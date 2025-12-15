@@ -1,0 +1,30 @@
+package cat.copernic.proyecto2.Domain.Farmacia;
+import jakarta.persistence.*;
+import lombok.Data;
+
+import java.util.List;
+@Data
+@Entity
+@Table(name="Proveedor")
+
+public class Proveedor {
+
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String nombre;
+    private String cif;
+    private String telefono;
+    private String email;
+    private String direccion;
+    private boolean activo = true;
+
+    @OneToMany(mappedBy = "proveedor", cascade = CascadeType.ALL)
+    private List<PedidoProveedor> pedidos;
+
+    public void añadirPedido(PedidoProveedor pedido) {
+
+    }
+
+
+}
