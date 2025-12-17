@@ -1,6 +1,9 @@
 package cat.copernic.proyecto2.Domain.Farmacia;
 import jakarta.persistence.*;
 import lombok.Data;
+import java.time.LocalDate;
+
+
 
 import java.util.List;
 @Data
@@ -17,6 +20,8 @@ public class Proveedor {
     private String telefono;
     private String email;
     private String direccion;
+    private LocalDate fechaAlta;
+    private LocalDate fechaBaja;
     private boolean activo = true;
 
     @OneToMany(mappedBy = "proveedor", cascade = CascadeType.ALL)
