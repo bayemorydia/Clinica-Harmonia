@@ -9,7 +9,7 @@ import lombok.Data;
 @Entity
 @Table(name="ProductoSanitario")
 
-public class ProductoSanitario {
+public class Medicamento {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
