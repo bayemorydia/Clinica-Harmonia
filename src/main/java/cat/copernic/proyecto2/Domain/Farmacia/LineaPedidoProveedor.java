@@ -19,7 +19,7 @@ public class LineaPedidoProveedor {
 
     @ManyToOne
     @JoinColumn(name = "producto_id")
-    private ProductoSanitario producto;
+    private Medicamento producto;
 
     private int cantidad;
     private BigDecimal precioUnitario;
