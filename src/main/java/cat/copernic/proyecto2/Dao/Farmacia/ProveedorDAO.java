@@ -24,4 +24,7 @@ public interface ProveedorDAO extends JpaRepository<Proveedor, Long> {
     @Query("SELECT p FROM Proveedor p WHERE p.cif = :valor")
     Optional<Proveedor> BuscarProveedorCif(@Param("valor") String valor);
 
+    @Query("SELECT p FROM Proveedor p WHERE p.telefono = :valor")
+    Optional<Proveedor> BuscarProveedorNumero(@Param("valor") String valor);
+
 }

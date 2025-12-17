@@ -24,9 +24,12 @@ public class ServiceIMPLProveedor implements ServiceProveedor {
             if (ProveedorDao.BuscarProveedorCif(proveedor.getCif()).isPresent()) {
                 throw new IllegalArgumentException("❌ Ya existe un proveedor con ese CIF");
             }
-     if (ProveedorDao.BuscarProveedorEmail(proveedor.getEmail()).isPresent()) {
-                throw new IllegalArgumentException("❌ Ya existe un proveedor con ese email");
-            }
+        if (ProveedorDao.BuscarProveedorEmail(proveedor.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("❌ Ya existe un proveedor con ese email");
+        }
+        if (ProveedorDao.BuscarProveedorNumero(proveedor.getTelefono()).isPresent()) {
+            throw new IllegalArgumentException("❌ Ya existe un proveedor con ese Telefono");
+        }
         proveedor.setId(null);
         proveedor.setActivo(true);
         proveedor.setFecha_alta(LocalDate.now());
@@ -47,12 +50,18 @@ public class ServiceIMPLProveedor implements ServiceProveedor {
             throw new IllegalArgumentException("❌ El email ya está en uso");
         }
 
+        Proveedor OtroTelefono = ProveedorDao.BuscarProveedorNumero(datosProveedor.getTelefono()).orElse(null);
+        if (OtroEmail != null && !OtroEmail.getId().equals(id)) {
+            throw new IllegalArgumentException("❌ El email ya está en uso");
+        }
+
+
         existente.setNombre(datosProveedor.getNombre());
         existente.setCif(datosProveedor.getCif());
         existente.setTelefono(datosProveedor.getTelefono());
         existente.setEmail(datosProveedor.getEmail());
         existente.setDireccion(datosProveedor.getDireccion());
-        existente.setFecha_baja(datosProveedor.getFecha_baja());
+        existente.setFecha_baja (datosProveedor.getFecha_baja());
         existente.setActivo(datosProveedor.isActivo());
 
 
