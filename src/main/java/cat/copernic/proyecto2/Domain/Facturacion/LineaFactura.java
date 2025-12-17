@@ -1,13 +1,9 @@
 package cat.copernic.proyecto2.Domain.Facturacion;
 
-import cat.copernic.proyecto2.Domain.Persona.Rol;
-import cat.copernic.proyecto2.Domain.Persona.Usuario;
 import jakarta.persistence.*;
 import lombok.Data;
-import java.time.LocalDateTime;
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import cat.copernic.proyecto2.Domain.Farmacia.ProductoSanitario;
+
 @Data
 @Entity
 @Table(name="LineaFactura")
