@@ -29,7 +29,7 @@ public class ServiceIMPLProveedor implements ServiceProveedor {
             }
         proveedor.setId(null);
         proveedor.setActivo(true);
-        proveedor.setFechaAlta(LocalDate.now());
+        proveedor.setFecha_alta(LocalDate.now());
         return ProveedorDao.save(proveedor);
     }
 
@@ -52,7 +52,7 @@ public class ServiceIMPLProveedor implements ServiceProveedor {
         existente.setTelefono(datosProveedor.getTelefono());
         existente.setEmail(datosProveedor.getEmail());
         existente.setDireccion(datosProveedor.getDireccion());
-        existente.setFechaBaja(datosProveedor.getFechaBaja());
+        existente.setFecha_baja(datosProveedor.getFecha_baja());
         existente.setActivo(datosProveedor.isActivo());
 
 
@@ -64,7 +64,7 @@ public class ServiceIMPLProveedor implements ServiceProveedor {
                 .orElseThrow(() -> new RuntimeException("Proveedor no encontrado con id " + id));
 
         existente.setActivo(false);
-        existente.setFechaBaja(LocalDate.now());
+        existente.setFecha_baja(LocalDate.now());
         ProveedorDao.save(existente);
     }
     public void EliminarProveedor(Long id) {

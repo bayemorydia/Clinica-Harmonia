@@ -18,9 +18,9 @@ public interface ProveedorDAO extends JpaRepository<Proveedor, Long> {
     List<Proveedor> buscarProveedorPorNombreOCif(@Param("valor") String valor);
     //Buscar Proovedor por el cif tanto por mayusculas i minusculas
     //param para indicar que ese paremetro se usara en la base datos
-    @Query("SELECT p.email FROM Proveedor p WHERE p.email LIKE('%valor%')")
+    @Query("SELECT p FROM Proveedor p WHERE p.email LIKE('valor')")
     Optional<Proveedor> BuscarProveedorEmail(@Param("valor") String valor);
 
-    @Query("SELECT p.cif FROM Proveedor p WHERE p.cif LIKE('%valor%')")
+    @Query("SELECT p FROM Proveedor p WHERE p.cif LIKE('valor')")
     Optional<Proveedor> BuscarProveedorCif(@Param("valor") String valor);
 }

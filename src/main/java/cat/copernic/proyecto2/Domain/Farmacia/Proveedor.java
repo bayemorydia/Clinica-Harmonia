@@ -16,12 +16,14 @@ public class Proveedor {
     private Long id;
 
     private String nombre;
+    @Column(unique = true)
     private String cif;
+    @Column(unique = true)
     private String telefono;
     private String email;
     private String direccion;
-    private LocalDate fechaAlta;
-    private LocalDate fechaBaja;
+    private LocalDate fecha_alta;
+    private LocalDate fecha_baja;
     private boolean activo = true;
 
     @OneToMany(mappedBy = "proveedor", cascade = CascadeType.ALL)
