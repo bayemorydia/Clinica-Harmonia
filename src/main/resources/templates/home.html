@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Inicio | Gestión Médica</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        .menu-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            border-radius: 15px;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15) !important;
+        }
+
+        .icon-box {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+
+    <div class="container py-5">
+        <div class="text-center mb-5">
+            <h1 class="display-4 fw-bold text-primary">Sistema Médico</h1>
+            <p class="lead text-muted">Panel Central de Administración</p>
+        </div>
+
+        <div class="row g-4 justify-content-center">
+            
+            <div class="col-md-4">
+                <a th:href="@{/pacientes}" class="text-decoration-none">
+                    <div class="card h-100 border-0 shadow menu-card text-center p-4">
+                        <div class="card-body">
+                            <i class="bi bi-people-fill text-primary icon-box"></i>
+                            <h3 class="card-title text-dark">Pacientes</h3>
+                            <p class="card-text text-muted">Gestión de expedientes, historial clínico y datos personales.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-4">
+                <a th:href="@{/empleados}" class="text-decoration-none">
+                    <div class="card h-100 border-0 shadow menu-card text-center p-4">
+                        <div class="card-body">
+                            <i class="bi bi-person-badge-fill text-warning icon-box"></i>
+                            <h3 class="card-title text-dark">Empleados</h3>
+                            <p class="card-text text-muted">Control de personal médico, enfermería y administración.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-4">
+                <a th:href="@{/proveedores}" class="text-decoration-none">
+                    <div class="card h-100 border-0 shadow menu-card text-center p-4">
+                        <div class="card-body">
+                            <i class="bi bi-truck text-secondary icon-box"></i>
+                            <h3 class="card-title text-dark">Proveedores</h3>
+                            <p class="card-text text-muted">Gestión de suministros y contactos de laboratorios.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-4">
+                <a th:href="@{/citas}" class="text-decoration-none">
+                    <div class="card h-100 border-0 shadow menu-card text-center p-4">
+                        <div class="card-body">
+                            <i class="bi bi-calendar-event-fill text-info icon-box"></i>
+                            <h3 class="card-title text-dark">Citas Médicas</h3>
+                            <p class="card-text text-muted">Programación de consultas y gestión de la agenda clínica.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-4">
+                <a th:href="@{/medicamentos}" class="text-decoration-none">
+                    <div class="card h-100 border-0 shadow menu-card text-center p-4">
+                        <div class="card-body">
+                            <i class="bi bi-capsule text-success icon-box"></i>
+                            <h3 class="card-title text-dark">Medicamentos</h3>
+                            <p class="card-text text-muted">Catálogo de fármacos, stock disponible y dosis.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-4">
+                <a th:href="@{/tratamientos}" class="text-decoration-none">
+                    <div class="card h-100 border-0 shadow menu-card text-center p-4">
+                        <div class="card-body">
+                            <i class="bi bi-clipboard2-pulse-fill text-danger icon-box"></i>
+                            <h3 class="card-title text-dark">Tratamientos</h3>
+                            <p class="card-text text-muted">Seguimiento de planes médicos y procedimientos.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
