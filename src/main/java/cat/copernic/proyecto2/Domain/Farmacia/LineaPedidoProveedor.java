@@ -1,10 +1,9 @@
 package cat.copernic.proyecto2.Domain.Farmacia;
-import cat.copernic.proyecto2.Domain.Persona.Rol;
-import cat.copernic.proyecto2.Domain.Persona.Usuario;
+
 import jakarta.persistence.*;
 import lombok.Data;
-import java.time.LocalDate;
 import java.math.BigDecimal;
+
 @Data
 @Entity
 @Table(name="LineaPedidoProveedor")
