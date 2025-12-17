@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Proveedores</title>
+    <style>
+        /* Reset básico */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .btn-add {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .btn-add:hover {
+            background-color: #218838;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-mirar {
+            background-color: #17a2b8;
+            color: white;
+        }
+        .btn-mirar:hover {
+            background-color: #138496;
+        }
+
+        .btn-modificar {
+            background-color: #ffc107;
+            color: #333;
+        }
+        .btn-modificar:hover {
+            background-color: #e0a800;
+        }
+
+        .btn-eliminar {
+            background-color: #dc3545;
+            color: white;
+        }
+        .btn-eliminar:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Lista de Proveedores</h1>
+
+    <a href="/proveedores/nuevo" class="btn-add">Añadir Proveedor</a>
+
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>CIF</th>
+            <th>Teléfono</th>
+            <th>Email</th>
+            <th>Dirección</th>
+            <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="proveedor : ${proveedores}">
+            <td th:text="${proveedor.id}"></td>
+            <td th:text="${proveedor.nombre}"></td>
+            <td th:text="${proveedor.cif}"></td>
+            <td th:text="${proveedor.telefono}"></td>
+            <td th:text="${proveedor.email}"></td>
+            <td th:text="${proveedor.direccion}"></td>
+            <td>
+                <a th:href="@{/proveedores/{id}(id=${proveedor.id})}">
+                    <button class="btn btn-mirar">Mirar</button>
+                </a>
+                <a th:href="@{/proveedores/editar/{id}(id=${proveedor.id})}">
+                    <button class="btn btn-modificar">Modificar</button>
+                </a>
+                <button class="btn btn-eliminar"
+                        th:onclick="'confirmarEliminar(' + ${proveedor.id} + ')'">
+                    Eliminar
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function confirmarEliminar(id) {
+        if (confirm("¿Estás seguro de que quieres eliminar este proveedor?")) {
+            window.location.href = "/proveedores/eliminar/" + id;
+        }
+    }
+</script>
+</body>
+</html>

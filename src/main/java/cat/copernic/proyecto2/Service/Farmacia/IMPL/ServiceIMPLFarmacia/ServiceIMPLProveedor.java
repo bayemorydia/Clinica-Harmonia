@@ -94,6 +94,15 @@ public class ServiceIMPLProveedor implements ServiceProveedor {
         if (termino == null || termino.isBlank()) {
             return listarTodos();
         }
+         if (termino == null || termino.isBlank()) {
+            return listarTodos();
+        }
         return ProveedorDao.buscarProveedorPorNombreOCif(termino);
+    }
+    @Transactional(readOnly = true)
+    public Proveedor buscarPorID(long id) {
+        return  ProveedorDao.findById(id)
+                .orElseThrow(() -> new RuntimeException("Proveedor no encontrado con id " + id));
+
     }
 }
