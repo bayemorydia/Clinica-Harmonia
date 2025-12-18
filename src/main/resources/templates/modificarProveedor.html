@@ -17,7 +17,11 @@
                     <div class="card-header bg-warning py-3 text-center">
                         <h2 class="h4 mb-0 text-dark"><i class="bi bi-pencil-square me-2"></i>Modificar Proveedor</h2>
                     </div>
-                    
+                    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <span th:text="${error}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
                     <div class="card-body p-4">
                         <form th:action="@{/proveedores/actualizar}" th:object="${proveedor}" method="post">
                             

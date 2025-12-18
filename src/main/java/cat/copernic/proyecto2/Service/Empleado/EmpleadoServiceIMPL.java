@@ -72,7 +72,7 @@ public class EmpleadoServiceIMPL implements EmpleadoService {
         return empleadoDAO.save(existente);
     }
 
-    public void eliminarEmpleado(Long id) {
+    public void desactivarEmpleado(Long id) {
         Empleado existente = empleadoDAO.findById(id)
                 .orElseThrow(() -> new RuntimeException("Empleado no encontrado con id " + id));
 
@@ -80,7 +80,7 @@ public class EmpleadoServiceIMPL implements EmpleadoService {
         existente.setFecha_baja(LocalDate.now());
         empleadoDAO.save(existente);
     }
-    public void desactivarEmpleado(Long id) {
+    public void eliminarEmpleado(Long id) {
         Empleado existente = empleadoDAO.findById(id)
                 .orElseThrow(() -> new RuntimeException("Empleado no encontrado con id " + id));
 
