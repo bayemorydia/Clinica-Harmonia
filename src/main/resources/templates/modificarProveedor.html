@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Modificar Proveedor</title>
+    <style>
+        body {
+            background-color: #f0f2f5;
+            font-family: 'Arial', sans-serif;
+            padding: 20px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input[type="text"], input[type="email"], input[type="tel"], input[type="date"] {
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        .btn-submit {
+            padding: 12px;
+            background-color: #ffc107;
+            color: #333;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .btn-submit:hover {
+            background-color: #e0a800;
+        }
+
+        .btn-cancel {
+            padding: 12px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-cancel:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Modificar Proveedor</h1>
+
+    <form th:action="@{/proveedores/actualizar}" method="post">
+        <!-- Campo oculto para enviar el ID del proveedor -->
+        <input type="hidden" name="id" th:value="${proveedor.id}">
+
+        <label for="nombre">Nombre</label>
+        <input type="text" id="nombre" name="nombre" th:value="${proveedor.nombre}" required>
+
+        <label for="cif">CIF</label>
+        <input type="text" id="cif" name="cif" th:value="${proveedor.cif}" required>
+
+        <label for="telefono">Teléfono</label>
+        <input type="tel" id="telefono" name="telefono" th:value="${proveedor.telefono}" required>
+
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" th:value="${proveedor.email}">
+
+        <label for="direccion">Dirección</label>
+        <input type="text" id="direccion" name="direccion" th:value="${proveedor.direccion}">
+
+        <label for="fecha_alta">Fecha de Alta</label>
+        <input type="date" id="fecha_alta" name="fecha_alta" th:value="${proveedor.fecha_alta}">
+
+        <button type="submit" class="btn-submit">Actualizar Proveedor</button>
+    </form>
+
+    <a href="/proveedores" class="btn-cancel">Cancelar</a>
+</div>
+</body>
+</html>

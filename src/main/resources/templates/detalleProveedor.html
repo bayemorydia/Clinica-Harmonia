@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalle del Proveedor</title>
+    <style>
+        body {
+            background-color: #f0f2f5;
+            font-family: 'Arial', sans-serif;
+            padding: 20px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        .detalle {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .detalle label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .detalle span {
+            padding: 8px 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .btn-cancel {
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 20px;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-cancel:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Detalle del Proveedor</h1>
+
+    <div class="detalle">
+        <div>
+            <label>ID:</label>
+            <span th:text="${proveedor.id}"></span>
+        </div>
+        <div>
+            <label>Nombre:</label>
+            <span th:text="${proveedor.nombre}"></span>
+        </div>
+        <div>
+            <label>CIF:</label>
+            <span th:text="${proveedor.cif}"></span>
+        </div>
+        <div>
+            <label>Teléfono:</label>
+            <span th:text="${proveedor.telefono}"></span>
+        </div>
+        <div>
+            <label>Email:</label>
+            <span th:text="${proveedor.email}"></span>
+        </div>
+        <div>
+            <label>Dirección:</label>
+            <span th:text="${proveedor.direccion}"></span>
+        </div>
+        <div>
+            <label>Fecha de Alta:</label>
+            <span th:text="${proveedor.fecha_alta}"></span>
+        </div>
+        <div>
+            <label>Activo:</label>
+            <span th:text="${proveedor.activo} ? 'Sí' : 'No'"></span>
+        </div>
+    </div>
+
+    <a href="/proveedores" class="btn-cancel">Volver</a>
+</div>
+</body>
+</html>
