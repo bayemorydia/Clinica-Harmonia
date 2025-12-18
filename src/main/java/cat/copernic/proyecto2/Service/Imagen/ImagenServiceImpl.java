@@ -1,4 +1,4 @@
-package cat.copernic.proyecto2.Service;
+package cat.copernic.proyecto2.Service.Imagen;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

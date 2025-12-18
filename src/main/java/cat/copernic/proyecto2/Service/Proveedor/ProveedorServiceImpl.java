@@ -1,29 +1,26 @@
-package cat.copernic.proyecto2.Service.Farmacia.IMPL.ServiceIMPLFarmacia;
-import cat.copernic.proyecto2.Dao.Farmacia.ProveedorDAO;
-import cat.copernic.proyecto2.Service.Farmacia.ServiceProveedor;
+package cat.copernic.proyecto2.Service.Proveedor;
+
+import cat.copernic.proyecto2.DAO.Farmacia.ProveedorDAO;
 import org.springframework.transaction.annotation.Transactional;
-import cat.copernic.proyecto2.Dao.Farmacia.ProveedorDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
-import java.util.Optional;
 import java.time.LocalDate;
 import cat.copernic.proyecto2.Domain.Farmacia.Proveedor;
 import java.lang.IllegalArgumentException;
 import org.springframework.stereotype.Service;
 
-
 @Service
 @Transactional
-public class ServiceIMPLProveedor implements ServiceProveedor {
-    //read only solo lee datos
+public class ProveedorServiceImpl implements ProveedorService {
+    // read only solo lee datos
 
     @Autowired
-    private  ProveedorDAO ProveedorDao;
+    private ProveedorDAO ProveedorDao;
 
     public Proveedor crearProveedor(Proveedor proveedor) {
-            if (ProveedorDao.BuscarProveedorCif(proveedor.getCif()).isPresent()) {
-                throw new IllegalArgumentException("❌ Ya existe un proveedor con ese CIF");
-            }
+        if (ProveedorDao.BuscarProveedorCif(proveedor.getCif()).isPresent()) {
+            throw new IllegalArgumentException("❌ Ya existe un proveedor con ese CIF");
+        }
         if (ProveedorDao.BuscarProveedorEmail(proveedor.getEmail()).isPresent()) {
             throw new IllegalArgumentException("❌ Ya existe un proveedor con ese email");
         }
@@ -55,34 +52,34 @@ public class ServiceIMPLProveedor implements ServiceProveedor {
             throw new IllegalArgumentException("❌ El email ya está en uso");
         }
 
-
         existente.setNombre(datosProveedor.getNombre());
         existente.setCif(datosProveedor.getCif());
         existente.setTelefono(datosProveedor.getTelefono());
         existente.setEmail(datosProveedor.getEmail());
         existente.setDireccion(datosProveedor.getDireccion());
-        existente.setFecha_baja (datosProveedor.getFecha_baja());
+        existente.setFecha_baja(datosProveedor.getFecha_baja());
         existente.setActivo(datosProveedor.isActivo());
-
+        
 
         return ProveedorDao.save(existente);
     }
 
     public void DesactivarProveedor(Long id) {
-        Proveedor existente=  ProveedorDao.findById(id)
+        Proveedor existente = ProveedorDao.findById(id)
                 .orElseThrow(() -> new RuntimeException("Proveedor no encontrado con id " + id));
 
         existente.setActivo(false);
         existente.setFecha_baja(LocalDate.now());
         ProveedorDao.save(existente);
     }
+
     public void EliminarProveedor(Long id) {
         Proveedor existente = ProveedorDao.findById(id)
                 .orElseThrow(() -> new RuntimeException("Proveedor no encontrado con id " + id));
         ProveedorDao.deleteById(id);
     }
 
-    @Transactional(readOnly = true)//solo va a leer datos
+    @Transactional(readOnly = true) // solo va a leer datos
     public Proveedor obtenerPorId(Long id) {
         return ProveedorDao.findById(id)
                 .orElseThrow(() -> new RuntimeException("Proveedor no encontrado con id " + id));
@@ -103,14 +100,15 @@ public class ServiceIMPLProveedor implements ServiceProveedor {
         if (termino == null || termino.isBlank()) {
             return listarTodos();
         }
-         if (termino == null || termino.isBlank()) {
+        if (termino == null || termino.isBlank()) {
             return listarTodos();
         }
         return ProveedorDao.buscarProveedorPorNombreOCif(termino);
     }
+
     @Transactional(readOnly = true)
     public Proveedor buscarPorID(long id) {
-        return  ProveedorDao.findById(id)
+        return ProveedorDao.findById(id)
                 .orElseThrow(() -> new RuntimeException("Proveedor no encontrado con id " + id));
 
     }

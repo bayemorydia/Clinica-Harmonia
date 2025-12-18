@@ -1,4 +1,4 @@
-package cat.copernic.proyecto2.Domain.Personal_sanitario;
+package cat.copernic.proyecto2.Domain.PersonalSanitario;
 
 import java.time.LocalDateTime;
 import jakarta.persistence.*;

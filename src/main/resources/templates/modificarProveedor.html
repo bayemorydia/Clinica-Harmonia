@@ -1,119 +1,89 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
-    <title>Modificar Proveedor</title>
-    <style>
-        body {
-            background-color: #f0f2f5;
-            font-family: 'Arial', sans-serif;
-            padding: 20px;
-        }
-
-        .container {
-            width: 90%;
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 25px;
-            color: #333;
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-        }
-
-        label {
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #555;
-        }
-
-        input[type="text"], input[type="email"], input[type="tel"], input[type="date"] {
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            transition: all 0.3s;
-        }
-
-        input:focus {
-            border-color: #007bff;
-            outline: none;
-        }
-
-        .btn-submit {
-            padding: 12px;
-            background-color: #ffc107;
-            color: #333;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.3s;
-        }
-
-        .btn-submit:hover {
-            background-color: #e0a800;
-        }
-
-        .btn-cancel {
-            padding: 12px;
-            background-color: #dc3545;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-top: 10px;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-        }
-
-        .btn-cancel:hover {
-            background-color: #c82333;
-        }
-    </style>
+    <title>Editar Proveedor | Gestión</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 </head>
-<body>
-<div class="container">
-    <h1>Modificar Proveedor</h1>
 
-    <form th:action="@{/proveedores/actualizar}" method="post">
-        <!-- Campo oculto para enviar el ID del proveedor -->
-        <input type="hidden" name="id" th:value="${proveedor.id}">
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                
+                <div class="card shadow border-0">
+                    <div class="card-header bg-warning py-3 text-center">
+                        <h2 class="h4 mb-0 text-dark"><i class="bi bi-pencil-square me-2"></i>Modificar Proveedor</h2>
+                    </div>
+                    
+                    <div class="card-body p-4">
+                        <form th:action="@{/proveedores/actualizar}" th:object="${proveedor}" method="post">
+                            
+                            <input type="hidden" th:field="*{id}">
+                            
+                            <input type="hidden" th:field="*{fecha_alta}">
 
-        <label for="nombre">Nombre</label>
-        <input type="text" id="nombre" name="nombre" th:value="${proveedor.nombre}" required>
+                            <div class="mb-3">
+                                <label for="nombre" class="form-label fw-bold">Nombre de la Empresa</label>
+                                <input type="text" id="nombre" th:field="*{nombre}" class="form-control" required>
+                            </div>
 
-        <label for="cif">CIF</label>
-        <input type="text" id="cif" name="cif" th:value="${proveedor.cif}" required>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="cif" class="form-label fw-bold">CIF</label>
+                                    <input type="text" id="cif" th:field="*{cif}" class="form-control" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="telefono" class="form-label fw-bold">Teléfono</label>
+                                    <input type="tel" id="telefono" th:field="*{telefono}" class="form-control" required>
+                                </div>
+                            </div>
 
-        <label for="telefono">Teléfono</label>
-        <input type="tel" id="telefono" name="telefono" th:value="${proveedor.telefono}" required>
+                            <div class="mb-3">
+                                <label for="email" class="form-label fw-bold">Correo Electrónico</label>
+                                <input type="email" id="email" th:field="*{email}" class="form-control" required>
+                            </div>
 
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" th:value="${proveedor.email}">
+                            <div class="mb-3">
+                                <label for="direccion" class="form-label fw-bold">Dirección Fiscal</label>
+                                <input type="text" id="direccion" th:field="*{direccion}" class="form-control" required>
+                            </div>
 
-        <label for="direccion">Dirección</label>
-        <input type="text" id="direccion" name="direccion" th:value="${proveedor.direccion}">
+                            <div class="mb-4">
+                                <label for="activo" class="form-label fw-bold">Estado del Proveedor</label>
+                                <select id="activo" th:field="*{activo}" class="form-select">
+                                    <option th:value="true">Activo (Operativo)</option>
+                                    <option th:value="false">Inactivo (No operativo)</option>
+                                </select>
+                            </div>
 
-        <label for="fecha_alta">Fecha de Alta</label>
-        <input type="date" id="fecha_alta" name="fecha_alta" th:value="${proveedor.fecha_alta}">
+                            <hr>
 
-        <button type="submit" class="btn-submit">Actualizar Proveedor</button>
-    </form>
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-warning fw-bold shadow-sm">
+                                    <i class="bi bi-save me-2"></i>Guardar Cambios
+                                </button>
+                                <a th:href="@{/proveedores}" class="btn btn-outline-secondary">
+                                    Cancelar
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
 
-    <a href="/proveedores" class="btn-cancel">Cancelar</a>
-</div>
+                <div class="text-center mt-3">
+                    <small class="text-muted">
+                        Registrado originalmente el: <span class="fw-bold" th:text="${#temporals.format(proveedor.fecha_alta, 'dd/MM/yyyy')}"></span>
+                    </small>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

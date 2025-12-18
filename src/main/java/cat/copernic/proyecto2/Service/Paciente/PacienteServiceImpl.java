@@ -1,4 +1,4 @@
-package cat.copernic.proyecto2.Service;
+package cat.copernic.proyecto2.Service.Paciente;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import cat.copernic.proyecto2.DAO.PacienteDAO;
 import cat.copernic.proyecto2.Domain.Recepción.Paciente;
+import cat.copernic.proyecto2.Service.Imagen.ImagenService;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -31,7 +32,7 @@ public class PacienteServiceImpl implements PacienteService {
         String nombreImagenNueva = imagenService.guardarImagen(file, "Paciente");
         if (paciente.getId() == null || paciente.getId() == 0) {
             paciente.setFechaAlta(LocalDate.now());
-            validarDuplicados(paciente);            
+            validarDuplicados(paciente);
             if (nombreImagenNueva != null) {
                 paciente.setRutaFoto(nombreImagenNueva);
             } else {
@@ -40,7 +41,7 @@ public class PacienteServiceImpl implements PacienteService {
         } else {
             Paciente existente = pacienteDAO.findById(paciente.getId()).orElse(null);
             if (existente != null) {
-                paciente.setFechaAlta(existente.getFechaAlta());                
+                paciente.setFechaAlta(existente.getFechaAlta());
                 if (nombreImagenNueva != null) {
                     imagenService.eliminarImagen(existente.getRutaFoto(), "Paciente");
                     paciente.setRutaFoto(nombreImagenNueva);
@@ -77,8 +78,8 @@ public class PacienteServiceImpl implements PacienteService {
     public void deletePaciente(Long id) {
         Paciente p = pacienteDAO.findById(id).orElse(null);
         if (p != null) {
-            imagenService.eliminarImagen(p.getRutaFoto(), "Paciente");
-            pacienteDAO.delete(p);
+            p.setActivo(false);
+            pacienteDAO.save(p);
         }
     }
 

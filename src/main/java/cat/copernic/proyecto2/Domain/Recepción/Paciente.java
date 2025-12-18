@@ -1,17 +1,18 @@
 package cat.copernic.proyecto2.Domain.Recepción;
 
 import cat.copernic.proyecto2.Domain.Persona.Usuario;
+import cat.copernic.proyecto2.Domain.PersonalSanitario.HistorialClinico;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import lombok.ToString;
 import java.time.LocalDate;
-import cat.copernic.proyecto2.Domain.Personal_sanitario.HistorialClinico;
 import java.util.List;
-
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Data
 @Entity
+@Table(name = "Paciente")
 public class Paciente {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,6 +39,8 @@ public class Paciente {
     private String direccion;
     private LocalDate fechaAlta;
     private String rutaFoto; // Agregado para imagen
+    @Column(name = "activo")
+    private boolean activo = true;
 
     // Relación con login
     @OneToOne
@@ -49,6 +52,7 @@ public class Paciente {
     private HistorialClinico historial;
 
     // Citas
+    @ToString.Exclude
     @OneToMany(mappedBy = "paciente")
     private List<Cita> citas;
 }

@@ -9,39 +9,47 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-
 import cat.copernic.proyecto2.Domain.Recepción.Paciente;
-import cat.copernic.proyecto2.Service.PacienteService;
+import cat.copernic.proyecto2.Service.Paciente.PacienteService;
 import jakarta.validation.Valid;
 
 @Controller
+@RequestMapping("/pacientes")
 public class PacienteController {
 
     @Autowired
     private PacienteService pacienteService;
 
-    @GetMapping("/pacientes")
+    @GetMapping("")
     public String listarPacientes(Model model) {
         List<Paciente> pacientes = pacienteService.getAllPacientes();
         model.addAttribute("pacientes", pacientes);
         model.addAttribute("btnAnadirPaciente", "Añadir Nuevo Paciente");
-        model.addAttribute("headerAccion", "Acción");
-        model.addAttribute("btnUpdate", "Editar");
-        model.addAttribute("btnDelete", "Eliminar");
         model.addAttribute("pacienteService", pacienteService);
         return "Paciente/listaPacientes";
     }
 
-    @GetMapping("/pacientes/anadir")
+    @GetMapping("/anadir")
     public String mostrarFormularioAnadir(Model model) {
         model.addAttribute("paciente", new Paciente());
         model.addAttribute("titulo", "Registrar Nuevo Paciente");
         return "Paciente/formularioPaciente";
     }
 
-    @PostMapping("/pacientes/guardar")
+    @GetMapping("/activar/{id}")
+    public String activarPaciente(@PathVariable("id") Long id) {
+        Paciente paciente = pacienteService.findPacienteById(id);
+        if (paciente != null) {
+            paciente.setActivo(true); // Cambiamos el estado a activo
+            pacienteService.savePaciente(paciente, null); // Guardamos (enviamos null a la foto según tu lógica)
+        }
+        return "redirect:/pacientes"; // Redirigimos de nuevo al listado
+    }
+
+    @PostMapping("/guardar")
     public String guardarPaciente(
             @Valid @ModelAttribute("paciente") Paciente paciente,
             BindingResult result,
@@ -59,7 +67,7 @@ public class PacienteController {
         }
     }
 
-    @GetMapping("/pacientes/detalle/{id}")
+    @GetMapping("/detalle/{id}")
     public String verDetallePaciente(@PathVariable("id") Long id, Model model) {
         Paciente paciente = pacienteService.findPacienteById(id);
         if (paciente == null) {
@@ -67,25 +75,29 @@ public class PacienteController {
         }
         model.addAttribute("paciente", paciente);
         model.addAttribute("pacienteService", pacienteService);
-        model.addAttribute("titulo", "Detalles del Paciente: " + paciente.getNombre() + " " + paciente.getApellidos());
+        model.addAttribute("titulo", "Detalles del Paciente");
         return "Paciente/detallePaciente";
     }
 
-    @GetMapping("/pacientes/confirmarEliminar/{id}")
+    @GetMapping("/confirmarEliminar/{id}")
     public String confirmarEliminar(@PathVariable("id") Long id, Model model) {
         Paciente paciente = pacienteService.findPacienteById(id);
         if (paciente == null) {
             return "redirect:/pacientes";
         }
         model.addAttribute("paciente", paciente);
-        model.addAttribute("titulo", "Confirmar Eliminación");
+        model.addAttribute("titulo", "Confirmar Desactivación");
         return "Paciente/confirmarEliminarPaciente";
     }
 
-    @PostMapping("/pacientes/eliminar")
-    public String eliminarPaciente(@RequestParam("id") Long id) {
-        pacienteService.deletePaciente(id);
+    // Cambiado: Ahora desactiva en lugar de borrar
+    @PostMapping("/eliminar")
+    public String desactivarPaciente(@RequestParam("id") Long id) {
+        Paciente paciente = pacienteService.findPacienteById(id);
+        if (paciente != null) {
+            paciente.setActivo(false); // Cambiamos el estado a falso
+            pacienteService.savePaciente(paciente, null); // Guardamos el cambio
+        }
         return "redirect:/pacientes";
     }
-
 }

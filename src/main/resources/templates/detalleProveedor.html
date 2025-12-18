@@ -1,108 +1,81 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
-    <title>Detalle del Proveedor</title>
-    <style>
-        body {
-            background-color: #f0f2f5;
-            font-family: 'Arial', sans-serif;
-            padding: 20px;
-        }
-
-        .container {
-            width: 90%;
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 25px;
-            color: #333;
-        }
-
-        .detalle {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .detalle label {
-            font-weight: bold;
-            color: #555;
-        }
-
-        .detalle span {
-            padding: 8px 10px;
-            background-color: #f8f9fa;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-        }
-
-        .btn-cancel {
-            padding: 12px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-top: 20px;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-        }
-
-        .btn-cancel:hover {
-            background-color: #0056b3;
-        }
-    </style>
+    <title>Detalle del Proveedor | Gestión</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 </head>
-<body>
-<div class="container">
-    <h1>Detalle del Proveedor</h1>
 
-    <div class="detalle">
-        <div>
-            <label>ID:</label>
-            <span th:text="${proveedor.id}"></span>
-        </div>
-        <div>
-            <label>Nombre:</label>
-            <span th:text="${proveedor.nombre}"></span>
-        </div>
-        <div>
-            <label>CIF:</label>
-            <span th:text="${proveedor.cif}"></span>
-        </div>
-        <div>
-            <label>Teléfono:</label>
-            <span th:text="${proveedor.telefono}"></span>
-        </div>
-        <div>
-            <label>Email:</label>
-            <span th:text="${proveedor.email}"></span>
-        </div>
-        <div>
-            <label>Dirección:</label>
-            <span th:text="${proveedor.direccion}"></span>
-        </div>
-        <div>
-            <label>Fecha de Alta:</label>
-            <span th:text="${proveedor.fecha_alta}"></span>
-        </div>
-        <div>
-            <label>Activo:</label>
-            <span th:text="${proveedor.activo} ? 'Sí' : 'No'"></span>
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-7">
+                
+                <div class="card shadow border-0">
+                    <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
+                        <h2 class="h4 mb-0"><i class="bi bi-info-circle me-2"></i>Información del Proveedor</h2>
+                        <span th:class="${proveedor.activo} ? 'badge bg-success' : 'badge bg-danger'"
+                              th:text="${proveedor.activo} ? 'Estado: Activo' : 'Estado: Inactivo'">
+                        </span>
+                    </div>
+                    
+                    <div class="card-body p-4">
+                        <div class="row g-3">
+                            <div class="col-12 border-bottom pb-2">
+                                <p class="text-muted small mb-1">Nombre Comercial</p>
+                                <h3 class="h5 fw-bold text-dark" th:text="${proveedor.nombre}"></h3>
+                                <small class="text-muted">ID del sistema: #<span th:text="${proveedor.id}"></span></small>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="fw-bold text-secondary small uppercase"><i class="bi bi-card-text me-1"></i> CIF</label>
+                                <p class="fs-6 mt-1" th:text="${proveedor.cif}"></p>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="fw-bold text-secondary small uppercase"><i class="bi bi-telephone me-1"></i> Teléfono</label>
+                                <p class="fs-6 mt-1" th:text="${proveedor.telefono}"></p>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="fw-bold text-secondary small uppercase"><i class="bi bi-envelope me-1"></i> Email</label>
+                                <p class="fs-6 mt-1" th:text="${proveedor.email}"></p>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="fw-bold text-secondary small uppercase"><i class="bi bi-calendar-check me-1"></i> Fecha de Alta</label>
+                                <p class="fs-6 mt-1" th:text="${#temporals.format(proveedor.fecha_alta, 'dd/MM/yyyy')}"></p>
+                            </div>
+
+                            <div class="col-12 bg-light p-3 rounded">
+                                <label class="fw-bold text-secondary small uppercase"><i class="bi bi-geo-alt me-1"></i> Dirección Fiscal</label>
+                                <p class="fs-6 mt-1 mb-0" th:text="${proveedor.direccion}"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer bg-white py-3 d-flex justify-content-between">
+                        <a th:href="@{/proveedores}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Volver al listado
+                        </a>
+                        <div>
+                            <a th:href="@{/proveedores/editar/{id}(id=${proveedor.id})}" class="btn btn-warning">
+                                <i class="bi bi-pencil"></i> Editar Datos
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="text-center mt-4 text-muted small">
+                    Última actualización de datos gestionada por el módulo de Farmacia.
+                </p>
+            </div>
         </div>
     </div>
 
-    <a href="/proveedores" class="btn-cancel">Volver</a>
-</div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
