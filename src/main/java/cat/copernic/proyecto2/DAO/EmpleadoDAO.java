@@ -1,7 +1,6 @@
-package cat.copernic.proyecto2.Dao;
+package cat.copernic.proyecto2.DAO;
 
 import cat.copernic.proyecto2.Domain.Administración.Empleado;
-import cat.copernic.proyecto2.Domain.Farmacia.Proveedor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

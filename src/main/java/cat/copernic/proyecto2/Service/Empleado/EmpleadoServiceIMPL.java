@@ -1,18 +1,17 @@
 package cat.copernic.proyecto2.Service.Empleado;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import cat.copernic.proyecto2.Dao.EmpleadoDAO;
+import cat.copernic.proyecto2.DAO.EmpleadoDAO;
 import cat.copernic.proyecto2.Domain.Administración.Empleado;
 import cat.copernic.proyecto2.Domain.Persona.Rol;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDate;
 
 @Service
 @Transactional
-public class EmpleadoServiceIMPL implements EmpleadoService {
+public class EmpleadoServiceImpl implements EmpleadoService {
     @Autowired
     private  EmpleadoDAO empleadoDAO;
 

@@ -53,6 +53,9 @@ public class SecurityConfig {
 
                         // Flujo de medicamentos: Solo ADMIN
                         .requestMatchers("/medicamentos/**").hasRole("ADMIN")
+
+                        // Flujo de empleados: Solo ADMIN
+                        .requestMatchers("/empleados/**").hasRole("ADMIN")
                         
                         // Cualquier otra petición requiere estar autenticado
                         .anyRequest().authenticated())
