@@ -1,6 +1,6 @@
 package cat.copernic.proyecto2.Service.Proveedor;
 
-import cat.copernic.proyecto2.DAO.Farmacia.ProveedorDAO;
+import cat.copernic.proyecto2.Dao.Farmacia.ProveedorDAO;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
