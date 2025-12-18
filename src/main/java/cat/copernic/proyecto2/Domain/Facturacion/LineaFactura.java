@@ -2,7 +2,7 @@ package cat.copernic.proyecto2.Domain.Facturacion;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import cat.copernic.proyecto2.Domain.Farmacia.ProductoSanitario;
+import cat.copernic.proyecto2.Domain.Farmacia.Medicamento;
 
 @Data
 @Entity
@@ -13,7 +13,7 @@ public class LineaFactura {
     private int idDetalle;
     @ManyToOne
     @JoinColumn(name = "producto_id")
-    private ProductoSanitario producto;
+    private Medicamento producto;
     private int cantidad;
     private float precioUnitario;
     private float subtotal;
