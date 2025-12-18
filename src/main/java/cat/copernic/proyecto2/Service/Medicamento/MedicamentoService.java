@@ -1,4 +1,4 @@
-package cat.copernic.proyecto2.Service;
+package cat.copernic.proyecto2.Service.Medicamento;
 
 import cat.copernic.proyecto2.Domain.Farmacia.Medicamento; // Import de tu entidad
 import java.util.List;

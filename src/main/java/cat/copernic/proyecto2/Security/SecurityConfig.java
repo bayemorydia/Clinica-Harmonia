@@ -47,6 +47,12 @@ public class SecurityConfig {
 
                         // Flujo de Proveedores: Solo ADMIN
                         .requestMatchers("/proveedores/**").hasRole("ADMIN")
+
+                        // Flujo de tratamientos: Solo ADMIN
+                        .requestMatchers("/tratamientos/**").hasRole("ADMIN")
+
+                        // Flujo de medicamentos: Solo ADMIN
+                        .requestMatchers("/medicamentos/**").hasRole("ADMIN")
                         
                         // Cualquier otra petición requiere estar autenticado
                         .anyRequest().authenticated())

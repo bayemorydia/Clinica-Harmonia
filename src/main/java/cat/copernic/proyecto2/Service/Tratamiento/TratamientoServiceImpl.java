@@ -1,7 +1,7 @@
-package cat.copernic.proyecto2.Service;
+package cat.copernic.proyecto2.Service.Tratamiento;
 
 import cat.copernic.proyecto2.DAO.TratamientoDAO;
-import cat.copernic.proyecto2.Domain.Personal_sanitario.Tratamiento;
+import cat.copernic.proyecto2.Domain.PersonalSanitario.Tratamiento;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

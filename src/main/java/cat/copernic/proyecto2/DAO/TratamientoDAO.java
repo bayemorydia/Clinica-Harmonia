@@ -1,6 +1,6 @@
 package cat.copernic.proyecto2.DAO;
 
-import cat.copernic.proyecto2.Domain.Personal_sanitario.Tratamiento;
+import cat.copernic.proyecto2.Domain.PersonalSanitario.Tratamiento;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
