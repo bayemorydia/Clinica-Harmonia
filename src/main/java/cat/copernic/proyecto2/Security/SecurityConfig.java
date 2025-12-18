@@ -12,7 +12,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-public class SecutiryConfig {
+public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -36,14 +36,30 @@ public class SecutiryConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
+                        // Permitir acceso a recursos estáticos (CSS, JS, Imágenes)
+                        .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
+                        
+                        // Flujo de Pacientes: Solo ADMIN
                         .requestMatchers("/pacientes/**").hasRole("ADMIN")
+                        
+                        // Flujo de Citas: Solo ADMIN
+                        .requestMatchers("/citas/**").hasRole("ADMIN")
+
+                        // Flujo de Proveedores: Solo ADMIN
+                        .requestMatchers("/proveedores/**").hasRole("ADMIN")
+                        
+                        // Cualquier otra petición requiere estar autenticado
                         .anyRequest().authenticated())
+                
                 .formLogin(form -> form
-                        .defaultSuccessUrl("/", true)
+                        .defaultSuccessUrl("/", true) // Redirige al inicio tras login
                         .permitAll())
+                
                 .logout(logout -> logout
                         .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout") // Redirige a login tras cerrar sesión
                         .permitAll());
+        
         return http.build();
     }
 }

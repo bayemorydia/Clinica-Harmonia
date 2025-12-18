@@ -14,15 +14,20 @@
 
                 <form th:action="@{/pacientes/guardar}" th:object="${paciente}" method="post">
                     <div class="card shadow border-0">
-                        
+
                         <div class="card-header bg-success text-white py-3">
                             <h3 class="mb-0">
-                                <i class="bi bi-person-plus-fill me-2"></i> 
+                                <i class="bi bi-person-plus-fill me-2"></i>
                                 <span th:text="${paciente.id == null ? 'Nuevo Registro de Paciente' : 'Editar Paciente'}">Formulario</span>
                             </h3>
                         </div>
 
                         <div class="card-body p-4">
+                            <div th:if="${error}" class="alert alert-danger d-flex align-items-center mb-4">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                <div th:text="${error}"></div>
+                            </div>
+
                             <input type="hidden" th:field="*{id}" />
                             <input type="hidden" th:field="*{rutaFoto}" />
                             <input type="hidden" th:field="*{fechaAlta}" />
@@ -31,25 +36,54 @@
                             <div class="row g-3 mb-4">
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Nombre</label>
-                                    <input type="text" th:field="*{nombre}" class="form-control" placeholder="Ej: Juan" required>
+                                    <input type="text" th:field="*{nombre}" 
+                                           th:classappend="${#fields.hasErrors('nombre')} ? 'is-invalid' : ''"
+                                           class="form-control" placeholder="Ej: Juan">
+                                    <div class="invalid-feedback">
+                                        <i class="bi bi-exclamation-circle me-1"></i>
+                                        <span th:errors="*{nombre}"></span>
+                                    </div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Apellidos</label>
-                                    <input type="text" th:field="*{apellidos}" class="form-control" placeholder="Ej: Pérez García" required>
+                                    <input type="text" th:field="*{apellidos}" 
+                                           th:classappend="${#fields.hasErrors('apellidos')} ? 'is-invalid' : ''"
+                                           class="form-control" placeholder="Ej: Pérez García">
+                                    <div class="invalid-feedback">
+                                        <i class="bi bi-exclamation-circle me-1"></i>
+                                        <span th:errors="*{apellidos}"></span>
+                                    </div>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label fw-bold">DNI / NIE</label>
-                                    <input type="text" th:field="*{dni}" class="form-control" placeholder="12345678A" required>
+                                    <input type="text" th:field="*{dni}" 
+                                           th:classappend="${#fields.hasErrors('dni')} ? 'is-invalid' : ''"
+                                           class="form-control" placeholder="12345678A">
+                                    <div class="invalid-feedback">
+                                        <i class="bi bi-exclamation-circle me-1"></i>
+                                        <span th:errors="*{dni}"></span>
+                                    </div>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label fw-bold">Fecha de Nacimiento</label>
-                                    <input type="date" name="fechaNacimiento" 
-                                           th:value="${paciente.fechaNacimiento != null ? #temporals.format(paciente.fechaNacimiento, 'yyyy-MM-dd') : ''}"
-                                           class="form-control" required>
+                                    <input type="date" th:field="*{fechaNacimiento}"
+                                           th:max="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"
+                                           th:classappend="${#fields.hasErrors('fechaNacimiento')} ? 'is-invalid' : ''"
+                                           class="form-control">
+                                    <div class="invalid-feedback">
+                                        <i class="bi bi-exclamation-circle me-1"></i>
+                                        <span th:errors="*{fechaNacimiento}"></span>
+                                    </div>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label fw-bold">Teléfono</label>
-                                    <input type="tel" th:field="*{telefono}" class="form-control" placeholder="999888777">
+                                    <input type="tel" th:field="*{telefono}" 
+                                           th:classappend="${#fields.hasErrors('telefono')} ? 'is-invalid' : ''"
+                                           class="form-control" placeholder="999888777">
+                                    <div class="invalid-feedback">
+                                        <i class="bi bi-exclamation-circle me-1"></i>
+                                        <span th:errors="*{telefono}"></span>
+                                    </div>
                                 </div>
                             </div>
 
@@ -57,15 +91,33 @@
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Correo Electrónico</label>
-                                    <input type="email" th:field="*{email}" class="form-control" placeholder="correo@ejemplo.com">
+                                    <input type="email" th:field="*{email}" 
+                                           th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''"
+                                           class="form-control" placeholder="correo@ejemplo.com">
+                                    <div class="invalid-feedback">
+                                        <i class="bi bi-exclamation-circle me-1"></i>
+                                        <span th:errors="*{email}"></span>
+                                    </div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Nº Seguridad Social</label>
-                                    <input type="text" th:field="*{numeroSeguridadSocial}" class="form-control">
+                                    <input type="text" th:field="*{numeroSeguridadSocial}" 
+                                           th:classappend="${#fields.hasErrors('numeroSeguridadSocial')} ? 'is-invalid' : ''"
+                                           class="form-control">
+                                    <div class="invalid-feedback">
+                                        <i class="bi bi-exclamation-circle me-1"></i>
+                                        <span th:errors="*{numeroSeguridadSocial}"></span>
+                                    </div>
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label fw-bold">Dirección</label>
-                                    <textarea th:field="*{direccion}" class="form-control" rows="2"></textarea>
+                                    <textarea th:field="*{direccion}" 
+                                              th:classappend="${#fields.hasErrors('direccion')} ? 'is-invalid' : ''"
+                                              class="form-control" rows="2"></textarea>
+                                    <div class="invalid-feedback">
+                                        <i class="bi bi-exclamation-circle me-1"></i>
+                                        <span th:errors="*{direccion}"></span>
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Citas | Clínica</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+</head>
+
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <form th:action="@{/citas/guardar}" th:object="${cita}" method="post">
+                    <div class="card shadow border-0">
+                        <div class="card-header bg-primary text-white py-3">
+                            <h4 class="mb-0">
+                                <i class="bi bi-calendar-plus me-2"></i>
+                                <span th:text="*{id != null} ? 'Editar Cita' : 'Nueva Cita Médica'"></span>
+                            </h4>
+                        </div>
+                        <div class="card-body p-4">
+
+                            <div th:if="${errorNegocio}"
+                                class="alert alert-danger d-flex align-items-center mb-4 shadow-sm">
+                                <i class="bi bi-exclamation-octagon-fill me-2 fs-5"></i>
+                                <span th:text="${errorNegocio}"></span>
+                            </div>
+
+                            <input type="hidden" th:field="*{id}" />
+
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">Paciente</label>
+                                    <select th:field="*{paciente}" class="form-select"
+                                        th:classappend="${#fields.hasErrors('paciente')} ? 'is-invalid'">
+                                        <option value="">Seleccione el paciente...</option>
+                                        <option th:each="p : ${pacientes}" th:value="${p.id}"
+                                            th:text="${p.nombre + ' ' + p.apellidos}"></option>
+                                    </select>
+                                    <div class="invalid-feedback" th:errors="*{paciente}"></div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Nombre del Médico</label>
+                                    <div class="input-group has-validation">
+                                        <span class="input-group-text"><i class="bi bi-person-badge"></i></span>
+                                        <input type="text" th:field="*{nombreMedico}" class="form-control"
+                                            th:classappend="${#fields.hasErrors('nombreMedico')} ? 'is-invalid'"
+                                            placeholder="Ej: Dr. García">
+                                        <div class="invalid-feedback" th:errors="*{nombreMedico}"></div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Especialidad</label>
+                                    <div class="input-group has-validation">
+                                        <span class="input-group-text"><i class="bi bi-stethoscope"></i></span>
+                                        <input type="text" th:field="*{especialidad}" class="form-control"
+                                            th:classappend="${#fields.hasErrors('especialidad')} ? 'is-invalid'"
+                                            placeholder="Ej: Cardiología">
+                                        <div class="invalid-feedback" th:errors="*{especialidad}"></div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <label class="form-label fw-bold">Fecha y Hora</label>
+                                    <input type="datetime-local" id="fechaHoraInput" th:field="*{fechaHora}" step="3600"
+                                        class="form-control"
+                                        th:classappend="${#fields.hasErrors('fechaHora')} ? 'is-invalid'" required>
+                                    <div class="invalid-feedback" th:errors="*{fechaHora}"></div>
+                                    <small class="text-muted">Horario: 08:00 a 17:00 (Citas cada hora exacta).</small>
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">Motivo de la consulta</label>
+                                    <textarea th:field="*{motivo}" class="form-control"
+                                        placeholder="Escriba brevemente el motivo..." rows="2"
+                                        th:classappend="${#fields.hasErrors('motivo')} ? 'is-invalid'"></textarea>
+                                    <div class="invalid-feedback" th:errors="*{motivo}"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-footer bg-white d-flex justify-content-between p-3">
+                            <a th:href="@{/citas}" class="btn btn-outline-secondary px-4">
+                                <i class="bi bi-arrow-left"></i> Volver
+                            </a>
+                            <button type="submit" class="btn btn-primary px-5 fw-bold shadow-sm">
+                                <i class="bi bi-save me-1"></i> Guardar Cita
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const input = document.getElementById('fechaHoraInput');
+
+            // 1. Establecer fecha mínima (hoy a esta hora)
+            const ahora = new Date();
+            const year = ahora.getFullYear();
+            const month = String(ahora.getMonth() + 1).padStart(2, '0');
+            const day = String(ahora.getDate()).padStart(2, '0');
+            const hours = String(ahora.getHours()).padStart(2, '0');
+
+            const minDateTime = `${year}-${month}-${day}T${hours}:00`;
+            input.setAttribute('min', minDateTime);
+
+            // 2. Limpiar minutos a :00 automáticamente
+            input.addEventListener('change', function () {
+                if (this.value) {
+                    const date = new Date(this.value);
+                    date.setMinutes(0);
+                    date.setSeconds(0);
+
+                    const y = date.getFullYear();
+                    const m = String(date.getMonth() + 1).padStart(2, '0');
+                    const d = String(date.getDate()).padStart(2, '0');
+                    const h = String(date.getHours()).padStart(2, '0');
+
+                    this.value = `${y}-${m}-${d}T${h}:00`;
+                }
+            });
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

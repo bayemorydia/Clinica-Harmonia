@@ -1,4 +1,4 @@
-package cat.copernic.proyecto2.Domain.Personal_sanitario;
+package cat.copernic.proyecto2.Domain.PersonalSanitario;
 
 import cat.copernic.proyecto2.Domain.Recepción.Paciente;
 import java.util.List;
