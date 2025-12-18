@@ -15,7 +15,7 @@ public class EmpleadoController {
     private EmpleadoService empleadoService;
 
     // Listar empleados
-    @GetMapping
+    @GetMapping("")
     public String listarEmpleados(Model model) {
         model.addAttribute("empleados", empleadoService.listarTodos());
         return "empleado/listar";
@@ -30,9 +30,15 @@ public class EmpleadoController {
 
     // Guardar nuevo empleado
     @PostMapping("/guardar")
-    public String guardarEmpleado(@ModelAttribute Empleado empleado) {
-        empleadoService.crear(empleado);
-        return "redirect:/empleados";
+    public String guardarEmpleado(@ModelAttribute Empleado empleado,Model model) {
+        try{
+            empleadoService.crear(empleado);
+            return "redirect:/empleados";
+        }catch(Exception e){
+            model.addAttribute("error", e.getMessage());
+            return("empleado/añadir");
+        }
+
     }
 
     // Ver detalle de un empleado
@@ -41,6 +47,7 @@ public class EmpleadoController {
         model.addAttribute("empleado", empleadoService.obtenerPorId(id));
         return "empleado/detalle";
     }
+
 
     // Mostrar formulario para modificar empleado
     @GetMapping("/editar/{id}")
@@ -51,10 +58,15 @@ public class EmpleadoController {
 
     // Actualizar empleado
     @PostMapping("/actualizar/{id}")
-    public String actualizarEmpleado( @ModelAttribute Empleado empleado) {
+    public String actualizarEmpleado( @ModelAttribute Empleado empleado,Model model) {
 
-        empleadoService.actualizar(empleado.getId(), empleado);
-        return "redirect:/empleados";
+        try{
+            empleadoService.actualizar(empleado.getId(), empleado);
+            return "redirect:/empleados";
+        }catch(Exception e){
+            model.addAttribute("error", e.getMessage());
+            return"empleado/modificar";
+        }
     }
 
     // Eliminar empleado (opcional)
