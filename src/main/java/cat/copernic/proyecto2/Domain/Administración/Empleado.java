@@ -23,8 +23,9 @@ public class Empleado {
     private String email;
     private String telefono;
 
-    private LocalDate fechaAlta;
-    private LocalDate fechaBaja;
+
+    private LocalDate fecha_alta;
+    private LocalDate fecha_baja;
 
     private String departamento;
 
@@ -33,6 +34,8 @@ public class Empleado {
     private Rol rol;
 
     private BigDecimal salarioBase;
+    @Column(nullable = false)
+    private Boolean activa = true;
 
     @OneToOne
     @JoinColumn(name = "usuario_id")

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Modificar Empleado | Farmacia</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div class="container mt-5">
+    <div class="card shadow border-0">
+        <div class="card-header bg-white">
+            <h1 class="h4 text-primary fw-bold">Modificar Empleado</h1>
+        </div>
+        <div class="card-body">
+            <form th:action="@{/empleados/actualizar/{id}(id=${empleado.id})}" th:object="${empleado}" method="post">
+                <div class="mb-3">
+                    <label class="form-label">Nombre</label>
+                    <input type="text" th:field="*{nombre}" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Apellidos</label>
+                    <input type="text" th:field="*{apellidos}" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">DNI</label>
+                    <input type="text" th:field="*{dni}" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" th:field="*{email}" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Teléfono</label>
+                    <input type="text" th:field="*{telefono}" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Departamento</label>
+                    <input type="text" th:field="*{departamento}" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Salario Base</label>
+                    <input type="number" th:field="*{salarioBase}" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Actualizar</button>
+                <a th:href="@{/empleados}" class="btn btn-link">Volver a lista</a>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
