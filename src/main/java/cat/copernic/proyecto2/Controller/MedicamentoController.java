@@ -1,7 +1,8 @@
 package cat.copernic.proyecto2.Controller;
 
 import cat.copernic.proyecto2.Domain.Farmacia.Medicamento;
-import cat.copernic.proyecto2.Service.MedicamentoService;
+import cat.copernic.proyecto2.Service.Medicamento.MedicamentoService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

@@ -1,6 +1,6 @@
-package cat.copernic.proyecto2.Service;
+package cat.copernic.proyecto2.Service.Tratamiento;
 
-import cat.copernic.proyecto2.Domain.Personal_sanitario.Tratamiento;
+import cat.copernic.proyecto2.Domain.PersonalSanitario.Tratamiento;
 import java.util.List;
 
 public interface TratamientoService {

@@ -1,7 +1,8 @@
-package cat.copernic.proyecto2.Service;
+package cat.copernic.proyecto2.Service.Medicamento;
 
 import cat.copernic.proyecto2.DAO.MedicamentoDAO;
 import cat.copernic.proyecto2.Domain.Farmacia.Medicamento;
+
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
