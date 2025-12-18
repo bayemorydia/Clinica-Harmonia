@@ -52,9 +52,14 @@ public class ProveedorController {
 
     // ACTUALIZAR PROVEEDOR
     @PostMapping("/actualizar")
-    public String actualizarProveedor(@ModelAttribute Proveedor proveedor) {
-        proveedorService.actualizarProveedor(proveedor.getId(), proveedor);
-        return "redirect:/proveedores";
+    public String actualizarProveedor(@ModelAttribute Proveedor proveedor,Model model) {
+        try{
+            proveedorService.actualizarProveedor(proveedor.getId(), proveedor);
+            return "redirect:/proveedores";
+        }catch(Exception e){
+            model.addAttribute("error", e.getMessage());
+            return"modificarProveedor";
+        }
     }
 
     // VER DETALLES DEL PROVEEDOR
