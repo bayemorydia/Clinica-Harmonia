@@ -1,4 +1,4 @@
-package cat.copernic.proyecto2.DAO.Farmacia;
+package cat.copernic.proyecto2.DAO;
 
 
 import org.springframework.data.jpa.repository.JpaRepository;
