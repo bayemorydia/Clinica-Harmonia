@@ -1,14 +1,13 @@
 package cat.copernic.proyecto2.Security;
 
+import javax.sql.DataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
+import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -20,55 +19,36 @@ public class SecurityConfig {
     }
 
     @Bean
-    public UserDetailsService userDetailsService() {
-        PasswordEncoder encoder = passwordEncoder();
+    public UserDetailsManager userDetailsService(DataSource dataSource) {
+        JdbcUserDetailsManager users = new JdbcUserDetailsManager(dataSource);
 
-        UserDetails admin = User.builder()
-                .username("admin")
-                .password(encoder.encode("admin"))
-                .roles("ADMIN")
-                .build();
+        users.setUsersByUsernameQuery(
+                "SELECT username, password_hash, activo FROM usuario WHERE username = ?");
 
-        return new InMemoryUserDetailsManager(admin);
+        // Añadimos 'ROLE_' al nombre del rol para que Spring lo reconozca correctamente
+        users.setAuthoritiesByUsernameQuery(
+                "SELECT u.username, CONCAT('ROLE_', r.nombre) FROM usuario u " +
+                        "JOIN usuario_roles ur ON u.usuario_id = ur.usuario_id " +
+                        "JOIN roles r ON ur.rol_id = r.id " +
+                        "WHERE u.username = ?");
+
+        return users;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        // Permitir acceso a recursos estáticos (CSS, JS, Imágenes)
-                        .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
-                        
-                        // Flujo de Pacientes: Solo ADMIN
-                        .requestMatchers("/pacientes/**").hasRole("ADMIN")
-                        
-                        // Flujo de Citas: Solo ADMIN
-                        .requestMatchers("/citas/**").hasRole("ADMIN")
-
-                        // Flujo de Proveedores: Solo ADMIN
-                        .requestMatchers("/proveedores/**").hasRole("ADMIN")
-
-                        // Flujo de tratamientos: Solo ADMIN
-                        .requestMatchers("/tratamientos/**").hasRole("ADMIN")
-
-                        // Flujo de medicamentos: Solo ADMIN
-                        .requestMatchers("/medicamentos/**").hasRole("ADMIN")
-
-                        // Flujo de empleados: Solo ADMIN
-                        .requestMatchers("/empleados/**").hasRole("ADMIN")
-                        
-                        // Cualquier otra petición requiere estar autenticado
+                        .requestMatchers("/generate-admin", "/login", "/css/**", "/js/**").permitAll()
+                        // Usamos hasRole('ADMINISTRADOR'), Spring buscará 'ROLE_ADMINISTRADOR'
+                        .requestMatchers("/admin/**").hasRole("ADMINISTRADOR")
+                        .requestMatchers("/pacientes/**").hasAnyRole("ADMINISTRADOR", "RECEPCIONISTA", "MEDICO")
                         .anyRequest().authenticated())
-                
                 .formLogin(form -> form
-                        .defaultSuccessUrl("/", true) // Redirige al inicio tras login
+                        .defaultSuccessUrl("/admin", true)
                         .permitAll())
-                
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login?logout") // Redirige a login tras cerrar sesión
-                        .permitAll());
-        
+                .logout(logout -> logout.permitAll());
+
         return http.build();
     }
 }

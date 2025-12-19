@@ -13,6 +13,7 @@ public class Usuario {
     @Column(name="usuario_id")
     private Long id;
     private String username;
+    @Column(name = "password_hash", length = 255)
     private String passwordHash;
     private boolean activo;
 

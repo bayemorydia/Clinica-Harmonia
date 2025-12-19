@@ -1,0 +1,27 @@
+package cat.copernic.proyecto2.Controller;
+
+import cat.copernic.proyecto2.Service.Traduccion.TraduccionService;
+import cat.copernic.proyecto2.Service.Paciente.PacienteService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Controller
+@RequestMapping("/admin")
+public class AdminsitradorController {
+
+    @Autowired
+    private TraduccionService traduccionService;
+
+    @Autowired
+    private PacienteService pacienteService;
+
+    @GetMapping("")
+    public String index(Model model) {
+        model.addAttribute("trad", traduccionService);
+        model.addAttribute("totalPacientesActivos", pacienteService.countPacientesActivos());
+        return "Administrador/home";
+    }
+}
