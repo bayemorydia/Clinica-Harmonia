@@ -1,6 +1,8 @@
 package cat.copernic.proyecto2.Service.Paciente;
 
 import java.util.List;
+
+import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 import cat.copernic.proyecto2.Domain.Recepción.Paciente;
 
@@ -10,4 +12,6 @@ public interface PacienteService {
     Paciente findPacienteById(Long id);
     void deletePaciente(Long id);
     String getEdadPaciente(Paciente paciente);
+    long countPacientesActivos();
+    Page<Paciente> getPacientesPaginados(String query, int page, int size);
 }
