@@ -1,35 +1,18 @@
 package cat.copernic.proyecto2.Service.Empleado;
 
-
 import cat.copernic.proyecto2.Domain.Administración.Empleado;
-import cat.copernic.proyecto2.Domain.Farmacia.Proveedor;
 import cat.copernic.proyecto2.Domain.Persona.Rol;
-
 import java.util.List;
 
-    public interface EmpleadoService {
-
-        // CRUD
+public interface EmpleadoService {
         Empleado crear(Empleado empleado);
-
         Empleado actualizar(Long id, Empleado datos);
-
-        void eliminarEmpleado(Long id); // borrado lógico (fechaBaja)
-
+        void eliminarEmpleado(Long id);
         void desactivarEmpleado(Long id);
-
-
         Empleado obtenerPorId(Long id);
-
         List<Empleado> listarTodos();
-
         List<Empleado> listarActivos();
-
         List<Empleado> buscarPorRol(Rol rol);
-
         List<Empleado> buscarPorDepartamento(String departamento);
-
         List<Empleado> buscarPorNombreOApellidos(String termino);
-
-
 }

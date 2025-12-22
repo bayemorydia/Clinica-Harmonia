@@ -60,11 +60,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         existente.setDepartamento(datos.getDepartamento());
         existente.setRol(datos.getRol());
         existente.setSalarioBase(datos.getSalarioBase());
-
-        // OJO: fechaAlta normalmente NO se toca
-        // fechaBaja solo se toca si quieres reactivar / dar baja manual
         existente.setFecha_baja(datos.getFecha_baja());
-
         return empleadoDAO.save(existente);
     }
 

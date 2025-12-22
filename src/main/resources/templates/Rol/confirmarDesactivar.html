@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <div th:replace="~{Reutilizable/layout :: head_general}"></div>
+    <title th:text="${trad.getTraduccion('roles.desactivar.titulo')}">Desactivar Rol</title>
+</head>
+
+<body class="bg-light">
+    <div th:replace="~{Reutilizable/layout :: menu}"></div>
+
+    <main class="content">
+        <div class="container mt-5">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card shadow-sm border-0" style="border-radius: 15px; overflow: hidden;">
+                        <div class="card-header bg-danger text-white py-3 text-center border-0">
+                            <h4 class="mb-0 fw-bold">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                <span
+                                    th:text="${trad.getTraduccion('roles.desactivar.confirmacion')}">¿Confirmar?</span>
+                            </h4>
+                        </div>
+
+                        <div class="card-body p-4 text-center">
+                            <p class="text-muted" th:text="${trad.getTraduccion('roles.desactivar.subtitulo')}">
+                                Subtítulo informativo sobre la desactivación.
+                            </p>
+
+                            <div class="bg-light p-4 rounded-4 border border-light-subtle mb-4">
+                                <div class="mb-3">
+                                    <span class="text-muted small text-uppercase fw-bold d-block mb-1"
+                                        th:text="${trad.getTraduccion('roles.desactivar.info.nombre')}">Nombre</span>
+                                    <h5 th:text="${rol.nombre}" class="text-dark fw-bold"></h5>
+                                </div>
+                                <div class="mb-0">
+                                    <span class="text-muted small text-uppercase fw-bold d-block mb-1"
+                                        th:text="${trad.getTraduccion('roles.desactivar.info.desc')}">Descripción</span>
+                                    <p th:text="${rol.descripcion}" class="text-muted mb-0"></p>
+                                </div>
+                            </div>
+
+                            <form th:action="@{/admin/roles/desactivar}" method="post">
+                                <input type="hidden" name="id" th:value="${rol.id}" />
+
+                                <div class="d-flex gap-3 justify-content-center mt-4">
+                                    <a th:href="@{/admin/roles}" class="btn btn-light rounded-pill px-4 fw-bold">
+                                        <span th:text="${trad.getTraduccion('btn.cancelar')}">Cancelar</span>
+                                    </a>
+
+                                    <button type="submit" class="btn btn-danger rounded-pill px-4 fw-bold shadow-sm">
+                                        <i class="bi bi-shield-x me-2"></i>
+                                        <span
+                                            th:text="${trad.getTraduccion('roles.btn.confirmar.desactivar')}">Confirmar</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{Reutilizable/layout :: scripts}"></div>
+</body>
+
+</html>

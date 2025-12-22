@@ -47,8 +47,8 @@ public class Empleado {
     @OneToMany(mappedBy = "empleado", cascade = CascadeType.ALL)
     private List<Nomina> nominas = new ArrayList<>();
 
-    // @OneToMany(mappedBy = "profesional")
-    // private List<Cita> citasAtendidas = new ArrayList<>();
+    @OneToMany(mappedBy = "profesional")
+    private List<Cita> citasAtendidas = new ArrayList<>();
 
 
 

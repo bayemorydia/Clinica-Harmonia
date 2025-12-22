@@ -5,6 +5,7 @@ import cat.copernic.proyecto2.Domain.Recepción.Paciente;
 import java.util.Set;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 @Data
 @Entity
 public class Usuario {
@@ -26,9 +27,11 @@ public class Usuario {
     }
 
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private Empleado empleado;
 
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private Paciente paciente;
 
     @ManyToMany(fetch = FetchType.EAGER)
