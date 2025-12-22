@@ -1,6 +1,7 @@
 package cat.copernic.proyecto2.Controller;
 
 import cat.copernic.proyecto2.Service.Traduccion.TraduccionService;
+import cat.copernic.proyecto2.Service.Cita.CitaService;
 import cat.copernic.proyecto2.Service.Paciente.PacienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/admin")
-public class AdminsitradorController {
+public class AdministradorController {
 
     @Autowired
     private TraduccionService traduccionService;
@@ -18,10 +19,14 @@ public class AdminsitradorController {
     @Autowired
     private PacienteService pacienteService;
 
+    @Autowired
+    private CitaService citaService;
+
     @GetMapping("")
     public String index(Model model) {
         model.addAttribute("trad", traduccionService);
         model.addAttribute("totalPacientesActivos", pacienteService.countPacientesActivos());
+        model.addAttribute("totalCitasActivas", citaService.countCitasActivas());
         return "Administrador/home";
     }
 }

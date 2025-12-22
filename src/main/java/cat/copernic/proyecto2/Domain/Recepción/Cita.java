@@ -27,13 +27,11 @@ public class Cita {
     @JoinColumn(name = "paciente_id")
     private Paciente paciente;
 
-    // @NotNull(message = "Debe asignar un profesional")
-    // @ManyToOne
-    // @JoinColumn(name = "profesional_id")
-    // private Empleado profesional; // Médico o enfermero
-
-    @NotBlank(message = "Debe escribir el nombre del médico")
-    private String nombreMedico;
+    @ToString.Exclude
+    @NotNull(message = "Debe asignar un profesional")
+    @ManyToOne
+    @JoinColumn(name = "profesional_id")
+    private Empleado profesional;
 
     @NotNull(message = "La fecha y hora es obligatoria")
     @Future(message = "La cita debe ser en una fecha futura")
@@ -47,9 +45,4 @@ public class Cita {
 
     @Enumerated(EnumType.STRING)
     private EstadoCita estado = EstadoCita.PROGRAMADA;
-
-    //private String notasRecepcion;
-    @ManyToOne
-    @JoinColumn(name = "profesional_id", nullable = true)
-    private Empleado profesional;
 }
