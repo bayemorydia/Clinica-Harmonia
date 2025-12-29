@@ -4,7 +4,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import java.time.LocalDate;
-
 import cat.copernic.proyecto2.DAO.ProveedorDAO;
 import cat.copernic.proyecto2.Domain.Farmacia.Proveedor;
 import java.lang.IllegalArgumentException;

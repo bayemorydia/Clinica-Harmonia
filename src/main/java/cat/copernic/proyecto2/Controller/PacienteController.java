@@ -1,7 +1,7 @@
 package cat.copernic.proyecto2.Controller;
 
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import cat.copernic.proyecto2.Domain.Recepción.Paciente;
 import cat.copernic.proyecto2.Service.Paciente.PacienteService;
+import cat.copernic.proyecto2.Service.Traduccion.TraduccionService;
 import jakarta.validation.Valid;
 
 @Controller
@@ -23,19 +24,30 @@ public class PacienteController {
     @Autowired
     private PacienteService pacienteService;
 
+    @Autowired
+    private TraduccionService traduccionService; // Inyección de traducciones
+
     @GetMapping("")
-    public String listarPacientes(Model model) {
-        List<Paciente> pacientes = pacienteService.getAllPacientes();
-        model.addAttribute("pacientes", pacientes);
-        model.addAttribute("btnAnadirPaciente", "Añadir Nuevo Paciente");
-        model.addAttribute("pacienteService", pacienteService);
+    public String listarPacientes(
+            @RequestParam(value = "query", required = false, defaultValue = "") String query,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            Model model) {
+        Page<Paciente> pacientePage = pacienteService.getPacientesPaginados(query, page, size);
+        model.addAttribute("pacientes", pacientePage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", pacientePage.getTotalPages());
+        model.addAttribute("totalElements", pacientePage.getTotalElements());
+        model.addAttribute("size", size);
+        model.addAttribute("query", query);
+        model.addAttribute("trad", traduccionService);
         return "Paciente/listaPacientes";
     }
 
     @GetMapping("/anadir")
     public String mostrarFormularioAnadir(Model model) {
         model.addAttribute("paciente", new Paciente());
-        model.addAttribute("titulo", "Registrar Nuevo Paciente");
+        model.addAttribute("trad", traduccionService); // Pasar traducciones
         return "Paciente/formularioPaciente";
     }
 
@@ -43,10 +55,10 @@ public class PacienteController {
     public String activarPaciente(@PathVariable("id") Long id) {
         Paciente paciente = pacienteService.findPacienteById(id);
         if (paciente != null) {
-            paciente.setActivo(true); // Cambiamos el estado a activo
-            pacienteService.savePaciente(paciente, null); // Guardamos (enviamos null a la foto según tu lógica)
+            paciente.setActivo(true);
+            pacienteService.savePaciente(paciente, null);
         }
-        return "redirect:/pacientes"; // Redirigimos de nuevo al listado
+        return "redirect:/pacientes";
     }
 
     @PostMapping("/guardar")
@@ -55,6 +67,9 @@ public class PacienteController {
             BindingResult result,
             @RequestParam(value = "file", required = false) MultipartFile imagen,
             Model model) {
+
+        model.addAttribute("trad", traduccionService); // Por si hay errores de validación
+
         if (result.hasErrors()) {
             return "Paciente/formularioPaciente";
         }
@@ -62,7 +77,7 @@ public class PacienteController {
             pacienteService.savePaciente(paciente, imagen);
             return "redirect:/pacientes";
         } catch (Exception e) {
-            model.addAttribute("error", "Error al procesar la solicitud: " + e.getMessage());
+            model.addAttribute("error", e.getMessage());
             return "Paciente/formularioPaciente";
         }
     }
@@ -70,34 +85,47 @@ public class PacienteController {
     @GetMapping("/detalle/{id}")
     public String verDetallePaciente(@PathVariable("id") Long id, Model model) {
         Paciente paciente = pacienteService.findPacienteById(id);
-        if (paciente == null) {
+        if (paciente == null)
             return "redirect:/pacientes";
-        }
         model.addAttribute("paciente", paciente);
-        model.addAttribute("pacienteService", pacienteService);
-        model.addAttribute("titulo", "Detalles del Paciente");
+        model.addAttribute("edad", pacienteService.getEdadPaciente(paciente));
+        model.addAttribute("trad", traduccionService);
         return "Paciente/detallePaciente";
     }
 
     @GetMapping("/confirmarEliminar/{id}")
     public String confirmarEliminar(@PathVariable("id") Long id, Model model) {
         Paciente paciente = pacienteService.findPacienteById(id);
-        if (paciente == null) {
+        if (paciente == null)
             return "redirect:/pacientes";
-        }
+
         model.addAttribute("paciente", paciente);
-        model.addAttribute("titulo", "Confirmar Desactivación");
+        model.addAttribute("trad", traduccionService); // Pasar traducciones
         return "Paciente/confirmarEliminarPaciente";
     }
 
-    // Cambiado: Ahora desactiva en lugar de borrar
     @PostMapping("/eliminar")
     public String desactivarPaciente(@RequestParam("id") Long id) {
         Paciente paciente = pacienteService.findPacienteById(id);
         if (paciente != null) {
-            paciente.setActivo(false); // Cambiamos el estado a falso
-            pacienteService.savePaciente(paciente, null); // Guardamos el cambio
+            paciente.setActivo(false);
+            pacienteService.savePaciente(paciente, null);
         }
         return "redirect:/pacientes";
+    }
+
+    @GetMapping("/search")
+    public String search(@RequestParam(value = "query", required = false) String query,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            Model model) {
+        Page<Paciente> pacientePage = pacienteService.getPacientesPaginados(query, page, size);
+        model.addAttribute("pacientes", pacientePage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", pacientePage.getTotalPages());
+        model.addAttribute("totalElements", pacientePage.getTotalElements());
+        model.addAttribute("size", size);
+        model.addAttribute("trad", traduccionService);
+        return "Paciente/listaPacientes :: tablaPacientes";
     }
 }

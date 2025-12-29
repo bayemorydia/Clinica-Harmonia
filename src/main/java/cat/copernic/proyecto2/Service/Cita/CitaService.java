@@ -1,11 +1,12 @@
 package cat.copernic.proyecto2.Service.Cita;
 
-import java.util.List;
 import cat.copernic.proyecto2.Domain.Recepción.Cita;
+import org.springframework.data.domain.Page;
 
 public interface CitaService {
-    List<Cita> getAllCitas();
-    Cita findCitaById(Long id);
+    Page<Cita> getCitasPaginadas(String query, int page, int size);
     void saveCita(Cita cita) throws Exception;
-    void deleteCita(Long id);
+    void anularCita(Long id);
+    long countCitasActivas();
+    Cita findCitaById(Long id);
 }

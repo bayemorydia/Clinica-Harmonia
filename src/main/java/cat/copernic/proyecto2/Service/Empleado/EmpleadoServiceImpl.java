@@ -12,12 +12,9 @@ import java.time.LocalDate;
 @Service
 @Transactional
 public class EmpleadoServiceImpl implements EmpleadoService {
+
     @Autowired
     private  EmpleadoDAO empleadoDAO;
-
-
-
-    // ---------- CRUD ----------
 
     public Empleado crear(Empleado empleado) {
         if (empleadoDAO.obtenerDNI(empleado.getDni()).isPresent()) {
@@ -29,9 +26,9 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         if (empleadoDAO.obtenerTelefono(empleado.getTelefono()).isPresent()) {
             throw new IllegalArgumentException("❌ Ya existe un Empleado con ese Telefono");
         }
-        empleado.setId(null);                 // alta nueva
+        empleado.setId(null);
         empleado.setFecha_alta(LocalDate.now());
-        empleado.setFecha_baja(null);          // activo
+        empleado.setFecha_baja(null);
         return empleadoDAO.save(empleado);
     }
 
@@ -63,11 +60,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         existente.setDepartamento(datos.getDepartamento());
         existente.setRol(datos.getRol());
         existente.setSalarioBase(datos.getSalarioBase());
-
-        // OJO: fechaAlta normalmente NO se toca
-        // fechaBaja solo se toca si quieres reactivar / dar baja manual
         existente.setFecha_baja(datos.getFecha_baja());
-
         return empleadoDAO.save(existente);
     }
 

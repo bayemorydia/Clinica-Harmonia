@@ -1,13 +1,10 @@
 package cat.copernic.proyecto2.DAO;
 
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import cat.copernic.proyecto2.Domain.Farmacia.Proveedor;
 import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
-
 import org.springframework.data.repository.query.Param;
-
 import java.util.List;
 
 public interface ProveedorDAO extends JpaRepository<Proveedor, Long> {

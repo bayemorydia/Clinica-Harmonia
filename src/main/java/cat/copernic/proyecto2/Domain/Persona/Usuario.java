@@ -5,6 +5,7 @@ import cat.copernic.proyecto2.Domain.Recepción.Paciente;
 import java.util.Set;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 @Data
 @Entity
 public class Usuario {
@@ -13,6 +14,7 @@ public class Usuario {
     @Column(name="usuario_id")
     private Long id;
     private String username;
+    @Column(name = "password_hash", length = 255)
     private String passwordHash;
     private boolean activo;
 
@@ -25,9 +27,11 @@ public class Usuario {
     }
 
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private Empleado empleado;
 
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private Paciente paciente;
 
     @ManyToMany(fetch = FetchType.EAGER)

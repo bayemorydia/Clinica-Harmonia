@@ -44,6 +44,7 @@ public class Paciente {
 
     // Relación con login
     @OneToOne
+    @ToString.Exclude
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 

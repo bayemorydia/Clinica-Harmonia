@@ -2,74 +2,292 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Agenda de Citas | Clínica</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <div th:replace="~{Reutilizable/layout :: head_general}"></div>
+    <title th:text="${trad.getTraduccion('mod.citas')}">Gestión de Citas</title>
+    <style>
+        .clickable-row {
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .clickable-row:hover {
+            background-color: rgba(0, 123, 255, 0.05) !important;
+        }
+
+        .page-link {
+            color: #6c757d;
+            border: none;
+            background: #f1f3f5;
+            margin: 0 3px;
+            border-radius: 8px !important;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
+        .page-item.active .page-link {
+            background-color: #0d6efd !important;
+            color: white !important;
+            box-shadow: 0 4px 10px rgba(13, 110, 253, 0.2);
+        }
+
+        .page-item.disabled .page-link {
+            background-color: #f8f9fa;
+            color: #dee2e6;
+        }
+
+        .select-paginacion-clean {
+            display: inline-block;
+            width: 75px;
+            padding: 0.375rem 1.75rem 0.375rem 0.75rem;
+            font-size: 0.85rem;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            appearance: none;
+            cursor: pointer;
+        }
+
+        .table-footer {
+            padding: 1.25rem 1.5rem;
+            background-color: #ffffff;
+            border-top: 1px solid #edf2f7;
+        }
+    </style>
 </head>
 
-<body class="bg-light">
-    <div class="container mt-5">
-        <div class="card shadow border-0">
-            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-3">
-                <h4 class="mb-0"><i class="bi bi-calendar3 me-2"></i>Agenda General de Citas</h4>
-                <a th:href="@{/citas/nueva}" class="btn btn-primary">
-                    <i class="bi bi-plus-circle me-1"></i> Programar Cita
+<body>
+    <div th:replace="~{Reutilizable/layout :: menu}"></div>
+
+    <main class="content">
+        <div class="container-fluid">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="fw-bold text-dark mb-1" th:text="${trad.getTraduccion('mod.citas')}">Gestión de Citas
+                    </h2>
+                    <p class="text-muted small mb-0" th:text="${trad.getTraduccion('citas.listado.subtitulo')}">
+                        Programación de servicios médicos y seguimiento de agenda.</p>
+                </div>
+                <a th:href="@{/citas/nueva}" class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold">
+                    <i class="bi bi-calendar-plus me-2"></i>
+                    <span th:text="${trad.getTraduccion('citas.btn.anadir')}">Nueva Cita</span>
                 </a>
             </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Fecha y Hora</th>
-                                <th>Paciente</th>
-                                <th>Médico</th>
-                                <th>Especialidad</th>
-                                <th>Estado</th>
-                                <th class="text-center">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="c : ${citas}">
-                                <td class="fw-bold text-primary"
-                                    th:text="${#temporals.format(c.fechaHora, 'dd/MM/yyyy HH:mm')} + 'h'"></td>
-                                <td th:text="${c.paciente.nombre + ' ' + c.paciente.apellidos}"></td>
-                                <td>
-                                    <i class="bi bi-person-badge text-muted me-1"></i>
-                                    <span th:text="${c.nombreMedico}"></span>
-                                </td>
-                                <td th:text="${c.especialidad}"></td>
-                                <td>
-                                    <span class="badge"
-                                        th:classappend="${c.estado.name() == 'PROGRAMADA' ? 'bg-info' : 'bg-success'}"
-                                        th:text="${c.estado}"></span>
-                                </td>
-                                <td class="text-center">
-                                    <a th:href="@{/citas/editar/{id}(id=${c.id})}"
-                                        class="btn btn-sm btn-outline-warning">
-                                        <i class="bi bi-pencil"></i>
-                                    </a>
-                                    <a th:href="@{/citas/confirmarEliminar/{id}(id=${c.id})}"
-                                        class="btn btn-sm btn-outline-danger">
-                                        <i class="bi bi-trash"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr th:if="${#lists.isEmpty(citas)}">
-                                <td colspan="6" class="text-center py-4 text-muted">No hay citas programadas.</td>
-                            </tr>
-                        </tbody>
-                    </table>
+
+            <div class="card shadow-sm border-0 mb-4" style="border-radius: 15px;">
+                <div class="card-body">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0 text-muted">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" id="searchInput" class="form-control border-start-0 ps-0 shadow-none"
+                            th:placeholder="${trad.getTraduccion('citas.placeholder.buscar')}" th:value="${query}">
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0" style="border-radius: 15px; overflow: hidden;">
+                <div class="card-body p-0" id="tablaContainer">
+
+                    <div th:fragment="tablaCitas">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th class="ps-4 py-3 border-0 text-secondary small fw-bold"
+                                            th:text="${trad.getTraduccion('citas.tabla.fechahora')}">FECHA Y HORA</th>
+                                        <th class="py-3 border-0 text-secondary small fw-bold"
+                                            th:text="${trad.getTraduccion('citas.tabla.paciente')}">PACIENTE</th>
+                                        <th class="py-3 border-0 text-secondary small fw-bold"
+                                            th:text="${trad.getTraduccion('citas.tabla.medico')}">MÉDICO / ESPECIALIDAD
+                                        </th>
+                                        <th class="py-3 border-0 text-secondary small fw-bold"
+                                            th:text="${trad.getTraduccion('citas.tabla.estado')}">ESTADO</th>
+                                        <th class="py-3 border-0 text-secondary small fw-bold text-center"
+                                            th:text="${trad.getTraduccion('citas.tabla.acciones')}">ACCIONES</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:if="${#lists.isEmpty(citas)}">
+                                        <td colspan="5" class="text-center py-5 text-muted"
+                                            th:text="${trad.getTraduccion('citas.tabla.vacio')}">No se han encontrado
+                                            citas.</td>
+                                    </tr>
+                                    <tr th:each="c : ${citas}" class="border-bottom clickable-row"
+                                        th:data-href="@{'/citas/editar/' + ${c.id}}">
+
+                                        <td class="ps-4 py-3">
+                                            <div class="d-flex align-items-center">
+                                                <div class="bg-primary bg-opacity-10 text-primary rounded-3 d-flex flex-column align-items-center justify-content-center me-3"
+                                                    style="width: 50px; height: 50px;">
+                                                    <span class="fw-bold small"
+                                                        th:text="${#temporals.format(c.fechaHora, 'HH:mm')}">10:00</span>
+                                                    <span style="font-size: 0.6rem; text-transform: uppercase;"
+                                                        th:text="${#temporals.format(c.fechaHora, 'dd MMM')}">22
+                                                        DIC</span>
+                                                </div>
+                                                <div>
+                                                    <div class="fw-bold text-dark mb-0"
+                                                        th:text="${#temporals.format(c.fechaHora, 'dd/MM/yyyy')}">
+                                                        01/01/2024</div>
+                                                    <div class="text-muted small"
+                                                        th:text="${#temporals.format(c.fechaHora, 'HH:mm')} + ' h'">
+                                                        10:00 h</div>
+                                                </div>
+                                            </div>
+                                        </td>
+
+                                        <td>
+                                            <div class="fw-bold text-dark mb-0"
+                                                th:text="${c.paciente.nombre} + ' ' + ${c.paciente.apellidos}">Paciente
+                                            </div>
+                                            <div class="text-muted small" th:text="${c.paciente.dni}">DNI</div>
+                                        </td>
+
+                                        <td>
+                                            <div class="fw-bold text-dark mb-0">
+                                                <i class="bi bi-person-badge me-1 text-muted"></i>
+                                                <span
+                                                    th:text="${c.profesional != null ? c.profesional.nombre + ' ' + c.profesional.apellidos : 'No asignado'}">Médico</span>
+                                            </div>
+                                            <div class="badge bg-info-subtle text-info mt-1"
+                                                th:text="${c.especialidad}">Especialidad</div>
+                                        </td>
+
+                                        <td>
+                                            <span th:if="${c.estado.name() == 'PROGRAMADA'}"
+                                                class="badge rounded-pill bg-primary-subtle text-primary px-3 py-2"
+                                                th:text="${trad.getTraduccion('citas.estado.PROGRAMADA')}">Programada</span>
+                                            <span th:if="${c.estado.name() == 'REALIZADA'}"
+                                                class="badge rounded-pill bg-success-subtle text-success px-3 py-2"
+                                                th:text="${trad.getTraduccion('citas.estado.REALIZADA')}">Realizada</span>
+                                            <span th:if="${c.estado.name() == 'ANULADA'}"
+                                                class="badge rounded-pill bg-danger-subtle text-danger px-3 py-2"
+                                                th:text="${trad.getTraduccion('citas.estado.ANULADA')}">Anulada</span>
+                                        </td>
+
+                                        <td class="py-3 text-center">
+                                            <div th:if="${c.estado.name() != 'ANULADA'}">
+                                                <a th:href="@{'/citas/confirmarEliminar/' + ${c.id}}"
+                                                    class="btn btn-sm btn-outline-danger rounded-pill px-3 shadow-sm"
+                                                    onclick="event.stopPropagation();">
+                                                    <i class="bi bi-x-circle me-1"></i>
+                                                    <span th:text="${trad.getTraduccion('btn.anular')}">Anular</span>
+                                                </a>
+                                            </div>
+                                            <div th:if="${c.estado.name() == 'ANULADA'}">
+                                                <span class="text-muted small italic">-</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="table-footer d-flex justify-content-between align-items-center">
+                            <div class="text-muted small">
+                                <span class="fw-bold" th:text="${(currentPage * size) + 1}">1</span>
+                                <span th:text="${trad.getTraduccion('tabla.info.a')}">a</span>
+                                <span class="fw-bold" th:text="${(currentPage * size) + citas.size()}">10</span>
+                                <span th:text="${trad.getTraduccion('tabla.info.de')}">de</span>
+                                <span class="fw-bold" th:text="${totalElements}">100</span>
+                                <span th:text="${trad.getTraduccion('mod.citas').toLowerCase()}">citas</span>
+                            </div>
+
+                            <div class="d-flex align-items-center gap-4">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="text-muted small"
+                                        th:text="${trad.getTraduccion('pacientes.tabla.mostrar')}">Mostrar</span>
+                                    <select id="pageSize" class="select-paginacion-clean shadow-none"
+                                        onchange="updateTable(0)">
+                                        <option value="10" th:selected="${size == 10}">10</option>
+                                        <option value="20" th:selected="${size == 20}">20</option>
+                                        <option value="50" th:selected="${size == 50}">50</option>
+                                    </select>
+                                </div>
+
+                                <nav>
+                                    <ul class="pagination pagination-sm mb-0">
+                                        <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                                            <a class="page-link" href="javascript:void(0)"
+                                                th:onclick="'changePage(' + (${currentPage} - 1) + ')'">
+                                                <i class="bi bi-chevron-left"></i>
+                                            </a>
+                                        </li>
+                                        <li class="page-item"
+                                            th:each="i : ${#numbers.sequence(0, totalPages > 0 ? totalPages - 1 : 0)}"
+                                            th:if="${totalPages > 0 and i >= currentPage - 1 and i <= currentPage + 1}"
+                                            th:classappend="${i == currentPage} ? 'active'">
+                                            <a class="page-link" href="javascript:void(0)"
+                                                th:onclick="'changePage(' + ${i} + ')'" th:text="${i + 1}">1</a>
+                                        </li>
+                                        <li class="page-item"
+                                            th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
+                                            <a class="page-link" href="javascript:void(0)"
+                                                th:onclick="'changePage(' + (${currentPage} + 1) + ')'">
+                                                <i class="bi bi-chevron-right"></i>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                        <input type="hidden" id="hiddenTotalPages" th:value="${totalPages}">
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="mt-4">
-            <a th:href="@{/}" class="btn btn-link text-decoration-none">
-                &larr; Volver al Inicio
-            </a>
-        </div>
-    </div>
+    </main>
+
+    <div th:replace="~{Reutilizable/layout :: scripts}"></div>
+
+    <script th:inline="javascript">
+        document.addEventListener("DOMContentLoaded", () => {
+            initTableEvents();
+            let searchTimeout;
+            const searchInput = document.getElementById('searchInput');
+
+            searchInput.addEventListener('input', () => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => updateTable(0), 400);
+            });
+        });
+
+        function initTableEvents() {
+            document.querySelectorAll(".clickable-row").forEach(row => {
+                row.addEventListener("click", function (e) {
+                    // Si clicamos en el botón de anular u otro enlace, no disparamos la edición
+                    if (e.target.closest('button') || e.target.closest('a')) return;
+                    window.location.href = this.getAttribute("data-href");
+                });
+            });
+        }
+
+        function updateTable(page = 0) {
+            const query = document.getElementById('searchInput').value;
+            const size = document.getElementById('pageSize').value;
+            const container = document.getElementById('tablaContainer');
+
+            fetch(`/citas/search?query=${encodeURIComponent(query)}&page=${page}&size=${size}`)
+                .then(response => response.text())
+                .then(html => {
+                    container.innerHTML = html;
+                    initTableEvents();
+                })
+                .catch(err => console.error("Error actualizando la tabla de citas:", err));
+        }
+
+        function changePage(page) {
+            const totalPagesInput = document.getElementById('hiddenTotalPages');
+            const totalPages = totalPagesInput ? parseInt(totalPagesInput.value) : 0;
+            if (page < 0 || page >= totalPages) return;
+            updateTable(page);
+        }
+    </script>
 </body>
 
 </html>
