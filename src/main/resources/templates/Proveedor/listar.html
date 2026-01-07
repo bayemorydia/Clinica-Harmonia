@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <div th:replace="~{Reutilizable/layout :: head_general}"></div>
+    <title th:text="${trad != null ? trad.getTraduccion('proveedores.lista.titulo') : 'Lista de Proveedores'}">
+        Lista de Proveedores
+    </title>
+
+    <style>
+        .clickable-row {
+            cursor: pointer;
+            transition: background-color 0.15s ease;
+        }
+
+        .clickable-row:hover {
+            background-color: rgba(13, 110, 253, 0.04);
+        }
+
+        .table-footer {
+            padding: 1rem 1.5rem;
+            background-color: #ffffff;
+            border-top: 1px solid #edf2f7;
+        }
+
+        .select-paginacion-clean {
+            width: 80px;
+            font-size: 0.8rem;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+
+<body>
+<div th:replace="~{Reutilizable/layout :: menu}"></div>
+
+<main class="content">
+    <div class="container-fluid">
+
+        <!-- CABECERA -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold mb-1"
+                    th:text="${trad != null ? trad.getTraduccion('proveedores.lista.titulo') : 'Lista de Proveedores'}">
+                    Lista de Proveedores
+                </h2>
+                <p class="text-muted small mb-0"
+                   th:text="${trad != null ? trad.getTraduccion('proveedores.lista.subtitulo') : 'Gestión de suministros'}">
+                    Gestión de suministros
+                </p>
+            </div>
+
+            <a th:href="@{/proveedores/nuevo}" class="btn btn-primary rounded-pill px-4 fw-semibold shadow-sm">
+                <i class="bi bi-plus-circle me-2"></i>
+                <span th:text="${trad != null ? trad.getTraduccion('btn.nuevo') : 'Añadir Proveedor'}">
+                    Añadir Proveedor
+                </span>
+            </a>
+        </div>
+
+        <!-- TABLA -->
+        <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+            <div class="card-body p-0" id="tablaContainer">
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0 small">
+                        <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4 py-2 text-muted fw-semibold">ID</th>
+                            <th class="py-2 text-muted fw-semibold">Proveedor</th>
+                            <th class="py-2 text-muted fw-semibold">CIF</th>
+                            <th class="py-2 text-muted fw-semibold">Contacto</th>
+                            <th class="py-2 text-muted fw-semibold text-center">Estado</th>
+                            <th class="py-2 text-muted fw-semibold text-center">Acciones</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <tr th:if="${#lists.isEmpty(proveedores)}">
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                No hay proveedores registrados.
+                            </td>
+                        </tr>
+
+                        <tr th:each="proveedor : ${proveedores}"
+                            class="border-bottom clickable-row"
+                            th:data-href="@{/proveedores/detalle(id=${proveedor.id})}">
+
+                            <td class="ps-4 py-2 fw-semibold text-muted" th:text="${proveedor.id}"></td>
+
+                            <td class="py-2">
+                                <div class="fw-semibold text-dark" th:text="${proveedor.nombre}">Nombre</div>
+                                <div class="text-muted small" th:text="${proveedor.direccion}">Dirección</div>
+                            </td>
+
+                            <td class="py-2 text-muted small" th:text="${proveedor.cif}">CIF</td>
+
+                            <td class="py-2 text-muted small">
+                                <div><i class="bi bi-telephone me-1"></i> <span th:text="${proveedor.telefono}"></span></div>
+                                <div><i class="bi bi-envelope me-1"></i> <span th:text="${proveedor.email}"></span></div>
+                            </td>
+
+                            <td class="py-2 text-center">
+                                <span th:classappend="${proveedor.activo} ? 'badge bg-success-subtle text-success px-3' : 'badge bg-light text-secondary px-3'"
+                                      th:text="${proveedor.activo} ? 'Activo' : 'Inactivo'">Activo</span>
+                            </td>
+
+                            <td class="py-2 text-center">
+                                <!-- EDITAR -->
+                                <form th:action="@{/proveedores/editar}" method="get" class="d-inline">
+                                    <input type="hidden" name="id" th:value="${proveedor.id}" />
+                                    <button type="submit" class="btn btn-sm btn-light p-1 me-1" title="Editar" onclick="event.stopPropagation();">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                </form>
+
+                                <!-- DAR DE BAJA -->
+                                <form th:if="${proveedor.activo}" th:action="@{/proveedores/confirmarBaja}" method="get" class="d-inline">
+                                    <input type="hidden" name="id" th:value="${proveedor.id}" />
+                                    <button type="submit" class="btn btn-sm btn-warning p-1 me-1" title="Dar de baja" onclick="event.stopPropagation();">
+                                        <i class="bi bi-person-dash"></i>
+                                    </button>
+                                </form>
+
+                                <!-- REACTIVAR -->
+                                <form th:if="${!proveedor.activo}" th:action="@{/proveedores/activar}" method="get" class="d-inline">
+                                    <input type="hidden" name="id" th:value="${proveedor.id}" />
+                                    <button type="submit" class="btn btn-sm btn-success p-1 me-1" title="Reactivar" onclick="event.stopPropagation();">
+                                        <i class="bi bi-person-check"></i>
+                                    </button>
+                                </form>
+
+                                <!-- ELIMINAR -->
+                                <form th:action="@{/proveedores/confirmarEliminar}" method="get" class="d-inline">
+                                    <input type="hidden" name="id" th:value="${proveedor.id}" />
+                                    <button type="submit" class="btn btn-sm btn-danger p-1" title="Eliminar" onclick="event.stopPropagation();">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- PAGINACIÓN ABAJO -->
+                    <div class="table-footer d-flex justify-content-between align-items-center mt-2">
+                        <div class="text-muted small">
+                            <span class="fw-semibold" th:text="${(currentPage * size) + 1}">1</span>
+                            –
+                            <span class="fw-semibold" th:text="${(currentPage * size) + proveedores.size()}">10</span>
+                            de
+                            <span class="fw-semibold" th:text="${totalElements}">100</span>
+                            proveedores
+                        </div>
+
+                        <div class="d-flex align-items-center gap-4">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="text-muted small">Mostrar</span>
+                                <select id="pageSize" class="form-select select-paginacion-clean" onchange="updateTable(0)">
+                                    <option value="10" th:selected="${size == 10}">10</option>
+                                    <option value="20" th:selected="${size == 20}">20</option>
+                                    <option value="50" th:selected="${size == 50}">50</option>
+                                </select>
+                            </div>
+
+                            <nav>
+                                <ul class="pagination pagination-sm mb-0">
+                                    <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                                        <a class="page-link" href="javascript:void(0)" th:onclick="'changePage(' + (${currentPage} - 1) + ')'">
+                                            <i class="bi bi-chevron-left"></i>
+                                        </a>
+                                    </li>
+
+                                    <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages > 0 ? totalPages - 1 : 0)}"
+                                        th:if="${totalPages > 0 and i >= currentPage - 1 and i <= currentPage + 1}"
+                                        th:classappend="${i == currentPage} ? 'active'">
+                                        <a class="page-link" href="javascript:void(0)" th:onclick="'changePage(' + ${i} + ')'" th:text="${i + 1}">1</a>
+                                    </li>
+
+                                    <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
+                                        <a class="page-link" href="javascript:void(0)" th:onclick="'changePage(' + (${currentPage} + 1) + ')'">
+                                            <i class="bi bi-chevron-right"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+
+                    <input type="hidden" id="hiddenTotalPages" th:value="${totalPages}">
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{Reutilizable/layout :: scripts}"></div>
+
+<script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".clickable-row").forEach(row => {
+            row.addEventListener("click", function (e) {
+                if (e.target.closest('a') || e.target.closest('button')) return;
+                window.location.href = this.getAttribute("data-href");
+            });
+        });
+    });
+
+    function updateTable(page = 0) {
+        const size = document.getElementById('pageSize').value;
+        fetch(`/proveedores/page?page=${page}&size=${size}`)
+            .then(r => r.text())
+            .then(html => {
+                document.getElementById('tablaContainer').innerHTML = html;
+            });
+    }
+
+    function changePage(page) {
+        const totalPages = parseInt(document.getElementById('hiddenTotalPages').value);
+        if (page < 0 || page >= totalPages) return;
+        updateTable(page);
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+</script>
+
+</body>
+</html>

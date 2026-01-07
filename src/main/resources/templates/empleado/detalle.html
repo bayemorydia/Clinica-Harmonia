@@ -1,29 +1,175 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Detalle Empleado | Farmacia</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <div th:replace="~{Reutilizable/layout :: head_general}"></div>
+    <title th:text="${trad != null ? trad.getTraduccion('empleado.detalle.titulo') : 'Detalle Empleado'}">
+        Detalle Empleado
+    </title>
 </head>
-<body class="bg-light">
-<div class="container mt-5">
-    <div class="card shadow border-0">
-        <div class="card-header bg-white">
-            <h1 class="h4 text-primary fw-bold">Detalle Empleado</h1>
+
+<body>
+<div th:replace="~{Reutilizable/layout :: menu}"></div>
+
+<main class="content">
+    <div class="container-fluid">
+
+        <!-- Breadcrumb -->
+        <div class="mb-4">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a th:href="@{/empleados}"
+                           th:text="${trad != null ? trad.getTraduccion('empleados.lista.titulo') : 'Empleados'}">
+                            Empleados
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page"
+                        th:text="${trad != null ? trad.getTraduccion('empleado.detalle.titulo') : 'Detalle'}">
+                        Detalle
+                    </li>
+                </ol>
+            </nav>
         </div>
-        <div class="card-body">
-            <p><strong>ID:</strong> <span th:text="${empleado.id}"></span></p>
-            <p><strong>Nombre:</strong> <span th:text="${empleado.nombre}"></span></p>
-            <p><strong>Apellidos:</strong> <span th:text="${empleado.apellidos}"></span></p>
-            <p><strong>DNI:</strong> <span th:text="${empleado.dni}"></span></p>
-            <p><strong>Email:</strong> <span th:text="${empleado.email}"></span></p>
-            <p><strong>Teléfono:</strong> <span th:text="${empleado.telefono}"></span></p>
-            <p><strong>Departamento:</strong> <span th:text="${empleado.departamento}"></span></p>
-            <p><strong>Salario Base:</strong> <span th:text="${empleado.salarioBase}"></span></p>
-            <a th:href="@{/empleados}" class="btn btn-link">Volver a lista</a>
+
+        <div class="card shadow-sm border-0" style="border-radius: 15px;">
+            <div class="card-header bg-white border-0 py-4 px-4">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-primary bg-opacity-10 p-3 rounded-3 me-3">
+                            <i class="bi bi-person-vcard text-primary fs-4"></i>
+                        </div>
+                        <div>
+                            <h3 class="mb-0 fw-bold text-dark"
+                                th:text="${trad != null ? trad.getTraduccion('empleado.detalle.titulo') : 'Detalle Empleado'}">
+                                Detalle Empleado
+                            </h3>
+                            <p class="mb-0 text-muted small"
+                               th:text="${trad != null ? trad.getTraduccion('empleado.detalle.subtitulo') : 'Información completa del empleado'}">
+                                Información completa del empleado
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Estado -->
+                    <span class="badge"
+                          th:classappend="${empleado.activa} ? ' text-bg-success' : ' text-bg-secondary'"
+                          th:text="${empleado.activa ? (trad != null ? trad.getTraduccion('activo') : 'Activo') : (trad != null ? trad.getTraduccion('inactivo') : 'Inactivo')}">
+                        Activo
+                    </span>
+                </div>
+            </div>
+
+            <div class="card-body p-4 p-lg-5">
+
+                <!-- Bloque info -->
+                <div class="row g-4">
+
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded-3 border-0">
+                            <div class="text-muted small mb-1">ID</div>
+                            <div class="fw-bold" th:text="${empleado.id}">1</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded-3 border-0">
+                            <div class="text-muted small mb-1"
+                                 th:text="${trad != null ? trad.getTraduccion('empleado.nombre') : 'Nombre'}">Nombre</div>
+                            <div class="fw-bold" th:text="${empleado.nombre}">Nombre</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded-3 border-0">
+                            <div class="text-muted small mb-1"
+                                 th:text="${trad != null ? trad.getTraduccion('empleado.apellidos') : 'Apellidos'}">Apellidos</div>
+                            <div class="fw-bold" th:text="${empleado.apellidos}">Apellidos</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded-3 border-0">
+                            <div class="text-muted small mb-1">DNI / NIE</div>
+                            <div class="fw-bold" th:text="${empleado.dni}">12345678A</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded-3 border-0">
+                            <div class="text-muted small mb-1">Email</div>
+                            <div class="fw-bold" th:text="${empleado.email}">correo@ejemplo.com</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded-3 border-0">
+                            <div class="text-muted small mb-1"
+                                 th:text="${trad != null ? trad.getTraduccion('empleado.telefono') : 'Teléfono'}">Teléfono</div>
+                            <div class="fw-bold" th:text="${empleado.telefono}">612345678</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded-3 border-0">
+                            <div class="text-muted small mb-1"
+                                 th:text="${trad != null ? trad.getTraduccion('empleado.departamento') : 'Departamento'}">Departamento</div>
+                            <div class="fw-bold" th:text="${empleado.departamento}">Recepción</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded-3 border-0">
+                            <div class="text-muted small mb-1"
+                                 th:text="${trad != null ? trad.getTraduccion('empleado.rol') : 'Rol'}">Rol</div>
+                            <div class="fw-bold"
+                                 th:text="${empleado.rol != null ? empleado.rol.nombre : '-'}">ADMINISTRADOR</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded-3 border-0">
+                            <div class="text-muted small mb-1"
+                                 th:text="${trad != null ? trad.getTraduccion('empleado.salarioBase') : 'Salario Base'}">Salario Base</div>
+                            <div class="fw-bold" th:text="${empleado.salarioBase}">1200.00</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded-3 border-0">
+                            <div class="text-muted small mb-1"
+                                 th:text="${trad != null ? trad.getTraduccion('empleado.fechaAlta') : 'Fecha alta'}">Fecha alta</div>
+                            <div class="fw-bold" th:text="${empleado.fecha_alta}">2025-12-29</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6" th:if="${empleado.fecha_baja != null}">
+                        <div class="p-3 bg-light rounded-3 border-0">
+                            <div class="text-muted small mb-1"
+                                 th:text="${trad != null ? trad.getTraduccion('empleado.fechaBaja') : 'Fecha baja'}">Fecha baja</div>
+                            <div class="fw-bold" th:text="${empleado.fecha_baja}">2025-12-29</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card-footer bg-white border-0 p-4 d-flex justify-content-end gap-3">
+                <a th:href="@{/empleados}" class="btn btn-light px-4 fw-bold text-secondary">
+                    <span th:text="${trad != null ? trad.getTraduccion('btn.volver') : 'Volver'}">Volver</span>
+                </a>
+
+                <a th:href="@{/empleados/editar/{id}(id=${empleado.id})}"
+                   class="btn btn-primary px-5 fw-bold shadow-sm">
+                    <i class="bi bi-pencil me-1"></i>
+                    <span th:text="${trad != null ? trad.getTraduccion('btn.editar') : 'Editar'}">Editar</span>
+                </a>
+            </div>
         </div>
+
     </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</main>
+
+<div th:replace="~{Reutilizable/layout :: scripts}"></div>
 </body>
 </html>
