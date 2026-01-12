@@ -29,4 +29,5 @@ public class AdministradorController {
         model.addAttribute("totalCitasActivas", citaService.countCitasActivas());
         return "Administrador/home";
     }
+
 }

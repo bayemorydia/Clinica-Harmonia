@@ -176,6 +176,22 @@
                 <div class="col-md-4">
                     <div class="border p-3 quick-action d-flex align-items-center">
                         <div class="bg-dark bg-opacity-10 p-2 rounded me-3">
+                            <i class="bi bi-receipt text-dark fs-4"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1 fw-bold" th:text="${trad.getTraduccion('mod.facturacion.titulo')}">
+                                Facturación</h6>
+                            <p class="small text-muted mb-2" th:text="${trad.getTraduccion('mod.facturacion.desc')}">
+                                Ventas y Compras</p>
+                            <a th:href="@{/admin/facturas}" class="btn btn-sm btn-outline-dark w-100"
+                                th:text="${trad.getTraduccion('btn.entrar')}">Entrar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="border p-3 quick-action d-flex align-items-center">
+                        <div class="bg-dark bg-opacity-10 p-2 rounded me-3">
                             <i class="bi bi-person-gear text-dark fs-4"></i>
                         </div>
                         <div class="flex-grow-1">

@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public interface CitaDAO extends JpaRepository<Cita, Long> {
@@ -20,7 +21,9 @@ public interface CitaDAO extends JpaRepository<Cita, Long> {
             "LOWER(c.paciente.apellidos) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
             "LOWER(c.especialidad) LIKE LOWER(CONCAT('%', :query, '%'))")
     Page<Cita> findByQuery(@Param("query") String query, Pageable pageable);
+
     long countByEstadoNot(EstadoCita estado);
+
     long countByFechaHoraBetweenAndEstadoNot(LocalDateTime inicio, LocalDateTime fin, EstadoCita estado);
 
     // Búsqueda para validaciones (devuelven el objeto para comparar IDs en edición)
@@ -32,4 +35,22 @@ public interface CitaDAO extends JpaRepository<Cita, Long> {
     boolean existsByPacienteAndFechaHoraAndEstadoNot(Paciente p, LocalDateTime fh, EstadoCita e);
 
     boolean existsByProfesionalAndFechaHoraAndEstadoNot(Empleado m, LocalDateTime fh, EstadoCita e);
+
+    // Contar citas de HOY para un médico específico (Solo las que no están
+    // CANCELADAS)
+    long countByProfesionalIdAndFechaHoraBetweenAndEstadoNot(
+            Long profesionalId, LocalDateTime inicio, LocalDateTime fin, EstadoCita estado);
+
+    // Contar pacientes únicos que tienen citas PENDIENTES con este médico
+    @Query("SELECT COUNT(DISTINCT c.paciente) FROM Cita c " +
+            "WHERE c.profesional.id = :medicoId AND c.estado = :estado")
+    long countPacientesConCitasPendientes(@Param("medicoId") Long medicoId, @Param("estado") EstadoCita estado);
+
+    // Listar las citas pendientes de un médico para mostrarlas en el Dashboard
+    List<Cita> findByProfesionalIdAndEstadoOrderByFechaHoraAsc(Long medicoId, EstadoCita estado);
+
+    // Para la agenda: Citas entre dos fechas, de un médico, que NO estén ANULADAS
+    List<Cita> findByProfesionalIdAndFechaHoraBetweenAndEstadoNotOrderByFechaHoraAsc(
+        Long medicoId, LocalDateTime inicio, LocalDateTime fin, EstadoCita estado);
+
 }

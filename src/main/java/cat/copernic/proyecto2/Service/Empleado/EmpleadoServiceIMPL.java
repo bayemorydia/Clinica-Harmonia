@@ -14,7 +14,7 @@ import java.time.LocalDate;
 public class EmpleadoServiceImpl implements EmpleadoService {
 
     @Autowired
-    private  EmpleadoDAO empleadoDAO;
+    private EmpleadoDAO empleadoDAO;
 
     public Empleado crear(Empleado empleado) {
         if (empleadoDAO.obtenerDNI(empleado.getDni()).isPresent()) {
@@ -72,6 +72,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         existente.setFecha_baja(LocalDate.now());
         empleadoDAO.save(existente);
     }
+
     public void eliminarEmpleado(Long id) {
         Empleado existente = empleadoDAO.findById(id)
                 .orElseThrow(() -> new RuntimeException("Empleado no encontrado con id " + id));
@@ -79,7 +80,6 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         empleadoDAO.deleteById(id);
 
     }
-
 
     @Transactional(readOnly = true)
     public Empleado obtenerPorId(Long id) {
@@ -115,7 +115,14 @@ public class EmpleadoServiceImpl implements EmpleadoService {
             return listarTodos();
         }
         return empleadoDAO.obtenerActivosPorNombreOApellido(
-                termino
-        );
+                termino);
+    }
+
+    // En EmpleadoServiceImpl.java
+    @Override
+    @Transactional(readOnly = true)
+    public Empleado obtenerPorUsername(String username) {
+        return empleadoDAO.findByUsuarioUsername(username)
+                .orElseThrow(() -> new RuntimeException("No se encontró un empleado para el usuario: " + username));
     }
 }

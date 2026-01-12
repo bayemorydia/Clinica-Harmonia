@@ -9,6 +9,7 @@ public interface EmpleadoService {
         Empleado actualizar(Long id, Empleado datos);
         void eliminarEmpleado(Long id);
         void desactivarEmpleado(Long id);
+        Empleado obtenerPorUsername(String username);
         Empleado obtenerPorId(Long id);
         List<Empleado> listarTodos();
         List<Empleado> listarActivos();

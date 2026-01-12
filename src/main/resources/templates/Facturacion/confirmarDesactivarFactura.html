@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="~{Reutilizable/layout :: head_general}"></div>
+    <title th:text="${trad.getTraduccion('factura.desactivar.titulo')}">Confirmar Desactivación</title>
+</head>
+<body>
+    <div th:replace="~{Reutilizable/layout :: menu}"></div>
+    <main class="content">
+        <div class="container-fluid">
+            <div class="row justify-content-center mt-5">
+                <div class="col-xl-6 col-lg-8">
+                    <div class="card shadow-sm border-0" style="border-radius: 15px;">
+                        <div class="card-header bg-white border-0 py-4 px-4 text-center">
+                            <div class="bg-danger bg-opacity-10 p-3 rounded-circle d-inline-flex mb-3">
+                                <i class="bi bi-exclamation-octagon text-danger fs-2"></i>
+                            </div>
+                            <h3 class="fw-bold text-dark">¿Desactivar Factura?</h3>
+                        </div>
+                        <div class="card-body p-4 text-center">
+                            <div class="bg-light p-4 rounded-4 mb-4">
+                                <h5 class="fw-bold mb-1" th:text="'Factura #' + ${factura.id}"></h5>
+                                <p class="text-muted mb-0" th:text="${factura.tipo == 'VENTA' ? factura.paciente.nombre : factura.proveedor.nombre}"></p>
+                                <h4 class="text-primary fw-bold mt-2" th:text="${factura.total} + ' €'"></h4>
+                            </div>
+                            <div class="alert alert-warning border-0 small">
+                                <i class="bi bi-info-circle me-2"></i>
+                                Esta factura quedará oculta en los listados generales pero se mantendrá en los registros históricos.
+                            </div>
+                            <form th:action="@{/admin/facturas/desactivar}" method="post" class="mt-4">
+                                <input type="hidden" name="id" th:value="${factura.id}" />
+                                <div class="d-flex justify-content-center gap-3">
+                                    <a th:href="@{/admin/facturas}" class="btn btn-light px-4 rounded-pill fw-bold">Cancelar</a>
+                                    <button type="submit" class="btn btn-danger px-4 rounded-pill fw-bold shadow-sm">
+                                        <i class="bi bi-trash-fill me-2"></i>Confirmar Desactivación
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
