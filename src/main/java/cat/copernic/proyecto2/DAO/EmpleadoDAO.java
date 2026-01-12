@@ -4,9 +4,13 @@ import cat.copernic.proyecto2.Domain.Administración.Empleado;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
 import java.util.List;
+
 import cat.copernic.proyecto2.Domain.Persona.Rol;
+
 import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -36,6 +40,8 @@ public interface EmpleadoDAO extends JpaRepository<Empleado, Long> {
     @Query("SELECT e FROM Empleado e WHERE e.dni = :valor")
     Optional<Empleado> obtenerDNI(@Param("valor") String DNI);
 
+    @Query("select count(e) from Empleado e")
+    int BuscarEmpleadosTotal();
 
 }
 

@@ -127,4 +127,5 @@ public class ProveedorServiceImpl implements ProveedorService {
         if (termino == null || termino.isBlank()) return listarTodos();
         return proveedorDAO.buscarProveedorPorNombreOCif(termino);
     }
+
 }

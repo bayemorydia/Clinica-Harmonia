@@ -4,9 +4,8 @@ import cat.copernic.proyecto2.Domain.Administración.Empleado;
 import cat.copernic.proyecto2.Service.Empleado.EmpleadoService;
 import cat.copernic.proyecto2.Service.Rol.RolService;
 import cat.copernic.proyecto2.Service.Traduccion.TraduccionService;
-
+import cat.copernic.proyecto2.Service.Usuario.UsuarioService;
 import jakarta.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import cat.copernic.proyecto2.Domain.Persona.Usuario;
 
 @Controller
 @RequestMapping("/empleados")
@@ -28,6 +28,9 @@ public class EmpleadoController {
     @Autowired
     private TraduccionService traduccionService;
 
+    @Autowired
+    private UsuarioService usuarioService; // <-- Inyectamos tu UsuarioService
+
     private void cargarRoles(Model model) {
         Pageable pageable = PageRequest.of(0, 200);
         model.addAttribute("roles", rolService.listarRoles(pageable).getContent());
@@ -35,8 +38,8 @@ public class EmpleadoController {
 
     @GetMapping("")
     public String listarEmpleados(Model model) {
-        int currentPage = 0; // o el valor real de la página
-        int size = 10;       // tamaño de página
+        int currentPage = 0; // Página inicial
+        int size = 10;       // Tamaño de página
         model.addAttribute("currentPage", currentPage);
         model.addAttribute("size", size);
         model.addAttribute("empleados", empleadoService.listarTodos());
@@ -66,7 +69,20 @@ public class EmpleadoController {
         }
 
         try {
+            // 1️⃣ Crear empleado
             empleadoService.crear(empleado);
+
+            // 2️⃣ Crear usuario automáticamente
+            Usuario usuario = usuarioService.crearUsuarioPaciente(
+                    empleado.getNombre(),
+                    empleado.getApellidos(),
+                    empleado.getDni()
+            );
+
+            // 3️⃣ Asignar usuario al empleado y actualizar
+            empleado.setUsuario(usuario);
+            empleadoService.actualizar(empleado.getId(), empleado);
+
             return "redirect:/empleados";
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
@@ -74,6 +90,7 @@ public class EmpleadoController {
             return "empleado/añadir";
         }
     }
+
 
     @GetMapping("/editar")
     public String mostrarFormularioEditar(@RequestParam Long id, Model model) {
@@ -94,7 +111,7 @@ public class EmpleadoController {
 
         if (result.hasErrors()) {
             cargarRoles(model);
-            return "empleado/modificar";
+            return "empleado/detalle";
         }
 
         try {
@@ -103,7 +120,7 @@ public class EmpleadoController {
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
             cargarRoles(model);
-            return "empleado/modificar";
+            return "empleado/detalle";
         }
     }
 
@@ -111,26 +128,30 @@ public class EmpleadoController {
     public String detalle(@RequestParam Long id, Model model) {
         model.addAttribute("empleado", empleadoService.obtenerPorId(id));
         model.addAttribute("trad", traduccionService);
+        cargarRoles(model);
+
         return "empleado/detalle";
     }
 
-    @GetMapping("/confirmarBaja")
-    public String confirmarBaja(@RequestParam Long id, Model model) {
+    // =======================================
+    // BAJA Y ACTIVACIÓN CON PATH VARIABLE
+    // =======================================
+
+    @GetMapping("/confirmarBaja/{id}")
+    public String confirmarBaja(@PathVariable("id") Long id, Model model) {
         model.addAttribute("empleado", empleadoService.obtenerPorId(id));
         model.addAttribute("trad", traduccionService);
         return "empleado/confirmarBajaEmpleado";
     }
 
-    // Ejecutar BAJA (lógica)
-    @PostMapping("/baja")
-    public String bajaEmpleado(@RequestParam("id") Long id) {
+    @PostMapping("/baja/{id}")
+    public String bajaEmpleado(@PathVariable("id") Long id) {
         empleadoService.desactivarEmpleado(id);
         return "redirect:/empleados";
     }
 
-    // Reactivar empleado
-    @GetMapping("/activar")
-    public String activarEmpleado(@RequestParam Long id) {
+    @GetMapping("/activar/{id}")
+    public String activarEmpleado(@PathVariable("id") Long id) {
         Empleado emp = empleadoService.obtenerPorId(id);
         emp.setFecha_baja(null);
         emp.setActiva(true);
@@ -138,18 +159,5 @@ public class EmpleadoController {
         return "redirect:/empleados";
     }
 
-    // Confirmar ELIMINAR (físico)
-    @GetMapping("/confirmarEliminar")
-    public String confirmarEliminarFisico(@RequestParam Long id, Model model) {
-        model.addAttribute("empleado", empleadoService.obtenerPorId(id));
-        model.addAttribute("trad", traduccionService);
-        return "empleado/confirmarEliminarEmpleado";
-    }
 
-    // Ejecutar ELIMINAR (físico)
-    @PostMapping("/eliminarFisico")
-    public String eliminarFisico(@RequestParam("id") Long id) {
-        empleadoService.eliminarEmpleado(id);
-        return "redirect:/empleados";
-    }
 }

@@ -153,6 +153,11 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     }
 
 
+    @Override
+    public int ContarEmpleados() {
+        return empleadoDAO.BuscarEmpleadosTotal();
+    }
+
 
 
 }

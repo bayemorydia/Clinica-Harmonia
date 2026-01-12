@@ -3,7 +3,7 @@
 
 <head>
     <div th:replace="~{Reutilizable/layout :: head_general}"></div>
-    <title th:text="${trad.getTraduccion('empleado.baja.titulo')}">Confirmar baja</title>
+    <title th:text="${trad.getTraduccion('empleado.baja.titulo')}">Confirmar Desactivación</title>
 </head>
 
 <body>
@@ -12,48 +12,94 @@
 <main class="content">
     <div class="container-fluid">
 
-        <div class="card shadow-sm border-0" style="border-radius:15px;">
-            <div class="card-header bg-white border-0 py-4 px-4">
-                <div class="d-flex align-items-center">
-                    <div class="bg-warning bg-opacity-10 p-3 rounded-3 me-3">
-                        <i class="bi bi-person-dash text-warning fs-4"></i>
-                    </div>
-                    <div>
-                        <h3 class="fw-bold mb-0">
-                            Confirmar baja del empleado
-                        </h3>
-                        <p class="text-muted small mb-0">
-                            El empleado quedará inactivo pero no será eliminado
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card-body p-4">
-                <div class="alert alert-warning border-0">
-                    ⚠️ Esta acción **no borra el empleado**, solo lo marca como inactivo.
-                </div>
-
-                <ul class="list-group mb-4">
-                    <li class="list-group-item"><strong>Nombre:</strong> <span th:text="${empleado.nombre}"></span></li>
-                    <li class="list-group-item"><strong>Apellidos:</strong> <span th:text="${empleado.apellidos}"></span></li>
-                    <li class="list-group-item"><strong>DNI:</strong> <span th:text="${empleado.dni}"></span></li>
-                    <li class="list-group-item"><strong>Departamento:</strong> <span th:text="${empleado.departamento}"></span></li>
-                </ul>
-
-                <form th:action="@{/empleados/baja}" method="post" class="d-flex justify-content-end gap-3">
-                    <input type="hidden" name="id" th:value="${empleado.id}">
-                    <a th:href="@{/empleados}" class="btn btn-light">Cancelar</a>
-                    <button type="submit" class="btn btn-warning fw-bold">
-                        Confirmar baja
-                    </button>
-                </form>
-            </div>
+        <div class="mb-4">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a th:href="@{/empleados}" th:text="${trad.getTraduccion('empleados.lista.titulo')}">Empleados</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page" th:text="${trad.getTraduccion('empleado.baja.titulo')}">Desactivar</li>
+                </ol>
+            </nav>
         </div>
 
+        <div class="row justify-content-center">
+            <div class="col-xl-6 col-lg-8">
+                <div class="card shadow-sm border-0" style="border-radius: 15px; overflow: hidden;">
+
+                    <div class="card-header bg-white border-0 py-4 px-4">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-warning bg-opacity-10 p-3 rounded-3 me-3">
+                                <i class="bi bi-person-dash text-warning fs-4"></i>
+                            </div>
+                            <div>
+                                <h3 class="mb-0 fw-bold text-dark" th:text="${trad.getTraduccion('empleado.baja.titulo')}">Confirmar Acción</h3>
+                                <p class="mb-0 text-muted small">Esta acción modificará el estado del registro</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body p-4 p-md-5 text-center">
+                        <p class="lead fw-semibold text-dark mb-4">¿Estás seguro de que deseas desactivar al empleado?</p>
+
+                        <div class="bg-light p-4 rounded-4 border border-light-subtle mb-4">
+                            <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                                 style="width: 60px; height: 60px;">
+                                <h4 class="mb-0 fw-bold" th:text="${#strings.substring(empleado.nombre,0,1)}"></h4>
+                            </div>
+                            <h5 class="fw-bold mb-1 text-dark" th:text="${empleado.nombre} + ' ' + ${empleado.apellidos}"></h5>
+                            <p class="mb-0 text-muted font-monospace small" th:text="'DNI: ' + ${empleado.dni}"></p>
+                            <p class="mb-0 text-muted font-monospace small" th:text="'Departamento: ' + ${empleado.departamento}"></p>
+                        </div>
+
+                        <div class="alert alert-warning border-0 small mb-0 shadow-sm">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <span th:text="${trad.getTraduccion('empleado.baja.aviso')}">
+                                    El empleado dejará de estar activo en el sistema, pero sus datos no serán borrados permanentemente.
+                                </span>
+                        </div>
+
+                        <form th:action="@{'/empleados/baja/' + ${empleado.id}}" method="post" class="mt-5">
+                            <input type="hidden" name="id" th:value="${empleado.id}" />
+
+                            <div class="d-flex justify-content-center gap-3">
+                                <a th:href="@{/empleados}" class="btn btn-light px-4 py-2 fw-bold text-secondary rounded-pill">
+                                    <span th:text="${trad.getTraduccion('btn.cancelar')}">Cancelar</span>
+                                </a>
+                                <button type="submit" class="btn btn-warning px-4 py-2 fw-bold shadow-sm rounded-pill transition-all hover-lift">
+                                    <i class="bi bi-person-x-fill me-2"></i>
+                                    <span th:text="${trad.getTraduccion('btn.confirmar.desactivar')}">Sí, Desactivar Empleado</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="card-footer bg-light bg-opacity-50 border-0 py-3 text-center">
+                        <small class="text-muted italic">Módulo de Gestión de Recursos Humanos</small>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </main>
 
 <div th:replace="~{Reutilizable/layout :: scripts}"></div>
+
+<style>
+    .hover-lift:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .1) !important;
+    }
+
+    .transition-all {
+        transition: all 0.2s ease-in-out;
+    }
+
+    body {
+        background-color: #f8f9fa;
+    }
+</style>
 </body>
+
 </html>
+

@@ -3,9 +3,7 @@
 
 <head>
     <div th:replace="~{Reutilizable/layout :: head_general}"></div>
-    <title th:text="${trad != null ? trad.getTraduccion('proveedor.baja.titulo') : 'Confirmar baja'}">
-        Confirmar baja proveedor
-    </title>
+    <title th:text="${trad != null ? trad.getTraduccion('proveedor.baja.titulo') : 'Confirmar baja'}">Confirmar Baja Proveedor</title>
 </head>
 
 <body>
@@ -14,48 +12,98 @@
 <main class="content">
     <div class="container-fluid">
 
-        <div class="card shadow-sm border-0" style="border-radius:15px;">
-            <div class="card-header bg-white border-0 py-4 px-4">
-                <div class="d-flex align-items-center">
-                    <div class="bg-warning bg-opacity-10 p-3 rounded-3 me-3">
-                        <i class="bi bi-truck text-warning fs-4"></i>
-                    </div>
-                    <div>
-                        <h3 class="fw-bold mb-0">
-                            Confirmar baja del proveedor
-                        </h3>
-                        <p class="text-muted small mb-0">
-                            El proveedor quedará inactivo pero no será eliminado
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card-body p-4">
-                <div class="alert alert-warning border-0">
-                    ⚠️ Esta acción **no borra el proveedor**, solo lo marca como inactivo.
-                </div>
-
-                <ul class="list-group mb-4">
-                    <li class="list-group-item"><strong>Nombre:</strong> <span th:text="${proveedor.nombre}"></span></li>
-                    <li class="list-group-item"><strong>CIF:</strong> <span th:text="${proveedor.cif}"></span></li>
-                    <li class="list-group-item"><strong>Teléfono:</strong> <span th:text="${proveedor.telefono}"></span></li>
-                    <li class="list-group-item"><strong>Email:</strong> <span th:text="${proveedor.email}"></span></li>
-                </ul>
-
-                <form th:action="@{/proveedores/baja}" method="post" class="d-flex justify-content-end gap-3">
-                    <input type="hidden" name="id" th:value="${proveedor.id}">
-                    <a th:href="@{/proveedores}" class="btn btn-light">Cancelar</a>
-                    <button type="submit" class="btn btn-warning fw-bold">
-                        Confirmar baja
-                    </button>
-                </form>
-            </div>
+        <!-- Breadcrumb -->
+        <div class="mb-4">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a th:href="@{/proveedores}" th:text="${trad != null ? trad.getTraduccion('proveedores.lista.titulo') : 'Proveedores'}">Proveedores</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page" th:text="${trad != null ? trad.getTraduccion('proveedor.baja.titulo') : 'Baja'}">Baja</li>
+                </ol>
+            </nav>
         </div>
 
+        <!-- Card -->
+        <div class="row justify-content-center">
+            <div class="col-xl-6 col-lg-8">
+                <div class="card shadow-sm border-0" style="border-radius: 15px; overflow: hidden;">
+
+                    <div class="card-header bg-white border-0 py-4 px-4">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-warning bg-opacity-10 p-3 rounded-3 me-3">
+                                <i class="bi bi-truck text-warning fs-4"></i>
+                            </div>
+                            <div>
+                                <h3 class="mb-0 fw-bold text-dark" th:text="${trad != null ? trad.getTraduccion('proveedor.baja.titulo') : 'Confirmar baja del proveedor'}">
+                                    Confirmar baja del proveedor
+                                </h3>
+                                <p class="mb-0 text-muted small">Esta acción marcará al proveedor como inactivo</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body p-4 p-md-5 text-center">
+                        <p class="lead fw-semibold text-dark mb-4">¿Estás seguro de que deseas desactivar al proveedor?</p>
+
+                        <div class="bg-light p-4 rounded-4 border border-light-subtle mb-4">
+                            <div class="bg-warning bg-opacity-10 text-warning rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                                 style="width: 60px; height: 60px;">
+                                <h4 class="mb-0 fw-bold" th:text="${#strings.substring(proveedor.nombre,0,1)}"></h4>
+                            </div>
+                            <h5 class="fw-bold mb-1 text-dark" th:text="${proveedor.nombre}"></h5>
+                            <p class="mb-0 text-muted font-monospace small" th:text="'CIF: ' + ${proveedor.cif}"></p>
+                            <p class="mb-0 text-muted font-monospace small" th:text="'Teléfono: ' + ${proveedor.telefono}"></p>
+                            <p class="mb-0 text-muted font-monospace small" th:text="'Email: ' + ${proveedor.email}"></p>
+                        </div>
+
+                        <div class="alert alert-warning border-0 small mb-0 shadow-sm">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <span th:text="${trad != null ? trad.getTraduccion('proveedor.baja.aviso') : 'El proveedor dejará de estar activo en el sistema, pero sus datos no serán borrados permanentemente.'}">
+                                    El proveedor dejará de estar activo en el sistema, pero sus datos no serán borrados permanentemente.
+                                </span>
+                        </div>
+
+                        <form th:action="@{/proveedores/baja}" method="post" class="mt-5">
+                            <input type="hidden" name="id" th:value="${proveedor.id}" />
+
+                            <div class="d-flex justify-content-center gap-3">
+                                <a th:href="@{/proveedores}" class="btn btn-light px-4 py-2 fw-bold text-secondary rounded-pill">
+                                    <span th:text="${trad != null ? trad.getTraduccion('btn.cancelar') : 'Cancelar'}">Cancelar</span>
+                                </a>
+                                <button type="submit" class="btn btn-warning px-4 py-2 fw-bold shadow-sm rounded-pill transition-all hover-lift">
+                                    <i class="bi bi-person-x-fill me-2"></i>
+                                    <span th:text="${trad != null ? trad.getTraduccion('btn.confirmar.desactivar') : 'Sí, Desactivar Proveedor'}">Sí, Desactivar Proveedor</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="card-footer bg-light bg-opacity-50 border-0 py-3 text-center">
+                        <small class="text-muted italic">Módulo de Gestión de Proveedores</small>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </main>
 
 <div th:replace="~{Reutilizable/layout :: scripts}"></div>
+
+<style>
+    .hover-lift:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .1) !important;
+    }
+
+    .transition-all {
+        transition: all 0.2s ease-in-out;
+    }
+
+    body {
+        background-color: #f8f9fa;
+    }
+</style>
 </body>
+
 </html>

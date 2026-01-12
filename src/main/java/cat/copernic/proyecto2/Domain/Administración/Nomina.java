@@ -1,30 +1,36 @@
 package cat.copernic.proyecto2.Domain.Administración;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+
 import java.math.BigDecimal;
-import java.time.YearMonth;
+import java.time.LocalDate;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Data
 @Entity
-@Table(name="Nomina")
-
+@Table(name = "Nomina")
 public class Nomina {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "El empleado es obligatorio")
     @ManyToOne
-    @JoinColumn(name = "empleado_id")
+    @JoinColumn(name = "empleado_id", nullable = false)
     private Empleado empleado;
 
-    private YearMonth periodo;
-
+    @NotNull(message = "El período es obligatorio")
+    private String periodo;
+    @NotNull(message = "El salario base es obligatorio")
     private BigDecimal salarioBase;
+
     private BigDecimal complementos;
+
     private BigDecimal deducciones;
+
+    @NotNull(message = "El total a pagar es obligatorio")
     private BigDecimal totalPagar;
-
-
 }
-

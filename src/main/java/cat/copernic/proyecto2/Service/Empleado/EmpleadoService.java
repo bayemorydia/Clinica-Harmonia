@@ -30,5 +30,5 @@ public interface EmpleadoService {
 
     List<Empleado> buscarPorNombreOApellidos(String termino);
 
-
+    int ContarEmpleados();
 }

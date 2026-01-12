@@ -1,6 +1,7 @@
 package cat.copernic.proyecto2.Domain.Farmacia;
 
 import cat.copernic.proyecto2.Domain.Farmacia.PedidoProveedor;
+import cat.copernic.proyecto2.Domain.Persona.Usuario;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -39,6 +40,10 @@ public class Proveedor {
 
     private LocalDate fecha_alta;
     private LocalDate fecha_baja;
+
+    @OneToOne
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuario;
 
     @Column(nullable = false)
     private Boolean activo = true;
