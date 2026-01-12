@@ -5,7 +5,10 @@ import cat.copernic.proyecto2.DAO.UsuarioDAO;
 import cat.copernic.proyecto2.Domain.Persona.Rol;
 import cat.copernic.proyecto2.Domain.Persona.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,26 +22,43 @@ public class UsuarioServiceImpl implements UsuarioService {
     private RolDAO rolDAO;
 
     @Override
+    @Transactional(readOnly = true)
+    public Page<Usuario> listarUsuarios(Pageable pageable) {
+        return usuarioDAO.findAll(pageable); // Devuelve todos, activos e inactivos
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Usuario> buscarPorUsername(String query, Pageable pageable) {
+        return usuarioDAO.findByUsernameContainingIgnoreCase(query, pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Usuario buscarUsuario(Long id) {
+        return usuarioDAO.findById(id).orElse(null);
+    }
+
+    @Override
+    @Transactional
+    public void guardar(Usuario usuario) {
+        usuarioDAO.save(usuario);
+    }
+
+    @Override
+    @Transactional
     public Usuario crearUsuarioPaciente(String nombre, String apellidos, String dni) {
         Usuario nuevoUsuario = new Usuario();
-
-        // 1. Limpieza y extracción del PRIMER apellido
         String nombreLimpio = nombre.toLowerCase().trim();
-        // Dividimos por espacios y nos quedamos con la primera posición (primer
-        // apellido)
         String primerApellido = apellidos.toLowerCase().trim().split(" ")[0];
 
-        // 2. Generar Username Único con el primer apellido
         String username = generarUsernameUnico(nombreLimpio, primerApellido);
         nuevoUsuario.setUsername(username);
-
-        // 3. Password por defecto (DNI)
-        nuevoUsuario.setPasswordHash(dni);
+        nuevoUsuario.setPasswordHash(dni); // En producción usar BCrypt
         nuevoUsuario.setActivo(true);
 
-        // 4. Asignar Rol PACIENTE
         Rol rolPaciente = rolDAO.findByNombre("PACIENTE")
-                .orElseThrow(() -> new RuntimeException("Error: El rol 'PACIENTE' no existe en la base de datos"));
+                .orElseThrow(() -> new RuntimeException("Error: El rol 'PACIENTE' no existe"));
 
         Set<Rol> roles = new HashSet<>();
         roles.add(rolPaciente);
@@ -48,31 +68,12 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     private String generarUsernameUnico(String nombre, String apellido) {
-        // Intento 1: Primera letra nombre + primer apellido (lmariño)
-        String intento = nombre.substring(0, 1) + apellido;
-        if (!usuarioDAO.existsByUsername(intento))
-            return intento;
-
-        // Intento 2: Dos primeras letras + primer apellido (lumariño)
-        if (nombre.length() >= 2) {
-            intento = nombre.substring(0, 2) + apellido;
-            if (!usuarioDAO.existsByUsername(intento))
-                return intento;
-        }
-
-        // Intento 3: Tres primeras letras + primer apellido (laumariño)
-        if (nombre.length() >= 3) {
-            intento = nombre.substring(0, 3) + apellido;
-            if (!usuarioDAO.existsByUsername(intento))
-                return intento;
-        }
-
-        // Fallback: base + número incremental
-        int contador = 1;
         String base = nombre.substring(0, 1) + apellido;
-        while (usuarioDAO.existsByUsername(base + contador)) {
-            contador++;
+        String intento = base;
+        int contador = 1;
+        while (usuarioDAO.existsByUsername(intento)) {
+            intento = base + contador++;
         }
-        return base + contador;
+        return intento;
     }
 }

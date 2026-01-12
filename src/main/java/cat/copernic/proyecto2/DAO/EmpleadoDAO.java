@@ -33,5 +33,7 @@ public interface EmpleadoDAO extends JpaRepository<Empleado, Long> {
     @Query("SELECT e FROM Empleado e WHERE e.dni = :valor")
     Optional<Empleado> obtenerDNI(@Param("valor") String DNI);
 
-}
+    // En EmpleadoDAO.java
+    Optional<Empleado> findByUsuarioUsername(String username);
 
+}

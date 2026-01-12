@@ -1,29 +1,189 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Detalle Empleado | Farmacia</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: head_medico}"></div>
+    <div sec:authorize="hasRole('ADMINISTRADOR')" th:replace="~{Reutilizable/layout :: head_general}"></div>
+
+    <title th:text="${empleado.nombre} + ' ' + ${empleado.apellidos}">Detalle Empleado</title>
 </head>
+
 <body class="bg-light">
-<div class="container mt-5">
-    <div class="card shadow border-0">
-        <div class="card-header bg-white">
-            <h1 class="h4 text-primary fw-bold">Detalle Empleado</h1>
+    <div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: menu_medico}"></div>
+    <div sec:authorize="hasRole('ADMINISTRADOR')" th:replace="~{Reutilizable/layout :: menu}"></div>
+
+    <main th:class="${#authorization.expression('hasRole(''ROLE_MEDICO'')')} ? 'content-medico' : 'content'">
+        <div class="container-fluid py-4">
+
+            <div class="mb-4">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item" sec:authorize="hasRole('ADMINISTRADOR')">
+                            <a th:href="@{/empleados}" th:text="${trad.getTraduccion('nav.empleados')}">Empleados</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            <span
+                                th:text="${#authorization.expression('hasRole(''ROLE_MEDICO'')')} ? 'Mi Perfil' : 'Ficha del Profesional'"></span>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+
+            <form th:action="@{/empleados/guardar}" th:object="${empleado}" method="post">
+                <input type="hidden" th:field="*{id}" />
+
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <div class="card shadow-sm border-0 mb-4" style="border-radius: 15px; overflow: hidden;">
+                            <div class="card-header bg-info py-4 border-0"></div>
+                            <div class="card-body text-center position-relative" style="margin-top: -50px;">
+                                <div class="bg-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow-sm"
+                                    style="width: 100px; height: 100px; border: 5px solid white;">
+                                    <h1 class="mb-0 fw-bold text-info" style="font-size: 2.5rem;"
+                                        th:text="${#strings.substring(empleado.nombre,0,1)}"></h1>
+                                </div>
+                                <h4 class="fw-bold mb-1 text-dark"
+                                    th:text="${empleado.nombre} + ' ' + ${empleado.apellidos}"></h4>
+                                <p class="text-muted small mb-2" th:text="${empleado.email}"></p>
+
+                                <span class="badge rounded-pill bg-info-subtle text-info px-3 py-2 mb-4">
+                                    <i class="bi bi-briefcase me-1"></i> <span th:text="*{departamento}"></span>
+                                </span>
+
+                                <div class="px-3">
+                                    <div class="p-3 rounded-3 bg-light border text-start">
+                                        <div class="small text-muted text-uppercase fw-bold mb-2">Información
+                                            Contractual</div>
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span>ID Empleado:</span>
+                                            <span class="fw-bold" th:text="*{id}"></span>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <span>Salario Base:</span>
+                                            <span class="fw-bold text-success" th:text="*{salarioBase} + ' €'"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-8">
+                        <div class="card shadow-sm border-0" style="border-radius: 15px;">
+                            <div class="card-body p-4 p-md-5">
+
+                                <div class="mb-5">
+                                    <h5 class="fw-bold mb-4 text-primary d-flex align-items-center">
+                                        <span class="bg-primary bg-opacity-10 p-2 rounded-3 me-3">
+                                            <i class="bi bi-person-vcard"></i>
+                                        </span>
+                                        Datos Personales
+                                    </h5>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold text-secondary">Nombre</label>
+                                            <input type="text" th:field="*{nombre}"
+                                                class="form-control rounded-3 bg-light"
+                                                th:readonly="${#authorization.expression('hasRole(''ROLE_MEDICO'')')}"
+                                                required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold text-secondary">Apellidos</label>
+                                            <input type="text" th:field="*{apellidos}"
+                                                class="form-control rounded-3 bg-light"
+                                                th:readonly="${#authorization.expression('hasRole(''ROLE_MEDICO'')')}"
+                                                required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold text-secondary">DNI</label>
+                                            <input type="text" th:field="*{dni}"
+                                                class="form-control rounded-3 font-monospace bg-light"
+                                                th:readonly="${#authorization.expression('hasRole(''ROLE_MEDICO'')')}"
+                                                required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold text-secondary">Departamento</label>
+                                            <input type="text" th:field="*{departamento}"
+                                                class="form-control rounded-3 bg-light"
+                                                th:readonly="${#authorization.expression('hasRole(''ROLE_MEDICO'')')}">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-5">
+                                    <h5 class="fw-bold mb-4 text-primary d-flex align-items-center">
+                                        <span class="bg-primary bg-opacity-10 p-2 rounded-3 me-3">
+                                            <i class="bi bi-envelope-at"></i>
+                                        </span>
+                                        Contacto y Laboral
+                                    </h5>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold text-secondary">Teléfono</label>
+                                            <input type="text" th:field="*{telefono}"
+                                                class="form-control rounded-3 bg-light"
+                                                th:readonly="${#authorization.expression('hasRole(''ROLE_MEDICO'')')}">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold text-secondary">Correo
+                                                Electrónico</label>
+                                            <input type="email" th:field="*{email}"
+                                                class="form-control rounded-3 bg-light"
+                                                th:readonly="${#authorization.expression('hasRole(''ROLE_MEDICO'')')}">
+                                        </div>
+                                        <div class="col-md-12" sec:authorize="hasRole('ADMINISTRADOR')">
+                                            <label class="form-label small fw-bold text-secondary">Salario Base
+                                                (€)</label>
+                                            <input type="number" step="0.01" th:field="*{salarioBase}"
+                                                class="form-control rounded-3 bg-light">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card-footer bg-white border-0 p-0 text-end">
+                                    <hr class="my-4 opacity-25">
+
+                                    <button type="submit" sec:authorize="hasRole('ADMINISTRADOR')"
+                                        class="btn btn-primary rounded-pill px-5 py-3 fw-bold shadow-lg hover-lift">
+                                        <i class="bi bi-save me-2"></i> Guardar Cambios
+                                    </button>
+
+                                    <div sec:authorize="hasRole('MEDICO')"
+                                        class="alert alert-info d-inline-flex align-items-center rounded-pill px-4 shadow-sm border-0">
+                                        <i class="bi bi-info-circle-fill me-2 fs-5"></i>
+                                        <span>Modo lectura: Para actualizar sus datos, contacte con
+                                            administración.</span>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
-        <div class="card-body">
-            <p><strong>ID:</strong> <span th:text="${empleado.id}"></span></p>
-            <p><strong>Nombre:</strong> <span th:text="${empleado.nombre}"></span></p>
-            <p><strong>Apellidos:</strong> <span th:text="${empleado.apellidos}"></span></p>
-            <p><strong>DNI:</strong> <span th:text="${empleado.dni}"></span></p>
-            <p><strong>Email:</strong> <span th:text="${empleado.email}"></span></p>
-            <p><strong>Teléfono:</strong> <span th:text="${empleado.telefono}"></span></p>
-            <p><strong>Departamento:</strong> <span th:text="${empleado.departamento}"></span></p>
-            <p><strong>Salario Base:</strong> <span th:text="${empleado.salarioBase}"></span></p>
-            <a th:href="@{/empleados}" class="btn btn-link">Volver a lista</a>
-        </div>
-    </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    </main>
+
+    <div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: scripts_medico}"></div>
+    <div sec:authorize="hasRole('ADMINISTRADOR')" th:replace="~{Reutilizable/layout :: scripts}"></div>
+
+    <style>
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15) !important;
+        }
+
+        input[readonly] {
+            background-color: #f8f9fa !important;
+            border-color: #e9ecef;
+            cursor: not-allowed;
+            color: #6c757d;
+        }
+
+        .bg-info {
+            background-color: #0dcaf0 !important;
+        }
+    </style>
 </body>
+
 </html>

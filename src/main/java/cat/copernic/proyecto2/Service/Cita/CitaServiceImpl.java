@@ -9,8 +9,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CitaServiceImpl implements CitaService {
@@ -87,5 +92,51 @@ public class CitaServiceImpl implements CitaService {
             cita.setEstado(EstadoCita.ANULADA); // Marcado lógico (Soft-delete)
             citaDAO.save(cita);
         }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public long countPacientesPendientesPorMedico(Long medicoId) {
+        // Contamos pacientes únicos con citas en estado PENDIENTE para este médico
+        return citaDAO.countPacientesConCitasPendientes(medicoId, EstadoCita.PROGRAMADA);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public long countCitasHoyPorMedico(Long medicoId, LocalDateTime inicio, LocalDateTime fin) {
+        // Citas de hoy que NO estén anuladas para este médico
+        return citaDAO.countByProfesionalIdAndFechaHoraBetweenAndEstadoNot(
+                medicoId, inicio, fin, EstadoCita.ANULADA);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Cita> obtenerCitasPendientesMedico(Long medicoId) {
+        // Listado de citas futuras/pendientes para la tabla
+        return citaDAO.findByProfesionalIdAndEstadoOrderByFechaHoraAsc(medicoId, EstadoCita.PROGRAMADA);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Map<LocalDate, Long> obtenerResumenAgendaAnual(Long medicoId, int anio) {
+        LocalDateTime inicio = LocalDateTime.of(anio, 1, 1, 0, 0);
+        LocalDateTime fin = LocalDateTime.of(anio, 12, 31, 23, 59);
+
+        List<Cita> citas = citaDAO.findByProfesionalIdAndFechaHoraBetweenAndEstadoNotOrderByFechaHoraAsc(
+                medicoId, inicio, fin, EstadoCita.ANULADA);
+
+        // Agrupamos por fecha para contar cuántas citas hay por día
+        return citas.stream()
+                .collect(Collectors.groupingBy(
+                        c -> c.getFechaHora().toLocalDate(),
+                        Collectors.counting()));
+    }
+
+    @Override
+    public List<Cita> obtenerCitasDia(Long medicoId, LocalDate fecha) {
+        LocalDateTime inicio = fecha.atStartOfDay();
+        LocalDateTime fin = fecha.atTime(23, 59, 59);
+        return citaDAO.findByProfesionalIdAndFechaHoraBetweenAndEstadoNotOrderByFechaHoraAsc(
+                medicoId, inicio, fin, EstadoCita.ANULADA);
     }
 }
