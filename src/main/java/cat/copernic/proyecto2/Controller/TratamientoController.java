@@ -2,9 +2,11 @@ package cat.copernic.proyecto2.Controller;
 
 import cat.copernic.proyecto2.Domain.PersonalSanitario.Tratamiento;
 import cat.copernic.proyecto2.Service.Tratamiento.TratamientoService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,8 +20,7 @@ public class TratamientoController {
 
     @GetMapping("/listar")
     public String listar(Model model) {
-        var tratamientos = tratamientoService.listarTratamientos();
-        model.addAttribute("tratamientos", tratamientos);
+        model.addAttribute("tratamientos", tratamientoService.listarTratamientos());
         return "PersonalSanitario/ListaTratamientos";
     }
 
@@ -29,7 +30,10 @@ public class TratamientoController {
     }
 
     @PostMapping("/guardar")
-    public String guardar(Tratamiento tratamiento) {
+    public String guardar(@Valid Tratamiento tratamiento, BindingResult result) {
+        if (result.hasErrors()) {
+            return "PersonalSanitario/FormTratamiento";
+        }
         tratamientoService.guardar(tratamiento);
         return "redirect:/tratamientos/listar";
     }
