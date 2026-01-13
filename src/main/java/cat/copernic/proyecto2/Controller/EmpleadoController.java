@@ -49,7 +49,7 @@ public class EmpleadoController {
     private void cargarTurnos(Model model) {
         turnoService.CrearTurnos();
         model.addAttribute("turnos", turnoService.listarTodos()); // ahora lista objetos Turno
-        }
+    }
 
     @GetMapping("")
     public String listarEmpleados(Model model) {
@@ -180,12 +180,12 @@ public class EmpleadoController {
     @GetMapping("/confirmarBaja/{id}")
     public String confirmarBaja(@PathVariable("id") Long id, Model model) {
 
-      try {
-          model.addAttribute("empleado", empleadoService.obtenerPorId(id));
-          model.addAttribute("trad", traduccionService);
-          return "empleado/confirmarBajaEmpleado";
+        try {
+            model.addAttribute("empleado", empleadoService.obtenerPorId(id));
+            model.addAttribute("trad", traduccionService);
+            return "empleado/confirmarBajaEmpleado";
 
-      }catch (Exception e) {
+        }catch (Exception e) {
             System.out.println("DEBUG: Error crítico al procesar la baja: " + e.getMessage());
             e.printStackTrace();
         }
