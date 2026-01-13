@@ -7,6 +7,7 @@ import cat.copernic.proyecto2.Domain.Persona.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.HashSet;
@@ -17,6 +18,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Autowired
     private UsuarioDAO usuarioDAO;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private RolDAO rolDAO;
@@ -51,19 +55,17 @@ public class UsuarioServiceImpl implements UsuarioService {
         Usuario nuevoUsuario = new Usuario();
         String nombreLimpio = nombre.toLowerCase().trim();
         String primerApellido = apellidos.toLowerCase().trim().split(" ")[0];
-
         String username = generarUsernameUnico(nombreLimpio, primerApellido);
         nuevoUsuario.setUsername(username);
-        nuevoUsuario.setPasswordHash(dni); // En producción usar BCrypt
+        String passwordCifrado = passwordEncoder.encode(dni);
+        nuevoUsuario.setPasswordHash(passwordCifrado);
         nuevoUsuario.setActivo(true);
-
         Rol rolPaciente = rolDAO.findByNombre("PACIENTE")
                 .orElseThrow(() -> new RuntimeException("Error: El rol 'PACIENTE' no existe"));
 
         Set<Rol> roles = new HashSet<>();
         roles.add(rolPaciente);
         nuevoUsuario.setRoles(roles);
-
         return usuarioDAO.save(nuevoUsuario);
     }
 
