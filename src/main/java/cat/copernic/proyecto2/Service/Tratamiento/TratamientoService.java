@@ -8,4 +8,7 @@ public interface TratamientoService {
     public void guardar(Tratamiento tratamiento);
     public void eliminar(Tratamiento tratamiento);
     public Tratamiento encontrarTratamiento(Tratamiento tratamiento);
+    
+    // Método para validar duplicados
+    public boolean existeNombre(String nombre, Long idActual);
 }

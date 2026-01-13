@@ -1,54 +1,206 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Lista de Medicamentos</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <div th:replace="~{Reutilizable/layout :: head_general}"></div>
+    <title>Inventario de Medicamentos</title>
+    <style>
+        .clickable-row {
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .clickable-row:hover {
+            background-color: rgba(0, 123, 255, 0.05) !important;
+        }
+
+        /* Estilos Paginación */
+        .page-link {
+            color: #6c757d;
+            border: none;
+            background: #f1f3f5;
+            margin: 0 3px;
+            border-radius: 8px !important;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
+        .page-item.active .page-link {
+            background-color: #198754 !important; /* Verde para Farmacia */
+            color: white !important;
+            box-shadow: 0 4px 10px rgba(25, 135, 84, 0.2);
+        }
+
+        .stock-low {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .icon-box-med {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(25, 135, 84, 0.1);
+            color: #198754;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .table-footer {
+            padding: 1.25rem 1.5rem;
+            background-color: #ffffff;
+            border-top: 1px solid #edf2f7;
+        }
+    </style>
 </head>
 
-<body class="container mt-5">
+<body>
+    <div th:replace="~{Reutilizable/layout :: menu}"></div>
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Listado de Medicamentos</h2>
-        <a th:href="@{/medicamentos/nuevo}" class="btn btn-success">Registrar Nuevo</a>
-    </div>
+    <main class="content">
+        <div class="container-fluid">
 
-    <table class="table table-hover border">
-        <thead class="table-light">
-            <tr>
-                <th>Nombre</th>
-                <th>Código</th>
-                <th>Tipo</th>
-                <th>Stock</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="m : ${medicamentos}">
-                <td th:text="${m.nombre}"></td>
-                <td th:text="${m.codigo}"></td>
-                <td th:text="${m.tipo}"></td>
-                <td th:text="${m.stockActual}"></td>
-                <td>
-                    <a th:href="@{/medicamentos/editar/{id}(id=${m.id})}"
-                        class="btn btn-sm btn-outline-primary">Editar</a>
-                    <a th:href="@{/medicamentos/eliminar/{id}(id=${m.id})}" class="btn btn-sm btn-outline-danger"
-                        onclick="return confirm('¿Eliminar este medicamento?')">Eliminar</a>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="fw-bold text-dark mb-1">Inventario de Medicamentos</h2>
+                    <p class="text-muted small mb-0">Haga clic en una fila para editar los detalles del fármaco.</p>
+                </div>
+                <a th:href="@{/medicamentos/nuevo}" class="btn btn-success rounded-pill px-4 shadow-sm fw-bold">
+                    <i class="bi bi-capsule me-2"></i> 
+                    <span>Nuevo Medicamento</span>
+                </a>
+            </div>
 
-    <div th:if="${#lists.isEmpty(medicamentos)}" class="alert alert-info">
-        No hay medicamentos registrados actualmente.
-    </div>
-    <div class="mt-4">
-        <a th:href="@{/}" class="btn btn-link text-decoration-none">
-            &larr; Volver al Inicio
-        </a>
-    </div>
+            <div class="card shadow-sm border-0 mb-4" style="border-radius: 15px;">
+                <div class="card-body">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                        <input type="text" id="searchInput" class="form-control border-start-0 ps-0 shadow-none"
+                            placeholder="Buscar por nombre, código o tipo...">
+                    </div>
+                </div>
+            </div>
 
+            <div class="card shadow-sm border-0" style="border-radius: 15px; overflow: hidden;">
+                <div class="card-body p-0" id="tablaContainer">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0" id="medicamentosTable">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-4 py-3 border-0 text-secondary small fw-bold">MEDICAMENTO</th>
+                                    <th class="py-3 border-0 text-secondary small fw-bold">CÓDIGO</th>
+                                    <th class="py-3 border-0 text-secondary small fw-bold text-center">STOCK</th>
+                                    <th class="py-3 border-0 text-secondary small fw-bold">ESTADO</th>
+                                    <th class="py-3 border-0 text-secondary small fw-bold text-center">ACCIONES</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:if="${#lists.isEmpty(medicamentos)}">
+                                    <td colspan="5" class="text-center py-5 text-muted">No se han encontrado medicamentos.</td>
+                                </tr>
+                                
+                                <tr th:each="med : ${medicamentos}" class="border-bottom clickable-row"
+                                    th:data-href="@{'/medicamentos/editar/' + ${med.id}}"
+                                    th:classappend="${med.stockActual < med.stockMinimo} ? 'table-danger' : ''">
+                                    
+                                    <td class="ps-4 py-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="icon-box-med me-3">
+                                                <i class="bi bi-capsule-pill"></i>
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold text-dark mb-0">
+                                                    <span th:text="${med.nombre}">Nombre</span>
+                                                    
+                                                    <i th:if="${med.stockActual < med.stockMinimo}" 
+                                                       class="bi bi-exclamation-triangle-fill text-danger ms-2" 
+                                                       title="¡Stock bajo mínimos!"></i>
+                                                </div>
+                                                <div class="text-muted small" th:text="${med.tipo}">Tipo</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    
+                                    <td class="py-3 text-secondary font-monospace" th:text="${med.codigo}">COD-001</td>
+                                    
+                                    <td class="py-3 text-center">
+                                        <div th:class="${med.stockActual < med.stockMinimo} ? 'stock-low' : ''">
+                                            <span th:text="${med.stockActual}" class="fs-6">0</span>
+                                            <small class="text-muted d-block" style="font-size: 0.65rem;">Mín: [[${med.stockMinimo}]]</small>
+                                        </div>
+                                    </td>
+                                    
+                                    <td class="py-3">
+                                        <span th:if="${med.activo}" class="badge rounded-pill bg-success-subtle text-success px-3 py-2"
+                                            style="font-size: 0.75rem;">Activo</span>
+                                        <span th:if="${!med.activo}" class="badge rounded-pill bg-light text-secondary px-3 py-2"
+                                            style="font-size: 0.75rem;">Inactivo</span>
+                                    </td>
+                                    
+                                    <td class="py-3 text-center">
+                                        <div onclick="event.stopPropagation();">
+                                            <a th:if="${med.activo}" th:href="@{'/medicamentos/desactivar/' + ${med.id}}"
+                                                class="btn btn-sm btn-outline-danger rounded-pill px-3">
+                                                <i class="bi bi-slash-circle me-1"></i> Desactivar
+                                            </a>
+                                            <a th:if="${!med.activo}" th:href="@{'/medicamentos/activar/' + ${med.id}}"
+                                                class="btn btn-sm btn-outline-success rounded-pill px-3">
+                                                <i class="bi bi-check-circle me-1"></i> Activar
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="table-footer d-flex justify-content-between align-items-center">
+                        <div class="text-muted small">
+                            Mostrando <span class="fw-bold" th:text="${#lists.size(medicamentos)}">0</span> fármacos en inventario.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{Reutilizable/layout :: scripts}"></div>
+
+    <script th:inline="javascript">
+        document.addEventListener("DOMContentLoaded", () => {
+            initTableEvents();
+            
+            // Buscador del lado del cliente para Medicamentos
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', function() {
+                const query = this.value.toLowerCase();
+                const rows = document.querySelectorAll("#medicamentosTable tbody tr:not(.text-center)");
+                
+                rows.forEach(row => {
+                    const text = row.innerText.toLowerCase();
+                    row.style.display = text.includes(query) ? "" : "none";
+                });
+            });
+        });
+
+        function initTableEvents() {
+            document.querySelectorAll(".clickable-row").forEach(row => {
+                row.addEventListener("click", function (e) {
+                    // Evita navegar si el clic fue en un botón o enlace de acción
+                    if (e.target.closest('button') || e.target.closest('a')) {
+                        return;
+                    }
+                    window.location.href = this.getAttribute("data-href");
+                });
+            });
+        }
+    </script>
 </body>
 
 </html>

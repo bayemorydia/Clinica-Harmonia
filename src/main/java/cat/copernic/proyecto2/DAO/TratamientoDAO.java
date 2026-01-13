@@ -6,5 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TratamientoDAO extends JpaRepository<Tratamiento, Long> {
-    // Al extender de JpaRepository, ya tienes: save(), findAll(), findById(), deleteById(), etc.
+    
+    // Método estándar: Busca un tratamiento por su nombre exacto
+    Tratamiento findByNombre(String nombre);
 }

@@ -36,4 +36,25 @@ public class TratamientoServiceImpl implements TratamientoService {
     public Tratamiento encontrarTratamiento(Tratamiento tratamiento) {
         return tratamientoDAO.findById(tratamiento.getId()).orElse(null);
     }
+
+    // --- LÓGICA DE VALIDACIÓN CON findBy ---
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existeNombre(String nombre, Long idActual) {
+        // Usamos findByNombre como pediste
+        Tratamiento encontrado = tratamientoDAO.findByNombre(nombre);
+        
+        // 1. Si es null, no existe -> No hay duplicado
+        if (encontrado == null) {
+            return false;
+        }
+
+        // 2. Si existe, verificamos si es el mismo registro (edición)
+        if (idActual != null && encontrado.getId().equals(idActual)) {
+            return false; // Soy yo mismo, no cuenta como duplicado
+        }
+
+        // 3. Si existe y tiene otro ID -> Es duplicado
+        return true;
+    }
 }

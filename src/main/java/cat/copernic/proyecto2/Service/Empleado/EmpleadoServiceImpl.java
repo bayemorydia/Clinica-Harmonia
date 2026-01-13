@@ -69,7 +69,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         }
 
         Empleado OtroTelefono = empleadoDAO.obtenerTelefono(datos.getTelefono()).orElse(null);
-        if (OtroEmail != null && !OtroTelefono.getId().equals(id)) {
+        if (OtroTelefono != null && !OtroTelefono.getId().equals(id)) {
             throw new IllegalArgumentException("❌ El Telefono ya está en uso");
         }
 
