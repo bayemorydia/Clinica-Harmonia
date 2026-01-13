@@ -8,10 +8,7 @@ import cat.copernic.proyecto2.Domain.Administración.Empleado;
 import cat.copernic.proyecto2.Domain.Persona.Rol;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Page;
-import cat.copernic.proyecto2.Domain.Administración.Nomina;
+
 @Service
 @Transactional
 public class EmpleadoServiceImpl implements EmpleadoService {
@@ -29,29 +26,10 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         if (empleadoDAO.obtenerTelefono(empleado.getTelefono()).isPresent()) {
             throw new IllegalArgumentException("❌ Ya existe un Empleado con ese Telefono");
         }
-
-        if (empleado.getTurno() == null) {
-            System.err.println("ERROR: Turno no asignado");
-            throw new IllegalArgumentException("❌ El empleado debe tener un turno asignado");
-        }
-
-        if (empleado.getInicio() == null || empleado.getFin() == null) {
-            System.err.println("ERROR: Horario incompleto → Inicio: " + empleado.getInicio() + ", Fin: " + empleado.getFin());
-            throw new IllegalArgumentException("❌ Debes asignar hora de inicio y fin");
-        }
         empleado.setId(null);
         empleado.setFecha_alta(LocalDate.now());
         empleado.setFecha_baja(null);
-        System.out.println("DEBUG: Guardando empleado → " + empleado);
-
-        try {
-            System.out.println("echo");
-            return empleadoDAO.save(empleado);
-        } catch (Exception e) {
-            System.err.println("ERROR: Fallo al guardar el empleado");
-            e.printStackTrace();
-            throw e;  // re-lanzamos para que el error llegue al log
-        }
+        return empleadoDAO.save(empleado);
     }
 
     public Empleado actualizar(Long id, Empleado datos) {
@@ -69,7 +47,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         }
 
         Empleado OtroTelefono = empleadoDAO.obtenerTelefono(datos.getTelefono()).orElse(null);
-        if (OtroEmail != null && !OtroTelefono.getId().equals(id)) {
+        if (OtroTelefono != null && !OtroTelefono.getId().equals(id)) {
             throw new IllegalArgumentException("❌ El Telefono ya está en uso");
         }
 
@@ -83,9 +61,6 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         existente.setRol(datos.getRol());
         existente.setSalarioBase(datos.getSalarioBase());
         existente.setFecha_baja(datos.getFecha_baja());
-        existente.setInicio(datos.getInicio());
-        existente.setFin(datos.getFin());
-        existente.setTurno(datos.getTurno());
         return empleadoDAO.save(existente);
     }
 
@@ -94,7 +69,6 @@ public class EmpleadoServiceImpl implements EmpleadoService {
                 .orElseThrow(() -> new RuntimeException("Empleado no encontrado con id " + id));
 
         // Borrado lógico: dar de baja
-        existente.setActiva(false);
         existente.setFecha_baja(LocalDate.now());
         empleadoDAO.save(existente);
     }
@@ -144,10 +118,6 @@ public class EmpleadoServiceImpl implements EmpleadoService {
                 termino);
     }
 
-    public long ContarEmpleados() {
-        return empleadoDAO.BuscarEmpleadosTotal();
-    }
-
     // En EmpleadoServiceImpl.java
     @Override
     @Transactional(readOnly = true)
@@ -155,15 +125,4 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         return empleadoDAO.findByUsuarioUsername(username)
                 .orElseThrow(() -> new RuntimeException("No se encontró un empleado para el usuario: " + username));
     }
-
-
-    @Override
-    public Page<Nomina> listarNominasPorEmpleado(Long empleadoId, String search, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        if (search == null || search.isEmpty()) {
-            search = null;
-        }
-        return empleadoDAO.findByEmpleado(empleadoId, search, pageable);
-    }
-
 }

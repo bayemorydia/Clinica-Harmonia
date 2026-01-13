@@ -51,16 +51,15 @@ public class PacienteServiceImpl implements PacienteService {
             // --- Lógica para NUEVO paciente ---
             validacionesService.validarDocumentoIdentidad(paciente.getDni());
             validarDuplicados(paciente);
-            
+
             paciente.setFechaAlta(LocalDate.now());
 
             // 1. Crear automáticamente el usuario de acceso al sistema
             Usuario nuevoUsuario = usuarioService.crearUsuarioPaciente(
-                paciente.getNombre(), 
-                paciente.getApellidos(), 
-                paciente.getDni()
-            );
-            
+                    paciente.getNombre(),
+                    paciente.getApellidos(),
+                    paciente.getDni());
+
             // 2. Vincular el usuario creado con el paciente
             paciente.setUsuario(nuevoUsuario);
 
@@ -125,16 +124,20 @@ public class PacienteServiceImpl implements PacienteService {
 
     @Override
     public String getEdadPaciente(Paciente paciente) {
+        if (paciente == null || paciente.getFechaNacimiento() == null) {
+            return "Fecha no disponible";
+        }
         Period periodo = Period.between(paciente.getFechaNacimiento(), LocalDate.now());
         if (periodo.getYears() >= 1) {
-            return periodo.getYears() + ":" + (periodo.getYears() == 1 ? "año" : "años");
+            return periodo.getYears() + " " + (periodo.getYears() == 1 ? "año" : "años");
         }
         if (periodo.getMonths() >= 1) {
-            return periodo.getMonths() + ":" + (periodo.getMonths() == 1 ? "mes" : "meses");
+            return periodo.getMonths() + " " + (periodo.getMonths() == 1 ? "mes" : "meses");
         }
         long dias = java.time.temporal.ChronoUnit.DAYS.between(paciente.getFechaNacimiento(), LocalDate.now());
-        if (dias <= 0) return "0:recien_nacido";
-        return dias + ":" + (dias == 1 ? "dia" : "dias");
+        if (dias <= 0)
+            return "0:recien_nacido";
+        return dias + " " + (dias == 1 ? "dia" : "dias");
     }
 
     @Override

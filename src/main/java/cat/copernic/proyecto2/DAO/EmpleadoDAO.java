@@ -4,15 +4,9 @@ import cat.copernic.proyecto2.Domain.Administración.Empleado;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import cat.copernic.proyecto2.Domain.Administración.Nomina;
 import java.util.List;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Page;
 import cat.copernic.proyecto2.Domain.Persona.Rol;
-
 import java.util.Optional;
-
 
 public interface EmpleadoDAO extends JpaRepository<Empleado, Long> {
     @Query("SELECT e FROM  Empleado e WHERE e.rol  = : valor ")
@@ -39,22 +33,7 @@ public interface EmpleadoDAO extends JpaRepository<Empleado, Long> {
     @Query("SELECT e FROM Empleado e WHERE e.dni = :valor")
     Optional<Empleado> obtenerDNI(@Param("valor") String DNI);
 
-    @Query("select count(e) from Empleado e")
-    int BuscarEmpleadosTotal();
-
+    // En EmpleadoDAO.java
     Optional<Empleado> findByUsuarioUsername(String username);
 
-    @Query("SELECT n FROM Nomina n " +
-            "WHERE n.empleado.id = :empleadoId " +
-            "AND (:search IS NULL OR LOWER(n.periodo) LIKE LOWER(CONCAT('%', :search, '%'))) " +
-            "ORDER BY n.periodo DESC")
-    Page<Nomina> findByEmpleado(
-            @Param("empleadoId") Long empleadoId,
-            @Param("search") String search,
-            Pageable pageable
-    );
-
-
 }
-
-
