@@ -1,4 +1,5 @@
 package cat.copernic.proyecto2.Domain.Administración;
+
 import cat.copernic.proyecto2.Domain.Recepción.Cita;
 import java.util.List;
 import java.util.ArrayList;
@@ -39,6 +40,7 @@ public class Empleado {
 
     @OneToOne
     @JoinColumn(name = "usuario_id")
+
     private Usuario usuario;
 
     @OneToMany(mappedBy = "empleado", cascade = CascadeType.ALL)
@@ -49,7 +51,5 @@ public class Empleado {
 
     @OneToMany(mappedBy = "profesional")
     private List<Cita> citasAtendidas = new ArrayList<>();
-
-
 
 }

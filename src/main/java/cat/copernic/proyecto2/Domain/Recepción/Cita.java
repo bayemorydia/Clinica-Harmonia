@@ -2,44 +2,45 @@ package cat.copernic.proyecto2.Domain.Recepción;
 
 import cat.copernic.proyecto2.Domain.Administración.Empleado;
 import java.time.LocalDateTime;
-
 import org.springframework.format.annotation.DateTimeFormat;
-
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.ToString;
+import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
 @Table(name = "Cita")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true) // Importante para que el Select funcione
 public class Cita {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @ToString.Exclude
     @NotNull(message = "Debe seleccionar un paciente")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER) // Aseguramos carga para evitar LazyInitializationException
     @JoinColumn(name = "paciente_id")
     private Paciente paciente;
 
     @ToString.Exclude
     @NotNull(message = "Debe asignar un profesional")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "profesional_id")
     private Empleado profesional;
 
     @NotNull(message = "La fecha y hora es obligatoria")
-    @Future(message = "La cita debe ser en una fecha futura")
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime fechaHora;
 
     @NotBlank(message = "La especialidad es obligatoria")
     private String especialidad;
+
     @Size(max = 500)
     private String motivo;
 

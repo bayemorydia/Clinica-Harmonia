@@ -22,16 +22,16 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h2 class="fw-bold text-dark mb-1" th:text="${trad.getTraduccion('mod.facturacion.titulo')}">Facturación</h2>
-                    <p class="text-muted small mb-0">Consulta y descarga de documentos contables.</p>
+                    <p class="text-muted small mb-0" th:text="${trad.getTraduccion('facturacion.subtitulo')}">Consulta y descarga de documentos contables.</p>
                 </div>
                 
                 <div class="export-panel shadow-sm">
-                    <span class="small fw-bold text-secondary text-uppercase">Exportar:</span>
+                    <span class="small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('facturacion.exportar.label')}">Exportar:</span>
                     <select id="periodoExport" class="form-select form-select-sm border-0 bg-transparent shadow-none" style="width: 120px; cursor:pointer;">
-                        <option value="DIA">Hoy</option>
-                        <option value="SEMANA">Esta Semana</option>
-                        <option value="MES">Este Mes</option>
-                        <option value="ANYO">Este Año</option>
+                        <option value="DIA" th:text="${trad.getTraduccion('periodo.dia')}">Hoy</option>
+                        <option value="SEMANA" th:text="${trad.getTraduccion('periodo.semana')}">Esta Semana</option>
+                        <option value="MES" th:text="${trad.getTraduccion('periodo.mes')}">Este Mes</option>
+                        <option value="ANYO" th:text="${trad.getTraduccion('periodo.anyo')}">Este Año</option>
                     </select>
                     <button onclick="descargarInformeAsincrono()" id="btnDownload" class="btn btn-success btn-sm rounded-circle p-2" title="Descargar CSV">
                         <i class="bi bi-file-earmark-arrow-down"></i>
@@ -56,16 +56,16 @@
                             <table class="table table-hover align-middle mb-0">
                                 <thead class="bg-light">
                                     <tr>
-                                        <th class="ps-4 py-3 border-0 text-secondary small fw-bold">FECHA</th>
-                                        <th class="py-3 border-0 text-secondary small fw-bold">CLIENTE / PROVEEDOR</th>
-                                        <th class="py-3 border-0 text-secondary small fw-bold">TIPO</th>
-                                        <th class="py-3 border-0 text-secondary small fw-bold">TOTAL</th>
-                                        <th class="py-3 border-0 text-secondary small fw-bold text-center">DETALLES</th>
+                                        <th class="ps-4 py-3 border-0 text-secondary small fw-bold" th:text="${trad.getTraduccion('tabla.fecha')}">FECHA</th>
+                                        <th class="py-3 border-0 text-secondary small fw-bold" th:text="${trad.getTraduccion('tabla.cliente_proveedor')}">CLIENTE / PROVEEDOR</th>
+                                        <th class="py-3 border-0 text-secondary small fw-bold" th:text="${trad.getTraduccion('tabla.tipo')}">TIPO</th>
+                                        <th class="py-3 border-0 text-secondary small fw-bold" th:text="${trad.getTraduccion('tabla.total')}">TOTAL</th>
+                                        <th class="py-3 border-0 text-secondary small fw-bold text-center" th:text="${trad.getTraduccion('tabla.detalles')}">DETALLES</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr th:if="${#lists.isEmpty(facturas)}">
-                                        <td colspan="5" class="text-center py-5 text-muted">No se han encontrado facturas.</td>
+                                        <td colspan="5" class="text-center py-5 text-muted" th:text="${trad.getTraduccion('facturacion.vacia')}">No se han encontrado facturas.</td>
                                     </tr>
                                     <tr th:each="f : ${facturas}" class="border-bottom clickable-row"
                                         th:data-href="@{'/admin/facturas/detalle/' + ${f.id}}">
@@ -79,7 +79,9 @@
                                             </div>
                                         </td>
                                         <td class="py-3">
-                                            <span class="badge rounded-pill px-3 py-2" th:classappend="${f.tipo == 'VENTA' ? 'bg-success-subtle text-success' : 'bg-info-subtle text-info'}" th:text="${f.tipo}"></span>
+                                            <span class="badge rounded-pill px-3 py-2" 
+                                                  th:classappend="${f.tipo == 'VENTA' ? 'bg-success-subtle text-success' : 'bg-info-subtle text-info'}" 
+                                                  th:text="${trad.getTraduccion('tipo.' + f.tipo)}"></span>
                                         </td>
                                         <td class="py-3 fw-bold text-dark" th:text="${f.total + '€'}"></td>
                                         <td class="py-3 text-center">
@@ -91,11 +93,14 @@
                                 </tbody>
                             </table>
                         </div>
+
                         <div class="table-footer d-flex justify-content-between align-items-center">
                             <div class="text-muted small">
                                 <span class="fw-bold" th:text="${(currentPage * size) + 1}">1</span> a
                                 <span class="fw-bold" th:text="${(currentPage * size) + facturas.size()}">10</span>
-                                de <span class="fw-bold" th:text="${totalElements}">100</span> facturas
+                                <span th:text="${trad.getTraduccion('paginacion.de')}">de</span>
+                                <span class="fw-bold" th:text="${totalElements}">100</span>
+                                <span th:text="${trad.getTraduccion('paginacion.facturas')}">facturas</span>
                             </div>
                             <div class="d-flex align-items-center gap-4">
                                 <select id="pageSize" class="select-paginacion-clean" onchange="updateTable(0)">
@@ -127,6 +132,8 @@
     <div th:replace="~{Reutilizable/layout :: scripts}"></div>
 
     <script th:inline="javascript">
+        const errorMsg = /*[[${trad.getTraduccion('alerta.error_reporte')}]]*/ 'Error';
+
         document.addEventListener("DOMContentLoaded", () => {
             initTableEvents();
             const searchInput = document.getElementById('searchInput');
@@ -167,7 +174,7 @@
                     a.click();
                     a.remove();
                 })
-                .catch(() => alert("Error al generar el reporte"))
+                .catch(() => alert(errorMsg))
                 .finally(() => {
                     btn.disabled = false;
                     btn.innerHTML = '<i class="bi bi-file-earmark-arrow-down"></i>';
