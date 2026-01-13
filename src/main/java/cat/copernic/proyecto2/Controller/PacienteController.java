@@ -66,18 +66,48 @@ public class PacienteController {
             @Valid @ModelAttribute("paciente") Paciente paciente,
             BindingResult result,
             @RequestParam(value = "file", required = false) MultipartFile imagen,
+            @RequestParam(value = "origen", required = false) String origen,
             Model model) {
 
-        model.addAttribute("trad", traduccionService); // Por si hay errores de validación
+        model.addAttribute("trad", traduccionService);
 
         if (result.hasErrors()) {
+            if ("detalle".equals(origen)) {
+                // Recuperamos el paciente de la DB para asegurar que tenemos la edad correcta
+                Paciente pacienteExistente = pacienteService.findPacienteById(paciente.getId());
+                if (pacienteExistente != null) {
+                    model.addAttribute("edad", pacienteService.getEdadPaciente(pacienteExistente));
+                    // Opcional: restauramos la fecha en el objeto actual para evitar NPE en la
+                    // vista
+                    paciente.setFechaNacimiento(pacienteExistente.getFechaNacimiento());
+                    paciente.setUsuario(pacienteExistente.getUsuario());
+                }
+                return "Paciente/detallePaciente";
+            }
             return "Paciente/formularioPaciente";
         }
+
         try {
             pacienteService.savePaciente(paciente, imagen);
+
+            if ("detalle".equals(origen)) {
+                return "redirect:/pacientes/detalle/" + paciente.getId() + "?success";
+            }
             return "redirect:/pacientes";
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
+
+            if ("detalle".equals(origen)) {
+                // En caso de excepción (ej. DNI duplicado), volvemos a cargar los datos
+                // necesarios para la vista
+                Paciente pacienteExistente = pacienteService.findPacienteById(paciente.getId());
+                if (pacienteExistente != null) {
+                    model.addAttribute("edad", pacienteService.getEdadPaciente(pacienteExistente));
+                    paciente.setFechaNacimiento(pacienteExistente.getFechaNacimiento());
+                    paciente.setUsuario(pacienteExistente.getUsuario());
+                }
+                return "Paciente/detallePaciente";
+            }
             return "Paciente/formularioPaciente";
         }
     }

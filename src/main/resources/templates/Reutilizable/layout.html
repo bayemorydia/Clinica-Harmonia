@@ -13,6 +13,8 @@
             border-right: 1px solid #dee2e6;
             width: 260px;
             position: fixed;
+            overflow-y: auto;
+            z-index: 1000;
         }
 
         .content {
@@ -30,6 +32,7 @@
             margin-bottom: 0.3rem;
             text-decoration: none;
             display: block;
+            transition: all 0.2s;
         }
 
         .nav-link:hover,
@@ -62,7 +65,15 @@
 
         .lang-select-minimal:focus {
             outline: none;
-            box-shadow: none;
+        }
+
+        .nav-divider {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #adb5bd;
+            text-transform: uppercase;
+            padding: 1.5rem 1rem 0.5rem;
+            letter-spacing: 1px;
         }
     </style>
 </head>
@@ -71,47 +82,80 @@
     <div class="sidebar d-flex flex-column p-3" th:fragment="menu">
         <div class="d-flex align-items-center mb-1 px-2">
             <i class="bi bi-hospital-fill text-primary fs-3 me-2"></i>
-            <span class="fs-5 fw-bold text-primary">Clínica Harmonia</span>
+            <span class="fs-5 fw-bold text-primary" th:text="${trad.getTraduccion('nav.clinica.nombre')}">Clínica Harmonia</span>
         </div>
 
         <div class="lang-container">
             <select class="lang-select-minimal" onchange="changeLang(this.value)">
-                <option value="es" th:selected="${#locale.language == 'es'}">ESPAÑOL</option>
-                <option value="ca" th:selected="${#locale.language == 'ca'}">CATALÀ</option>
-                <option value="en" th:selected="${#locale.language == 'en'}">ENGLISH</option>
+                <option value="es" th:selected="${#locale.language == 'es'}" th:text="${trad.getTraduccion('lang.es')}">ESPAÑOL</option>
+                <option value="ca" th:selected="${#locale.language == 'ca'}" th:text="${trad.getTraduccion('lang.ca')}">CATALÀ</option>
+                <option value="en" th:selected="${#locale.language == 'en'}" th:text="${trad.getTraduccion('lang.en')}">ENGLISH</option>
             </select>
         </div>
 
         <ul class="nav nav-pills flex-column mb-auto">
             <li>
-                <a th:href="@{/admin}" class="nav-link active">
+                <a th:href="@{/admin}" class="nav-link">
                     <i class="bi bi-grid-1x2-fill"></i>
-                    <span th:text="${trad.getTraduccion('nav.inicio')}">Dashboard</span>
+                    <span th:text="${trad.getTraduccion('nav.inicio')}">Inicio</span>
                 </a>
             </li>
 
-            <li th:if="${#authorization.expression('hasAuthority(''ADMINISTRADOR'')')}">
+            <li>
                 <a th:href="@{/pacientes}" class="nav-link">
                     <i class="bi bi-people"></i>
                     <span th:text="${trad.getTraduccion('mod.pacientes')}">Pacientes</span>
                 </a>
             </li>
-            <li>
-                <a th:href="@{/citas}" class="nav-link">
-                    <i class="bi bi-calendar-check"></i>
-                    <span th:text="${trad.getTraduccion('mod.citas')}">Citas</span>
-                </a>
-            </li>
+
             <li>
                 <a th:href="@{/empleados}" class="nav-link">
                     <i class="bi bi-person-badge"></i>
                     <span th:text="${trad.getTraduccion('mod.empleados')}">Empleados</span>
                 </a>
             </li>
+
+            <li>
+                <a th:href="@{/citas}" class="nav-link">
+                    <i class="bi bi-calendar-check"></i>
+                    <span th:text="${trad.getTraduccion('mod.citas')}">Citas Médicas</span>
+                </a>
+            </li>
+
             <li>
                 <a th:href="@{/medicamentos}" class="nav-link">
                     <i class="bi bi-capsule"></i>
-                    <span th:text="${trad.getTraduccion('mod.medicamentos')}">Farmacia</span>
+                    <span th:text="${trad.getTraduccion('mod.medicamentos')}">Medicamentos</span>
+                </a>
+            </li>
+
+            <li>
+                <a th:href="@{/tratamientos}" class="nav-link">
+                    <i class="bi bi-clipboard2-pulse"></i>
+                    <span th:text="${trad.getTraduccion('mod.tratamientos')}">Tratamientos</span>
+                </a>
+            </li>
+
+            <div class="nav-divider" th:text="${trad.getTraduccion('nav.seccion.admin')}">Administración</div>
+
+            <li>
+                <a th:href="@{/admin/facturas}" class="nav-link">
+                    <i class="bi bi-receipt"></i>
+                    <span th:text="${trad.getTraduccion('mod.facturacion.titulo')}">Facturación</span>
+                </a>
+            </li>
+
+            <li>
+                <a th:href="@{/admin/roles}" class="nav-link">
+                    <i class="bi bi-shield-lock"></i>
+                    <span th:text="${trad.getTraduccion('mod.admin.roles.titulo')}">Roles</span>
+                </a>
+            </li>
+
+            <li>
+                <a th:href="@{/admin/usuarios}" class="nav-link">
+                    <i class="bi bi-person-gear"></i>
+                    <span th:text="${trad.getTraduccion('mod.admin.usuarios.titulo')}">Usuarios</span>
                 </a>
             </li>
         </ul>
@@ -119,11 +163,9 @@
         <hr>
 
         <form th:action="@{/logout}" method="post">
-            <button class="btn btn-light w-100 text-danger text-start px-3">
+            <button type="submit" class="btn btn-light w-100 text-danger text-start px-3 shadow-none">
                 <i class="bi bi-box-arrow-right me-2"></i>
-                <span
-                    th:text="${trad.getTraduccion('btn.logout') != null ? trad.getTraduccion('btn.logout') : 'Cerrar Sesión'}">Cerrar
-                    Sesión</span>
+                <span th:text="${trad.getTraduccion('btn.logout')}">Cerrar Sesión</span>
             </button>
         </form>
     </div>
