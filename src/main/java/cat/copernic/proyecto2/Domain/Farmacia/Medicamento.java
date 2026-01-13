@@ -1,18 +1,18 @@
 package cat.copernic.proyecto2.Domain.Farmacia;
 
 import cat.copernic.proyecto2.Domain.Facturacion.LineaFactura;
-import java.util.List;
 import jakarta.persistence.*;
-import lombok.Data;
 import jakarta.validation.constraints.*;
+import lombok.Data;
+import java.util.List;
 
 @Data
 @Entity
 @Table(name="ProductoSanitario")
-
 public class Medicamento {
 
-@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank(message = "El nombre es obligatorio")
@@ -31,10 +31,9 @@ public class Medicamento {
     @Min(value = 0, message = "El stock mínimo no puede ser inferior a 0")
     private int stockMinimo;
 
-    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL)
-    private List<LineaPedidoProveedor> lineasPedido;
+    // Campo para borrado lógico (activar/desactivar)
+    private boolean activo = true; 
 
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL)
     private List<LineaFactura> lineasFactura;
 }
-
