@@ -117,8 +117,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         return empleadoDAO.obtenerActivosPorNombreOApellido(
                 termino);
     }
-
-    // En EmpleadoServiceImpl.java
+    
     @Override
     @Transactional(readOnly = true)
     public Empleado obtenerPorUsername(String username) {
