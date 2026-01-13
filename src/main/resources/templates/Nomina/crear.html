@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <div th:replace="~{Reutilizable/layout :: head_general}"></div>
+    <title>Crear Nómina</title>
+</head>
+
+<body class="bg-light">
+<div th:replace="~{Reutilizable/layout :: menu}"></div>
+
+<main class="content">
+    <div class="container-fluid py-4">
+
+        <!-- ALERTA DE ERROR -->
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show rounded-3 mb-4 shadow-sm">
+            <i class="bi bi-exclamation-octagon-fill me-2"></i>
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- BREADCRUMB -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a th:href="@{/nominas}">Nóminas</a>
+                </li>
+                <li class="breadcrumb-item active">Nueva Nómina</li>
+            </ol>
+        </nav>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0 rounded-4">
+                    <div class="card-body p-4 p-md-5">
+
+                        <!-- NOMBRE EMPLEADO -->
+                        <h4 class="fw-bold mb-4 text-center text-primary"
+                            th:text="${empleado.nombre + ' ' + empleado.apellidos}">
+                            Nombre Apellido
+                        </h4>
+
+                        <!-- FORMULARIO -->
+                        <form th:action="@{/nominas/guardar}" method="post" th:object="${nomina}">
+
+                            <!-- EMPLEADO -->
+                            <input type="hidden" th:field="*{empleado.id}"/>
+
+                            <!-- SALARIO BASE -->
+                            <input type="hidden" th:field="*{salarioBase}" id="salarioBase"/>
+
+                            <!-- PERIODO -->
+                            <div class="mb-3">
+                                <label class="form-label fw-bold text-secondary">Período</label>
+                                <input type="month"
+                                       th:field="*{periodo}"
+                                       class="form-control rounded-3"
+                                       required>
+                            </div>
+
+                            <!-- COMPLEMENTOS -->
+                            <div class="mb-3">
+                                <label class="form-label fw-bold text-secondary">Complementos (€)</label>
+                                <input type="number"
+                                       step="0.01"
+                                       th:field="*{complementos}"
+                                       id="complementos"
+                                       class="form-control rounded-3"
+                                       value="0">
+                            </div>
+
+                            <!-- DEDUCCIONES -->
+                            <div class="mb-3">
+                                <label class="form-label fw-bold text-secondary">Deducciones (€)</label>
+                                <input type="number"
+                                       step="0.01"
+                                       th:field="*{deducciones}"
+                                       id="deducciones"
+                                       class="form-control rounded-3"
+                                       value="0">
+                            </div>
+
+                            <!-- TOTAL -->
+                            <div class="mb-3">
+                                <label class="form-label fw-bold text-secondary">Total a pagar (€)</label>
+                                <input type="number"
+                                       step="0.01"
+                                       th:field="*{totalPagar}"
+                                       id="totalPagar"
+                                       class="form-control rounded-3"
+                                       readonly
+                                       required>
+                            </div>
+
+                            <!-- BOTONES -->
+                            <div class="d-flex justify-content-end mt-4">
+                                <a th:href="@{/nominas/detalle/{id}(id=${empleado.id})}" class="btn btn-light rounded-pill me-3">
+                                    Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary rounded-pill">
+                                    Guardar Nómina
+                                </button>
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<div th:replace="~{Reutilizable/layout :: scripts}"></div>
+
+<!-- SCRIPT CALCULAR TOTAL -->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const salarioBase = parseFloat(document.getElementById('salarioBase').value) || 0;
+    const complementosInput = document.getElementById('complementos');
+    const deduccionesInput = document.getElementById('deducciones');
+    const totalPagarInput = document.getElementById('totalPagar');
+
+    function calcularTotal() {
+        const complementos = parseFloat(complementosInput.value) || 0;
+        const deducciones = parseFloat(deduccionesInput.value) || 0;
+        totalPagarInput.value = (salarioBase + complementos - deducciones).toFixed(2);
+    }
+
+    complementosInput.addEventListener('input', calcularTotal);
+    deduccionesInput.addEventListener('input', calcularTotal);
+    window.addEventListener('DOMContentLoaded', calcularTotal);
+    /*]]>*/
+</script>
+
+</body>
+</html>

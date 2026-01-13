@@ -1,21 +1,21 @@
-package cat.copernic.proyecto2.Domain.Persona;
+    package cat.copernic.proyecto2.Domain.Persona;
 
-import jakarta.persistence.*;
-import lombok.Data;
+    import jakarta.persistence.*;
+    import lombok.Data;
 
-@Data
-@Entity
-@Table(name = "roles")
-public class Rol {
+    @Data
+    @Entity
+    @Table(name = "roles")
+    public class Rol {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
 
-    @Column(unique = true, nullable = false)
-    private String nombre;
+        @Column(unique = true, nullable = false)
+        private String nombre;
 
-    private String descripcion;
+        private String descripcion;
 
-    private boolean activo = true;
-}
+        private boolean activo = true;
+    }

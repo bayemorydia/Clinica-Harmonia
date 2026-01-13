@@ -7,7 +7,10 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import cat.copernic.proyecto2.Domain.Persona.Rol;
 import java.util.Optional;
-
+import cat.copernic.proyecto2.Domain.Administración.Nomina;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 public interface EmpleadoDAO extends JpaRepository<Empleado, Long> {
     @Query("SELECT e FROM  Empleado e WHERE e.rol  = : valor ")
     List<Empleado> obtenerPorRol(@Param("valor") Rol rol);
@@ -35,5 +38,19 @@ public interface EmpleadoDAO extends JpaRepository<Empleado, Long> {
 
     // En EmpleadoDAO.java
     Optional<Empleado> findByUsuarioUsername(String username);
+
+    @Query("SELECT n FROM Nomina n " +
+            "WHERE n.empleado.id = :empleadoId " +
+            "AND (:search IS NULL OR LOWER(n.periodo) LIKE LOWER(CONCAT('%', :search, '%'))) " +
+            "ORDER BY n.periodo DESC")
+    Page<Nomina> findByEmpleado(
+            @Param("empleadoId") Long empleadoId,
+            @Param("search") String search,
+            Pageable pageable
+    );
+
+
+    @Query("select count(e) from Empleado e")
+    int BuscarEmpleadosTotal();
 
 }
