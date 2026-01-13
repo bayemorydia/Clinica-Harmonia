@@ -54,7 +54,7 @@ public class NominaController {
         model.addAttribute("nominas", nominaService.getAllNominas());
         model.addAttribute("empleados", empleadoService.listarTodos());
         model.addAttribute("trad", traduccionService);
-        return "Nomina/listar";
+        return "Nomina/listarNominas";
     }
 
     // ---------------------------
@@ -123,7 +123,7 @@ public class NominaController {
                 .subtract(nomina.getDeducciones()));
 
         nominaService.saveNomina(nomina);
-        return "redirect:/nominas";
+        return "redirect:/listarNominas";
     }
 
     // ---------------------------
@@ -139,7 +139,7 @@ public class NominaController {
         Empleado empleado = empleadoService.obtenerPorId(id);
         if (empleado == null) {
             model.addAttribute("error", "Empleado no encontrado");
-            return "redirect:/nominas";
+            return "redirect:/listarNominas";
         }
 
         // Paginación de nóminas por empleado
@@ -182,7 +182,7 @@ public class NominaController {
                 .subtract(nomina.getDeducciones()));
 
         nominaService.updateNomina(id, nomina);
-        return "redirect:/nominas";
+        return "redirect:/listarNominas";
     }
 
     // ---------------------------
@@ -206,7 +206,7 @@ public class NominaController {
         Nomina nomina = nominaService.findById(id);
         if (nomina == null) {
             model.addAttribute("error", "La nómina no existe");
-            return "redirect:/nominas";
+            return "redirect:/listarNominas";
         }
 
         // Obtenemos el empleado relacionado
@@ -219,5 +219,6 @@ public class NominaController {
 
         return "Nomina/DetalleNomina"; // Thymeleaf
     }
+
 }
 

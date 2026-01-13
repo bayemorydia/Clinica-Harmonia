@@ -1,9 +1,11 @@
 package cat.copernic.proyecto2.Domain.Administración;
 
 import cat.copernic.proyecto2.Domain.Recepción.Cita;
-
+import cat.copernic.proyecto2.Domain.Administración.Turno;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.ArrayList;
+import java.time.LocalTime;
 
 import cat.copernic.proyecto2.Domain.Persona.Rol;
 import cat.copernic.proyecto2.Domain.Persona.Usuario;
@@ -58,14 +60,28 @@ public class Empleado {
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
-    @OneToMany(mappedBy = "empleado", cascade = CascadeType.ALL)
-    private List<TurnoTrabajo> turnos = new ArrayList<>();
+
+    @NotNull(message = "La hora de inicio es obligatoria")
+    @Column(nullable = false)
+    private LocalTime inicio ;
+
+    @NotNull(message = "La hora de fin es obligatoria")
+    @Column(nullable = false)
+    private LocalTime fin;
+
+    @ManyToOne
+    @JoinColumn(name = "turno_id")
+    private Turno turno ;  // valor por defecto en Java
+
 
     @OneToMany(mappedBy = "empleado", cascade = CascadeType.ALL)
     private List<Nomina> nominas = new ArrayList<>();
 
     @OneToMany(mappedBy = "profesional")
     private List<Cita> citasAtendidas = new ArrayList<>();
+
+
+
 
 
 }

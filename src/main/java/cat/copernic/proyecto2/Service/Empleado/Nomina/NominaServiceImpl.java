@@ -10,7 +10,7 @@ import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import org.springframework.stereotype.Service;
-import cat.copernic.proyecto2.Dao.NominaDAO;
+import cat.copernic.proyecto2.DAO.NominaDAO;
 import cat.copernic.proyecto2.Domain.Administración.Nomina;
 import java.io.ByteArrayOutputStream;
 import org.springframework.beans.factory.annotation.Autowired;

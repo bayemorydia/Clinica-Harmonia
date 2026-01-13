@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <div th:replace="~{Reutilizable/layout :: head_general}"></div>
+    <title th:text="${trad.getTraduccion('usuario.desactivar.titulo')}">Confirmar Desactivación de Cuenta</title>
+</head>
+
+<body>
+    <div th:replace="~{Reutilizable/layout :: menu}"></div>
+
+    <main class="content">
+        <div class="container-fluid">
+
+            <div class="mb-4">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a th:href="@{/admin/usuarios}"
+                                th:text="${trad.getTraduccion('mod.admin.usuarios.titulo')}">Usuarios</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page"
+                            th:text="${trad.getTraduccion('usuario.desactivar.titulo')}">Desactivar</li>
+                    </ol>
+                </nav>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-xl-6 col-lg-8">
+                    <div class="card shadow-sm border-0" style="border-radius: 15px; overflow: hidden;">
+
+                        <div class="card-header bg-white border-0 py-4 px-4">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-warning bg-opacity-10 p-3 rounded-3 me-3">
+                                    <i class="bi bi-exclamation-triangle-fill text-warning fs-4"></i>
+                                </div>
+                                <div>
+                                    <h3 class="mb-0 fw-bold text-dark"
+                                        th:text="${trad.getTraduccion('usuario.desactivar.titulo')}">Confirmar Acción
+                                    </h3>
+                                    <p class="mb-0 text-muted small">Esta acción modificará el estado de acceso del usuario</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body p-4 p-md-5 text-center">
+                            <p class="lead fw-semibold text-dark mb-4">¿Estás seguro de que deseas desactivar esta cuenta de usuario?</p>
+
+                            <div class="bg-light p-4 rounded-4 border border-light-subtle mb-4">
+                                <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                                    style="width: 60px; height: 60px;">
+                                    <h4 class="mb-0 fw-bold" th:text="${#strings.substring(usuario.username,0,1).toUpperCase()}">U</h4>
+                                </div>
+                                <h5 class="fw-bold mb-1 text-dark" th:text="${usuario.username}">Username</h5>
+                                <p class="mb-0 text-muted small">
+                                    <span th:text="${usuario.empleado != null ? usuario.empleado.nombre + ' ' + usuario.empleado.apellidos : (usuario.paciente != null ? usuario.paciente.nombre + ' ' + usuario.paciente.apellidos : 'Usuario del Sistema')}"></span>
+                                </p>
+                            </div>
+
+                            <div class="alert alert-warning border-0 small mb-0 shadow-sm">
+                                <i class="bi bi-info-circle me-2"></i>
+                                <span th:text="${trad.getTraduccion('usuario.desactivar.aviso')}">
+                                    El usuario no podrá iniciar sesión, pero sus datos y registros históricos se mantendrán en el sistema.
+                                </span>
+                            </div>
+
+                            <form th:action="@{/admin/usuarios/desactivar}" method="post" class="mt-5">
+                                <input type="hidden" name="id" th:value="${usuario.id}" />
+
+                                <div class="d-flex justify-content-center gap-3">
+                                    <a th:href="@{/admin/usuarios}"
+                                        class="btn btn-light px-4 py-2 fw-bold text-secondary rounded-pill">
+                                        <span th:text="${trad.getTraduccion('btn.cancelar')}">Cancelar</span>
+                                    </a>
+                                    <button type="submit"
+                                        class="btn btn-warning px-4 py-2 fw-bold shadow-sm rounded-pill transition-all hover-lift">
+                                        <i class="bi bi-person-x-fill me-2"></i>
+                                        <span th:text="${trad.getTraduccion('btn.confirmar.desactivar')}">Sí, Desactivar Cuenta</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="card-footer bg-light bg-opacity-50 border-0 py-3 text-center">
+                            <small class="text-muted italic" th:text="${trad.getTraduccion('usuario.footer.seguridad')}">Módulo de Seguridad de Acceso</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{Reutilizable/layout :: scripts}"></div>
+
+    <style>
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .1) !important;
+        }
+        .transition-all {
+            transition: all 0.2s ease-in-out;
+        }
+        body {
+            background-color: #f8f9fa;
+        }
+    </style>
+</body>
+</html>

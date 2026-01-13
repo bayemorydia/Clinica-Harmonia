@@ -14,7 +14,12 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import cat.copernic.proyecto2.Domain.Persona.Usuario;
-
+import cat.copernic.proyecto2.Domain.Administración.Nomina;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
+import cat.copernic.proyecto2.Domain.Administración.Turno;
+import cat.copernic.proyecto2.Service.Empleado.Turno.TurnoService;
 @Controller
 @RequestMapping("/empleados")
 public class EmpleadoController {
@@ -31,10 +36,20 @@ public class EmpleadoController {
     @Autowired
     private UsuarioService usuarioService; // <-- Inyectamos tu UsuarioService
 
+
+    @Autowired
+    private TurnoService turnoService; // Nuevo servicio para turnos
+
+
     private void cargarRoles(Model model) {
         Pageable pageable = PageRequest.of(0, 200);
         model.addAttribute("roles", rolService.listarRoles(pageable).getContent());
     }
+
+    private void cargarTurnos(Model model) {
+        turnoService.CrearTurnos();
+        model.addAttribute("turnos", turnoService.listarTodos()); // ahora lista objetos Turno
+        }
 
     @GetMapping("")
     public String listarEmpleados(Model model) {
@@ -52,51 +67,72 @@ public class EmpleadoController {
         model.addAttribute("empleado", new Empleado());
         model.addAttribute("trad", traduccionService);
         cargarRoles(model);
+        cargarTurnos(model);
         return "empleado/añadir";
     }
 
-    @PostMapping("/guardar")
-    public String guardarEmpleado(
-            @Valid @ModelAttribute("empleado") Empleado empleado,
-            BindingResult result,
-            Model model) {
 
+
+    @PostMapping("/guardar")
+    public String guardarEmpleado(@Valid @ModelAttribute("empleado") Empleado empleado,
+                                  BindingResult result, Model model) {
         model.addAttribute("trad", traduccionService);
 
         if (result.hasErrors()) {
+            System.out.println("error aqui");
             cargarRoles(model);
+            cargarTurnos(model);
             return "empleado/añadir";
         }
 
         try {
-            // 1️⃣ Crear empleado
+            // 1. Crear el usuario (esto suele devolver el objeto Usuario guardado)
+            Usuario usuarioCreado = usuarioService.crearUsuarioPaciente(
+                    empleado.getNombre(), empleado.getApellidos(), empleado.getDni());
+
+            // 2. Vincular el usuario al empleado ANTES de guardar el empleado
+            empleado.setUsuario(usuarioCreado);
+
+            // 3. Llamar a crear UNA SOLA VEZ
             empleadoService.crear(empleado);
-
-            // 2️⃣ Crear usuario automáticamente
-            Usuario usuario = usuarioService.crearUsuarioPaciente(
-                    empleado.getNombre(),
-                    empleado.getApellidos(),
-                    empleado.getDni()
-            );
-
-            // 3️⃣ Asignar usuario al empleado y actualizar
-            empleado.setUsuario(usuario);
-            empleadoService.actualizar(empleado.getId(), empleado);
 
             return "redirect:/empleados";
         } catch (Exception e) {
-            model.addAttribute("error", e.getMessage());
+            model.addAttribute("error", "Error: " + e.getMessage());
             cargarRoles(model);
+            cargarTurnos(model);
             return "empleado/añadir";
         }
     }
+    @GetMapping("/empleado/{empleadoId}")
+    public String listarNominasEmpleado(
+            @PathVariable Long empleadoId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search,
+            Model model) {
 
+        Empleado empleado = empleadoService.obtenerPorId(empleadoId);
+        Page<Nomina> nominasPage = empleadoService.listarNominasPorEmpleado(empleadoId, search, page, size);
+        model.addAttribute("trad", traduccionService);
+
+        model.addAttribute("empleado", empleado);
+        model.addAttribute("nominas", nominasPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("size", size);
+        model.addAttribute("totalPages", nominasPage.getTotalPages());
+        model.addAttribute("totalElements", nominasPage.getTotalElements());
+        model.addAttribute("search", search);
+
+        return "empleado/nomina";
+    }
 
     @GetMapping("/editar")
     public String mostrarFormularioEditar(@RequestParam Long id, Model model) {
         model.addAttribute("empleado", empleadoService.obtenerPorId(id));
         model.addAttribute("trad", traduccionService);
         cargarRoles(model);
+        cargarTurnos(model);
         return "empleado/modificar";
     }
 
@@ -111,6 +147,8 @@ public class EmpleadoController {
 
         if (result.hasErrors()) {
             cargarRoles(model);
+            cargarTurnos(model);
+
             return "empleado/detalle";
         }
 
@@ -120,6 +158,8 @@ public class EmpleadoController {
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
             cargarRoles(model);
+            cargarTurnos(model);
+
             return "empleado/detalle";
         }
     }
@@ -129,7 +169,7 @@ public class EmpleadoController {
         model.addAttribute("empleado", empleadoService.obtenerPorId(id));
         model.addAttribute("trad", traduccionService);
         cargarRoles(model);
-
+        cargarTurnos(model);
         return "empleado/detalle";
     }
 
@@ -139,9 +179,17 @@ public class EmpleadoController {
 
     @GetMapping("/confirmarBaja/{id}")
     public String confirmarBaja(@PathVariable("id") Long id, Model model) {
-        model.addAttribute("empleado", empleadoService.obtenerPorId(id));
-        model.addAttribute("trad", traduccionService);
-        return "empleado/confirmarBajaEmpleado";
+
+      try {
+          model.addAttribute("empleado", empleadoService.obtenerPorId(id));
+          model.addAttribute("trad", traduccionService);
+          return "empleado/confirmarBajaEmpleado";
+
+      }catch (Exception e) {
+            System.out.println("DEBUG: Error crítico al procesar la baja: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return "redirect:/empleados";
     }
 
     @PostMapping("/baja/{id}")

@@ -2,12 +2,13 @@ package cat.copernic.proyecto2.Service.Empleado;
 
 import cat.copernic.proyecto2.Domain.Administración.Empleado;
 import cat.copernic.proyecto2.Domain.Persona.Rol;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
-
+import cat.copernic.proyecto2.Domain.Administración.Nomina;
 import java.util.List;
 
 public interface EmpleadoService {
-
     Empleado crear(Empleado empleado);
 
     Empleado actualizar(Long id, Empleado datos);
@@ -16,7 +17,7 @@ public interface EmpleadoService {
 
     void desactivarEmpleado(Long id);
 
-    void activarEmpleado(Long id); // ✅ nuevo
+    Empleado obtenerPorUsername(String username);
 
     Empleado obtenerPorId(Long id);
 
@@ -30,5 +31,6 @@ public interface EmpleadoService {
 
     List<Empleado> buscarPorNombreOApellidos(String termino);
 
-    int ContarEmpleados();
+    long ContarEmpleados();
+    Page<Nomina> listarNominasPorEmpleado(Long empleadoId, String search, int page, int size);
 }
