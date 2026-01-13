@@ -123,6 +123,13 @@
             </li>
 
             <li>
+                <a th:href="@{/citas}" class="nav-link">
+                    <i class="bi bi-calendar-check"></i>
+                    <span th:text="${trad.getTraduccion('mod.citas')}">Citas Médicas</span>
+                </a>
+            </li>
+
+            <li>
                 <a th:href="@{/medicamentos/listar}" class="nav-link">
                     <i class="bi bi-capsule"></i>
                     <span th:text="${trad.getTraduccion('mod.medicamentos')}">Medicamentos</span>

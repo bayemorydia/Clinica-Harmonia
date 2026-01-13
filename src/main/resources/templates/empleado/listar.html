@@ -1,113 +1,236 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Gestión de Empleados | Farmacia</title>
 
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+<head>
+    <div th:replace="~{Reutilizable/layout :: head_general}"></div>
+    <title th:text="${trad != null ? trad.getTraduccion('empleados.lista.titulo') : 'Lista de Empleados'}">Lista de Empleados</title>
+
+    <style>
+        .clickable-row {
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .clickable-row:hover {
+            background-color: rgba(0, 123, 255, 0.05) !important;
+        }
+
+        /* Estilos Paginación */
+        .page-link {
+            color: #6c757d;
+            border: none;
+            background: #f1f3f5;
+            margin: 0 3px;
+            border-radius: 8px !important;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
+        .page-item.active .page-link {
+            background-color: #0d6efd !important;
+            color: white !important;
+            box-shadow: 0 4px 10px rgba(13, 110, 253, 0.2);
+        }
+
+        .page-item.disabled .page-link {
+            background-color: #f8f9fa;
+            color: #dee2e6;
+        }
+
+        .select-paginacion-clean {
+            display: inline-block;
+            width: 75px;
+            padding: 0.375rem 1.75rem 0.375rem 0.75rem;
+            font-size: 0.85rem;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            appearance: none;
+            cursor: pointer;
+        }
+
+        .table-footer {
+            padding: 1.25rem 1.5rem;
+            background-color: #ffffff;
+            border-top: 1px solid #edf2f7;
+        }
+    </style>
 </head>
 
-<body class="bg-light">
+<body>
+<div th:replace="~{Reutilizable/layout :: menu}"></div>
 
-<div class="container mt-5">
-    <div class="card shadow border-0">
-        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
+<main class="content">
+    <div class="container-fluid">
+
+        <!-- CABECERA -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h1 class="h3 mb-0 text-primary fw-bold">
-                    <i class="bi bi-person-badge me-2"></i>Lista de Empleados
-                </h1>
-                <p class="text-muted small mb-0">Gestión de personal de la farmacia</p>
+                <h2 class="fw-bold text-dark mb-1" th:text="${trad.getTraduccion('empleados.lista.titulo')}">Lista de Empleados</h2>
+                <p class="text-muted small mb-0" th:text="${trad.getTraduccion('empleados.lista.subtitulo')}">Gestión de información y nómina</p>
             </div>
+            <a th:href="@{/nominas}" class="btn btn-outline-secondary rounded-pill px-4 fw-bold">
+                <i class="bi bi-people-fill me-2"></i>
+                Nominas
+            </a>
 
-            <a th:href="@{/empleados/nuevo}" class="btn btn-success shadow-sm">
-                <i class="bi bi-plus-circle me-1"></i> Añadir Empleado
+            <a th:href="@{/empleados/nuevo}" class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold">
+                <i class="bi bi-person-plus-fill me-2"></i>
+                <span th:text="${trad.getTraduccion('empleados.btn.anadir')}">Nuevo Empleado</span>
             </a>
         </div>
 
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-dark">
-                    <tr>
-                        <th class="ps-4">ID</th>
-                        <th>Nombre</th>
-                        <th>Apellidos</th>
-                        <th>Email</th>
-                        <th>Departamento</th>
-                        <th class="text-center">Acciones</th>
-                    </tr>
-                    </thead>
+        <!-- BUSCADOR -->
+        <div class="card shadow-sm border-0 mb-4" style="border-radius: 15px;">
+            <div class="card-body">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                    <input type="text" id="searchInput" class="form-control border-start-0 ps-0 shadow-none"
+                           th:placeholder="${trad.getTraduccion('empleados.placeholder.buscar')}" th:value="${query}">
+                </div>
+            </div>
+        </div>
 
-                    <tbody>
-                    <!-- Lista -->
-                    <tr th:each="empleado : ${empleados}">
-                        <td class="ps-4 fw-bold text-muted" th:text="${empleado.id}">1</td>
-                        <td th:text="${empleado.nombre}">Nombre</td>
-                        <td th:text="${empleado.apellidos}">Apellidos</td>
-                        <td th:text="${empleado.email}">email@x.com</td>
-                        <td th:text="${empleado.departamento}">Depto</td>
+        <!-- TABLA -->
+        <div class="card shadow-sm border-0" style="border-radius: 15px; overflow: hidden;">
+            <div class="card-body p-0" id="tablaContainer">
 
-                        <td class="text-center">
-                            <div class="btn-group" role="group" aria-label="Acciones">
-                                <!-- Ver -->
-                                <a th:href="@{/empleados/detalle/{id}(id=${empleado.id})}"
-                                   class="btn btn-sm btn-outline-primary" title="Ver detalles">
-                                    <i class="bi bi-eye"></i>
-                                </a>
+                <div th:fragment="tablaEmpleados">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4 py-3 border-0 text-secondary small fw-bold">NOMBRE COMPLETO</th>
+                                <th class="py-3 border-0 text-secondary small fw-bold">EMAIL</th>
+                                <th class="py-3 border-0 text-secondary small fw-bold">DEPARTAMENTO</th>
+                                <th class="py-3 border-0 text-secondary small fw-bold text-center">ESTADO</th>
+                                <th class="py-3 border-0 text-secondary small fw-bold text-center">ACCIONES</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:if="${#lists.isEmpty(empleados)}">
+                                <td colspan="5" class="text-center py-5 text-muted">No hay empleados registrados.</td>
+                            </tr>
+                            <tr th:each="empleado : ${empleados}" class="border-bottom clickable-row"
+                                th:data-href="@{'/empleados/detalle?id=' + ${empleado.id}}">
+                                <td class="ps-4 py-3">
+                                    <div class="fw-bold text-dark mb-0" th:text="${empleado.nombre} + ' ' + ${empleado.apellidos}">Nombre Apellido</div>
+                                </td>
+                                <td class="py-3 text-secondary" th:text="${empleado.email}">email@ejemplo.com</td>
+                                <td class="py-3 text-secondary" th:text="${empleado.departamento}">Departamento</td>
+                                <td class="py-3 text-center">
+                                    <span th:if="${empleado.activa}" class="badge rounded-pill bg-success-subtle text-success px-3 py-2" style="font-size: 0.75rem;">Activo</span>
+                                    <span th:if="${!empleado.activa}" class="badge rounded-pill bg-light text-secondary px-3 py-2" style="font-size: 0.75rem;">Inactivo</span>
+                                </td>
+                                <td class="py-3 text-center">
+                                    <a th:if="${empleado.activa}" th:href="@{'/empleados/confirmarBaja/' + ${empleado.id}}"
+                                       class="btn btn-sm btn-outline-danger rounded-pill px-3 me-1" onclick="event.stopPropagation();">
+                                        <i class="bi bi-person-x me-1"></i> (Dar de baja)
+                                    </a>
+                                    <a th:if="${!empleado.activa}" th:href="@{'/empleados/activar/' + ${empleado.id}}"
+                                       class="btn btn-sm btn-outline-success rounded-pill px-3 me-1" onclick="event.stopPropagation();">
+                                        <i class="bi bi-person-check me-1"></i> Activar
+                                    </a>
 
-                                <!-- Editar -->
-                                <a th:href="@{/empleados/editar/{id}(id=${empleado.id})}"
-                                   class="btn btn-sm btn-outline-warning" title="Editar">
-                                    <i class="bi bi-pencil"></i>
-                                </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
 
-                                <!-- Eliminar (sin th:onclick con Strings) -->
-                                <a th:href="@{/empleados/eliminar/{id}(id=${empleado.id})}"
-                                   class="btn btn-sm btn-outline-danger btn-delete"
-                                   title="Eliminar"
-                                   th:attr="data-nombre=${empleado.nombre},data-apellidos=${empleado.apellidos}">
-                                    <i class="bi bi-trash"></i>
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
+                    <!-- PAGINACIÓN -->
+                    <div class="table-footer d-flex justify-content-between align-items-center">
+                        <div class="text-muted small">
+                            <span class="fw-bold" th:text="${(currentPage * size) + 1}">1</span> a
+                            <span class="fw-bold" th:text="${(currentPage * size) + empleados.size()}">10</span>
+                            de <span class="fw-bold" th:text="${totalElements}">100</span> empleados
+                        </div>
 
-                    <!-- Vacío -->
-                    <tr th:if="${#lists.isEmpty(empleados)}">
-                        <td colspan="6" class="text-center py-4 text-muted">
-                            <i class="bi bi-info-circle me-2"></i> No hay empleados registrados.
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+                        <div class="d-flex align-items-center gap-4">
+                            <select id="pageSize" class="select-paginacion-clean shadow-none" onchange="updateTable(0)">
+                                <option value="10" th:selected="${size == 10}">10</option>
+                                <option value="20" th:selected="${size == 20}">20</option>
+                                <option value="50" th:selected="${size == 50}">50</option>
+                            </select>
+
+                            <nav>
+                                <ul class="pagination pagination-sm mb-0">
+                                    <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                                        <a class="page-link" href="javascript:void(0)" th:onclick="'changePage(' + (${currentPage} - 1) + ')'">
+                                            <i class="bi bi-chevron-left"></i>
+                                        </a>
+                                    </li>
+                                    <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages > 0 ? totalPages - 1 : 0)}"
+                                        th:if="${totalPages > 0 and i >= currentPage - 1 and i <= currentPage + 1}"
+                                        th:classappend="${i == currentPage} ? 'active'">
+                                        <a class="page-link" href="javascript:void(0)" th:onclick="'changePage(' + ${i} + ')'" th:text="${i + 1}">1</a>
+                                    </li>
+                                    <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
+                                        <a class="page-link" href="javascript:void(0)" th:onclick="'changePage(' + (${currentPage} + 1) + ')'">
+                                            <i class="bi bi-chevron-right"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                    <input type="hidden" id="hiddenTotalPages" th:value="${totalPages}">
+                </div>
             </div>
         </div>
     </div>
+</main>
 
-    <div class="mt-4">
-        <a th:href="@{/}" class="btn btn-link text-decoration-none text-secondary">
-            <i class="bi bi-arrow-left"></i> Volver al Inicio
-        </a>
-    </div>
-</div>
+<div th:replace="~{Reutilizable/layout :: scripts}"></div>
 
-<script>
-    // Confirmación de eliminar segura (Thymeleaf no mete Strings dentro de onclick)
+<script th:inline="javascript">
     document.addEventListener("DOMContentLoaded", () => {
-        document.querySelectorAll(".btn-delete").forEach(btn => {
-            btn.addEventListener("click", (ev) => {
-                const nombre = btn.dataset.nombre || "";
-                const apellidos = btn.dataset.apellidos || "";
-                const ok = confirm(`¿Seguro que quieres borrar a ${nombre} ${apellidos}?`);
-                if (!ok) ev.preventDefault();
-            });
+        initTableEvents();
+        let searchTimeout;
+        const searchInput = document.getElementById('searchInput');
+
+        searchInput.addEventListener('input', () => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => updateTable(0), 400);
         });
     });
-</script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    function initTableEvents() {
+        document.querySelectorAll(".clickable-row").forEach(row => {
+            row.addEventListener("click", function (e) {
+                if (e.target.closest('button') || e.target.closest('a')) {
+                    return;
+                }
+                window.location.href = this.getAttribute("data-href");
+            });
+        });
+    }
+
+    function updateTable(page = 0) {
+        const query = document.getElementById('searchInput').value;
+        const size = document.getElementById('pageSize').value;
+        const container = document.getElementById('tablaContainer');
+
+        fetch(`/empleados/search?query=${encodeURIComponent(query)}&page=${page}&size=${size}`)
+            .then(response => response.text())
+            .then(html => {
+                container.innerHTML = html;
+                initTableEvents();
+            })
+            .catch(err => console.error("Error actualizando la tabla:", err));
+    }
+
+    function changePage(page) {
+        const totalPagesInput = document.getElementById('hiddenTotalPages');
+        const totalPages = totalPagesInput ? parseInt(totalPagesInput.value) : 0;
+
+        if (page < 0 || page >= totalPages) return;
+        updateTable(page);
+    }
+</script>
 </body>
 </html>
