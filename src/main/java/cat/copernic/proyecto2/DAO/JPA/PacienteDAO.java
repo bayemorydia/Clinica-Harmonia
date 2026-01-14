@@ -1,4 +1,4 @@
-package cat.copernic.proyecto2.DAO;
+package cat.copernic.proyecto2.DAO.JPA;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

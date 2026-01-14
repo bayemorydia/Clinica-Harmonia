@@ -1,20 +1,15 @@
 package cat.copernic.proyecto2.Controller;
 
 import cat.copernic.proyecto2.Domain.Farmacia.Proveedor;
-import cat.copernic.proyecto2.Domain.Persona.Usuario;
 import cat.copernic.proyecto2.Service.Proveedor.ProveedorService;
 import cat.copernic.proyecto2.Service.Traduccion.TraduccionService;
 import cat.copernic.proyecto2.Service.Usuario.Proveedor.UsuarioProveedorService;
-
 import jakarta.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.transaction.annotation.Transactional;
-
 
 @Controller
 @RequestMapping("/proveedores")

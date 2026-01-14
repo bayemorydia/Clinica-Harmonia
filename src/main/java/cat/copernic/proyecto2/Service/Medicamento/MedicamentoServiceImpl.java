@@ -1,6 +1,6 @@
 package cat.copernic.proyecto2.Service.Medicamento;
 
-import cat.copernic.proyecto2.DAO.MedicamentoDAO;
+import cat.copernic.proyecto2.DAO.JPA.MedicamentoDAO;
 import cat.copernic.proyecto2.Domain.Farmacia.Medicamento;
 
 import java.util.List;

@@ -1,6 +1,6 @@
 package cat.copernic.proyecto2.Service.Proveedor;
 
-import cat.copernic.proyecto2.DAO.ProveedorDAO;
+import cat.copernic.proyecto2.DAO.JPA.ProveedorDAO;
 import cat.copernic.proyecto2.Domain.Farmacia.Proveedor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

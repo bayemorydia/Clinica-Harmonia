@@ -3,7 +3,8 @@ package cat.copernic.proyecto2.Service.Empleado;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import cat.copernic.proyecto2.DAO.EmpleadoDAO;
+
+import cat.copernic.proyecto2.DAO.JPA.EmpleadoDAO;
 import cat.copernic.proyecto2.Domain.Administración.Empleado;
 import cat.copernic.proyecto2.Domain.Persona.Rol;
 import org.springframework.transaction.annotation.Transactional;

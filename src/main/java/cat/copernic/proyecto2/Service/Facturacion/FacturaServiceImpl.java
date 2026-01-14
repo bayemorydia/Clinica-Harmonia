@@ -1,6 +1,6 @@
 package cat.copernic.proyecto2.Service.Facturacion;
 
-import cat.copernic.proyecto2.DAO.FacturaDAO;
+import cat.copernic.proyecto2.DAO.JPA.FacturaDAO;
 import cat.copernic.proyecto2.Domain.Facturacion.Factura;
 import cat.copernic.proyecto2.Domain.Facturacion.LineaFactura;
 import org.springframework.beans.factory.annotation.Autowired;

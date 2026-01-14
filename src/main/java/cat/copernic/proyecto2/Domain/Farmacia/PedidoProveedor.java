@@ -21,7 +21,7 @@ public class PedidoProveedor {
     private LocalDate fechaPedido;
     private LocalDate fechaEntregaEstimada;
 
-    private String estado; // PENDIENTE, RECIBIDO, CANCELADO...
+    private String estado;
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
     private List<LineaPedidoProveedor> lineas = new ArrayList<>();

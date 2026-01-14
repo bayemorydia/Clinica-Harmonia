@@ -1,6 +1,6 @@
 package cat.copernic.proyecto2.Service.Rol;
 
-import cat.copernic.proyecto2.DAO.RolDAO;
+import cat.copernic.proyecto2.DAO.JPA.RolDAO;
 import cat.copernic.proyecto2.Domain.Persona.Rol;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

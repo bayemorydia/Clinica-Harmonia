@@ -1,4 +1,4 @@
-package cat.copernic.proyecto2.DAO;
+package cat.copernic.proyecto2.DAO.JPA;
 
 import cat.copernic.proyecto2.Domain.Administración.Empleado;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,9 +8,9 @@ import java.util.List;
 import cat.copernic.proyecto2.Domain.Persona.Rol;
 import java.util.Optional;
 import cat.copernic.proyecto2.Domain.Administración.Nomina;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
+
 public interface EmpleadoDAO extends JpaRepository<Empleado, Long> {
     @Query("SELECT e FROM  Empleado e WHERE e.rol  = : valor ")
     List<Empleado> obtenerPorRol(@Param("valor") Rol rol);

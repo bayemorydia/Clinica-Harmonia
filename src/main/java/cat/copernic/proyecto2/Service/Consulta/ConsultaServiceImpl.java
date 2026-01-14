@@ -1,6 +1,10 @@
 package cat.copernic.proyecto2.Service.Consulta;
 
-import cat.copernic.proyecto2.DAO.*;
+import cat.copernic.proyecto2.DAO.JPA.CitaDAO;
+import cat.copernic.proyecto2.DAO.JPA.EpisodioClinicoDAO;
+import cat.copernic.proyecto2.DAO.JPA.HistorialClinicoDAO;
+import cat.copernic.proyecto2.DAO.JPA.MedicamentoDAO;
+import cat.copernic.proyecto2.DAO.JPA.PacienteDAO;
 import cat.copernic.proyecto2.Domain.PersonalSanitario.*;
 import cat.copernic.proyecto2.Domain.Recepción.Cita;
 import cat.copernic.proyecto2.Domain.Recepción.EstadoCita;

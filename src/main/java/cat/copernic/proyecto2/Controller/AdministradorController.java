@@ -31,7 +31,6 @@ public class AdministradorController {
         model.addAttribute("totalPacientesActivos", pacienteService.countPacientesActivos());
         model.addAttribute("totalCitasActivas", citaService.countCitasActivas());
         model.addAttribute("totalEmpleados", empleadoService.ContarEmpleados());
-
         return "Administrador/home";
     }
 

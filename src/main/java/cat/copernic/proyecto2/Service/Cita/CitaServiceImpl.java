@@ -1,6 +1,6 @@
 package cat.copernic.proyecto2.Service.Cita;
 
-import cat.copernic.proyecto2.DAO.CitaDAO;
+import cat.copernic.proyecto2.DAO.JPA.CitaDAO;
 import cat.copernic.proyecto2.Domain.Recepción.Cita;
 import cat.copernic.proyecto2.Domain.Recepción.EstadoCita;
 import org.springframework.beans.factory.annotation.Autowired;

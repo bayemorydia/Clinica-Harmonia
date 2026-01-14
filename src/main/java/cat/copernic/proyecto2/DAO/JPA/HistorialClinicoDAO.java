@@ -1,4 +1,4 @@
-package cat.copernic.proyecto2.DAO;
+package cat.copernic.proyecto2.DAO.JPA;
 
 import cat.copernic.proyecto2.Domain.PersonalSanitario.HistorialClinico;
 import org.springframework.data.jpa.repository.JpaRepository;

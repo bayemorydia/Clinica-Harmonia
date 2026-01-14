@@ -15,11 +15,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import cat.copernic.proyecto2.Domain.Persona.Usuario;
 import cat.copernic.proyecto2.Domain.Administración.Nomina;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
-import cat.copernic.proyecto2.Domain.Administración.Turno;
 import cat.copernic.proyecto2.Service.Empleado.Turno.TurnoService;
+
 @Controller
 @RequestMapping("/empleados")
 public class EmpleadoController {

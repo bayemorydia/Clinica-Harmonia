@@ -10,7 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import cat.copernic.proyecto2.DAO.PacienteDAO;
+
+import cat.copernic.proyecto2.DAO.JPA.PacienteDAO;
 import cat.copernic.proyecto2.Domain.Persona.Usuario;
 import cat.copernic.proyecto2.Domain.Recepción.Paciente;
 import cat.copernic.proyecto2.Service.Imagen.ImagenService;
