@@ -8,4 +8,5 @@ public interface MedicamentoDAO extends JpaRepository<Medicamento, Long> {
     Medicamento findByNombre(String nombre);
     Medicamento findByCodigo(String codigo);
     List<Medicamento> findByNombreContainingIgnoreCase(String nombre);
+    long countByActivoTrue();
 }

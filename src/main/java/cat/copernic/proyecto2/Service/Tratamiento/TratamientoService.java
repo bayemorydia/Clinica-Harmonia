@@ -4,11 +4,10 @@ import cat.copernic.proyecto2.Domain.PersonalSanitario.Tratamiento;
 import java.util.List;
 
 public interface TratamientoService {
-    public List<Tratamiento> listarTratamientos();
-    public void guardar(Tratamiento tratamiento);
-    public void eliminar(Tratamiento tratamiento);
-    public Tratamiento encontrarTratamiento(Tratamiento tratamiento);
-    
-    // Método para validar duplicados
-    public boolean existeNombre(String nombre, Long idActual);
+    List<Tratamiento> listarTratamientos();
+    void guardar(Tratamiento tratamiento);
+    void eliminar(Tratamiento tratamiento);
+    Tratamiento encontrarTratamiento(Tratamiento tratamiento);
+    long countTratamientosActivos();
+    boolean existeNombre(String nombre, Long idActual);
 }

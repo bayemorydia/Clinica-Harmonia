@@ -1,7 +1,9 @@
 package cat.copernic.proyecto2.Controller;
 
 import cat.copernic.proyecto2.Service.Empleado.EmpleadoService;
+import cat.copernic.proyecto2.Service.Medicamento.MedicamentoService;
 import cat.copernic.proyecto2.Service.Traduccion.TraduccionService;
+import cat.copernic.proyecto2.Service.Tratamiento.TratamientoService;
 import cat.copernic.proyecto2.Service.Cita.CitaService;
 import cat.copernic.proyecto2.Service.Paciente.PacienteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,12 +27,20 @@ public class AdministradorController {
     @Autowired
     private CitaService citaService;
 
+    @Autowired
+    private MedicamentoService medicamentoService;
+
+    @Autowired
+    private TratamientoService tratamientoService;
+
     @GetMapping("")
     public String index(Model model) {
         model.addAttribute("trad", traduccionService);
         model.addAttribute("totalPacientesActivos", pacienteService.countPacientesActivos());
         model.addAttribute("totalCitasActivas", citaService.countCitasActivas());
         model.addAttribute("totalEmpleados", empleadoService.ContarEmpleados());
+        model.addAttribute("totalMedicamentosActivos", medicamentoService.countMedicamentosActivos());
+        model.addAttribute("totalTratamientosActivos", tratamientoService.countTratamientosActivos());
         return "Administrador/home";
     }
 

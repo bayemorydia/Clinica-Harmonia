@@ -5,12 +5,11 @@ import java.util.List;
 
 public interface MedicamentoService {
     
-    public List<Medicamento> listarMedicamentos();
-    public void guardar(Medicamento medicamento);
-    public void eliminar(Medicamento medicamento);
-    public Medicamento encontrarMedicamento(Medicamento medicamento);
-    
-    // NUEVOS MÉTODOS DE VALIDACIÓN
-    public boolean existeNombre(String nombre, Long idActual);
-    public boolean existeCodigo(String codigo, Long idActual);
+    List<Medicamento> listarMedicamentos();
+    void guardar(Medicamento medicamento);
+    void eliminar(Medicamento medicamento);
+    Medicamento encontrarMedicamento(Medicamento medicamento);
+    boolean existeNombre(String nombre, Long idActual);
+    boolean existeCodigo(String codigo, Long idActual);
+    long countMedicamentosActivos();
 }

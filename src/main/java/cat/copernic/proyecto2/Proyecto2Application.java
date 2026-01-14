@@ -10,7 +10,6 @@ import cat.copernic.proyecto2.DAO.Mongo.TraduccionDAO;
 
 @SpringBootApplication
 @EnableJpaRepositories(basePackages = "cat.copernic.proyecto2.DAO", excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = TraduccionDAO.class))
-// Configuramos MongoDB para que SOLO escanee la interfaz de Traduccion
 @EnableMongoRepositories(basePackages = "cat.copernic.proyecto2.DAO", includeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = TraduccionDAO.class))
 public class Proyecto2Application {
 

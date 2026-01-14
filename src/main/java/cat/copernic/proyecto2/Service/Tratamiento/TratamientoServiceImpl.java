@@ -57,4 +57,9 @@ public class TratamientoServiceImpl implements TratamientoService {
         // 3. Si existe y tiene otro ID -> Es duplicado
         return true;
     }
+
+    @Override
+    public long countTratamientosActivos() {
+        return tratamientoDAO.countByActivoTrue();
+    }
 }

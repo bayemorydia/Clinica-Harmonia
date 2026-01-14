@@ -9,4 +9,5 @@ public interface TratamientoDAO extends JpaRepository<Tratamiento, Long> {
     
     // Método estándar: Busca un tratamiento por su nombre exacto
     Tratamiento findByNombre(String nombre);
+    long countByActivoTrue();
 }

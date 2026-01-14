@@ -120,7 +120,7 @@
                             </div>
                             <div>
                                 <h6 class="text-muted mb-0 small uppercase fw-bold" th:text="${trad.getTraduccion('mod.tratamientos')}">TRATAMIENTOS</h6>
-                                <h3 class="fw-bold mb-0">--</h3>
+                                <h3 class="fw-bold mb-0" th:text="${totalTratamientosActivos}">0</h3>
                             </div>
                         </div>
                     </div>
@@ -136,7 +136,7 @@
                             </div>
                             <div>
                                 <h6 class="text-muted mb-0 small uppercase fw-bold" th:text="${trad.getTraduccion('mod.medicamentos')}">STOCK</h6>
-                                <h3 class="fw-bold mb-0">--</h3>
+                                <h3 class="fw-bold mb-0" th:text="${totalMedicamentosActivos}">0</h3>
                             </div>
                         </div>
                     </div>

@@ -73,4 +73,9 @@ public class MedicamentoServiceImpl implements MedicamentoService {
         
         return true;
     }
+
+    @Override
+    public long countMedicamentosActivos() {
+        return medicamentoDAO.countByActivoTrue();
+    }
 }
