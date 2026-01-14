@@ -19,58 +19,77 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     @Autowired
     private EmpleadoDAO empleadoDAO;
 
+    @Override
     public Empleado crear(Empleado empleado) {
+        if (empleado == null) {
+            throw new IllegalArgumentException("❌ El empleado no puede ser nulo");
+        }
+
         if (empleadoDAO.obtenerDNI(empleado.getDni()).isPresent()) {
-            throw new IllegalArgumentException("❌ Ya existe un Empleado con ese dni");
+            throw new IllegalArgumentException("❌ Ya existe un empleado con ese DNI");
         }
+
         if (empleadoDAO.obtenerEmail(empleado.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("❌ Ya existe un Empleado con ese email");
+            throw new IllegalArgumentException("❌ Ya existe un empleado con ese email");
         }
+
         if (empleadoDAO.obtenerTelefono(empleado.getTelefono()).isPresent()) {
-            throw new IllegalArgumentException("❌ Ya existe un Empleado con ese Telefono");
+            throw new IllegalArgumentException("❌ Ya existe un empleado con ese teléfono");
         }
 
         if (empleado.getTurno() == null) {
-            System.err.println("ERROR: Turno no asignado");
             throw new IllegalArgumentException("❌ El empleado debe tener un turno asignado");
         }
 
         if (empleado.getInicio() == null || empleado.getFin() == null) {
-            System.err.println("ERROR: Horario incompleto → Inicio: " + empleado.getInicio() + ", Fin: " + empleado.getFin());
             throw new IllegalArgumentException("❌ Debes asignar hora de inicio y fin");
         }
-        empleado.setId(null);
-        empleado.setFecha_alta(LocalDate.now());
-        empleado.setFecha_baja(null);
-        System.out.println("DEBUG: Guardando empleado → " + empleado);
+
+        if (empleado.getInicio().isAfter(empleado.getFin())) {
+            throw new IllegalArgumentException("❌ La hora de inicio no puede ser posterior a la hora de fin");
+        }
 
         try {
-            System.out.println("echo");
+            empleado.setId(null);
+            empleado.setFecha_alta(LocalDate.now());
+            empleado.setFecha_baja(null);
             return empleadoDAO.save(empleado);
         } catch (Exception e) {
-            System.err.println("ERROR: Fallo al guardar el empleado");
-            e.printStackTrace();
-            throw e;  // re-lanzamos para que el error llegue al log
+            throw new RuntimeException("❌ Error al guardar el empleado: " + e.getMessage(), e);
         }
     }
 
+    @Override
     public Empleado actualizar(Long id, Empleado datos) {
-        Empleado existente = empleadoDAO.findById(id)
-                .orElseThrow(() -> new RuntimeException("Empleado no encontrado con id " + id));
-
-        Empleado OtroDNI = empleadoDAO.obtenerDNI(datos.getDni()).orElse(null);
-        if (OtroDNI != null && !OtroDNI.getId().equals(id)) {
-            throw new IllegalArgumentException("❌ El Dni ya está en uso");
+        if (datos == null) {
+            throw new IllegalArgumentException("❌ Los datos del empleado no pueden ser nulos");
         }
 
-        Empleado OtroEmail = empleadoDAO.obtenerEmail(datos.getEmail()).orElse(null);
-        if (OtroEmail != null && !OtroEmail.getId().equals(id)) {
+        Empleado existente = empleadoDAO.findById(id)
+                .orElseThrow(() -> new RuntimeException("❌ Empleado no encontrado con id " + id));
+
+        // Validaciones únicas
+        Empleado otroDNI = empleadoDAO.obtenerDNI(datos.getDni()).orElse(null);
+        if (otroDNI != null && !otroDNI.getId().equals(id)) {
+            throw new IllegalArgumentException("❌ El DNI ya está en uso");
+        }
+
+        Empleado otroEmail = empleadoDAO.obtenerEmail(datos.getEmail()).orElse(null);
+        if (otroEmail != null && !otroEmail.getId().equals(id)) {
             throw new IllegalArgumentException("❌ El email ya está en uso");
         }
 
-        Empleado OtroTelefono = empleadoDAO.obtenerTelefono(datos.getTelefono()).orElse(null);
-        if (OtroEmail != null && !OtroTelefono.getId().equals(id)) {
-            throw new IllegalArgumentException("❌ El Telefono ya está en uso");
+        Empleado otroTelefono = empleadoDAO.obtenerTelefono(datos.getTelefono()).orElse(null);
+        if (otroTelefono != null && !otroTelefono.getId().equals(id)) {
+            throw new IllegalArgumentException("❌ El teléfono ya está en uso");
+        }
+
+        if (datos.getInicio() == null || datos.getFin() == null) {
+            throw new IllegalArgumentException("❌ Debes asignar hora de inicio y fin");
+        }
+
+        if (datos.getInicio().isAfter(datos.getFin())) {
+            throw new IllegalArgumentException("❌ La hora de inicio no puede ser posterior a la hora de fin");
         }
 
         // Campos editables
@@ -86,84 +105,127 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         existente.setInicio(datos.getInicio());
         existente.setFin(datos.getFin());
         existente.setTurno(datos.getTurno());
-        return empleadoDAO.save(existente);
+
+        try {
+            return empleadoDAO.save(existente);
+        } catch (Exception e) {
+            throw new RuntimeException("❌ Error al actualizar el empleado: " + e.getMessage(), e);
+        }
     }
 
+    @Override
     public void desactivarEmpleado(Long id) {
         Empleado existente = empleadoDAO.findById(id)
-                .orElseThrow(() -> new RuntimeException("Empleado no encontrado con id " + id));
+                .orElseThrow(() -> new RuntimeException("❌ Empleado no encontrado con id " + id));
 
-        // Borrado lógico: dar de baja
         existente.setActiva(false);
         existente.setFecha_baja(LocalDate.now());
-        empleadoDAO.save(existente);
+
+        try {
+            empleadoDAO.save(existente);
+        } catch (Exception e) {
+            throw new RuntimeException("❌ Error al desactivar el empleado: " + e.getMessage(), e);
+        }
     }
 
+    @Override
     public void eliminarEmpleado(Long id) {
         Empleado existente = empleadoDAO.findById(id)
-                .orElseThrow(() -> new RuntimeException("Empleado no encontrado con id " + id));
+                .orElseThrow(() -> new RuntimeException("❌ Empleado no encontrado con id " + id));
 
-        empleadoDAO.deleteById(id);
-
+        try {
+            empleadoDAO.deleteById(id);
+        } catch (Exception e) {
+            throw new RuntimeException("❌ Error al eliminar el empleado: " + e.getMessage(), e);
+        }
     }
 
+    @Override
     @Transactional(readOnly = true)
     public Empleado obtenerPorId(Long id) {
         return empleadoDAO.findById(id)
-                .orElseThrow(() -> new RuntimeException("Empleado no encontrado con id " + id));
+                .orElseThrow(() -> new RuntimeException("❌ Empleado no encontrado con id " + id));
     }
 
+    @Override
     @Transactional(readOnly = true)
     public List<Empleado> listarTodos() {
-        return empleadoDAO.findAll();
+        try {
+            return empleadoDAO.findAll();
+        } catch (Exception e) {
+            throw new RuntimeException("❌ Error al listar empleados: " + e.getMessage(), e);
+        }
     }
 
-    // ---------- EXTRAS (RF-01 / RF-02) ----------
-
+    @Override
     @Transactional(readOnly = true)
     public List<Empleado> listarActivos() {
-        return empleadoDAO.obtenerActivos();
+        try {
+            return empleadoDAO.obtenerActivos();
+        } catch (Exception e) {
+            throw new RuntimeException("❌ Error al listar empleados activos: " + e.getMessage(), e);
+        }
     }
 
+    @Override
     @Transactional(readOnly = true)
     public List<Empleado> buscarPorRol(Rol rol) {
-        return empleadoDAO.obtenerPorRol(rol);
+        try {
+            return empleadoDAO.obtenerPorRol(rol);
+        } catch (Exception e) {
+            throw new RuntimeException("❌ Error al buscar empleados por rol: " + e.getMessage(), e);
+        }
     }
 
+    @Override
     @Transactional(readOnly = true)
     public List<Empleado> buscarPorDepartamento(String departamento) {
-        return empleadoDAO.obtenerPorDepartamento(departamento);
+        try {
+            return empleadoDAO.obtenerPorDepartamento(departamento);
+        } catch (Exception e) {
+            throw new RuntimeException("❌ Error al buscar empleados por departamento: " + e.getMessage(), e);
+        }
     }
 
+    @Override
     @Transactional(readOnly = true)
     public List<Empleado> buscarPorNombreOApellidos(String termino) {
-        if (termino == null || termino.isBlank()) {
-            return listarTodos();
+        try {
+            if (termino == null || termino.isBlank()) {
+                return listarTodos();
+            }
+            return empleadoDAO.obtenerActivosPorNombreOApellido(termino);
+        } catch (Exception e) {
+            throw new RuntimeException("❌ Error al buscar empleados por nombre/apellido: " + e.getMessage(), e);
         }
-        return empleadoDAO.obtenerActivosPorNombreOApellido(
-                termino);
     }
 
+    @Override
     public long ContarEmpleados() {
-        return empleadoDAO.BuscarEmpleadosTotal();
+        try {
+            return empleadoDAO.BuscarEmpleadosTotal();
+        } catch (Exception e) {
+            throw new RuntimeException("❌ Error al contar empleados: " + e.getMessage(), e);
+        }
     }
 
-    // En EmpleadoServiceImpl.java
     @Override
     @Transactional(readOnly = true)
     public Empleado obtenerPorUsername(String username) {
         return empleadoDAO.findByUsuarioUsername(username)
-                .orElseThrow(() -> new RuntimeException("No se encontró un empleado para el usuario: " + username));
+                .orElseThrow(() -> new RuntimeException("❌ No se encontró un empleado para el usuario: " + username));
     }
-
 
     @Override
     public Page<Nomina> listarNominasPorEmpleado(Long empleadoId, String search, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        if (search == null || search.isEmpty()) {
-            search = null;
+        try {
+            if (search != null && search.isEmpty()) {
+                search = null;
+            }
+            return empleadoDAO.findByEmpleado(empleadoId, search, pageable);
+        } catch (Exception e) {
+            throw new RuntimeException("❌ Error al listar nóminas del empleado: " + e.getMessage(), e);
         }
-        return empleadoDAO.findByEmpleado(empleadoId, search, pageable);
     }
-
 }

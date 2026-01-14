@@ -19,17 +19,14 @@ public class LoginController {
             return "redirect:/admin";
         } else if (request.isUserInRole("ROLE_MEDICO")) {
             return "redirect:/medico/dashboard";
+        } else if (request.isUserInRole("ROLE_RRHH")) {
+            return "redirect:/RRHH/dashboard";
         }
-        
-        // ¡OJO! No redirijas a /login aquí. 
-        // Si llega aquí y no tiene roles, mándalo a una página de "acceso denegado" 
+
+        // ¡OJO! No redirijas a /login aquí.
+        // Si llega aquí y no tiene roles, mándalo a una página de "acceso denegado"
         // o a una página de inicio pública.
         return "redirect:/login?error=no-role";
     }
-    
-    // Si decides hacer un HTML propio para el login:
-    @GetMapping("/login")
-    public String login() {
-        return "login"; // busca templates/login.html
-    }
+
 }

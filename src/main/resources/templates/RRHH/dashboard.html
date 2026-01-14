@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <div sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layout :: head_general}"></div>
+    <title>Dashboard RRHH</title>
+</head>
+
+<body class="bg-light">
+<!-- Menú solo RRHH -->
+<div sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layout :: menu}"></div>
+
+<main class="content">
+    <div class="container-fluid py-4">
+        <div class="mb-4">
+            <h2 class="fw-bold text-dark mb-1">Dashboard RRHH</h2>
+            <p class="text-muted">Panel de control para gestionar empleados, bajas y nóminas.</p>
+        </div>
+
+        <div class="row g-4">
+            <!-- Total Empleados -->
+            <div class="col-lg-3 col-md-6">
+                <div class="card shadow-sm border-0 bg-primary text-white mb-4" style="border-radius: 15px;">
+                    <div class="card-body p-4 text-center">
+                        <i class="bi bi-people fs-1 mb-2"></i>
+                        <h6 class="text-white-50 text-uppercase small fw-bold">Total Empleados</h6>
+                        <h1 class="display-4 fw-bold mb-0" th:text="${totalEmpleados ?: 0}">0</h1>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empleados Activos -->
+            <div class="col-lg-3 col-md-6">
+                <div class="card shadow-sm border-0 bg-success text-white mb-4" style="border-radius: 15px;">
+                    <div class="card-body p-4 text-center">
+                        <i class="bi bi-person-check fs-1 mb-2"></i>
+                        <h6 class="text-white-50 text-uppercase small fw-bold">Empleados Activos</h6>
+                        <h1 class="display-4 fw-bold mb-0" th:text="${empleadosActivos ?: 0}">0</h1>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empleados Inactivos -->
+            <div class="col-lg-3 col-md-6">
+                <div class="card shadow-sm border-0 bg-danger text-white mb-4" style="border-radius: 15px;">
+                    <div class="card-body p-4 text-center">
+                        <i class="bi bi-person-x fs-1 mb-2"></i>
+                        <h6 class="text-white-50 text-uppercase small fw-bold">Empleados Inactivos</h6>
+                        <h1 class="display-4 fw-bold mb-0" th:text="${empleadosInactivos ?: 0}">0</h1>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nóminas Pendientes -->
+            <div class="col-lg-3 col-md-6">
+                <div class="card shadow-sm border-0 bg-warning text-dark mb-4" style="border-radius: 15px;">
+                    <div class="card-body p-4 text-center">
+                        <i class="bi bi-file-earmark-text fs-1 mb-2"></i>
+                        <h6 class="text-dark text-uppercase small fw-bold">Nóminas Pendientes</h6>
+                        <h1 class="display-4 fw-bold mb-0" th:text="${nominasPendientes ?: 0}">0</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Accesos Rápidos -->
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <a th:href="@{/empleados}" class="text-decoration-none">
+                    <div class="card shadow-sm border-0 p-4 mb-4 hover-lift" style="border-radius: 15px;">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-people fs-2 text-primary me-3"></i>
+                            <div>
+                                <h6 class="fw-bold mb-0">Gestionar Empleados</h6>
+                                <small class="text-muted">Agregar, editar o eliminar empleados</small>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-lg-4">
+                <a th:href="@{/empleados/bajas}" class="text-decoration-none">
+                    <div class="card shadow-sm border-0 p-4 mb-4 hover-lift" style="border-radius: 15px;">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-person-dash fs-2 text-warning me-3"></i>
+                            <div>
+                                <h6 class="fw-bold mb-0">Bajas de Empleados</h6>
+                                <small class="text-muted">Desactivar o revisar bajas recientes</small>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-lg-4">
+                <a th:href="@{/nominas}" class="text-decoration-none">
+                    <div class="card shadow-sm border-0 p-4 mb-4 hover-lift" style="border-radius: 15px;">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-file-earmark-text fs-2 text-success me-3"></i>
+                            <div>
+                                <h6 class="fw-bold mb-0">Nóminas</h6>
+                                <small class="text-muted">Generar y revisar nóminas</small>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<!-- Scripts solo para RRHH -->
+<div sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layout :: scripts}"></div>
+
+<style>
+    .hover-lift:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15) !important;
+    }
+</style>
+</body>
+</html>

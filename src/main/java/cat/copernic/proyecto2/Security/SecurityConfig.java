@@ -43,7 +43,8 @@ public class SecurityConfig {
                                                                                           // entrar aquí
                                                 .requestMatchers("/admin/**").hasRole("ADMINISTRADOR")
                                                 .requestMatchers("/medico/**").hasAnyRole("MEDICO", "ADMINISTRADOR")
-                                                .anyRequest().authenticated())
+                                                 .requestMatchers("/RRHH/**").hasAnyRole("RRHH")
+                                        .anyRequest().authenticated())
                                 .formLogin(form -> form
                                                 //.loginPage("/login") // Asegúrate de tener un login.html o quita esta
                                                                      // línea para usar el de defecto
