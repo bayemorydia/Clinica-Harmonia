@@ -105,7 +105,7 @@
             </li>
 
             <li>
-                <a th:href="@{/medico/perfil/{id}(id=${medicoLogueado.id})}" class="nav-link-med"
+                <a th:href="@{/medico/perfil/{id}(id=${medicoLogueado?.id})}" class="nav-link-med"
                     th:classappend="${activePage == 'perfil' ? 'active' : ''}">
                     <i class="bi bi-person-circle"></i>
                     <span th:text="${#authorization.expression('hasRole(''ADMINISTRADOR'')')} 

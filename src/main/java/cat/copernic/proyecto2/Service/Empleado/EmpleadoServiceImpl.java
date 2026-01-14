@@ -99,14 +99,6 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         empleadoDAO.save(existente);
     }
 
-    public void eliminarEmpleado(Long id) {
-        Empleado existente = empleadoDAO.findById(id)
-                .orElseThrow(() -> new RuntimeException("Empleado no encontrado con id " + id));
-
-        empleadoDAO.deleteById(id);
-
-    }
-
     @Transactional(readOnly = true)
     public Empleado obtenerPorId(Long id) {
         return empleadoDAO.findById(id)

@@ -16,9 +16,9 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Controller
 @RequestMapping("/nominas")
@@ -200,24 +200,32 @@ public class NominaController {
     }
 
 
-    @GetMapping("/DetalleNomina/{id}")
-    public String detalleNomina(@PathVariable("id") Long id, Model model) {
-        // Obtenemos la nómina por ID
+    @GetMapping("/DetalleNomina/{id}") // He puesto la d minúscula para evitar errores de URL
+    public String detalleNomina(@PathVariable("id") Long id, Model model, Authentication auth) {
+        // 1. Obtenemos la nómina por ID
         Nomina nomina = nominaService.findById(id);
         if (nomina == null) {
             model.addAttribute("error", "La nómina no existe");
-            return "redirect:/listarNominas";
+            return "redirect:/nominas";
         }
 
-        // Obtenemos el empleado relacionado
-        Empleado empleado = nomina.getEmpleado();
+        // 2. Obtenemos el empleado dueño de la nómina (para mostrar los datos en la tarjeta)
+        Empleado empleadoDueno = nomina.getEmpleado();
 
-        // Pasamos datos al modelo
+        // 3. SEGURIDAD PARA EL LAYOUT: Cargamos el usuario que está navegando
+        // Esto evita que el layoutMedico explote al buscar medicoLogueado.id
+        if (auth != null) {
+            Empleado usuarioNavegando = empleadoService.obtenerPorUsername(auth.getName());
+            model.addAttribute("medicoLogueado", usuarioNavegando);
+        }
+
+        // 4. Pasamos los datos al modelo
         model.addAttribute("nomina", nomina);
-        model.addAttribute("empleado", empleado);
+        model.addAttribute("empleado", empleadoDueno); // Es el empleado de la nómina
         model.addAttribute("trad", traduccionService);
+        model.addAttribute("activePage", "nominas");
 
-        return "Nomina/DetalleNomina"; // Thymeleaf
+        return "Nomina/detalleNomina"; 
     }
 
 }

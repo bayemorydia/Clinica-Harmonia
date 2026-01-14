@@ -50,6 +50,7 @@ public class Paciente {
 
     // Historial clínico
     @OneToOne(mappedBy = "paciente", cascade = CascadeType.ALL)
+    @ToString.Exclude //
     private HistorialClinico historial;
 
     // Citas

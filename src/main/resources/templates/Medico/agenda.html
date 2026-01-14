@@ -82,19 +82,21 @@
                                         </td>
                                         <td th:text="${cita.motivo}">Consulta</td>
                                         <td>
-                                            <span th:if="${cita.estado == 'PENDIENTE'}"
+                                            <span th:if="${cita.estado.name() == 'PROGRAMADA'}"
                                                 class="badge bg-warning text-dark rounded-pill px-3"
                                                 th:text="${trad.getTraduccion('agenda.estado.pendiente')}">Pendiente</span>
-                                            <span th:if="${cita.estado == 'COMPLETADA'}"
+                                            <span th:if="${cita.estado.name() == 'REALIZADA'}"
                                                 class="badge bg-success rounded-pill px-3"
                                                 th:text="${trad.getTraduccion('agenda.estado.completada')}">Completada</span>
                                         </td>
                                         <td class="text-end pe-4">
-                                            <a th:href="@{/pacientes/detalle/{id}(id=${cita.paciente.id})}"
-                                                class="btn btn-sm btn-outline-primary rounded-pill px-3">
-                                                <i class="bi bi-eye me-1"></i>
-                                                <span th:text="${trad.getTraduccion('agenda.btn.ver')}">Ver</span>
-                                            </a>
+                                            <div class="btn-group">
+                                                <a th:if="${cita.estado.name() == 'PROGRAMADA'}"
+                                                    th:href="@{/medico/atender/{id}(id=${cita.id})}"
+                                                    class="btn btn-sm btn-success rounded-pill px-3 me-2">
+                                                    <i class="bi bi-stethoscope me-1"></i> Atender
+                                                </a>
+                                            </div>
                                         </td>
                                     </tr>
                                     <tr th:if="${#lists.isEmpty(citas)}">

@@ -54,4 +54,10 @@ public interface CitaDAO extends JpaRepository<Cita, Long> {
                         @Param("inicio") LocalDateTime inicio,
                         @Param("fin") LocalDateTime fin,
                         @Param("estado") EstadoCita e);
+
+        List<Cita> findByProfesionalIdAndFechaHoraBetweenAndEstadoOrderByFechaHoraAsc(
+                        Long profesionalId,
+                        LocalDateTime inicio,
+                        LocalDateTime fin,
+                        EstadoCita estado);
 }

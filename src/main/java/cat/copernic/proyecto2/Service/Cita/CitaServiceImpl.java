@@ -9,7 +9,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -74,7 +73,8 @@ public class CitaServiceImpl implements CitaService {
             throw new Exception("El horario de 13:00 a 14:00 es la hora de almuerzo.");
         }
 
-        // 5. Validar solapamiento Paciente (Si es nueva cita o si se cambia la hora en una existente)
+        // 5. Validar solapamiento Paciente (Si es nueva cita o si se cambia la hora en
+        // una existente)
         Optional<Cita> confP = citaDAO.findByPacienteAndFechaHoraAndEstadoNot(
                 cita.getPaciente(), fechaNormalizada, EstadoCita.ANULADA);
         if (confP.isPresent() && (cita.getId() == null || !confP.get().getId().equals(cita.getId()))) {
@@ -105,32 +105,45 @@ public class CitaServiceImpl implements CitaService {
         }
     }
 
-    @Override @Transactional(readOnly = true)
-    public long countPacientesPendientesPorMedico(Long medicoId) { 
-        return citaDAO.countPacientesConCitasPendientes(medicoId, EstadoCita.PROGRAMADA); 
+    @Override
+    @Transactional(readOnly = true)
+    public long countPacientesPendientesPorMedico(Long medicoId) {
+        return citaDAO.countPacientesConCitasPendientes(medicoId, EstadoCita.PROGRAMADA);
     }
 
-    @Override @Transactional(readOnly = true)
-    public long countCitasHoyPorMedico(Long medicoId, LocalDateTime inicio, LocalDateTime fin) { 
-        return citaDAO.countByProfesionalIdAndFechaHoraBetweenAndEstadoNot(medicoId, inicio, fin, EstadoCita.ANULADA); 
+    @Override
+    @Transactional(readOnly = true)
+    public long countCitasHoyPorMedico(Long medicoId, LocalDateTime inicio, LocalDateTime fin) {
+        return citaDAO.countByProfesionalIdAndFechaHoraBetweenAndEstadoNot(medicoId, inicio, fin, EstadoCita.ANULADA);
     }
 
-    @Override @Transactional(readOnly = true)
-    public List<Cita> obtenerCitasPendientesMedico(Long medicoId) { 
-        return citaDAO.findByProfesionalIdAndEstadoOrderByFechaHoraAsc(medicoId, EstadoCita.PROGRAMADA); 
+    @Override
+    @Transactional(readOnly = true)
+    public List<Cita> obtenerCitasPendientesMedico(Long medicoId) {
+        return citaDAO.findByProfesionalIdAndEstadoOrderByFechaHoraAsc(medicoId, EstadoCita.PROGRAMADA);
     }
 
-    @Override @Transactional(readOnly = true)
+    @Override
+    @Transactional(readOnly = true)
     public Map<LocalDate, Long> obtenerResumenAgendaAnual(Long medicoId, int anio) {
         LocalDateTime inicio = LocalDateTime.of(anio, 1, 1, 0, 0);
         LocalDateTime fin = LocalDateTime.of(anio, 12, 31, 23, 59);
-        return citaDAO.findByProfesionalIdAndFechaHoraBetweenAndEstadoNotOrderByFechaHoraAsc(medicoId, inicio, fin, EstadoCita.ANULADA)
+        return citaDAO
+                .findByProfesionalIdAndFechaHoraBetweenAndEstadoNotOrderByFechaHoraAsc(medicoId, inicio, fin,
+                        EstadoCita.ANULADA)
                 .stream().collect(Collectors.groupingBy(c -> c.getFechaHora().toLocalDate(), Collectors.counting()));
     }
 
-    @Override @Transactional(readOnly = true)
+    @Override
+    @Transactional(readOnly = true)
     public List<Cita> obtenerCitasDia(Long medicoId, LocalDate fecha) {
-        return citaDAO.findByProfesionalIdAndFechaHoraBetweenAndEstadoNotOrderByFechaHoraAsc(medicoId, 
-                fecha.atStartOfDay(), fecha.atTime(23, 59, 59), EstadoCita.ANULADA);
+        // Cambiamos la lógica: en lugar de "EstadoNot ANULADA",
+        // usamos "Estado PROGRAMADA" para que desaparezcan las realizadas, anuladas y
+        // no presentados.
+        return citaDAO.findByProfesionalIdAndFechaHoraBetweenAndEstadoOrderByFechaHoraAsc(
+                medicoId,
+                fecha.atStartOfDay(),
+                fecha.atTime(23, 59, 59),
+                EstadoCita.PROGRAMADA);
     }
 }
