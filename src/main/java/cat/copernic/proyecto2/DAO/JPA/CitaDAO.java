@@ -16,14 +16,16 @@ import java.util.Optional;
 public interface CitaDAO extends JpaRepository<Cita, Long> {
 
         @Query("SELECT c FROM Cita c WHERE " +
-                        "LOWER(c.paciente.nombre) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+                        "(:estado IS NULL OR c.estado = :estado) AND " +
+                        "(LOWER(c.paciente.nombre) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
                         "LOWER(c.paciente.apellidos) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
-                        "LOWER(c.especialidad) LIKE LOWER(CONCAT('%', :query, '%'))")
-        Page<Cita> findByQuery(@Param("query") String query, Pageable pageable);
+                        "LOWER(c.especialidad) LIKE LOWER(CONCAT('%', :query, '%')))")
+        Page<Cita> findByFilters(@Param("query") String query,
+                        @Param("estado") EstadoCita estado,
+                        Pageable pageable);
 
         long countByEstadoNot(EstadoCita estado);
 
-        // Búsqueda para validaciones de solapamiento
         Optional<Cita> findByPacienteAndFechaHoraAndEstadoNot(Paciente p, LocalDateTime fh, EstadoCita e);
 
         Optional<Cita> findByProfesionalAndFechaHoraAndEstadoNot(Empleado m, LocalDateTime fh, EstadoCita e);
@@ -40,7 +42,6 @@ public interface CitaDAO extends JpaRepository<Cita, Long> {
         List<Cita> findByProfesionalIdAndFechaHoraBetweenAndEstadoNotOrderByFechaHoraAsc(
                         Long medicoId, LocalDateTime inicio, LocalDateTime fin, EstadoCita estado);
 
-        // Añade esto a tu CitaDAO.java
         @Query("SELECT c FROM Cita c WHERE c.paciente = :paciente AND c.estado != :estado " +
                         "AND c.fechaHora > :inicio AND c.fechaHora < :fin")
         Optional<Cita> buscarCitaSolapadaPaciente(@Param("paciente") Paciente p,

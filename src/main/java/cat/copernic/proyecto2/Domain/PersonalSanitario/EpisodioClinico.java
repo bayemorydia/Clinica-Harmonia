@@ -2,16 +2,18 @@ package cat.copernic.proyecto2.Domain.PersonalSanitario;
 
 import cat.copernic.proyecto2.Domain.Administración.Empleado;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
 @Entity
-@Table(name="EpisodioClinico")
+@Table(name = "EpisodioClinico")
 public class EpisodioClinico {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
@@ -25,16 +27,19 @@ public class EpisodioClinico {
     private LocalDateTime fecha;
 
     private String motivoConsulta;
-    private String diagnostico;
     private String observaciones;
 
-    @OneToMany(mappedBy = "episodio", cascade = CascadeType.ALL)
-    private List<PruebaMedica> pruebas;
+    @ManyToMany
+    @JoinTable(name = "episodio_pruebas", joinColumns = @JoinColumn(name = "episodio_id"), inverseJoinColumns = @JoinColumn(name = "prueba_id"))
+    private List<PruebaMedica> pruebasAsignadas = new ArrayList<>();
 
     @OneToMany(mappedBy = "episodio", cascade = CascadeType.ALL)
     private List<Tratamiento> tratamientos;
 
     @OneToMany(mappedBy = "episodio", cascade = CascadeType.ALL)
     private List<RecetaMedica> recetas;
-}
 
+    @ManyToOne
+    @JoinColumn(name = "diagnostico_id") // Esta es la FK en la tabla SQL
+    private Diagnostico diagnostico;
+}

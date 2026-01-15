@@ -2,79 +2,76 @@ package cat.copernic.proyecto2.Service.Medicamento;
 
 import cat.copernic.proyecto2.DAO.JPA.MedicamentoDAO;
 import cat.copernic.proyecto2.Domain.Farmacia.Medicamento;
-
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
 
-@Service 
+@Service
 public class MedicamentoServiceImpl implements MedicamentoService {
 
-    @Autowired 
+    @Autowired
     private MedicamentoDAO medicamentoDAO;
 
     @Override
-    @Transactional(readOnly = true) 
+    @Transactional(readOnly = true)
     public List<Medicamento> listarMedicamentos() {
-        return (List<Medicamento>) medicamentoDAO.findAll();
+        return medicamentoDAO.findAll();
     }
 
     @Override
-    @Transactional 
-    public void guardar(Medicamento medicamento) {
-        medicamentoDAO.save(medicamento);
+    @Transactional(readOnly = true)
+    public Page<Medicamento> getMedicamentosPaginados(String query, Boolean activo, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("nombre").ascending());
+        return medicamentoDAO.findByFilters(query, activo, pageable);
     }
 
     @Override
     @Transactional
-    public void eliminar(Medicamento medicamento) {
-        medicamentoDAO.delete(medicamento);
+    public void guardar(Medicamento medicamento) {
+        // Validación: solo obligamos precio > 0 si el producto se guarda como ACTIVO
+        if (medicamento.isActivo()) {
+            if (medicamento.getPrecioUnitario() == null || medicamento.getPrecioUnitario() <= 0) {
+                throw new IllegalArgumentException(
+                        "El precio del medicamento debe ser mayor que cero para estar activo.");
+            }
+        }
+        medicamentoDAO.save(medicamento);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Medicamento encontrarMedicamento(Medicamento medicamento) {
-        return medicamentoDAO.findById(medicamento.getId()).orElse(null);
+    public Medicamento encontrarMedicamento(Long id) {
+        return medicamentoDAO.findById(id).orElse(null);
     }
 
-    // --- NUEVA LÓGICA DE VALIDACIÓN ---
+    @Override
+    @Transactional
+    public void eliminarLogica(Long id) {
+        medicamentoDAO.findById(id).ifPresent(m -> {
+            m.setActivo(false);
+            medicamentoDAO.save(m);
+        });
+    }
+
+    @Override
+    @Transactional
+    public void activarLogica(Long id) {
+        medicamentoDAO.findById(id).ifPresent(m -> {
+            if (m.getPrecioUnitario() == null || m.getPrecioUnitario() <= 0) {
+                throw new RuntimeException("No se puede activar un producto sin un precio válido.");
+            }
+            m.setActivo(true);
+            medicamentoDAO.save(m);
+        });
+    }
 
     @Override
     @Transactional(readOnly = true)
-    public boolean existeNombre(String nombre, Long idActual) {
-        Medicamento encontrado = medicamentoDAO.findByNombre(nombre);
-        
-        // Si no existe, perfecto
-        if (encontrado == null) {
-            return false; 
-        }
-        
-        // Si existe, comprobamos si es el mismo que estamos editando
-        if (idActual != null && encontrado.getId().equals(idActual)) {
-            return false; // Es el mismo, no cuenta como duplicado
-        }
-        
-        return true; // Es otro registro distinto -> DUPLICADO
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public boolean existeCodigo(String codigo, Long idActual) {
-        Medicamento encontrado = medicamentoDAO.findByCodigo(codigo);
-        
-        if (encontrado == null) {
-            return false;
-        }
-        
-        if (idActual != null && encontrado.getId().equals(idActual)) {
-            return false;
-        }
-        
-        return true;
-    }
-
-    @Override
     public long countMedicamentosActivos() {
         return medicamentoDAO.countByActivoTrue();
     }

@@ -1,7 +1,6 @@
 package cat.copernic.proyecto2.Controller;
 
 import cat.copernic.proyecto2.Domain.Administración.Empleado;
-import cat.copernic.proyecto2.Domain.Administración.Nomina;
 import cat.copernic.proyecto2.Domain.Persona.Usuario;
 import cat.copernic.proyecto2.Service.Empleado.EmpleadoService;
 import cat.copernic.proyecto2.Service.Empleado.Turno.TurnoService;
@@ -17,10 +16,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * Controlador para la gestión de Empleados.
- * Implementa inyección por constructor mediante Lombok.
- */
 @Controller
 @RequestMapping("/empleados")
 @RequiredArgsConstructor
@@ -39,28 +34,63 @@ public class EmpleadoController {
         model.addAttribute("trad", traduccionService);
     }
 
-    @GetMapping
-    public String listarEmpleados(Model model) {
-        model.addAttribute("currentPage", 0);
-        model.addAttribute("size", 10);
-        model.addAttribute("empleados", empleadoService.listarTodos());
+    @GetMapping("")
+    public String listar(
+            @RequestParam(value = "query", required = false, defaultValue = "") String query,
+            @RequestParam(value = "activo", required = false) Boolean activo,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            Model model) {
+
+        Page<Empleado> empleadoPage = empleadoService.getEmpleadosPaginados(query, activo, page, size);
+
+        model.addAttribute("empleados", empleadoPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", empleadoPage.getTotalPages());
+        model.addAttribute("totalElements", empleadoPage.getTotalElements());
+        model.addAttribute("size", size);
+        model.addAttribute("query", query);
+        model.addAttribute("activo", activo);
         model.addAttribute("trad", traduccionService);
-        return "empleado/listar";
+
+        return "Empleado/listar";
+    }
+
+    @GetMapping("/search")
+    public String search(
+            @RequestParam(value = "query", required = false, defaultValue = "") String query,
+            @RequestParam(value = "activo", required = false) Boolean activo,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            Model model) {
+
+        Page<Empleado> empleadoPage = empleadoService.getEmpleadosPaginados(query, activo, page, size);
+
+        model.addAttribute("empleados", empleadoPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", empleadoPage.getTotalPages());
+        model.addAttribute("totalElements", empleadoPage.getTotalElements());
+        model.addAttribute("size", size);
+        model.addAttribute("query", query);
+        model.addAttribute("activo", activo);
+        model.addAttribute("trad", traduccionService);
+
+        return "Empleado/listar :: tablaEmpleados";
     }
 
     @GetMapping("/nuevo")
     public String mostrarFormularioAnadir(Model model) {
         model.addAttribute("empleado", new Empleado());
         cargarListasSoporte(model);
-        return "empleado/añadir";
+        return "Empleado/añadir";
     }
 
     @PostMapping("/guardar")
     public String guardarEmpleado(@Valid @ModelAttribute("empleado") Empleado empleado,
-                                 BindingResult result, Model model) {
+            BindingResult result, Model model) {
         if (result.hasErrors()) {
             cargarListasSoporte(model);
-            return "empleado/añadir";
+            return "Empleado/añadir";
         }
         try {
             Usuario usuarioCreado = usuarioService.crearUsuarioPaciente(
@@ -69,55 +99,9 @@ public class EmpleadoController {
             empleadoService.crear(empleado);
             return "redirect:/empleados";
         } catch (Exception e) {
-            model.addAttribute("error", "Error: " + e.getMessage());
-            cargarListasSoporte(model);
-            return "empleado/añadir";
-        }
-    }
-
-    @GetMapping("/empleado/{empleadoId}")
-    public String listarNominasEmpleado(
-            @PathVariable Long empleadoId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String search,
-            Model model) {
-        Page<Nomina> nominasPage = empleadoService.listarNominasPorEmpleado(empleadoId, search, page, size);
-        model.addAttribute("trad", traduccionService);
-        model.addAttribute("empleado", empleadoService.obtenerPorId(empleadoId));
-        model.addAttribute("nominas", nominasPage.getContent());
-        model.addAttribute("currentPage", page);
-        model.addAttribute("size", size);
-        model.addAttribute("totalPages", nominasPage.getTotalPages());
-        model.addAttribute("totalElements", nominasPage.getTotalElements());
-        model.addAttribute("search", search);
-        return "empleado/nomina";
-    }
-
-    @GetMapping("/editar")
-    public String mostrarFormularioEditar(@RequestParam Long id, Model model) {
-        model.addAttribute("empleado", empleadoService.obtenerPorId(id));
-        cargarListasSoporte(model);
-        return "empleado/modificar";
-    }
-
-    @PostMapping("/actualizar")
-    public String actualizarEmpleado(
-            @RequestParam Long id,
-            @Valid @ModelAttribute("empleado") Empleado empleado,
-            BindingResult result,
-            Model model) {
-        if (result.hasErrors()) {
-            cargarListasSoporte(model);
-            return "empleado/detalle";
-        }
-        try {
-            empleadoService.actualizar(id, empleado);
-            return "redirect:/empleados";
-        } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
             cargarListasSoporte(model);
-            return "empleado/detalle";
+            return "Empleado/añadir";
         }
     }
 
@@ -125,14 +109,31 @@ public class EmpleadoController {
     public String detalle(@RequestParam Long id, Model model) {
         model.addAttribute("empleado", empleadoService.obtenerPorId(id));
         cargarListasSoporte(model);
-        return "empleado/detalle";
+        return "Empleado/detalle";
+    }
+
+    @PostMapping("/actualizar")
+    public String actualizarEmpleado(@RequestParam Long id, @Valid @ModelAttribute("empleado") Empleado empleado,
+            BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            cargarListasSoporte(model);
+            return "Empleado/detalle";
+        }
+        try {
+            empleadoService.actualizar(id, empleado);
+            return "redirect:/empleados";
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            cargarListasSoporte(model);
+            return "Empleado/detalle";
+        }
     }
 
     @GetMapping("/confirmarBaja/{id}")
     public String confirmarBaja(@PathVariable Long id, Model model) {
         model.addAttribute("empleado", empleadoService.obtenerPorId(id));
         model.addAttribute("trad", traduccionService);
-        return "empleado/confirmarBajaEmpleado";
+        return "Empleado/confirmarBajaEmpleado";
     }
 
     @PostMapping("/baja/{id}")
@@ -141,12 +142,18 @@ public class EmpleadoController {
         return "redirect:/empleados";
     }
 
-    @GetMapping("/activar/{id}")
+    // CORRECCIÓN: Usamos PostMapping para activar y aseguramos la persistencia
+    @PostMapping("/activar/{id}")
     public String activarEmpleado(@PathVariable Long id) {
         Empleado emp = empleadoService.obtenerPorId(id);
-        emp.setFecha_baja(null);
-        emp.setActiva(true);
+        emp.setFecha_baja(null); // Eliminamos la fecha de baja
+        emp.setActiva(true); // Cambiamos el estado a true
+
+        // Usamos el método guardar/actualizar del servicio.
+        // Nota: Si el error persiste por validaciones de DNI,
+        // asegúrate de que los datos en la BD sean válidos (ej: 9 dígitos en teléfono).
         empleadoService.actualizar(id, emp);
+
         return "redirect:/empleados";
     }
 }

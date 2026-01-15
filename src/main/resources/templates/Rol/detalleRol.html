@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <div th:replace="~{Reutilizable/layout :: head_general}"></div>
+    <title th:text="${trad.getTraduccion('mod.roles')} + ': ' + ${rol.nombre}">Detalle Rol</title>
+</head>
+
+<body class="bg-light">
+    <div th:replace="~{Reutilizable/layout :: menu}"></div>
+
+    <main class="content">
+        <div class="container-fluid py-4">
+
+            <div th:if="${param.success}" class="alert alert-success alert-dismissible fade show rounded-pill px-4 shadow-sm border-0 mb-4">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <span>¡Datos del rol actualizados correctamente!</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show rounded-pill px-4 shadow-sm border-0 mb-4">
+                <i class="bi bi-exclamation-octagon-fill me-2"></i>
+                <span th:text="${error}">Error</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <form th:action="@{/roles/guardar}" th:object="${rol}" method="post">
+                <input type="hidden" th:field="*{id}" />
+                <input type="hidden" th:field="*{activo}" />
+
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <div class="card shadow-sm border-0 mb-4" style="border-radius: 15px; overflow: hidden;">
+                            <div class="card-header bg-primary py-4 border-0"></div>
+                            <div class="card-body text-center position-relative" style="margin-top: -50px;">
+                                <div class="bg-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow-sm"
+                                    style="width: 100px; height: 100px; border: 5px solid white;">
+                                    <i class="bi bi-shield-lock-fill text-primary" style="font-size: 2.5rem;"></i>
+                                </div>
+                                <h4 class="fw-bold mb-1 text-dark" th:text="${rol.nombre}">Nombre Rol</h4>
+                                <p class="text-muted small mb-3">Identificador de Seguridad</p>
+
+                                <div class="mt-2 pt-3 border-top mx-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="small text-muted">Estado:</span>
+                                        <span th:class="${rol.activo} ? 'badge rounded-pill bg-success-subtle text-success' : 'badge rounded-pill bg-danger-subtle text-danger'"
+                                              th:text="${rol.activo} ? 'Activo' : 'Inactivo'">
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-8">
+                        <div class="card shadow-sm border-0" style="border-radius: 15px;">
+                            <div class="card-body p-4 p-md-5">
+                                <div class="mb-5">
+                                    <h5 class="fw-bold mb-4 text-primary d-flex align-items-center">
+                                        <span class="bg-primary bg-opacity-10 p-2 rounded-3 me-3"><i class="bi bi-gear-fill"></i></span>
+                                        <span>Configuración del Rol</span>
+                                    </h5>
+                                    <div class="row g-3">
+                                        <div class="col-12">
+                                            <label class="form-label small fw-bold text-secondary">Nombre del Rol</label>
+                                            <input type="text" th:field="*{nombre}" class="form-control rounded-3 bg-light"
+                                                th:classappend="${#fields.hasErrors('nombre')} ? 'is-invalid'"
+                                                placeholder="Ej: ROLE_ADMIN">
+                                            <div class="invalid-feedback" th:errors="*{nombre}"></div>
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label small fw-bold text-secondary">Descripción</label>
+                                            <textarea th:field="*{descripcion}" class="form-control rounded-3 bg-light"
+                                                rows="4" placeholder="Describa las responsabilidades de este rol..."></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card-footer bg-white border-0 p-0 d-flex justify-content-between">
+                                    <a th:href="@{/roles/listar}" class="btn btn-outline-secondary rounded-pill px-4 shadow-sm">
+                                        <i class="bi bi-arrow-left me-2"></i>
+                                        <span th:text="${trad.getTraduccion('btn.volver')}">Volver</span>
+                                    </a>
+                                    <button type="submit" class="btn btn-primary rounded-pill px-5 shadow-lg">
+                                        <i class="bi bi-save me-2"></i>
+                                        <span th:text="${trad.getTraduccion('btn.guardarCambios')}">Guardar Cambios</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </main>
+    <div th:replace="~{Reutilizable/layout :: scripts}"></div>
+</body>
+</html>

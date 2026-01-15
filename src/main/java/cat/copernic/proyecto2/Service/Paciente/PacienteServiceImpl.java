@@ -16,7 +16,7 @@ import cat.copernic.proyecto2.Domain.Persona.Usuario;
 import cat.copernic.proyecto2.Domain.Recepción.Paciente;
 import cat.copernic.proyecto2.Service.Imagen.ImagenService;
 import cat.copernic.proyecto2.Service.Validaciones.ValidacionesService;
-import cat.copernic.proyecto2.Service.Usuario.UsuarioService; // Importación nueva
+import cat.copernic.proyecto2.Service.Usuario.UsuarioService;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -32,7 +32,7 @@ public class PacienteServiceImpl implements PacienteService {
     private ValidacionesService validacionesService;
 
     @Autowired
-    private UsuarioService usuarioService; // Inyectado para crear la cuenta de acceso
+    private UsuarioService usuarioService;
 
     @Override
     public List<Paciente> getAllPacientes() {
@@ -49,32 +49,21 @@ public class PacienteServiceImpl implements PacienteService {
         }
 
         if (paciente.getId() == null || paciente.getId() == 0) {
-            // --- Lógica para NUEVO paciente ---
             validacionesService.validarDocumentoIdentidad(paciente.getDni());
             validarDuplicados(paciente);
-
             paciente.setFechaAlta(LocalDate.now());
+            paciente.setActivo(true); // Asegurar que nace activo
 
-            // 1. Crear automáticamente el usuario de acceso al sistema
             Usuario nuevoUsuario = usuarioService.crearUsuarioPaciente(
-                    paciente.getNombre(),
-                    paciente.getApellidos(),
-                    paciente.getDni());
-
-            // 2. Vincular el usuario creado con el paciente
+                    paciente.getNombre(), paciente.getApellidos(), paciente.getDni());
             paciente.setUsuario(nuevoUsuario);
 
-            if (nombreImagenNueva != null) {
-                paciente.setRutaFoto(nombreImagenNueva);
-            } else {
-                paciente.setRutaFoto("default-user.png");
-            }
+            paciente.setRutaFoto(nombreImagenNueva != null ? nombreImagenNueva : "default-user.png");
         } else {
-            // --- Lógica para EDITAR paciente ---
             Paciente existente = pacienteDAO.findById(paciente.getId()).orElse(null);
             if (existente != null) {
                 paciente.setFechaAlta(existente.getFechaAlta());
-                paciente.setUsuario(existente.getUsuario()); // Mantener el usuario actual
+                paciente.setUsuario(existente.getUsuario());
 
                 if (!existente.getDni().equals(paciente.getDni())) {
                     validacionesService.validarDocumentoIdentidad(paciente.getDni());
@@ -93,15 +82,9 @@ public class PacienteServiceImpl implements PacienteService {
     }
 
     private void validarDuplicados(Paciente paciente) {
-        if (pacienteDAO.existsByDni(paciente.getDni())) {
-            throw new RuntimeException("El DNI/NIE ya está registrado en el sistema");
-        }
-        if (pacienteDAO.existsByNumeroSeguridadSocial(paciente.getNumeroSeguridadSocial())) {
-            throw new RuntimeException("El número de Seguridad Social ya está registrado");
-        }
-        if (pacienteDAO.existsByEmail(paciente.getEmail())) {
-            throw new RuntimeException("El correo electrónico ya está registrado");
-        }
+        if (pacienteDAO.existsByDni(paciente.getDni())) throw new RuntimeException("DNI duplicado");
+        if (pacienteDAO.existsByNumeroSeguridadSocial(paciente.getNumeroSeguridadSocial())) throw new RuntimeException("SS duplicada");
+        if (pacienteDAO.existsByEmail(paciente.getEmail())) throw new RuntimeException("Email duplicado");
     }
 
     @Override
@@ -112,33 +95,19 @@ public class PacienteServiceImpl implements PacienteService {
     @Override
     @Transactional
     public void deletePaciente(Long id) {
-        Paciente p = pacienteDAO.findById(id).orElse(null);
+        Paciente p = findPacienteById(id);
         if (p != null) {
             p.setActivo(false);
-            // También desactivamos su acceso al sistema si tiene usuario
-            if (p.getUsuario() != null) {
-                p.getUsuario().setActivo(false);
-            }
+            if (p.getUsuario() != null) p.getUsuario().setActivo(false);
             pacienteDAO.save(p);
         }
     }
 
     @Override
     public String getEdadPaciente(Paciente paciente) {
-        if (paciente == null || paciente.getFechaNacimiento() == null) {
-            return "Fecha no disponible";
-        }
-        Period periodo = Period.between(paciente.getFechaNacimiento(), LocalDate.now());
-        if (periodo.getYears() >= 1) {
-            return periodo.getYears() + " " + (periodo.getYears() == 1 ? "año" : "años");
-        }
-        if (periodo.getMonths() >= 1) {
-            return periodo.getMonths() + " " + (periodo.getMonths() == 1 ? "mes" : "meses");
-        }
-        long dias = java.time.temporal.ChronoUnit.DAYS.between(paciente.getFechaNacimiento(), LocalDate.now());
-        if (dias <= 0)
-            return "0:recien_nacido";
-        return dias + " " + (dias == 1 ? "dia" : "dias");
+        if (paciente == null || paciente.getFechaNacimiento() == null) return "N/A";
+        Period p = Period.between(paciente.getFechaNacimiento(), LocalDate.now());
+        return p.getYears() + " años";
     }
 
     @Override
@@ -147,11 +116,8 @@ public class PacienteServiceImpl implements PacienteService {
     }
 
     @Override
-    public Page<Paciente> getPacientesPaginados(String query, int page, int size) {
+    public Page<Paciente> getPacientesPaginados(String query, Boolean activo, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("apellidos").ascending());
-        if (query == null || query.isEmpty()) {
-            return pacienteDAO.findAll(pageable);
-        }
-        return pacienteDAO.findByNombreOrDni(query, pageable);
+        return pacienteDAO.findByFilters(query, activo, pageable);
     }
 }

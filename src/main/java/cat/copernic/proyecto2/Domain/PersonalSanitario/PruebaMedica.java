@@ -1,23 +1,34 @@
 package cat.copernic.proyecto2.Domain.PersonalSanitario;
 
-import java.time.LocalDateTime;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import java.io.Serializable;
 
 @Data
-@Table(name="PruebaMedica")
 @Entity
-public class PruebaMedica {
+@Table(name = "PruebaMedica")
+public class PruebaMedica implements Serializable {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private static final long serialVersionUID = 1L;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "episodio_id")
-    private EpisodioClinico episodio;
+    @NotBlank(message = "El código es obligatorio")
+    @Column(unique = true, nullable = false)
+    private String codigo;
 
-    private String tipo;
-    private LocalDateTime fecha;
-    private String resultados;
+    @NotBlank(message = "El nombre es obligatorio")
+    @Column(nullable = false)
+    private String nombre;
+
+    @NotNull(message = "El precio es obligatorio")
+    @Column(nullable = false)
+    private Double precio;
+
+    @Column(name = "activo")
+    private boolean activo = true;
 }
-

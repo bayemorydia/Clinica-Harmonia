@@ -1,15 +1,21 @@
 package cat.copernic.proyecto2.Service.Medicamento;
 
 import cat.copernic.proyecto2.Domain.Farmacia.Medicamento;
+import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface MedicamentoService {
-    
     List<Medicamento> listarMedicamentos();
+
+    Page<Medicamento> getMedicamentosPaginados(String query, Boolean activo, int page, int size);
+
     void guardar(Medicamento medicamento);
-    void eliminar(Medicamento medicamento);
-    Medicamento encontrarMedicamento(Medicamento medicamento);
-    boolean existeNombre(String nombre, Long idActual);
-    boolean existeCodigo(String codigo, Long idActual);
+
+    Medicamento encontrarMedicamento(Long id);
+
+    void eliminarLogica(Long id);
+
+    void activarLogica(Long id);
+
     long countMedicamentosActivos();
 }

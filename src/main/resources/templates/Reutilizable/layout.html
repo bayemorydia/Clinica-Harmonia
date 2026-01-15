@@ -7,14 +7,22 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
+        body,
+        html {
+            height: 100%;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
         .sidebar {
-            min-height: 100vh;
+            height: 100vh;
             background: #ffffff;
             border-right: 1px solid #dee2e6;
             width: 260px;
             position: fixed;
             overflow-y: auto;
             z-index: 1000;
+            overflow-y: auto;
         }
 
         .content {
@@ -22,6 +30,7 @@
             padding: 2rem;
             background: #f8f9fa;
             min-height: 100vh;
+            width: calc(100% - 260px);
         }
 
         .nav-link {
@@ -82,14 +91,18 @@
     <div class="sidebar d-flex flex-column p-3" th:fragment="menu">
         <div class="d-flex align-items-center mb-1 px-2">
             <i class="bi bi-hospital-fill text-primary fs-3 me-2"></i>
-            <span class="fs-5 fw-bold text-primary" th:text="${trad.getTraduccion('nav.clinica.nombre')}">Clínica Harmonia</span>
+            <span class="fs-5 fw-bold text-primary" th:text="${trad.getTraduccion('nav.clinica.nombre')}">Clínica
+                Harmonia</span>
         </div>
 
         <div class="lang-container">
             <select class="lang-select-minimal" onchange="changeLang(this.value)">
-                <option value="es" th:selected="${#locale.language == 'es'}" th:text="${trad.getTraduccion('lang.es')}">ESPAÑOL</option>
-                <option value="ca" th:selected="${#locale.language == 'ca'}" th:text="${trad.getTraduccion('lang.ca')}">CATALÀ</option>
-                <option value="en" th:selected="${#locale.language == 'en'}" th:text="${trad.getTraduccion('lang.en')}">ENGLISH</option>
+                <option value="es" th:selected="${#locale.language == 'es'}" th:text="${trad.getTraduccion('lang.es')}">
+                    ESPAÑOL</option>
+                <option value="ca" th:selected="${#locale.language == 'ca'}" th:text="${trad.getTraduccion('lang.ca')}">
+                    CATALÀ</option>
+                <option value="en" th:selected="${#locale.language == 'en'}" th:text="${trad.getTraduccion('lang.en')}">
+                    ENGLISH</option>
             </select>
         </div>
 
@@ -123,6 +136,13 @@
             </li>
 
             <li>
+                <a th:href="@{/pruebas/listar}" class="nav-link">
+                    <i class="bi bi-clipboard2-pulse"></i>
+                    <span th:text="${trad.getTraduccion('mod.tratamientos')}">Pruebas Médicas</span>
+                </a>
+            </li>
+
+            <li>
                 <a th:href="@{/medicamentos/listar}" class="nav-link">
                     <i class="bi bi-capsule"></i>
                     <span th:text="${trad.getTraduccion('mod.medicamentos')}">Medicamentos</span>
@@ -130,23 +150,16 @@
             </li>
 
             <li>
-                <a th:href="@{/tratamientos/listar}" class="nav-link">
-                    <i class="bi bi-clipboard2-pulse"></i>
-                    <span th:text="${trad.getTraduccion('mod.tratamientos')}">Tratamientos</span>
+                <a th:href="@{/diagnosticos}" class="nav-link">
+                    <i class="bi bi-journal-medical"></i>
+                    <span th:text="${trad.getTraduccion('mod.diagnosticos')}">Diagnósticos</span>
                 </a>
             </li>
 
             <div class="nav-divider" th:text="${trad.getTraduccion('nav.seccion.admin')}">Administración</div>
 
             <li>
-                <a th:href="@{/admin/facturas}" class="nav-link">
-                    <i class="bi bi-receipt"></i>
-                    <span th:text="${trad.getTraduccion('mod.facturacion.titulo')}">Facturación</span>
-                </a>
-            </li>
-
-            <li>
-                <a th:href="@{/admin/roles}" class="nav-link">
+                <a th:href="@{/roles}" class="nav-link">
                     <i class="bi bi-shield-lock"></i>
                     <span th:text="${trad.getTraduccion('mod.admin.roles.titulo')}">Roles</span>
                 </a>
@@ -156,6 +169,20 @@
                 <a th:href="@{/admin/usuarios}" class="nav-link">
                     <i class="bi bi-person-gear"></i>
                     <span th:text="${trad.getTraduccion('mod.admin.usuarios.titulo')}">Usuarios</span>
+                </a>
+            </li>
+
+            <li>
+                <a th:href="@{/admin/facturas}" class="nav-link">
+                    <i class="bi bi-receipt"></i>
+                    <span th:text="${trad.getTraduccion('mod.facturacion.titulo')}">Facturación</span>
+                </a>
+            </li>
+
+            <li>
+                <a th:href="@{/proveedores}" class="nav-link">
+                    <i class="bi bi-truck"></i>
+                    <span th:text="${trad.getTraduccion('mod.proveedores')}">Proveedores</span>
                 </a>
             </li>
         </ul>

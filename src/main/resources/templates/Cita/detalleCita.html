@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <div th:replace="~{Reutilizable/layout :: head_general}"></div>
-    <title th:text="${trad.getTraduccion('cita.detalle.titulo_pestana')} + ' - ' + ${cita.paciente.nombre}">Consulta de Cita</title>
+    <title th:text="${trad.getTraduccion('cita.detalle.titulo_pestana')} + ' - ' + ${cita.paciente.nombre}">Consulta de
+        Cita</title>
 </head>
+
 <body class="bg-light">
     <div th:replace="~{Reutilizable/layout :: menu}"></div>
 
@@ -17,11 +20,12 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <h5 class="fw-bold mb-0 text-primary">
                                     <i class="bi bi-info-circle-fill me-2"></i>
-                                    <span th:text="${trad.getTraduccion('cita.detalle.cabecera')}">Información Detallada de la Cita</span>
+                                    <span th:text="${trad.getTraduccion('cita.detalle.cabecera')}">Información Detallada
+                                        de la Cita</span>
                                 </h5>
-                                <span class="badge rounded-pill px-3 py-2" 
-                                      th:classappend="${cita.estado.name() == 'PROGRAMADA' ? 'bg-primary-subtle text-primary' : (cita.estado.name() == 'ANULADA' ? 'bg-danger-subtle text-danger' : 'bg-success-subtle text-success')}"
-                                      th:text="${trad.getTraduccion('citas.estado.' + cita.estado.name())}">
+                                <span class="badge rounded-pill px-3 py-2"
+                                    th:classappend="${cita.estado.name() == 'PROGRAMADA' ? 'bg-primary-subtle text-primary' : (cita.estado.name() == 'ANULADA' ? 'bg-danger-subtle text-danger' : 'bg-success-subtle text-success')}"
+                                    th:text="${trad.getTraduccion('citas.estado.' + cita.estado.name())}">
                                 </span>
                             </div>
                         </div>
@@ -30,23 +34,29 @@
                             <div class="row g-4">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('cita.label.paciente')}">Paciente</label>
+                                        <label class="form-label small fw-bold text-secondary text-uppercase"
+                                            th:text="${trad.getTraduccion('cita.label.paciente')}">Paciente</label>
                                         <div class="p-2 border-bottom bg-light bg-opacity-50 rounded">
                                             <i class="bi bi-person me-2 text-primary"></i>
-                                            <span th:text="${cita.paciente.nombre + ' ' + cita.paciente.apellidos}"></span>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="mb-3">
-                                        <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('cita.label.medico')}">Profesional Médico</label>
-                                        <div class="p-2 border-bottom bg-light bg-opacity-50 rounded">
-                                            <i class="bi bi-person-badge me-2 text-primary"></i>
-                                            <span th:text="${cita.profesional != null ? cita.profesional.nombre + ' ' + cita.profesional.apellidos : 'No asignado'}"></span>
+                                            <span
+                                                th:text="${cita.paciente.nombre + ' ' + cita.paciente.apellidos}"></span>
                                         </div>
                                     </div>
 
                                     <div class="mb-3">
-                                        <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('cita.label.especialidad')}">Especialidad</label>
+                                        <label class="form-label small fw-bold text-secondary text-uppercase"
+                                            th:text="${trad.getTraduccion('cita.label.medico')}">Profesional
+                                            Médico</label>
+                                        <div class="p-2 border-bottom bg-light bg-opacity-50 rounded">
+                                            <i class="bi bi-person-badge me-2 text-primary"></i>
+                                            <span
+                                                th:text="${cita.profesional != null ? cita.profesional.nombre + ' ' + cita.profesional.apellidos : 'No asignado'}"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold text-secondary text-uppercase"
+                                            th:text="${trad.getTraduccion('cita.label.especialidad')}">Especialidad</label>
                                         <div class="p-2 border-bottom bg-light bg-opacity-50 rounded">
                                             <i class="bi bi-stethoscope me-2 text-primary"></i>
                                             <span th:text="${cita.especialidad}"></span>
@@ -56,17 +66,23 @@
 
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('cita.label.fechahora')}">Fecha y Hora</label>
+                                        <label class="form-label small fw-bold text-secondary text-uppercase"
+                                            th:text="${trad.getTraduccion('cita.label.fechahora')}">Fecha y Hora</label>
                                         <div class="p-2 border-bottom bg-light bg-opacity-50 rounded">
                                             <i class="bi bi-calendar3 me-2 text-primary"></i>
-                                            <span th:text="${#temporals.format(cita.fechaHora, 'dd/MM/yyyy HH:mm')}"></span>
+                                            <span
+                                                th:text="${#temporals.format(cita.fechaHora, 'dd/MM/yyyy HH:mm')}"></span>
                                         </div>
                                     </div>
 
                                     <div class="mb-3">
-                                        <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('cita.label.motivo')}">Motivo de la Consulta</label>
-                                        <div class="p-2 border bg-light bg-opacity-50 rounded" style="min-height: 100px;">
-                                            <span th:text="${cita.motivo != null && !cita.motivo.isEmpty() ? cita.motivo : trad.getTraduccion('cita.motivo.vacio')}"></span>
+                                        <label class="form-label small fw-bold text-secondary text-uppercase"
+                                            th:text="${trad.getTraduccion('cita.label.motivo')}">Motivo de la
+                                            Consulta</label>
+                                        <div class="p-2 border bg-light bg-opacity-50 rounded"
+                                            style="min-height: 100px;">
+                                            <span
+                                                th:text="${cita.motivo != null && !cita.motivo.isEmpty() ? cita.motivo : trad.getTraduccion('cita.motivo.vacio')}"></span>
                                         </div>
                                     </div>
                                 </div>
@@ -78,12 +94,18 @@
                                     <span th:text="${trad.getTraduccion('btn.volver_listado')}">Volver al Listado</span>
                                 </a>
 
-                                <div th:if="${cita.estado.name() != 'ANULADA'}">
-                                    <a th:href="@{'/citas/confirmarEliminar/' + ${cita.id}}" 
-                                       class="btn btn-danger rounded-pill px-4 shadow-sm">
+                                <div th:if="${cita.estado.name() == 'PROGRAMADA'}">
+                                    <a th:href="@{'/citas/confirmarEliminar/' + ${cita.id}}"
+                                        class="btn btn-danger rounded-pill px-4 shadow-sm">
                                         <i class="bi bi-x-circle me-2"></i>
                                         <span th:text="${trad.getTraduccion('btn.anular_cita')}">Anular Cita</span>
                                     </a>
+                                </div>
+
+                                <div th:unless="${cita.estado.name() == 'PROGRAMADA'}" class="text-muted small italic">
+                                    <i class="bi bi-lock-fill me-1"></i>
+                                    <span th:text="${trad.getTraduccion('citas.detalle.no_modificable')}">Esta cita no
+                                        puede ser anulada en su estado actual.</span>
                                 </div>
                             </div>
                         </div>
@@ -95,4 +117,5 @@
 
     <div th:replace="~{Reutilizable/layout :: scripts}"></div>
 </body>
+
 </html>

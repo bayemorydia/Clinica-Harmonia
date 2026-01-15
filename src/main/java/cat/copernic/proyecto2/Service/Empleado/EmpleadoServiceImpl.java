@@ -1,18 +1,15 @@
 package cat.copernic.proyecto2.Service.Empleado;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
-import java.util.List;
-
-import cat.copernic.proyecto2.DAO.JPA.EmpleadoDAO;
-import cat.copernic.proyecto2.Domain.Administración.Empleado;
-import cat.copernic.proyecto2.Domain.Persona.Rol;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Page;
+import java.util.List;
+import cat.copernic.proyecto2.DAO.JPA.EmpleadoDAO;
+import cat.copernic.proyecto2.Domain.Administración.Empleado;
 import cat.copernic.proyecto2.Domain.Administración.Nomina;
+
 @Service
 @Transactional
 public class EmpleadoServiceImpl implements EmpleadoService {
@@ -20,61 +17,35 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     @Autowired
     private EmpleadoDAO empleadoDAO;
 
+    @Override
     public Empleado crear(Empleado empleado) {
-        if (empleadoDAO.obtenerDNI(empleado.getDni()).isPresent()) {
-            throw new IllegalArgumentException("❌ Ya existe un Empleado con ese dni");
-        }
-        if (empleadoDAO.obtenerEmail(empleado.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("❌ Ya existe un Empleado con ese email");
-        }
-        if (empleadoDAO.obtenerTelefono(empleado.getTelefono()).isPresent()) {
-            throw new IllegalArgumentException("❌ Ya existe un Empleado con ese Telefono");
-        }
+        if (empleadoDAO.findByDni(empleado.getDni()).isPresent())
+            throw new IllegalArgumentException("❌ Ya existe un Empleado con ese DNI");
+        if (empleadoDAO.findByEmail(empleado.getEmail()).isPresent())
+            throw new IllegalArgumentException("❌ Ya existe un Empleado con ese Email");
+        if (empleadoDAO.findByTelefono(empleado.getTelefono()).isPresent())
+            throw new IllegalArgumentException("❌ Ya existe un Empleado con ese Teléfono");
 
-        if (empleado.getTurno() == null) {
-            System.err.println("ERROR: Turno no asignado");
-            throw new IllegalArgumentException("❌ El empleado debe tener un turno asignado");
-        }
-
-        if (empleado.getInicio() == null || empleado.getFin() == null) {
-            System.err.println("ERROR: Horario incompleto → Inicio: " + empleado.getInicio() + ", Fin: " + empleado.getFin());
+        if (empleado.getTurno() == null)
+            throw new IllegalArgumentException("❌ Turno no asignado");
+        if (empleado.getInicio() == null || empleado.getFin() == null)
             throw new IllegalArgumentException("❌ Debes asignar hora de inicio y fin");
-        }
+
         empleado.setId(null);
         empleado.setFecha_alta(LocalDate.now());
-        empleado.setFecha_baja(null);
-        System.out.println("DEBUG: Guardando empleado → " + empleado);
-
-        try {
-            System.out.println("echo");
-            return empleadoDAO.save(empleado);
-        } catch (Exception e) {
-            System.err.println("ERROR: Fallo al guardar el empleado");
-            e.printStackTrace();
-            throw e;  // re-lanzamos para que el error llegue al log
-        }
+        empleado.setActiva(true);
+        return empleadoDAO.save(empleado);
     }
 
+    @Override
     public Empleado actualizar(Long id, Empleado datos) {
-        Empleado existente = empleadoDAO.findById(id)
-                .orElseThrow(() -> new RuntimeException("Empleado no encontrado con id " + id));
+        Empleado existente = obtenerPorId(id);
 
-        Empleado OtroDNI = empleadoDAO.obtenerDNI(datos.getDni()).orElse(null);
-        if (OtroDNI != null && !OtroDNI.getId().equals(id)) {
-            throw new IllegalArgumentException("❌ El Dni ya está en uso");
-        }
+        empleadoDAO.findByDni(datos.getDni()).ifPresent(e -> {
+            if (!e.getId().equals(id))
+                throw new IllegalArgumentException("❌ El DNI ya está en uso");
+        });
 
-        Empleado OtroEmail = empleadoDAO.obtenerEmail(datos.getEmail()).orElse(null);
-        if (OtroEmail != null && !OtroEmail.getId().equals(id)) {
-            throw new IllegalArgumentException("❌ El email ya está en uso");
-        }
-
-        Empleado OtroTelefono = empleadoDAO.obtenerTelefono(datos.getTelefono()).orElse(null);
-        if (OtroTelefono != null && !OtroTelefono.getId().equals(id)) {
-            throw new IllegalArgumentException("❌ El Telefono ya está en uso");
-        }
-
-        // Campos editables
         existente.setNombre(datos.getNombre());
         existente.setApellidos(datos.getApellidos());
         existente.setDni(datos.getDni());
@@ -90,73 +61,61 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         return empleadoDAO.save(existente);
     }
 
-    public void desactivarEmpleado(Long id) {
-        Empleado existente = empleadoDAO.findById(id)
-                .orElseThrow(() -> new RuntimeException("Empleado no encontrado con id " + id));
+    @Override
+    @Transactional
+    public void activarEmpleado(Long id) {
+        Empleado emp = empleadoDAO.findById(id)
+                .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));
+        emp.setActiva(true);
+        emp.setFecha_baja(null);
+        // Al estar dentro de @Transactional, JPA sincroniza el cambio automáticamente
+        // al finalizar el método
+        empleadoDAO.save(emp);
+    }
 
-        // Borrado lógico: dar de baja
+    @Override
+    public void desactivarEmpleado(Long id) {
+        Empleado existente = obtenerPorId(id);
         existente.setActiva(false);
         existente.setFecha_baja(LocalDate.now());
         empleadoDAO.save(existente);
     }
 
+    @Override
     @Transactional(readOnly = true)
     public Empleado obtenerPorId(Long id) {
-        return empleadoDAO.findById(id)
-                .orElseThrow(() -> new RuntimeException("Empleado no encontrado con id " + id));
+        return empleadoDAO.findById(id).orElseThrow(() -> new RuntimeException("Empleado no encontrado"));
     }
 
+    @Override
     @Transactional(readOnly = true)
     public List<Empleado> listarTodos() {
         return empleadoDAO.findAll();
     }
 
-    // ---------- EXTRAS (RF-01 / RF-02) ----------
-
+    @Override
     @Transactional(readOnly = true)
-    public List<Empleado> listarActivos() {
-        return empleadoDAO.obtenerActivos();
+    public Page<Empleado> getEmpleadosPaginados(String query, Boolean activo, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("apellidos").ascending());
+        // Se mapea 'activo' de la vista al campo 'activa' del DAO
+        return empleadoDAO.findByFilters(query, activo, pageable);
     }
 
-    @Transactional(readOnly = true)
-    public List<Empleado> buscarPorRol(Rol rol) {
-        return empleadoDAO.obtenerPorRol(rol);
-    }
-
-    @Transactional(readOnly = true)
-    public List<Empleado> buscarPorDepartamento(String departamento) {
-        return empleadoDAO.obtenerPorDepartamento(departamento);
-    }
-
-    @Transactional(readOnly = true)
-    public List<Empleado> buscarPorNombreOApellidos(String termino) {
-        if (termino == null || termino.isBlank()) {
-            return listarTodos();
-        }
-        return empleadoDAO.obtenerActivosPorNombreOApellido(
-                termino);
-    }
-
+    @Override
     public long ContarEmpleados() {
-        return empleadoDAO.BuscarEmpleadosTotal();
+        return empleadoDAO.countByActivaTrue();
     }
 
-    // En EmpleadoServiceImpl.java
     @Override
     @Transactional(readOnly = true)
     public Empleado obtenerPorUsername(String username) {
         return empleadoDAO.findByUsuarioUsername(username)
-                .orElseThrow(() -> new RuntimeException("No se encontró un empleado para el usuario: " + username));
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
     }
-
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Nomina> listarNominasPorEmpleado(Long empleadoId, String search, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        if (search == null || search.isEmpty()) {
-            search = null;
-        }
-        return empleadoDAO.findByEmpleado(empleadoId, search, pageable);
+        return empleadoDAO.findByEmpleado(empleadoId, search, PageRequest.of(page, size));
     }
-
 }

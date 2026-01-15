@@ -4,13 +4,13 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import java.io.Serializable;
-// Importamos Empleado, que es la clase que tienes en tus logs
-// Si Empleado está en otro paquete (ej. RecursosHumanos), ajusta este import:
-import cat.copernic.proyecto2.Domain.Administración.Empleado; 
+import java.time.LocalDate;
+import cat.copernic.proyecto2.Domain.Administración.Empleado;
+import cat.copernic.proyecto2.Domain.Recepción.Paciente;
 
 @Data
 @Entity
-@Table(name="Tratamiento")
+@Table(name = "Tratamiento")
 public class Tratamiento implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -19,27 +19,27 @@ public class Tratamiento implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "El nombre del tratamiento es obligatorio")
-    @Size(max = 100, message = "El nombre no puede superar los 100 caracteres")
-    private String nombre;
-
     @NotBlank(message = "La descripción no puede estar vacía")
-    @Size(max = 500, message = "La descripción no puede superar los 500 caracteres")
+    @Size(max = 1000, message = "La descripción no puede superar los 1000 caracteres")
+    @Column(length = 1000)
     private String descripcion;
 
-    @Positive(message = "El precio debe ser un valor positivo")
-    @NotNull(message = "El precio es obligatorio")
-    private Double precio;
+    private LocalDate fechaInicio;
+    private LocalDate fechaFin;
 
-    private boolean activo = true; 
-
-    // Relación con Episodio (para solucionar el error 'mappedBy episodio')
-    @ManyToOne
-    @JoinColumn(name = "episodio_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "episodio_id", nullable = false)
     private EpisodioClinico episodio;
 
-    // CORREGIDO: Usamos Empleado en lugar de PersonalSanitario
-    @ManyToOne
-    @JoinColumn(name = "empleado_id")
-    private Empleado empleado; 
+    /**
+     * Es recomendable incluir al paciente directamente (como en Prueba y Receta)
+     * para facilitar auditorías y consultas rápidas sin pasar por Episodio.
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "paciente_id", nullable = false)
+    private Paciente paciente;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "empleado_id", nullable = false)
+    private Empleado empleado;
 }

@@ -5,12 +5,13 @@ import cat.copernic.proyecto2.Domain.Administración.EstadoVacaciones;
 import cat.copernic.proyecto2.Domain.Administración.Vacaciones;
 import cat.copernic.proyecto2.Domain.PersonalSanitario.EpisodioClinico;
 import cat.copernic.proyecto2.Domain.PersonalSanitario.LineaReceta;
+import cat.copernic.proyecto2.Domain.PersonalSanitario.PruebaMedica;
 import cat.copernic.proyecto2.Domain.PersonalSanitario.Tratamiento;
 import cat.copernic.proyecto2.Domain.Recepción.Cita;
 import cat.copernic.proyecto2.Domain.Recepción.EstadoCita;
 import cat.copernic.proyecto2.Service.Traduccion.TraduccionService;
-import cat.copernic.proyecto2.Service.Tratamiento.TratamientoService;
 import cat.copernic.proyecto2.Service.Medicamento.MedicamentoService;
+import cat.copernic.proyecto2.Service.Prueba.PruebaService;
 import cat.copernic.proyecto2.Service.Cita.CitaService;
 import cat.copernic.proyecto2.Service.Consulta.ConsultaService;
 import cat.copernic.proyecto2.Service.Empleado.EmpleadoService;
@@ -53,8 +54,7 @@ public class MedicoController {
     private MedicamentoService medicamentoService;
 
     @Autowired
-    private TratamientoService tratamientoService;
-
+    private PruebaService pruebaService;
 
     // --- DASHBOARD ---
     @GetMapping("/dashboard")
@@ -180,7 +180,7 @@ public class MedicoController {
         // Usamos Authentication auth y el mismo servicio/método
         Empleado medico = empleadoService.obtenerPorUsername(auth.getName());
         model.addAttribute("listaMedicamentos", medicamentoService.listarMedicamentos());
-        model.addAttribute("listaTratamientos", tratamientoService.listarTratamientos());
+        model.addAttribute("listaTratamientos", pruebaService.listarPruebas());
 
         // 2. Obtener la cita
         Cita cita = citaService.findCitaById(id);
@@ -207,8 +207,11 @@ public class MedicoController {
             @ModelAttribute EpisodioClinico episodio,
             @ModelAttribute Tratamiento tratamiento,
             @RequestParam(value = "meds[]", required = false) List<String> meds,
-            @RequestParam(value = "dosis[]", required = false) List<String> dosis) {
+            @RequestParam(value = "dosis[]", required = false) List<String> dosis,
+            @RequestParam(value = "pruebaTipo[]", required = false) List<String> pruebaTipos,
+            @RequestParam(value = "pruebaResultado[]", required = false) List<String> pruebaResultados) {
 
+        // 1. Procesar Líneas de Receta
         List<LineaReceta> lineas = new ArrayList<>();
         if (meds != null) {
             for (int i = 0; i < meds.size(); i++) {
@@ -219,7 +222,21 @@ public class MedicoController {
             }
         }
 
-        consultaService.finalizarConsulta(citaId, episodio, tratamiento, lineas);
+        // 2. Procesar Pruebas Médicas
+        List<PruebaMedica> pruebas = new ArrayList<>();
+        if (pruebaTipos != null) {
+            for (int i = 0; i < pruebaTipos.size(); i++) {
+                if (!pruebaTipos.get(i).isBlank()) { // Solo si el tipo no está vacío
+                    PruebaMedica pm = new PruebaMedica();
+                    pm.setNombre(pruebaTipos.get(i));
+                    pruebas.add(pm);
+                }
+            }
+        }
+
+        // 3. Llamada al servicio con el nuevo parámetro de pruebas
+        consultaService.finalizarConsulta(citaId, episodio, tratamiento, pruebas, lineas);
+
         return "redirect:/medico/agenda?success=true";
     }
 
@@ -268,5 +285,38 @@ public class MedicoController {
         model.addAttribute("trad", traduccionService);
 
         return "Nomina/listarNominas :: tablaNominas";
+    }
+
+    @PostMapping("/atender/finalizar")
+    public String finalizarConsulta(@RequestParam Long citaId,
+            @ModelAttribute EpisodioClinico episodio,
+            @ModelAttribute Tratamiento tratamiento,
+            @RequestParam(required = false) List<Long> pruebasIds,
+            @RequestParam(required = false) List<String> medNombre,
+            @RequestParam(required = false) List<String> medDosis,
+            @RequestParam(required = false) List<Double> medPrecio) {
+
+        // 1. Cargar objetos de Pruebas desde los IDs del catálogo
+        List<PruebaMedica> pruebas = new ArrayList<>();
+        if (pruebasIds != null) {
+            pruebasIds.forEach(id -> pruebas.add(pruebaService.encontrarPrueba(id)));
+        }
+
+        // 2. Construir líneas de receta con el nuevo campo de precio
+        List<LineaReceta> lineas = new ArrayList<>();
+        if (medNombre != null) {
+            for (int i = 0; i < medNombre.size(); i++) {
+                LineaReceta lr = new LineaReceta();
+                lr.setMedicamento(medNombre.get(i));
+                lr.setDosis(medDosis.get(i));
+                lr.setPrecioUnitario(medPrecio.get(i)); // Capturamos el precio unitario
+                lineas.add(lr);
+            }
+        }
+
+        // 3. Llamar al servicio corregido
+        consultaService.finalizarConsulta(citaId, episodio, tratamiento, pruebas, lineas);
+
+        return "redirect:/medico/dashboard?success";
     }
 }

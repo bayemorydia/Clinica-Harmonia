@@ -3,9 +3,10 @@ package cat.copernic.proyecto2.Controller;
 import cat.copernic.proyecto2.Service.Empleado.EmpleadoService;
 import cat.copernic.proyecto2.Service.Medicamento.MedicamentoService;
 import cat.copernic.proyecto2.Service.Traduccion.TraduccionService;
-import cat.copernic.proyecto2.Service.Tratamiento.TratamientoService;
 import cat.copernic.proyecto2.Service.Cita.CitaService;
+import cat.copernic.proyecto2.Service.Diagnostico.DiagnosticoService;
 import cat.copernic.proyecto2.Service.Paciente.PacienteService;
+import cat.copernic.proyecto2.Service.Prueba.PruebaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,7 +32,10 @@ public class AdministradorController {
     private MedicamentoService medicamentoService;
 
     @Autowired
-    private TratamientoService tratamientoService;
+    private PruebaService pruebaService;
+
+    @Autowired
+    private DiagnosticoService diagnosticoService;
 
     @GetMapping("")
     public String index(Model model) {
@@ -40,7 +44,8 @@ public class AdministradorController {
         model.addAttribute("totalCitasActivas", citaService.countCitasActivas());
         model.addAttribute("totalEmpleados", empleadoService.ContarEmpleados());
         model.addAttribute("totalMedicamentosActivos", medicamentoService.countMedicamentosActivos());
-        model.addAttribute("totalTratamientosActivos", tratamientoService.countTratamientosActivos());
+        model.addAttribute("totalPruebasActivas", pruebaService.countPruebasActivas());
+        model.addAttribute("totalDiagnosticosActivas", diagnosticoService.countDiagnosticosActivos());
         return "Administrador/home";
     }
 

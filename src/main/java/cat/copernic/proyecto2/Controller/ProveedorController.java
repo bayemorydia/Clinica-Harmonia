@@ -6,6 +6,9 @@ import cat.copernic.proyecto2.Service.Traduccion.TraduccionService;
 import cat.copernic.proyecto2.Service.Usuario.Proveedor.UsuarioProveedorService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,124 +18,105 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/proveedores")
 public class ProveedorController {
 
-    @Autowired
-    private ProveedorService proveedorService;
-
-    @Autowired
-    private TraduccionService traduccionService;
-
-    @Autowired
-    private UsuarioProveedorService usuarioProveedorService; // ✅ Servicio específico para proveedores
-
-    private void cargarDatosExtra(Model model) {
-        // Para cargar datos extra si hace falta
-    }
+    @Autowired private ProveedorService proveedorService;
+    @Autowired private TraduccionService traduccionService;
+    @Autowired private UsuarioProveedorService usuarioProveedorService;
 
     @GetMapping("")
-    public String listarProveedores(Model model) {
-        model.addAttribute("currentPage", 0);
-        model.addAttribute("size", 10);
-        model.addAttribute("proveedores", proveedorService.listarTodos());
+    public String listar(@RequestParam(defaultValue = "") String query,
+                         @RequestParam(required = false) Boolean activo,
+                         @RequestParam(defaultValue = "0") int page,
+                         @RequestParam(defaultValue = "10") int size, Model model) {
+        
+        Page<Proveedor> provPage = proveedorService.listarPaginado(query, activo, 
+                PageRequest.of(page, size, Sort.by("nombre").ascending()));
+
+        model.addAttribute("proveedores", provPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", provPage.getTotalPages());
+        model.addAttribute("totalElements", provPage.getTotalElements());
+        model.addAttribute("size", size);
+        model.addAttribute("query", query);
+        model.addAttribute("activo", activo);
         model.addAttribute("trad", traduccionService);
         return "proveedor/listar";
     }
 
+    @GetMapping("/search")
+    public String search(@RequestParam(defaultValue = "") String query,
+                         @RequestParam(required = false) Boolean activo,
+                         @RequestParam(defaultValue = "0") int page,
+                         @RequestParam(defaultValue = "10") int size, Model model) {
+        
+        Page<Proveedor> provPage = proveedorService.listarPaginado(query, activo, 
+                PageRequest.of(page, size, Sort.by("nombre").ascending()));
+
+        model.addAttribute("proveedores", provPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", provPage.getTotalPages());
+        model.addAttribute("totalElements", provPage.getTotalElements());
+        model.addAttribute("size", size);
+        model.addAttribute("trad", traduccionService);
+        return "proveedor/listar :: tablaProveedores";
+    }
+
     @GetMapping("/nuevo")
-    public String mostrarFormularioAnadir(Model model) {
+    public String nuevo(Model model) {
         model.addAttribute("proveedor", new Proveedor());
         model.addAttribute("trad", traduccionService);
-        cargarDatosExtra(model);
         return "proveedor/añadir";
     }
 
     @PostMapping("/guardar")
-    public String guardarProveedor(
-            @Valid @ModelAttribute("proveedor") Proveedor proveedor,
-            BindingResult result,
-            Model model) {
-
-        model.addAttribute("trad", traduccionService);
-
+    public String guardar(@Valid @ModelAttribute Proveedor proveedor, BindingResult result, Model model) {
         if (result.hasErrors()) {
+            model.addAttribute("trad", traduccionService);
             return "proveedor/añadir";
         }
-
         try {
-            // 1️⃣ Crear usuario primero
-            String nombre = proveedor.getNombre().trim();
-            String cif = proveedor.getCif().trim();
-
-            var usuario = usuarioProveedorService.crearUsuarioProveedor(nombre, cif);
-
-            // 2️⃣ Asociar usuario al proveedor
+            var usuario = usuarioProveedorService.crearUsuarioProveedor(proveedor.getNombre(), proveedor.getCif());
             proveedor.setUsuario(usuario);
-
-            // 3️⃣ Guardar proveedor con usuario
             proveedorService.crearProveedor(proveedor);
-
             return "redirect:/proveedores";
-
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
+            model.addAttribute("trad", traduccionService);
             return "proveedor/añadir";
-        }
-    }
-
-
-    @GetMapping("/editar")
-    public String mostrarFormularioEditar(@RequestParam("id") Long id, Model model) {
-        model.addAttribute("proveedor", proveedorService.buscarPorID(id));
-        model.addAttribute("trad", traduccionService);
-        cargarDatosExtra(model);
-        return "proveedor/detalle";
-    }
-
-    @PostMapping("/actualizar")
-    public String actualizarProveedor(
-            @RequestParam("id") Long id,
-            @Valid @ModelAttribute("proveedor") Proveedor proveedor,
-            BindingResult result,
-            Model model) {
-
-        model.addAttribute("trad", traduccionService);
-
-        if (result.hasErrors()) {
-            cargarDatosExtra(model);
-            return "proveedor/detalle";
-        }
-
-        try {
-            proveedorService.actualizarProveedor(id, proveedor);
-            return "redirect:/proveedores";
-        } catch (Exception e) {
-            model.addAttribute("error", e.getMessage());
-            cargarDatosExtra(model);
-            return "proveedor/detalle";
         }
     }
 
     @GetMapping("/detalle")
-    public String detalle(@RequestParam("id") Long id, Model model) {
+    public String detalle(@RequestParam Long id, Model model) {
         model.addAttribute("proveedor", proveedorService.buscarPorID(id));
         model.addAttribute("trad", traduccionService);
-        return "proveedor/detalle";
+        return "proveedor/añadir";
+    }
+
+    @PostMapping("/actualizar")
+    public String actualizar(@RequestParam Long id, @Valid @ModelAttribute Proveedor proveedor, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("trad", traduccionService);
+            return "proveedor/detalle";
+        }
+        proveedorService.actualizarProveedor(id, proveedor);
+        return "redirect:/proveedores";
     }
 
     @GetMapping("/confirmarBaja")
-    public String confirmarBaja(@RequestParam("id") Long id, Model model) {
+    public String confirmarBaja(@RequestParam Long id, Model model) {
         model.addAttribute("proveedor", proveedorService.buscarPorID(id));
         model.addAttribute("trad", traduccionService);
         return "proveedor/confirmarBajaProveedor";
     }
 
     @PostMapping("/baja")
-    public String bajaProveedor(@RequestParam("id") Long id) {
-        proveedorService.DesactivarProveedor(id);
+    public String baja(@RequestParam Long id) {
+        proveedorService.desactivarProveedor(id);
         return "redirect:/proveedores";
     }
 
-    @GetMapping("/activar")
-    public String activarProveedor(@RequestParam("id") Long id) {
+    @PostMapping("/activar/{id}")
+    public String activar(@PathVariable Long id) {
         proveedorService.activarProveedor(id);
         return "redirect:/proveedores";
     }

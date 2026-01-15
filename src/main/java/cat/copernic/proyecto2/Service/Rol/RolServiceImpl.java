@@ -2,17 +2,19 @@ package cat.copernic.proyecto2.Service.Rol;
 
 import cat.copernic.proyecto2.DAO.JPA.RolDAO;
 import cat.copernic.proyecto2.Domain.Persona.Rol;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class RolServiceImpl implements RolService {
 
-    @Autowired
-    private RolDAO rolDAO;
+    private final RolDAO rolDAO;
 
     @Override
     @Transactional(readOnly = true)
@@ -21,38 +23,45 @@ public class RolServiceImpl implements RolService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public Page<Rol> buscarPorNombre(String query, Pageable pageable) {
-        return rolDAO.findByNombreContainingIgnoreCase(query, pageable);
-    }
-
-    @Override
     @Transactional
     public void guardar(Rol rol) {
-        boolean existe;
-        if (rol.getId() == null) {
-            existe = rolDAO.existsByNombreIgnoreCase(rol.getNombre());
-        } else {
-            existe = rolDAO.existsByNombreIgnoreCaseAndIdNot(rol.getNombre(), rol.getId());
-        }
-        if (existe) {
-            throw new RuntimeException("El nombre del rol ya existe.");
-        }
+        // Validación Case Sensitive y Duplicados
+        rolDAO.findByNombre(rol.getNombre()).ifPresent(existente -> {
+            if (rol.getId() == null || !existente.getId().equals(rol.getId())) {
+                throw new RuntimeException("Ya existe un rol con el nombre exacto: " + rol.getNombre());
+            }
+        });
         rolDAO.save(rol);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Rol buscarRol(Long id) {
-        return rolDAO.findById(id).orElse(null);
+    public Rol encontrarRol(Long id) {
+        return rolDAO.findById(id).orElseThrow(() -> new RuntimeException("Rol no encontrado"));
     }
 
     @Override
     @Transactional
-    public void cambiarEstado(Long id) {
+    public void desactivar(Long id) {
         rolDAO.findById(id).ifPresent(rol -> {
-            rol.setActivo(!rol.isActivo());
+            rol.setActivo(false);
             rolDAO.save(rol);
         });
+    }
+
+    @Override
+    @Transactional
+    public void activar(Long id) {
+        rolDAO.findById(id).ifPresent(rol -> {
+            rol.setActivo(true);
+            rolDAO.save(rol);
+        });
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Rol> getRolesPaginados(String query, Boolean activo, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("nombre").ascending());
+        return rolDAO.findByFilters(query, activo, pageable);
     }
 }

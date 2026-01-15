@@ -8,10 +8,10 @@ import java.util.List;
 
 @Data
 @Entity
-@Table(name="ProductoSanitario")
+@Table(name = "ProductoSanitario")
 public class Medicamento {
 
-    @Id 
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -31,8 +31,11 @@ public class Medicamento {
     @Min(value = 0, message = "El stock mínimo no puede ser inferior a 0")
     private int stockMinimo;
 
-    // Campo para borrado lógico (activar/desactivar)
-    private boolean activo = true; 
+    @NotNull(message = "El precio unitario es obligatorio")
+    @Positive(message = "El precio debe ser un número positivo mayor que cero") // VALIDACIÓN CLAVE
+    private Double precioUnitario;
+
+    private boolean activo = true;
 
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL)
     private List<LineaFactura> lineasFactura;

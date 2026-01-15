@@ -39,6 +39,18 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     @Transactional(readOnly = true)
+    public Page<Usuario> listarPaginado(String query, Boolean activo, Pageable pageable) {
+        // Si no tienes una Query personalizada en el DAO, puedes usar este enfoque:
+        if ((query == null || query.isEmpty()) && activo == null) {
+            return usuarioDAO.findAll(pageable);
+        }
+        // Suponiendo que añades el método findByFilters al UsuarioDAO igual que en
+        // Paciente
+        return usuarioDAO.findByFilters(query, activo, pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Usuario buscarUsuario(Long id) {
         return usuarioDAO.findById(id).orElse(null);
     }
