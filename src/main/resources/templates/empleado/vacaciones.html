@@ -1,15 +1,20 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
-    <th:block th:insert="~{Reutilizable/layoutMedico :: head_medico}"></th:block>
+    <div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: head_medico}"></div>
+    <div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: head_recepcion}"></div>
+    <div sec:authorize="!hasAnyRole('MEDICO', 'RECEPCIONISTA')" th:replace="~{Reutilizable/layout :: head_general}"></div>
+    
     <title th:text="${trad.getTraduccion('vacaciones.titulo')}">Vacaciones</title>
 </head>
 
 <body class="bg-light">
-    <th:block th:insert="~{Reutilizable/layoutMedico :: menu_medico}"></th:block>
+    <div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: menu_medico}"></div>
+    <div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: menu_recepcion}"></div>
+    <div sec:authorize="!hasAnyRole('MEDICO', 'RECEPCIONISTA')" th:replace="~{Reutilizable/layout :: menu}"></div>
 
-    <main class="content-medico">
+    <main th:class="${#authorization.expression('hasAnyRole(''ROLE_MEDICO'', ''ROLE_RECEPCIONISTA'')')} ? (${#authorization.expression('hasRole(''ROLE_MEDICO'')')} ? 'content-medico' : 'content-recepcion') : 'content'">
         <div class="container-fluid py-4">
 
             <div class="mb-4">
@@ -59,7 +64,7 @@
                                 <span th:text="${trad.getTraduccion('vacaciones.nueva.solicitud')}">Nueva
                                     Solicitud</span>
                             </h5>
-                            <form th:action="@{/medico/vacaciones/solicitar}" method="post">
+                            <form th:action="@{/vacaciones/solicitar}" method="post">
                                 <div class="mb-3">
                                     <label class="form-label small fw-bold text-muted"
                                         th:text="${trad.getTraduccion('vacaciones.label.inicio')}">FECHA INICIO</label>
@@ -140,12 +145,9 @@
 
                                         <td class="text-end pe-4">
                                             <div class="d-flex justify-content-end align-items-center">
-                                                <form
-                                                    th:if="${vaca.estado.name() == 'PENDIENTE' or vaca.estado.name() == 'RECHAZADA'}"
-                                                    th:action="@{/medico/vacaciones/cancelar/{id}(id=${vaca.id})}"
-                                                    method="post">
-                                                    <button type="submit" class="btn btn-link text-danger p-0 border-0"
-                                                        onclick="return confirm('¿Deseas eliminar esta solicitud?')">
+                                                <form th:if="${vaca.estado.toString() == 'PENDIENTE' or vaca.estado.toString() == 'RECHAZADA'}" 
+                                                      th:action="@{/vacaciones/cancelar/{id}(id=${vaca.id})}" method="post">
+                                                    <button type="submit" class="btn btn-link text-danger p-0 border-0" onclick="return confirm('¿Deseas eliminar esta solicitud?')">
                                                         <i class="bi bi-trash fs-5"></i>
                                                     </button>
                                                 </form>
@@ -172,7 +174,9 @@
         </div>
     </main>
 
-    <th:block th:insert="~{Reutilizable/layoutMedico :: scripts_medico}"></th:block>
+    <div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: scripts_medico}"></div>
+    <div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: scripts_recepcion}"></div>
+    <div sec:authorize="!hasAnyRole('MEDICO', 'RECEPCIONISTA')" th:replace="~{Reutilizable/layout :: scripts}"></div>
 </body>
 
 </html>

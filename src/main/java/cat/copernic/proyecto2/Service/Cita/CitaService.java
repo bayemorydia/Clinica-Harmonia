@@ -2,11 +2,11 @@ package cat.copernic.proyecto2.Service.Cita;
 
 import cat.copernic.proyecto2.Domain.Recepción.Cita;
 import cat.copernic.proyecto2.Domain.Recepción.EstadoCita;
+import org.springframework.data.domain.Page;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import org.springframework.data.domain.Page;
 
 public interface CitaService {
     Page<Cita> getCitasPaginadas(String query, EstadoCita estado, int page, int size);
@@ -28,4 +28,8 @@ public interface CitaService {
     Map<LocalDate, Long> obtenerResumenAgendaAnual(Long medicoId, int anio);
 
     List<Cita> obtenerCitasDia(Long medicoId, LocalDate fecha);
+
+    // --- NUEVOS: Métodos para Recepción (Globales) ---
+    List<Cita> listarCitasDeHoyGlobal();
+    List<Cita> listarCitasPorDiaGlobal(LocalDate fecha);
 }

@@ -2,18 +2,17 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
+    <div sec:authorize="hasAnyRole('ADMINISTRADOR', 'MEDICO')" th:replace="~{Reutilizable/layout :: head_general}"></div>
+    <div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: head_recepcion}"></div>
     <div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: head_medico}"></div>
-    <div sec:authorize="hasRole('ADMINISTRADOR')" th:replace="~{Reutilizable/layout :: head_general}"></div>
-    <title
-        th:text="${trad.getTraduccion('paciente.detalle.titulo')} + ': ' + ${paciente.nombre} + ' ' + ${paciente.apellidos}">
-        Detalle Paciente</title>
+    <title th:text="${trad.getTraduccion('paciente.detalle.titulo')} + ': ' + ${paciente.nombre} + ' ' + ${paciente.apellidos}">Detalle Paciente</title>
 </head>
 
 <body class="bg-light">
-    <div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: menu_medico}"></div>
-    <div sec:authorize="hasRole('ADMINISTRADOR')" th:replace="~{Reutilizable/layout :: menu}"></div>
+    <div sec:authorize="hasAnyRole('ADMINISTRADOR', 'MEDICO')" th:replace="~{Reutilizable/layout :: menu}"></div>
+    <div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: menu_recepcion}"></div>
 
-    <main th:class="${#authorization.expression('hasRole(''ROLE_MEDICO'')')} ? 'content-medico' : 'content'">
+    <main th:class="${#authorization.expression('hasRole(''RECEPCIONISTA'')')} ? 'content-recepcion' : 'content'">
         <div class="container-fluid py-4">
 
             <div th:if="${param.success}"
@@ -181,7 +180,7 @@
                                         <i class="bi bi-arrow-left me-2"></i>
                                         <span th:text="${trad.getTraduccion('btn.volver')}">Volver</span>
                                     </a>
-                                    <button type="submit" sec:authorize="hasRole('ADMINISTRADOR')"
+                                    <button type="submit" sec:authorize="hasAnyRole('ADMINISTRADOR', 'RECEPCIONISTA')"
                                         class="btn btn-primary rounded-pill px-5 shadow-lg">
                                         <i class="bi bi-save me-2"></i>
                                         <span th:text="${trad.getTraduccion('btn.guardarCambios')}">Guardar
@@ -196,8 +195,8 @@
         </div>
     </main>
 
-    <div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: scripts_medico}"></div>
-    <div sec:authorize="hasRole('ADMINISTRADOR')" th:replace="~{Reutilizable/layout :: scripts}"></div>
+    <div sec:authorize="hasAnyRole('ADMINISTRADOR', 'MEDICO')" th:replace="~{Reutilizable/layout :: scripts}"></div>
+    <div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: scripts_recepcion}"></div>
 </body>
 
 </html>

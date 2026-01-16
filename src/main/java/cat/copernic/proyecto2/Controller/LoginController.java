@@ -20,6 +20,8 @@ public class LoginController {
             return "redirect:/medico/dashboard";
         } else if (request.isUserInRole("ROLE_PACIENTE")){
             return "redirect:/paciente/dashboard";
+        } else if (request.isUserInRole("ROLE_RECEPCIONISTA")) {
+            return "redirect:/recepcion/dashboard";
         }
         return "redirect:/login?error=no-role";
     }

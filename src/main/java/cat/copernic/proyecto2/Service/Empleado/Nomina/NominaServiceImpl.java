@@ -1,24 +1,19 @@
 package cat.copernic.proyecto2.Service.Empleado.Nomina;
 
-import com.itextpdf.kernel.colors.ColorConstants;
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.Cell;
-import com.itextpdf.layout.element.Paragraph;
-import com.itextpdf.layout.element.Table;
-import com.itextpdf.layout.properties.TextAlignment;
-import com.itextpdf.layout.properties.UnitValue;
-import org.springframework.stereotype.Service;
-
 import cat.copernic.proyecto2.DAO.JPA.NominaDAO;
 import cat.copernic.proyecto2.Domain.Administración.Nomina;
-import java.io.ByteArrayOutputStream;
+import com.lowagie.text.*;
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfWriter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
-
+import java.awt.Color;
+import java.io.ByteArrayOutputStream;
+import java.math.BigDecimal; // <--- IMPORTANTE
 import java.util.List;
 
 @Service
@@ -27,6 +22,7 @@ public class NominaServiceImpl implements NominaService {
     @Autowired
     private NominaDAO nominaRepository;
 
+    @Override
     public Page<Nomina> getNominasPorEmpleado(Long empleadoId, Pageable pageable) {
         return nominaRepository.findByEmpleadoId(empleadoId, pageable);
     }
@@ -36,6 +32,7 @@ public class NominaServiceImpl implements NominaService {
         return nominaRepository.findAll();
     }
 
+    @Override
     public Nomina findById(Long id) {
         return nominaRepository.findById(id).orElse(null);
     }
@@ -66,66 +63,79 @@ public class NominaServiceImpl implements NominaService {
     public byte[] generarPdfNomina(Nomina nomina) {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
 
-            // Crear PDF
-            PdfWriter writer = new PdfWriter(baos);
-            PdfDocument pdf = new PdfDocument(writer);
-            Document document = new Document(pdf);
+            // 1. Configurar documento
+            Document document = new Document(PageSize.A4);
+            PdfWriter.getInstance(document, baos);
+            document.open();
 
-            // Título principal
-            Paragraph titulo = new Paragraph("NÓMINA MENSUAL")
-                    .setTextAlignment(TextAlignment.CENTER)
-                    .setFontSize(20)
-                    .setBold();
+            // Fuentes
+            Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 20);
+            Font boldFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
+            Font regularFont = FontFactory.getFont(FontFactory.HELVETICA, 12);
+
+            // 2. Título
+            Paragraph titulo = new Paragraph("NÓMINA MENSUAL", titleFont);
+            titulo.setAlignment(Element.ALIGN_CENTER);
             document.add(titulo);
 
-            document.add(new Paragraph(" ")); // espacio
+            document.add(new Paragraph(" ")); 
 
-            // Datos del empleado
-            Table datosEmpleado = new Table(UnitValue.createPercentArray(new float[]{1, 2}))
-                    .useAllAvailableWidth();
+            // 3. Datos del Empleado
+            PdfPTable datosEmpleado = new PdfPTable(2);
+            datosEmpleado.setWidthPercentage(100);
+            datosEmpleado.setWidths(new float[]{1, 2});
 
-            datosEmpleado.addCell(new Cell().add(new Paragraph("Empleado:").setBold()).setBorder(null));
-            datosEmpleado.addCell(new Cell().add(new Paragraph(nomina.getEmpleado().getNombre() + " " + nomina.getEmpleado().getApellidos())).setBorder(null));
-
-            datosEmpleado.addCell(new Cell().add(new Paragraph("DNI/NIE:").setBold()).setBorder(null));
-            datosEmpleado.addCell(new Cell().add(new Paragraph(nomina.getEmpleado().getDni())).setBorder(null));
-
-            datosEmpleado.addCell(new Cell().add(new Paragraph("Departamento:").setBold()).setBorder(null));
-            datosEmpleado.addCell(new Cell().add(new Paragraph(nomina.getEmpleado().getDepartamento())).setBorder(null));
-
-            datosEmpleado.addCell(new Cell().add(new Paragraph("Periodo:").setBold()).setBorder(null));
-            datosEmpleado.addCell(new Cell().add(new Paragraph(nomina.getPeriodo())).setBorder(null));
+            addDatoEmpleado(datosEmpleado, "Empleado:", nomina.getEmpleado().getNombre() + " " + nomina.getEmpleado().getApellidos(), boldFont, regularFont);
+            addDatoEmpleado(datosEmpleado, "DNI/NIE:", nomina.getEmpleado().getDni(), boldFont, regularFont);
+            
+            String depto = (nomina.getEmpleado().getDepartamento() != null) ? nomina.getEmpleado().getDepartamento() : "General";
+            addDatoEmpleado(datosEmpleado, "Departamento:", depto, boldFont, regularFont);
+            addDatoEmpleado(datosEmpleado, "Periodo:", nomina.getPeriodo(), boldFont, regularFont);
 
             document.add(datosEmpleado);
+            document.add(new Paragraph(" "));
 
-            document.add(new Paragraph(" ")); // espacio
+            // 4. Tabla de Conceptos
+            PdfPTable tabla = new PdfPTable(2);
+            tabla.setWidthPercentage(100);
+            tabla.setWidths(new float[]{3, 2});
 
-            // Tabla de conceptos y cantidades
-            Table tabla = new Table(UnitValue.createPercentArray(new float[]{3, 2}))
-                    .useAllAvailableWidth();
+            // Encabezados
+            PdfPCell header1 = new PdfPCell(new Phrase("Concepto", boldFont));
+            header1.setBackgroundColor(Color.LIGHT_GRAY);
+            header1.setPadding(5);
+            tabla.addCell(header1);
 
-            // Encabezado
-            tabla.addHeaderCell(new Cell().add(new Paragraph("Concepto").setBold()).setBackgroundColor(ColorConstants.LIGHT_GRAY));
-            tabla.addHeaderCell(new Cell().add(new Paragraph("Importe (€)").setBold()).setBackgroundColor(ColorConstants.LIGHT_GRAY).setTextAlignment(TextAlignment.RIGHT));
+            PdfPCell header2 = new PdfPCell(new Phrase("Importe (€)", boldFont));
+            header2.setBackgroundColor(Color.LIGHT_GRAY);
+            header2.setHorizontalAlignment(Element.ALIGN_RIGHT);
+            header2.setPadding(5);
+            tabla.addCell(header2);
 
-            // Filas de conceptos
-            tabla.addCell("Salario Base");
-            tabla.addCell(new Paragraph(String.format("%.2f", nomina.getSalarioBase())).setTextAlignment(TextAlignment.RIGHT));
-
-            tabla.addCell("Complementos");
-            tabla.addCell(new Paragraph(String.format("%.2f", nomina.getComplementos())).setTextAlignment(TextAlignment.RIGHT));
-
-            tabla.addCell("Deducciones");
-            tabla.addCell(new Paragraph(String.format("%.2f", nomina.getDeducciones())).setTextAlignment(TextAlignment.RIGHT));
+            // Filas (Aquí usamos BigDecimal)
+            addFilaTabla(tabla, "Salario Base", nomina.getSalarioBase(), regularFont);
+            addFilaTabla(tabla, "Complementos", nomina.getComplementos(), regularFont);
+            addFilaTabla(tabla, "Deducciones", nomina.getDeducciones(), regularFont);
 
             // Total
-            tabla.addCell(new Cell().add(new Paragraph("Total a Pagar").setBold()));
-            tabla.addCell(new Cell().add(new Paragraph(String.format("%.2f", nomina.getTotalPagar())).setBold()).setTextAlignment(TextAlignment.RIGHT));
+            PdfPCell cellTotalLabel = new PdfPCell(new Phrase("Total a Pagar", boldFont));
+            cellTotalLabel.setPadding(5);
+            tabla.addCell(cellTotalLabel);
+
+            // Controlamos nulos en el total por seguridad
+            BigDecimal total = (nomina.getTotalPagar() != null) ? nomina.getTotalPagar() : BigDecimal.ZERO;
+            PdfPCell cellTotalValue = new PdfPCell(new Phrase(String.format("%.2f €", total), boldFont));
+            cellTotalValue.setHorizontalAlignment(Element.ALIGN_RIGHT);
+            cellTotalValue.setPadding(5);
+            tabla.addCell(cellTotalValue);
 
             document.add(tabla);
 
-            document.add(new Paragraph(" ")); // espacio
-            document.add(new Paragraph("Gracias por su dedicación.").setTextAlignment(TextAlignment.CENTER));
+            // Pie
+            document.add(new Paragraph("\n\n"));
+            Paragraph pie = new Paragraph("Gracias por su dedicación.", regularFont);
+            pie.setAlignment(Element.ALIGN_CENTER);
+            document.add(pie);
 
             document.close();
             return baos.toByteArray();
@@ -136,6 +146,30 @@ public class NominaServiceImpl implements NominaService {
         }
     }
 
+    // --- MÉTODOS AUXILIARES ---
 
+    private void addDatoEmpleado(PdfPTable table, String label, String value, Font labelFont, Font valueFont) {
+        PdfPCell cellLabel = new PdfPCell(new Phrase(label, labelFont));
+        cellLabel.setBorder(Rectangle.NO_BORDER);
+        table.addCell(cellLabel);
 
+        PdfPCell cellValue = new PdfPCell(new Phrase(value, valueFont));
+        cellValue.setBorder(Rectangle.NO_BORDER);
+        table.addCell(cellValue);
+    }
+
+    // CORREGIDO: Ahora acepta BigDecimal en lugar de Double
+    private void addFilaTabla(PdfPTable table, String concepto, BigDecimal valor, Font font) {
+        PdfPCell cellConcepto = new PdfPCell(new Phrase(concepto, font));
+        cellConcepto.setPadding(5);
+        table.addCell(cellConcepto);
+
+        // Seguridad contra nulos
+        BigDecimal valorSeguro = (valor != null) ? valor : BigDecimal.ZERO;
+
+        PdfPCell cellValor = new PdfPCell(new Phrase(String.format("%.2f", valorSeguro), font));
+        cellValor.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        cellValor.setPadding(5);
+        table.addCell(cellValor);
+    }
 }

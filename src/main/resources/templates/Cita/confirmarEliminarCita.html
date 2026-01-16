@@ -1,15 +1,17 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
-    <div th:replace="~{Reutilizable/layout :: head_general}"></div>
+    <div sec:authorize="hasAnyRole('ADMINISTRADOR', 'MEDICO')" th:replace="~{Reutilizable/layout :: head_general}"></div>
+    <div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: head_recepcion}"></div>
     <title th:text="${trad.getTraduccion('citas.anular.titulo')}">Anular Cita</title>
 </head>
 
 <body class="bg-light">
-    <div th:replace="~{Reutilizable/layout :: menu}"></div>
+    <div sec:authorize="hasAnyRole('ADMINISTRADOR', 'MEDICO')" th:replace="~{Reutilizable/layout :: menu}"></div>
+    <div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: menu_recepcion}"></div>
 
-    <main class="content">
+    <main th:class="${#authorization.expression('hasRole(''RECEPCIONISTA'')')} ? 'content-recepcion' : 'content'">
         <div class="container mt-5">
             <div class="row justify-content-center">
                 <div class="col-md-6">
@@ -63,6 +65,7 @@
         </div>
     </main>
 
-    <div th:replace="~{Reutilizable/layout :: scripts}"></div>
+    <div sec:authorize="hasAnyRole('ADMINISTRADOR', 'MEDICO')" th:replace="~{Reutilizable/layout :: scripts}"></div>
+    <div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: scripts_recepcion}"></div>
 </body>
 </html>

@@ -75,67 +75,7 @@ public class MedicoController {
         return "Medico/dashboard";
     }
 
-    // --- GESTIÓN DE VACACIONES ---
-    @GetMapping("/vacaciones")
-    public String mostrarVacaciones(Model model, Authentication auth) {
-        Empleado medico = empleadoService.obtenerPorUsername(auth.getName());
-        LocalDate hoy = LocalDate.now();
-
-        // El servicio se encarga del cálculo proporcional según fecha de alta
-        long diasDisponibles = vacacionesService.calcularDiasDisponibles(medico);
-
-        model.addAttribute("medicoLogueado", medico);
-        model.addAttribute("hoy", hoy);
-        model.addAttribute("diasDisponibles", diasDisponibles);
-        model.addAttribute("activePage", "vacaciones");
-        model.addAttribute("trad", traduccionService);
-
-        // Obtenemos las solicitudes reales de la base de datos SQL
-        model.addAttribute("solicitudes", vacacionesService.listarVacacionesPorEmpleado(medico.getId()));
-
-        return "Empleado/vacaciones";
-    }
-
-    @PostMapping("/vacaciones/solicitar")
-    public String solicitarVacaciones(@RequestParam("fechaInicio") String inicio,
-            @RequestParam("fechaFin") String fin,
-            Authentication auth) {
-
-        Empleado medico = empleadoService.obtenerPorUsername(auth.getName());
-        LocalDate fechaIni = LocalDate.parse(inicio);
-        LocalDate fechaFin = LocalDate.parse(fin);
-
-        if (fechaFin.isBefore(fechaIni)) {
-            return "redirect:/medico/vacaciones?error=fecha";
-        }
-
-        if (vacacionesService.existeSolapamiento(medico.getId(), fechaIni, fechaFin)) {
-            return "redirect:/medico/vacaciones?error=solapamiento";
-        }
-
-        Vacaciones nueva = new Vacaciones();
-        nueva.setEmpleado(medico);
-        nueva.setFechaInicio(fechaIni);
-        nueva.setFechaFin(fechaFin);
-        nueva.setEstado(EstadoVacaciones.PENDIENTE);
-
-        // Cálculo: se suma 1 porque si pides del 10 al 10, es 1 día de vacaciones
-        long dias = ChronoUnit.DAYS.between(fechaIni, fechaFin) + 1;
-        nueva.setTotalDias((int) dias);
-
-        vacacionesService.guardarVacacion(nueva);
-
-        return "redirect:/medico/vacaciones?success=true";
-    }
-
-    @PostMapping("/vacaciones/cancelar/{id}")
-    public String cancelarVacaciones(@PathVariable("id") Long id) {
-        // En una app profesional, podrías validar aquí que la vacación pertenezca al
-        // médico
-        vacacionesService.eliminarVacacion(id);
-        return "redirect:/medico/vacaciones";
-    }
-
+   
     // --- PERFIL Y AGENDA ---
     @GetMapping("/perfil/{id}")
     public String verPerfil(@PathVariable("id") Long id, Model model) {
