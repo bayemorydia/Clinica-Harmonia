@@ -1,29 +1,45 @@
 package cat.copernic.proyecto2.Domain.PersonalSanitario;
 
-import cat.copernic.proyecto2.Domain.Administración.Empleado;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.Data;
+import java.io.Serializable;
 import java.time.LocalDate;
+import cat.copernic.proyecto2.Domain.Administración.Empleado;
+import cat.copernic.proyecto2.Domain.Recepción.Paciente;
 
 @Data
 @Entity
-@Table(name="Tratamiento")
-public class Tratamiento {
+@Table(name = "Tratamiento")
+public class Tratamiento implements Serializable {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private static final long serialVersionUID = 1L;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "episodio_id")
-    private EpisodioClinico episodio;
-
+    @NotBlank(message = "La descripción no puede estar vacía")
+    @Size(max = 1000, message = "La descripción no puede superar los 1000 caracteres")
+    @Column(length = 1000)
     private String descripcion;
+
     private LocalDate fechaInicio;
     private LocalDate fechaFin;
 
-    @ManyToOne
-    @JoinColumn(name = "medico_id")
-    private Empleado prescriptor;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "episodio_id", nullable = false)
+    private EpisodioClinico episodio;
 
-    private String indicaciones;
+    /**
+     * Es recomendable incluir al paciente directamente (como en Prueba y Receta)
+     * para facilitar auditorías y consultas rápidas sin pasar por Episodio.
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "paciente_id", nullable = false)
+    private Paciente paciente;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "empleado_id", nullable = false)
+    private Empleado empleado;
 }

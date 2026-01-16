@@ -8,15 +8,17 @@ import lombok.Data;
 @Table(name="LineaReceta")
 public class LineaReceta {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
     @JoinColumn(name = "receta_id")
     private RecetaMedica receta;
 
-    private String medicamento;
+    private String medicamento; // Nombre del medicamento del catálogo
     private String dosis;
-    private String frecuencia;
-    private int duracionDias;
+    
+    // Almacena el precio capturado del medicamento para la factura final
+    private Double precioUnitario; 
 }

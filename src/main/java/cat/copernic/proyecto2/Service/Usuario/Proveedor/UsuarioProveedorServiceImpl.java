@@ -1,7 +1,7 @@
 package cat.copernic.proyecto2.Service.Usuario.Proveedor;
 
-import cat.copernic.proyecto2.DAO.RolDAO;
-import cat.copernic.proyecto2.DAO.UsuarioDAO;
+import cat.copernic.proyecto2.DAO.JPA.RolDAO;
+import cat.copernic.proyecto2.DAO.JPA.UsuarioDAO;
 import cat.copernic.proyecto2.Domain.Persona.Rol;
 import cat.copernic.proyecto2.Domain.Persona.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -9,9 +9,8 @@ import java.time.LocalDate;
 
 @Data
 @Entity
-@Table(name="Empleado")
+@Table(name="RecetaMedica") // Corregido: antes decía Empleado
 public class RecetaMedica {
-
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -30,6 +29,6 @@ public class RecetaMedica {
     private LocalDate fechaEmision;
     private boolean activa = true;
 
-    @OneToMany(mappedBy = "receta", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "receta", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LineaReceta> lineas;
 }

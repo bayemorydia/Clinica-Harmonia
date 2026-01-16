@@ -105,7 +105,7 @@
             </li>
 
             <li>
-                <a th:href="@{/medico/perfil/{id}(id=${medicoLogueado.id})}" class="nav-link-med"
+                <a th:href="@{/medico/perfil/{id}(id=${medicoLogueado?.id})}" class="nav-link-med"
                     th:classappend="${activePage == 'perfil' ? 'active' : ''}">
                     <i class="bi bi-person-circle"></i>
                     <span th:text="${#authorization.expression('hasRole(''ADMINISTRADOR'')')}
@@ -123,7 +123,7 @@
             </li>
 
             <li>
-                <a th:href="@{/medico/vacaciones}" class="nav-link-med"
+                <a th:href="@{/vacaciones}" class="nav-link-med"
                     th:classappend="${#ctx.containsVariable('activePage') and activePage == 'vacaciones' ? 'active' : ''}">
                     <i class="bi bi-sun"></i>
                     <span th:text="${trad.getTraduccion('nav.vacaciones') ?: 'Vacaciones'}">Vacaciones</span>

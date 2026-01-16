@@ -1,13 +1,14 @@
 package cat.copernic.proyecto2.Service.Empleado.Turno;
+
+import cat.copernic.proyecto2.DAO.JPA.TurnoDAO;
 import cat.copernic.proyecto2.Domain.Administración.Turno;
 import java.util.List;
-import cat.copernic.proyecto2.DAO.TurnoDAO;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import cat.copernic.proyecto2.Domain.Administración.Turno;
 
 @Service
-public class TurnoServiceIMPL implements TurnoService {
+public class TurnoServiceImpl implements TurnoService {
     @Autowired
     private TurnoDAO turnoRepository;
 

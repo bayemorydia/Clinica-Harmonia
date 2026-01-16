@@ -1,9 +1,10 @@
 package cat.copernic.proyecto2.Service.Vacaciones;
 
+import cat.copernic.proyecto2.DAO.JPA.VacacionesDAO;
 import cat.copernic.proyecto2.Domain.Administración.Empleado;
 import cat.copernic.proyecto2.Domain.Administración.EstadoVacaciones;
 import cat.copernic.proyecto2.Domain.Administración.Vacaciones;
-import cat.copernic.proyecto2.DAO.VacacionesDAO;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,24 +37,32 @@ public class VacacionesServiceImpl implements VacacionesService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public long calcularDiasDisponibles(Empleado empleado) {
         LocalDate hoy = LocalDate.now();
-        // Si no hay fecha de alta (por seguridad), tomamos el 1 de enero del año actual
         LocalDate alta = (empleado.getFecha_alta() != null) ? empleado.getFecha_alta()
                 : LocalDate.of(hoy.getYear(), 1, 1);
 
         int diasMaxAnuales = 22;
+        long diasDerecho;
 
-        // Si el alta fue en años anteriores, tiene los 22 días
         if (alta.getYear() < hoy.getYear()) {
-            return diasMaxAnuales;
+            diasDerecho = diasMaxAnuales;
+        } else {
+            LocalDate finDeAnio = LocalDate.of(hoy.getYear(), 12, 31);
+            long diasActivo = ChronoUnit.DAYS.between(alta, finDeAnio) + 1;
+            diasDerecho = Math.round((diasActivo / 365.0) * diasMaxAnuales);
         }
 
-        // Si entró este año, calculamos la parte proporcional hasta fin de año
-        LocalDate finDeAnio = LocalDate.of(hoy.getYear(), 12, 31);
-        long diasActivo = ChronoUnit.DAYS.between(alta, finDeAnio) + 1;
+        // NUEVO: Restar los días de vacaciones ya ACEPTADAS este año
+        List<Vacaciones> misVacaciones = vacacionesDAO.findByEmpleadoId(empleado.getId());
+        long diasConsumidos = misVacaciones.stream()
+                .filter(v -> v.getEstado() == EstadoVacaciones.ACEPTADA) // Solo las aprobadas cuentan
+                .filter(v -> v.getFechaInicio().getYear() == hoy.getYear())
+                .mapToLong(Vacaciones::getTotalDias)
+                .sum();
 
-        return Math.round((diasActivo / 365.0) * diasMaxAnuales);
+        return diasDerecho - diasConsumidos;
     }
 
     @Override

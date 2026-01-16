@@ -1,14 +1,11 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <th:block sec:authorize="hasRole('ADMINISTRADOR')"
-              th:replace="~{Reutilizable/layout :: head_general}" />
-
-    <th:block sec:authorize="hasRole('MEDICO')"
-              th:replace="~{Reutilizable/layoutMedico :: head_medico}" />
-
-    <th:block sec:authorize="hasRole('RRHH')"
-              th:replace="~{Reutilizable/layoutRRHH :: head_RRHH}" />    <title th:text="${trad.getTraduccion('nomina.lista.titulo')} + ' - ' + ${empleado.nombre} + ' ' + ${empleado.apellidos}">Nóminas</title>
+    <div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: head_medico}"></div>
+    <div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: head_recepcion}"></div>
+    <div sec:authorize="!hasAnyRole('MEDICO', 'RECEPCIONISTA')" th:replace="~{Reutilizable/layout :: head_general}"></div>
+    
+    <title th:text="'Nóminas de ' + ${empleado.nombre} + ' ' + ${empleado.apellidos}">Nóminas</title>
     <style>
         .clickable-row { cursor:pointer; transition: background-color 0.2s; }
         .clickable-row:hover { background-color: rgba(0,123,255,0.05)!important; }
@@ -19,161 +16,131 @@
         .table-footer { padding:1.25rem 1.5rem; background-color:#fff; border-top:1px solid #edf2f7;}
     </style>
 </head>
-<body>
-<div sec:authorize="hasRole('ADMINISTRADOR')"
-     th:replace="~{Reutilizable/layout :: menu}"></div>
+<body class="bg-light">
+    <div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: menu_medico}"></div>
+    <div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: menu_recepcion}"></div>
+    <div sec:authorize="!hasAnyRole('MEDICO', 'RECEPCIONISTA')" th:replace="~{Reutilizable/layout :: menu}"></div>
 
-<!-- MÉDICO -->
-<div sec:authorize="hasRole('MEDICO')"
-     th:replace="~{Reutilizable/layoutMedico :: menu_medico}"></div>
+    <main th:class="${#authorization.expression('hasAnyRole(''ROLE_MEDICO'', ''ROLE_RECEPCIONISTA'')')} ? (${#authorization.expression('hasRole(''ROLE_MEDICO'')')} ? 'content-medico' : 'content-recepcion') : 'content'">
+        <div class="container-fluid py-4">
 
-<!-- RRHH -->
-<div sec:authorize="hasRole('RRHH')"
-     th:replace="~{Reutilizable/layoutRRHH :: menu_RRHH}"></div>
-<main class="content">
-    <div class="container-fluid py-4">
+            <div class="card shadow-sm border-0" style="border-radius:15px; overflow:hidden;">
+                <div class="card-body p-0" id="tablaContainer">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                            <tr>
+                                <th>Periodo</th>
+                                <th>Salario Base</th>
+                                <th>Complementos</th>
+                                <th>Deducciones</th>
+                                <th>Total</th>
+                                <th>Acciones</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:if="${#lists.isEmpty(nominas)}">
+                                <td colspan="6" class="text-center py-5 text-muted">No se han encontrado nóminas.</td>
+                            </tr>
+                            <tr th:each="nomina : ${nominas}" class="clickable-row"
+                                th:data-href="@{'/nominas/detalle/' + ${nomina.id}}">
+                                <td th:text="${nomina.periodo}">01/2026</td>
+                                <td th:text="${nomina.salarioBase}">1000€</td>
+                                <td th:text="${nomina.complementos}">200€</td>
+                                <td th:text="${nomina.deducciones}">50€</td>
+                                <td th:text="${nomina.totalPagar}" class="fw-bold text-success">1150€</td>
+                                <td>
+                                    <a th:href="@{'/nominas/imprimir/' + ${nomina.id}}" class="btn btn-sm btn-outline-danger rounded-pill px-3" target="_blank">
+                                        <i class="bi bi-printer me-1"></i> Imprimir
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
 
-        <div class="mb-4">
-            <h2 class="fw-bold text-dark" th:text="${trad.getTraduccion('nomina.lista.titulo')}">Nóminas</h2>
-            <p class="text-muted" th:text="${trad.getTraduccion('nomina.lista.subtitulo')} + ': ' + ${empleado.nombre} + ' ' + ${empleado.apellidos}">Historial de pagos para el empleado</p>
-            <div>
-                <!-- Botón Crear Nómina -->
-                <a th:href="@{'/nominas/nuevo/' + ${empleado.id}}" class="btn btn-primary rounded-pill px-4"
-                   sec:authorize="hasRole('RRHH')">
-
-                    <i class="bi bi-plus-lg me-1"></i> <span th:text="${trad.getTraduccion('btn.crearNomina')}">Crear Nómina</span>
-                </a>
-            </div>
-        </div>
-
-
-
-        <div class="card shadow-sm border-0" style="border-radius:15px; overflow:hidden;">
-            <div class="card-body p-0" id="tablaContainer">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="bg-light">
-                        <tr>
-                            <th th:text="${trad.getTraduccion('nomina.tabla.periodo')}">Periodo</th>
-                            <th th:text="${trad.getTraduccion('empleado.label.salario')}">Salario Base</th>
-                            <th th:text="${trad.getTraduccion('nomina.tabla.complementos')}">Complementos</th>
-                            <th th:text="${trad.getTraduccion('nomina.tabla.deducciones')}">Deducciones</th>
-                            <th th:text="${trad.getTraduccion('nomina.tabla.total')}">Total</th>
-                            <th th:text="${trad.getTraduccion('empleados.tabla.acciones')}">Acciones</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:if="${#lists.isEmpty(nominas)}">
-                            <td colspan="6" class="text-center py-5 text-muted" th:text="${trad.getTraduccion('nomina.tabla.vacia')}">No se han encontrado nóminas.</td>
-                        </tr>
-                        <tr th:each="nomina : ${nominas}" class="clickable-row"
-                            th:data-href="@{'/nominas/detalle/' + ${nomina.id}}">
-                            <td th:text="${nomina.periodo}">01/2026</td>
-                            <td th:text="${nomina.salarioBase} + '€'">1000€</td>
-                            <td th:text="${nomina.complementos} + '€'">200€</td>
-                            <td th:text="${nomina.deducciones} + '€'">50€</td>
-                            <td th:text="${nomina.totalPagar} + '€'" class="fw-bold text-success">1150€</td>
-                            <td>
-                                <a th:href="@{'/nominas/imprimir/' + ${nomina.id}}" class="btn btn-sm btn-outline-danger rounded-pill px-3" target="_blank" onclick="event.stopPropagation();">
-                                    <i class="bi bi-printer me-1"></i> <span th:text="${trad.getTraduccion('btn.imprimir')}">Imprimir</span>
-                                </a>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-
-                    <div class="table-footer d-flex justify-content-between align-items-center mt-3">
-                        <div class="text-muted small">
-                            <span class="fw-bold" th:text="${(currentPage * size) + 1}">1</span>
-                            <span th:text="${trad.getTraduccion('paginacion.a')}">a</span>
-                            <span class="fw-bold" th:text="${(currentPage * size) + nominas.size()}">10</span>
-                            <span th:text="${trad.getTraduccion('paginacion.de')}">de</span>
-                            <span class="fw-bold" th:text="${totalElements}">100</span>
-                            <span th:text="${trad.getTraduccion('nomina.lista.titulo').toLowerCase()}">nóminas</span>
-                        </div>
-
-                        <div class="d-flex align-items-center gap-4">
-                            <div class="d-flex align-items-center gap-2">
-                                <span class="text-muted small" th:text="${trad.getTraduccion('paginacion.mostrar')}">Mostrar</span>
-                                <select id="pageSize" class="select-paginacion-clean shadow-none" onchange="updateTable(0)">
-                                    <option value="10" th:selected="${size == 10}">10</option>
-                                    <option value="20" th:selected="${size == 20}">20</option>
-                                    <option value="50" th:selected="${size == 50}">50</option>
-                                </select>
+                        <div class="table-footer d-flex justify-content-between align-items-center mt-3">
+                            <div class="text-muted small">
+                                <span th:text="${(currentPage * size) + 1}">1</span> a
+                                <span th:text="${(currentPage * size) + nominas.size()}">10</span>
+                                de <span th:text="${totalElements}">100</span> nóminas
                             </div>
 
-                            <nav>
-                                <ul class="pagination pagination-sm mb-0">
-                                    <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                                        <a class="page-link" href="javascript:void(0)" th:onclick="'changePage(' + (${currentPage} - 1) + ')'">
-                                            <i class="bi bi-chevron-left"></i>
-                                        </a>
-                                    </li>
-                                    <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages > 0 ? totalPages - 1 : 0)}"
-                                        th:if="${totalPages > 0 and i >= currentPage - 1 and i <= currentPage + 1}"
-                                        th:classappend="${i == currentPage} ? 'active'">
-                                        <a class="page-link" href="javascript:void(0)" th:onclick="'changePage(' + ${i} + ')'" th:text="${i + 1}">1</a>
-                                    </li>
-                                    <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
-                                        <a class="page-link" href="javascript:void(0)" th:onclick="'changePage(' + (${currentPage} + 1) + ')'">
-                                            <i class="bi bi-chevron-right"></i>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </nav>
+                            <div class="d-flex align-items-center gap-4">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="text-muted small">Mostrar</span>
+                                    <select id="pageSize" class="select-paginacion-clean shadow-none" onchange="updateTable(0)">
+                                        <option value="10" th:selected="${size == 10}">10</option>
+                                        <option value="20" th:selected="${size == 20}">20</option>
+                                        <option value="50" th:selected="${size == 50}">50</option>
+                                    </select>
+                                </div>
+
+                                <nav>
+                                    <ul class="pagination pagination-sm mb-0">
+                                        <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                                            <a class="page-link" href="javascript:void(0)" th:onclick="'changePage(' + (${currentPage} - 1) + ')'">
+                                                <i class="bi bi-chevron-left"></i>
+                                            </a>
+                                        </li>
+                                        <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages > 0 ? totalPages - 1 : 0)}"
+                                            th:if="${i >= currentPage - 1 and i <= currentPage + 1}"
+                                            th:classappend="${i == currentPage} ? 'active'">
+                                            <a class="page-link" href="javascript:void(0)" th:onclick="'changePage(' + ${i} + ')'" th:text="${i + 1}">1</a>
+                                        </li>
+                                        <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
+                                            <a class="page-link" href="javascript:void(0)" th:onclick="'changePage(' + (${currentPage} + 1) + ')'">
+                                                <i class="bi bi-chevron-right"></i>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
                         </div>
                     </div>
                     <input type="hidden" id="hiddenTotalPages" th:value="${totalPages}">
                 </div>
             </div>
         </div>
-    </div>
-</main>
+    </main>
 
-<div sec:authorize="hasRole('ADMINISTRADOR')"
-     th:replace="~{Reutilizable/layout :: scripts}"></div>
+    <div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: scripts_medico}"></div>
+    <div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: scripts_recepcion}"></div>
+    <div sec:authorize="!hasAnyRole('MEDICO', 'RECEPCIONISTA')" th:replace="~{Reutilizable/layout :: scripts}"></div>
 
-<!-- MÉDICO -->
-<div sec:authorize="hasRole('MEDICO')"
-     th:replace="~{Reutilizable/layoutMedico :: scripts_medico}"></div>
-
-<!-- RRHH -->
-<div sec:authorize="hasRole('RRHH')"
-     th:replace="~{Reutilizable/layoutRRHH :: scripts_RRHH}"></div>
-<script th:inline="javascript">
-    document.addEventListener("DOMContentLoaded", () => {
-        initTableEvents();
-    });
-
-    function initTableEvents() {
-        document.querySelectorAll(".clickable-row").forEach(row => {
-            row.addEventListener("click", function(e) {
-                if(e.target.closest('button') || e.target.closest('a')) return;
-                window.location.href = this.getAttribute("data-href");
-            });
+    <script th:inline="javascript">
+        document.addEventListener("DOMContentLoaded", () => {
+            initTableEvents();
         });
-    }
 
-    function updateTable(page = 0) {
-        const size = document.getElementById('pageSize').value;
-        const container = document.getElementById('tablaContainer');
-        const empleadoId = /*[[${empleado.id}]]*/ 0;
+        function initTableEvents() {
+            document.querySelectorAll(".clickable-row").forEach(row => {
+                row.addEventListener("click", function(e) {
+                    if(e.target.closest('button') || e.target.closest('a')) return;
+                    window.location.href = this.getAttribute("data-href");
+                });
+            });
+        }
 
-        fetch(`/nominas/empleado/${empleadoId}?page=${page}&size=${size}`)
-            .then(response => response.text())
-            .then(html => {
-                container.innerHTML = html;
-                initTableEvents();
-            })
-            .catch(err => console.error("Error actualizando la tabla:", err));
-    }
+        function updateTable(page = 0) {
+            const size = document.getElementById('pageSize').value;
+            const container = document.getElementById('tablaContainer');
+            const empleadoId = /*[[${empleado.id}]]*/ 0;
 
-    function changePage(page) {
-        const totalPagesInput = document.getElementById('hiddenTotalPages');
-        const totalPages = totalPagesInput ? parseInt(totalPagesInput.value) : 0;
-        if(page < 0 || page >= totalPages) return;
-        updateTable(page);
-    }
-</script>
+            fetch(`/nominas/empleado/${empleadoId}?page=${page}&size=${size}`)
+                .then(response => response.text())
+                .then(html => {
+                    container.innerHTML = html;
+                    initTableEvents();
+                })
+                .catch(err => console.error("Error actualizando la tabla:", err));
+        }
+
+        function changePage(page) {
+            const totalPagesInput = document.getElementById('hiddenTotalPages');
+            const totalPages = totalPagesInput ? parseInt(totalPagesInput.value) : 0;
+            if(page < 0 || page >= totalPages) return;
+            updateTable(page);
+        }
+    </script>
 </body>
 </html>

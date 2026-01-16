@@ -4,7 +4,7 @@
 <head>
     <div th:replace="~{Reutilizable/layout :: head_general}"></div>
     <title th:text="${trad.getTraduccion('nav.inicio')}">Panel de Control - Administrador</title>
-    
+
     <style>
         .card-stat {
             transition: transform 0.2s, box-shadow 0.2s;
@@ -28,7 +28,7 @@
         .quick-action {
             border-radius: 12px;
             transition: all 0.3s;
-            height: 100%; 
+            height: 100%;
         }
 
         .quick-action:hover {
@@ -49,10 +49,11 @@
         <header class="mb-4 d-flex justify-content-between align-items-center">
             <div>
                 <h2 class="fw-bold mb-0">
-                    <span th:text="${trad.getTraduccion('nav.admin.dashboard')}">Dashboard</span> 
+                    <span th:text="${trad.getTraduccion('nav.admin.dashboard')}">Dashboard</span>
                     [[${trad.getTraduccion('nav.admin')}]]
                 </h2>
-                <p class="text-muted" th:text="${trad.getTraduccion('mod.admin.desc')}">Bienvenido al centro de mando</p>
+                <p class="text-muted" th:text="${trad.getTraduccion('mod.admin.desc')}">Bienvenido al centro de mando
+                </p>
             </div>
             <div class="d-flex align-items-center">
                 <span class="badge bg-primary-subtle text-primary p-2 px-3 rounded-pill me-3">
@@ -71,7 +72,8 @@
                                 <i class="bi bi-people text-primary fs-3"></i>
                             </div>
                             <div>
-                                <h6 class="text-muted mb-0 small uppercase fw-bold" th:text="${trad.getTraduccion('mod.pacientes')}">PACIENTES</h6>
+                                <h6 class="text-muted mb-0 small uppercase fw-bold"
+                                    th:text="${trad.getTraduccion('mod.pacientes')}">PACIENTES</h6>
                                 <h3 class="fw-bold mb-0" th:text="${totalPacientesActivos}">0</h3>
                             </div>
                         </div>
@@ -87,8 +89,9 @@
                                 <i class="bi bi-person-badge text-info fs-3"></i>
                             </div>
                             <div>
-                                <h6 class="text-muted mb-0 small uppercase fw-bold" th:text="${trad.getTraduccion('mod.empleados')}">EMPLEADOS</h6>
-                                <h3 class="fw-bold mb-0">--</h3>
+                                <h6 class="text-muted mb-0 small uppercase fw-bold"
+                                    th:text="${trad.getTraduccion('mod.empleados')}">EMPLEADOS</h6>
+                                <h3 class="fw-bold mb-0" th:text="${totalEmpleados}">0</h3>
                             </div>
                         </div>
                     </div>
@@ -103,7 +106,8 @@
                                 <i class="bi bi-calendar-check text-success fs-3"></i>
                             </div>
                             <div>
-                                <h6 class="text-muted mb-0 small uppercase fw-bold" th:text="${trad.getTraduccion('mod.citas')}">CITAS</h6>
+                                <h6 class="text-muted mb-0 small uppercase fw-bold"
+                                    th:text="${trad.getTraduccion('mod.citas')}">CITAS</h6>
                                 <h3 class="fw-bold mb-0" th:text="${totalCitasActivas}">0</h3>
                             </div>
                         </div>
@@ -111,23 +115,24 @@
                 </a>
             </div>
 
-            <div class="col-xl col-md-6">
-                <a th:href="@{/tratamientos}" class="text-decoration-none">
+            <div class="col-xl col-md-4">
+                <a th:href="@{/pruebas/listar}" class="text-decoration-none">
                     <div class="card border-0 shadow-sm p-3 card-stat h-100">
                         <div class="d-flex align-items-center">
                             <div class="icon-box bg-danger bg-opacity-10 rounded-3 me-3">
                                 <i class="bi bi-clipboard2-pulse text-danger fs-3"></i>
                             </div>
                             <div>
-                                <h6 class="text-muted mb-0 small uppercase fw-bold" th:text="${trad.getTraduccion('mod.tratamientos')}">TRATAMIENTOS</h6>
-                                <h3 class="fw-bold mb-0">--</h3>
+                                <h6 class="text-muted mb-0 small uppercase fw-bold"
+                                    th:text="${trad.getTraduccion('mod.tratamientos')}">Pruebas Médicas</h6>
+                                <h3 class="fw-bold mb-0" th:text="${totalPruebasActivas}">0</h3>
                             </div>
                         </div>
                     </div>
                 </a>
             </div>
 
-            <div class="col-xl col-md-6">
+            <div class="col-xl col-md-4">
                 <a th:href="@{/medicamentos}" class="text-decoration-none">
                     <div class="card border-0 shadow-sm p-3 card-stat h-100">
                         <div class="d-flex align-items-center">
@@ -135,8 +140,26 @@
                                 <i class="bi bi-capsule text-warning fs-3"></i>
                             </div>
                             <div>
-                                <h6 class="text-muted mb-0 small uppercase fw-bold" th:text="${trad.getTraduccion('mod.medicamentos')}">STOCK</h6>
-                                <h3 class="fw-bold mb-0">--</h3>
+                                <h6 class="text-muted mb-0 small uppercase fw-bold"
+                                    th:text="${trad.getTraduccion('mod.medicamentos')}">STOCK</h6>
+                                <h3 class="fw-bold mb-0" th:text="${totalMedicamentosActivos}">0</h3>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-xl col-md-4">
+                <a th:href="@{/diagnosticos}" class="text-decoration-none">
+                    <div class="card border-0 shadow-sm p-3 card-stat h-100">
+                        <div class="d-flex align-items-center">
+                            <div class="icon-box bg-secondary bg-opacity-10 rounded-3 me-3">
+                                <i class="bi bi-journal-medical text-secondary fs-3"></i>
+                            </div>
+                            <div>
+                                <h6 class="text-muted mb-0 small uppercase fw-bold"
+                                    th:text="${trad.getTraduccion('mod.diagnosticos')}">DIAGNÓSTICOS</h6>
+                                <h3 class="fw-bold mb-0" th:text="${totalDiagnosticosActivas}">0</h3>
                             </div>
                         </div>
                     </div>
@@ -149,7 +172,7 @@
                 <i class="bi bi-gear-fill me-2 text-secondary"></i>
                 <span th:text="${trad.getTraduccion('mod.admin.gestion_global')}">Gestión Global de la Aplicación</span>
             </h5>
-            
+
             <div class="row g-3">
                 <div class="col-md-3">
                     <div class="border p-3 quick-action d-flex flex-column">
@@ -157,10 +180,13 @@
                             <div class="bg-dark bg-opacity-10 p-2 rounded me-3">
                                 <i class="bi bi-shield-lock text-dark fs-4"></i>
                             </div>
-                            <h6 class="mb-0 fw-bold" th:text="${trad.getTraduccion('mod.admin.roles.titulo')}">Roles</h6>
+                            <h6 class="mb-0 fw-bold" th:text="${trad.getTraduccion('mod.admin.roles.titulo')}">Roles
+                            </h6>
                         </div>
-                        <p class="small text-muted flex-grow-1" th:text="${trad.getTraduccion('mod.admin.roles.desc')}">Permisos y niveles</p>
-                        <a th:href="@{/admin/roles}" class="btn btn-sm btn-outline-dark w-100" th:text="${trad.getTraduccion('btn.entrar')}">Entrar</a>
+                        <p class="small text-muted flex-grow-1" th:text="${trad.getTraduccion('mod.admin.roles.desc')}">
+                            Permisos y niveles</p>
+                        <a th:href="@{/roles}" class="btn btn-sm btn-outline-dark w-100"
+                            th:text="${trad.getTraduccion('btn.entrar')}">Entrar</a>
                     </div>
                 </div>
 
@@ -170,10 +196,13 @@
                             <div class="bg-dark bg-opacity-10 p-2 rounded me-3">
                                 <i class="bi bi-person-gear text-dark fs-4"></i>
                             </div>
-                            <h6 class="mb-0 fw-bold" th:text="${trad.getTraduccion('mod.admin.usuarios.titulo')}">Usuarios</h6>
+                            <h6 class="mb-0 fw-bold" th:text="${trad.getTraduccion('mod.admin.usuarios.titulo')}">
+                                Usuarios</h6>
                         </div>
-                        <p class="small text-muted flex-grow-1" th:text="${trad.getTraduccion('mod.admin.usuarios.desc')}">Cuentas de acceso</p>
-                        <a th:href="@{/admin/usuarios}" class="btn btn-sm btn-outline-dark w-100" th:text="${trad.getTraduccion('btn.entrar')}">Entrar</a>
+                        <p class="small text-muted flex-grow-1"
+                            th:text="${trad.getTraduccion('mod.admin.usuarios.desc')}">Cuentas de acceso</p>
+                        <a th:href="@{/admin/usuarios}" class="btn btn-sm btn-outline-dark w-100"
+                            th:text="${trad.getTraduccion('btn.entrar')}">Entrar</a>
                     </div>
                 </div>
 
@@ -183,10 +212,13 @@
                             <div class="bg-dark bg-opacity-10 p-2 rounded me-3">
                                 <i class="bi bi-receipt text-dark fs-4"></i>
                             </div>
-                            <h6 class="mb-0 fw-bold" th:text="${trad.getTraduccion('mod.facturacion.titulo')}">Facturación</h6>
+                            <h6 class="mb-0 fw-bold" th:text="${trad.getTraduccion('mod.facturacion.titulo')}">
+                                Facturación</h6>
                         </div>
-                        <p class="small text-muted flex-grow-1" th:text="${trad.getTraduccion('mod.facturacion.desc')}">Ventas y finanzas</p>
-                        <a th:href="@{/admin/facturas}" class="btn btn-sm btn-outline-dark w-100" th:text="${trad.getTraduccion('btn.entrar')}">Entrar</a>
+                        <p class="small text-muted flex-grow-1" th:text="${trad.getTraduccion('mod.facturacion.desc')}">
+                            Ventas y finanzas</p>
+                        <a th:href="@{/admin/facturas}" class="btn btn-sm btn-outline-dark w-100"
+                            th:text="${trad.getTraduccion('btn.entrar')}">Entrar</a>
                     </div>
                 </div>
 
@@ -198,15 +230,18 @@
                             </div>
                             <h6 class="mb-0 fw-bold" th:text="${trad.getTraduccion('mod.proveedores')}">Proveedores</h6>
                         </div>
-                        <p class="small text-muted flex-grow-1" th:text="${trad.getTraduccion('mod.admin.proveedores.desc')}">Suministros médicos</p>
-                        <a th:href="@{/proveedores}" class="btn btn-sm btn-outline-dark w-100" th:text="${trad.getTraduccion('btn.entrar')}">Entrar</a>
+                        <p class="small text-muted flex-grow-1"
+                            th:text="${trad.getTraduccion('mod.admin.proveedores.desc')}">Suministros médicos</p>
+                        <a th:href="@{/proveedores}" class="btn btn-sm btn-outline-dark w-100"
+                            th:text="${trad.getTraduccion('btn.entrar')}">Entrar</a>
                     </div>
                 </div>
             </div>
         </div>
 
         <footer class="mt-5 text-center text-muted">
-            <small th:text="${trad.getTraduccion('footer.copy')}">&copy; 2026 Clínica Harmonia - Sistema de Gestión Integral</small>
+            <small th:text="${trad.getTraduccion('footer.copy')}">&copy; 2026 Clínica Harmonia - Sistema de Gestión
+                Integral</small>
         </footer>
     </main>
 

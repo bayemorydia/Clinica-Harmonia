@@ -3,148 +3,118 @@ package cat.copernic.proyecto2.Controller;
 import cat.copernic.proyecto2.Domain.Persona.Rol;
 import cat.copernic.proyecto2.Service.Rol.RolService;
 import cat.copernic.proyecto2.Service.Traduccion.TraduccionService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequestMapping("/admin/roles")
+@RequestMapping("/roles")
+@RequiredArgsConstructor
 public class RolController {
 
-    @Autowired
-    private RolService rolService;
+    private final RolService rolService;
+    private final TraduccionService traduccionService;
 
-    @Autowired
-    private TraduccionService trad;
+    @GetMapping({ "", "/listar" })
+    public String listar(
+            @RequestParam(value = "query", required = false, defaultValue = "") String query,
+            @RequestParam(value = "activo", required = false) Boolean activo,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            Model model) {
 
-    /**
-     * Lista principal de roles con paginación.
-     */
-    @GetMapping
-    public String listar(Model model,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        Page<Rol> rolesPage = rolService.listarRoles(PageRequest.of(page, size));
+        Page<Rol> rolesPage = rolService.getRolesPaginados(query, activo, page, size);
 
         model.addAttribute("roles", rolesPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", rolesPage.getTotalPages());
         model.addAttribute("totalElements", rolesPage.getTotalElements());
         model.addAttribute("size", size);
-        model.addAttribute("trad", trad);
+        model.addAttribute("query", query);
+        model.addAttribute("activo", activo);
+        model.addAttribute("trad", traduccionService);
 
         return "Rol/listaRol";
     }
 
-    /**
-     * Endpoint para la búsqueda y filtrado dinámico (AJAX).
-     * Retorna solo el fragmento de la tabla.
-     */
     @GetMapping("/search")
-    public String search(@RequestParam(required = false) String query,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+    public String search(
+            @RequestParam(value = "query", required = false, defaultValue = "") String query,
+            @RequestParam(value = "activo", required = false) Boolean activo,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
             Model model) {
 
-        Page<Rol> rolesPage = (query == null || query.isEmpty())
-                ? rolService.listarRoles(PageRequest.of(page, size))
-                : rolService.buscarPorNombre(query, PageRequest.of(page, size));
+        Page<Rol> rolesPage = rolService.getRolesPaginados(query, activo, page, size);
 
         model.addAttribute("roles", rolesPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", rolesPage.getTotalPages());
         model.addAttribute("totalElements", rolesPage.getTotalElements());
         model.addAttribute("size", size);
-        model.addAttribute("trad", trad);
+        model.addAttribute("query", query);
+        model.addAttribute("activo", activo);
+        model.addAttribute("trad", traduccionService);
 
+        // Retorna solo el fragmento de la tabla para la actualización AJAX
         return "Rol/listaRol :: tablaRoles";
     }
 
-    /**
-     * Muestra el formulario para crear un nuevo rol.
-     */
     @GetMapping("/nuevo")
     public String nuevo(Model model) {
-        Rol rol = new Rol();
-        rol.setActivo(true); // Activo por defecto al crear
-        model.addAttribute("rol", rol);
-        model.addAttribute("trad", trad);
+        model.addAttribute("rol", new Rol());
+        model.addAttribute("trad", traduccionService);
         return "Rol/formularioRol";
     }
 
-    /**
-     * Muestra el formulario para editar un rol existente.
-     */
-    @GetMapping("/editar/{id}")
-    public String editar(@PathVariable("id") Long id, Model model) {
-        Rol rol = rolService.buscarRol(id);
-        if (rol == null) {
-            return "redirect:/admin/roles";
-        }
-        model.addAttribute("rol", rol);
-        model.addAttribute("trad", trad);
-        return "Rol/formularioRol";
-    }
-
-    /**
-     * Guarda o actualiza un rol.
-     * Incluye validación de duplicados mediante un bloque try-catch.
-     */
     @PostMapping("/guardar")
-    public String guardar(@ModelAttribute Rol rol, Model model) {
+    public String guardar(@Valid @ModelAttribute("rol") Rol rol, BindingResult result, Model model,
+            RedirectAttributes flash) {
+        if (result.hasErrors()) {
+            model.addAttribute("trad", traduccionService);
+            return "Rol/formularioRol";
+        }
         try {
             rolService.guardar(rol);
-            return "redirect:/admin/roles";
-        } catch (RuntimeException e) {
-            // Si el servicio lanza una excepción (ej: nombre duplicado)
-            model.addAttribute("rol", rol);
-            model.addAttribute("trad", trad);
-            // 'e.getMessage()' contiene la clave de traducción: "error.nombre.duplicado"
-            model.addAttribute("error", trad.getTraduccion(e.getMessage()));
+            flash.addFlashAttribute("success", "Operación realizada con éxito.");
+            return "redirect:/roles/listar";
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("trad", traduccionService);
             return "Rol/formularioRol";
         }
     }
 
-    /**
-     * Activa un rol directamente (sin confirmación).
-     */
-    @GetMapping("/activar/{id}")
-    public String activar(@PathVariable Long id) {
-        Rol rol = rolService.buscarRol(id);
-        if (rol != null) {
-            rol.setActivo(true);
-            rolService.guardar(rol);
-        }
-        return "redirect:/admin/roles";
-    }
-
-    /**
-     * Navega a la pantalla de confirmación para desactivar.
-     */
     @GetMapping("/confirmarDesactivar/{id}")
     public String confirmarDesactivar(@PathVariable Long id, Model model) {
-        Rol rol = rolService.buscarRol(id);
-        if (rol == null)
-            return "redirect:/admin/roles";
-
-        model.addAttribute("rol", rol);
-        model.addAttribute("trad", trad);
+        model.addAttribute("rol", rolService.encontrarRol(id));
+        model.addAttribute("trad", traduccionService);
         return "Rol/confirmarDesactivar";
     }
 
-    /**
-     * Procesa la desactivación efectiva tras la confirmación.
-     */
     @PostMapping("/desactivar")
-    public String desactivar(@RequestParam("id") Long id) {
-        Rol rol = rolService.buscarRol(id);
-        if (rol != null) {
-            rol.setActivo(false);
-            rolService.guardar(rol);
-        }
-        return "redirect:/admin/roles";
+    public String desactivar(@RequestParam Long id, RedirectAttributes flash) {
+        rolService.desactivar(id);
+        flash.addFlashAttribute("warning", "Rol desactivado.");
+        return "redirect:/roles/listar";
+    }
+
+    @PostMapping("/activar/{id}")
+    public String activar(@PathVariable Long id, RedirectAttributes flash) {
+        rolService.activar(id);
+        flash.addFlashAttribute("success", "Rol activado.");
+        return "redirect:/roles/listar";
+    }
+
+    @GetMapping("/detalle/{id}")
+    public String detalle(@PathVariable Long id, Model model) {
+        model.addAttribute("rol", rolService.encontrarRol(id));
+        model.addAttribute("trad", traduccionService);
+        return "Rol/detalleRol";
     }
 }

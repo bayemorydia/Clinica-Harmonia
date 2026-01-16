@@ -1,13 +1,11 @@
 package cat.copernic.proyecto2.Domain.Farmacia;
 
-import cat.copernic.proyecto2.Domain.Farmacia.PedidoProveedor;
 import cat.copernic.proyecto2.Domain.Persona.Usuario;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;

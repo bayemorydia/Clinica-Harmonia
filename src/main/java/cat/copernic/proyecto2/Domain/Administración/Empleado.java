@@ -1,12 +1,9 @@
 package cat.copernic.proyecto2.Domain.Administración;
 
 import cat.copernic.proyecto2.Domain.Recepción.Cita;
-import cat.copernic.proyecto2.Domain.Administración.Turno;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.ArrayList;
 import java.time.LocalTime;
-
 import cat.copernic.proyecto2.Domain.Persona.Rol;
 import cat.copernic.proyecto2.Domain.Persona.Usuario;
 import jakarta.persistence.*;
@@ -15,7 +12,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
-
 import java.time.LocalDate;
 import java.math.BigDecimal;
 

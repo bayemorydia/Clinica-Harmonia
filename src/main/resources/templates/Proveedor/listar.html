@@ -1,202 +1,122 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <div th:replace="~{Reutilizable/layout :: head_general}"></div>
-    <title th:text="${trad != null ? trad.getTraduccion('proveedores.lista.titulo') : 'Lista de Proveedores'}">
-        Lista de Proveedores
-    </title>
-
+    <title th:text="${trad.getTraduccion('proveedores.lista.titulo')}">Proveedores</title>
     <style>
-        .clickable-row {
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
-
-        .clickable-row:hover {
-            background-color: rgba(0, 123, 255, 0.05) !important;
-        }
-
-        /* Estilos Paginación */
-        .page-link {
-            color: #6c757d;
-            border: none;
-            background: #f1f3f5;
-            margin: 0 3px;
-            border-radius: 8px !important;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.85rem;
-            transition: all 0.2s ease;
-        }
-
-        .page-item.active .page-link {
-            background-color: #0d6efd !important;
-            color: white !important;
-            box-shadow: 0 4px 10px rgba(13, 110, 253, 0.2);
-        }
-
-        .page-item.disabled .page-link {
-            background-color: #f8f9fa;
-            color: #dee2e6;
-        }
-
-        .select-paginacion-clean {
-            display: inline-block;
-            width: 75px;
-            padding: 0.375rem 1.75rem 0.375rem 0.75rem;
-            font-size: 0.85rem;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            appearance: none;
-            cursor: pointer;
-        }
-
-        .table-footer {
-            padding: 1.25rem 1.5rem;
-            background-color: #ffffff;
-            border-top: 1px solid #edf2f7;
-        }
-
-        /* Badges de estado */
-        .badge-activo {
-            font-size: 0.75rem;
-            padding: 0.35rem 0.75rem;
-            border-radius: 50px;
-        }
+        .clickable-row { cursor: pointer; transition: background-color 0.2s ease; }
+        .clickable-row:hover { background-color: rgba(0, 123, 255, 0.05) !important; }
+        .page-link { color: #6c757d; border: none; background: #f1f3f5; margin: 0 3px; border-radius: 8px !important; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; transition: all 0.2s ease; }
+        .page-item.active .page-link { background-color: #0d6efd !important; color: white !important; box-shadow: 0 4px 10px rgba(13, 110, 253, 0.2); }
+        .select-paginacion-clean { display: inline-block; width: 75px; padding: 0.375rem 1.75rem 0.375rem 0.75rem; font-size: 0.85rem; border: 1px solid #dee2e6; border-radius: 8px; appearance: none; cursor: pointer; }
+        .table-footer { padding: 1.25rem 1.5rem; background-color: #ffffff; border-top: 1px solid #edf2f7; }
     </style>
 </head>
-
 <body>
 <div th:replace="~{Reutilizable/layout :: menu}"></div>
-
 <main class="content">
     <div class="container-fluid">
-
-        <!-- CABECERA -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h2 class="fw-bold text-dark mb-1"
-                    th:text="${trad != null ? trad.getTraduccion('proveedores.lista.titulo') : 'Lista de Proveedores'}">
-                    Lista de Proveedores
-                </h2>
-                <p class="text-muted small mb-0"
-                   th:text="${trad != null ? trad.getTraduccion('proveedores.lista.subtitulo') : 'Gestión de suministros'}">
-                    Gestión de suministros
-                </p>
+                <h2 class="fw-bold text-dark mb-1" th:text="${trad.getTraduccion('proveedores.lista.titulo')}">Proveedores</h2>
+                <p class="text-muted small mb-0">Gestión de suministros y logística.</p>
             </div>
-
             <a th:href="@{/proveedores/nuevo}" class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold">
-                <i class="bi bi-plus-circle me-2"></i>
-                <span th:text="${trad != null ? trad.getTraduccion('btn.nuevo') : 'Añadir Proveedor'}">
-                    Añadir Proveedor
-                </span>
+                <i class="bi bi-plus-circle me-2"></i> <span th:text="${trad.getTraduccion('btn.nuevo.proveedor')}">Nuevo</span>
             </a>
         </div>
 
-        <!-- TABLA -->
+        <div class="card shadow-sm border-0 mb-4" style="border-radius: 15px;">
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-8">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                            <input type="text" id="searchInput" class="form-control border-start-0 ps-0 shadow-none" 
+                                   th:placeholder="${trad.getTraduccion('citas.placeholder.buscar')}" th:value="${query}">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <select id="statusFilter" class="form-select shadow-none" style="border-radius: 8px;" onchange="updateTable(0)">
+                            <option value="" th:selected="${activo == null}">Todos los estados</option>
+                            <option value="true" th:selected="${activo == true}">Activos</option>
+                            <option value="false" th:selected="${activo == false}">Inactivos</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="card shadow-sm border-0" style="border-radius: 15px; overflow: hidden;">
             <div class="card-body p-0" id="tablaContainer">
+                <div th:fragment="tablaProveedores">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-4 py-3 border-0 text-secondary small fw-bold">PROVEEDOR</th>
+                                    <th class="py-3 border-0 text-secondary small fw-bold">CIF</th>
+                                    <th class="py-3 border-0 text-secondary small fw-bold">CONTACTO</th>
+                                    <th class="py-3 border-0 text-secondary small fw-bold text-center">ESTADO</th>
+                                    <th class="py-3 border-0 text-secondary small fw-bold text-center">ACCIONES</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:if="${#lists.isEmpty(proveedores)}">
+                                    <td colspan="5" class="text-center py-5 text-muted">No hay proveedores.</td>
+                                </tr>
+                                <tr th:each="p : ${proveedores}" class="border-bottom clickable-row" 
+                                    th:onclick="|window.location.href='/proveedores/detalle?id=' + ${p.id}|">
+                                    <td class="ps-4 py-3">
+                                        <div class="fw-bold text-dark mb-0" th:text="${p.nombre}">Nombre</div>
+                                        <div class="text-muted small" th:text="${p.direccion}">Dirección</div>
+                                    </td>
+                                    <td class="py-3 font-monospace small" th:text="${p.cif}">CIF</td>
+                                    <td class="py-3 small">
+                                        <div th:text="${p.telefono}"></div>
+                                        <div class="text-muted" th:text="${p.email}"></div>
+                                    </td>
+                                    <td class="py-3 text-center">
+                                        <span th:if="${p.activo}" class="badge rounded-pill bg-success-subtle text-success px-3 py-2">Activo</span>
+                                        <span th:unless="${p.activo}" class="badge rounded-pill bg-light text-secondary px-3 py-2">Inactivo</span>
+                                    </td>
+                                    <td class="py-3 text-center" onclick="event.stopPropagation();">
+                                        <a th:if="${p.activo}" th:href="@{'/proveedores/confirmarBaja?id=' + ${p.id}}" class="btn btn-sm btn-outline-danger rounded-pill px-3">
+                                            <i class="bi bi-trash"></i> Baja
+                                        </a>
+                                        <form th:unless="${p.activo}" th:action="@{'/proveedores/activar/' + ${p.id}}" method="post" style="display:inline;">
+                                            <button type="submit" class="btn btn-sm btn-outline-success rounded-pill px-3">
+                                                <i class="bi bi-check-circle"></i> Activar
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
 
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="bg-light">
-                        <tr>
-                            <th class="ps-4 py-3 border-0 text-secondary small fw-bold">ID</th>
-                            <th class="py-3 border-0 text-secondary small fw-bold">Proveedor</th>
-                            <th class="py-3 border-0 text-secondary small fw-bold">CIF</th>
-                            <th class="py-3 border-0 text-secondary small fw-bold">Contacto</th>
-                            <th class="py-3 border-0 text-secondary small fw-bold text-center">Estado</th>
-                            <th class="py-3 border-0 text-secondary small fw-bold text-center">Acciones</th>
-                        </tr>
-                        </thead>
-
-                        <tbody>
-                        <tr th:if="${#lists.isEmpty(proveedores)}">
-                            <td colspan="6" class="text-center py-5 text-muted">No hay proveedores registrados.</td>
-                        </tr>
-
-                        <tr th:each="proveedor : ${proveedores}" class="border-bottom clickable-row"
-                            th:data-href="@{/proveedores/detalle(id=${proveedor.id})}">
-
-                            <td class="ps-4 py-3 fw-semibold text-dark" th:text="${proveedor.id}">1</td>
-
-                            <td class="py-3">
-                                <div class="fw-bold text-dark mb-1" th:text="${proveedor.nombre}">Nombre</div>
-                                <div class="text-secondary small" th:text="${proveedor.direccion}">Dirección</div>
-                            </td>
-
-                            <td class="py-3 text-secondary small" th:text="${proveedor.cif}">CIF</td>
-
-                            <td class="py-3 text-secondary small">
-                                <div><i class="bi bi-telephone me-1"></i> <span th:text="${proveedor.telefono}"></span></div>
-                                <div><i class="bi bi-envelope me-1"></i> <span th:text="${proveedor.email}"></span></div>
-                            </td>
-
-                            <td class="py-3 text-center">
-                                <span th:classappend="${proveedor.activo} ? 'badge rounded-pill bg-success-subtle text-success px-3 py-2' : 'badge rounded-pill bg-light text-secondary px-3 py-2'"
-                                      th:text="${proveedor.activo} ? 'Activo' : 'Inactivo'">Activo</span>
-                            </td>
-
-                            <td class="py-3 text-center">
-
-
-                                <!-- DAR DE BAJA -->
-                                <form th:if="${proveedor.activo}" th:action="@{/proveedores/confirmarBaja}" method="get" class="d-inline">
-                                    <input type="hidden" name="id" th:value="${proveedor.id}" />
-                                    <button type="submit" class="btn btn-sm btn-outline-warning rounded-pill px-3 me-1" title="Dar de baja" onclick="event.stopPropagation();">
-                                        <i class="bi bi-person-dash me-1"></i> Baja
-                                    </button>
-                                </form>
-
-                                <!-- REACTIVAR -->
-                                <form th:if="${!proveedor.activo}" th:action="@{/proveedores/activar}" method="get" class="d-inline">
-                                    <input type="hidden" name="id" th:value="${proveedor.id}" />
-                                    <button type="submit" class="btn btn-sm btn-outline-success rounded-pill px-3 me-1" title="Reactivar" onclick="event.stopPropagation();">
-                                        <i class="bi bi-person-check me-1"></i> Activar
-                                    </button>
-                                </form>
-
-
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-
-                    <!-- PAGINACIÓN -->
                     <div class="table-footer d-flex justify-content-between align-items-center">
                         <div class="text-muted small">
-                            <span class="fw-bold" th:text="${(currentPage * size) + 1}">1</span> a
-                            <span class="fw-bold" th:text="${(currentPage * size) + proveedores.size()}">10</span>
-                            de <span class="fw-bold" th:text="${totalElements}">100</span> proveedores
+                            <span th:text="${(currentPage * size) + 1}">1</span> a 
+                            <span th:text="${(currentPage * size) + proveedores.size()}">10</span> de 
+                            <span class="fw-bold" th:text="${totalElements}">100</span>
                         </div>
-
                         <div class="d-flex align-items-center gap-4">
                             <select id="pageSize" class="select-paginacion-clean shadow-none" onchange="updateTable(0)">
                                 <option value="10" th:selected="${size == 10}">10</option>
                                 <option value="20" th:selected="${size == 20}">20</option>
-                                <option value="50" th:selected="${size == 50}">50</option>
                             </select>
-
-                            <nav>
+                            <nav th:if="${totalPages > 1}">
                                 <ul class="pagination pagination-sm mb-0">
                                     <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                                        <a class="page-link" href="javascript:void(0)" th:onclick="'changePage(' + (${currentPage} - 1) + ')'">
-                                            <i class="bi bi-chevron-left"></i>
-                                        </a>
+                                        <a class="page-link" href="javascript:void(0)" th:onclick="'changePage(' + (${currentPage} - 1) + ')'"><i class="bi bi-chevron-left"></i></a>
                                     </li>
-                                    <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages > 0 ? totalPages - 1 : 0)}"
-                                        th:if="${totalPages > 0 and i >= currentPage - 1 and i <= currentPage + 1}"
+                                    <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" 
                                         th:classappend="${i == currentPage} ? 'active'">
-                                        <a class="page-link" href="javascript:void(0)" th:onclick="'changePage(' + ${i} + ')'" th:text="${i + 1}">1</a>
+                                        <a class="page-link" href="javascript:void(0)" th:onclick="'changePage(' + ${i} + ')'" th:text="${i + 1}"></a>
                                     </li>
                                     <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
-                                        <a class="page-link" href="javascript:void(0)" th:onclick="'changePage(' + (${currentPage} + 1) + ')'">
-                                            <i class="bi bi-chevron-right"></i>
-                                        </a>
+                                        <a class="page-link" href="javascript:void(0)" th:onclick="'changePage(' + (${currentPage} + 1) + ')'"><i class="bi bi-chevron-right"></i></a>
                                     </li>
                                 </ul>
                             </nav>
@@ -210,37 +130,31 @@
 </main>
 
 <div th:replace="~{Reutilizable/layout :: scripts}"></div>
-
 <script th:inline="javascript">
-    document.addEventListener("DOMContentLoaded", () => {
-        initTableEvents();
-    });
-
-    function initTableEvents() {
-        document.querySelectorAll(".clickable-row").forEach(row => {
-            row.addEventListener("click", function (e) {
-                if (e.target.closest('button') || e.target.closest('a')) return;
-                window.location.href = this.getAttribute("data-href");
-            });
-        });
-    }
-
     function updateTable(page = 0) {
+        const query = document.getElementById('searchInput').value;
         const size = document.getElementById('pageSize').value;
-        fetch(`/proveedores/page?page=${page}&size=${size}`)
+        const activo = document.getElementById('statusFilter').value;
+        const container = document.getElementById('tablaContainer');
+        const params = new URLSearchParams({ query, page, size });
+        if (activo !== "") params.append("activo", activo);
+
+        fetch(`/proveedores/search?${params.toString()}`)
             .then(r => r.text())
-            .then(html => {
-                document.getElementById('tablaContainer').innerHTML = html;
-                initTableEvents();
-            });
+            .then(html => { container.innerHTML = html; })
+            .catch(err => console.error("Error:", err));
     }
 
-    function changePage(page) {
-        const totalPages = parseInt(document.getElementById('hiddenTotalPages').value);
-        if (page < 0 || page >= totalPages) return;
-        updateTable(page);
+    function changePage(p) {
+        const total = parseInt(document.getElementById('hiddenTotalPages').value);
+        if (p >= 0 && p < total) updateTable(p);
     }
+
+    let timeout = null;
+    document.getElementById('searchInput').addEventListener('keyup', () => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => updateTable(0), 400);
+    });
 </script>
-
 </body>
 </html>

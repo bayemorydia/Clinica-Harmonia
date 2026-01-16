@@ -31,7 +31,7 @@
                                 <i class="bi bi-person-check text-primary fs-3"></i>
                             </div>
                             <div>
-                                <h6 class="text-muted mb-0 small text-uppercase fw-bold">Pacientes Pendientes</h6>
+                                <h6 class="text-muted mb-0 small text-uppercase fw-bold" th:text="${trad.getTraduccion('medico.stat.pendientes')}">Pacientes Pendientes</h6>
                                 <h3 class="fw-bold mb-0" th:text="${totalPacientes}">0</h3>
                             </div>
                         </div>
@@ -45,7 +45,7 @@
                                 <i class="bi bi-calendar2-day text-success fs-3"></i>
                             </div>
                             <div>
-                                <h6 class="text-muted mb-0 small text-uppercase fw-bold">Mis Citas Hoy</h6>
+                                <h6 class="text-muted mb-0 small text-uppercase fw-bold" th:text="${trad.getTraduccion('medico.stat.hoy')}">Mis Citas Hoy</h6>
                                 <h3 class="fw-bold mb-0" th:text="${citasHoy}">0</h3>
                             </div>
                         </div>
@@ -56,49 +56,31 @@
             <div class="card border-0 shadow-sm p-4 bg-white mb-4">
                 <h5 class="fw-bold mb-4">
                     <i class="bi bi-calendar-event me-2 text-primary"></i>
-                    Citas Pendientes Asignadas
+                    <span th:text="${trad.getTraduccion('medico.tabla.titulo')}">Próximas 5 Citas</span>
                 </h5>
                 <div class="table-responsive">
                     <table class="table table-hover align-middle">
                         <thead class="table-light">
                             <tr>
-                                <th>Fecha y Hora</th>
-                                <th>Paciente</th>
-                                <th>Especialidad</th>
-                                <th class="text-end">Acciones</th>
+                                <th th:text="${trad.getTraduccion('cita.label.fechahora')}">Fecha y Hora</th>
+                                <th th:text="${trad.getTraduccion('cita.label.paciente')}">Paciente</th>
+                                <th th:text="${trad.getTraduccion('cita.label.especialidad')}">Especialidad</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="cita : ${citasPendientes}">
+                            <tr th:each="cita, iterStat : ${citasPendientes}" th:if="${iterStat.index < 5}">
                                 <td class="fw-bold" th:text="${#temporals.format(cita.fechaHora, 'dd/MM HH:mm')}"></td>
                                 <td th:text="${cita.paciente.nombre} + ' ' + ${cita.paciente.apellidos}"></td>
                                 <td><span class="badge bg-info-subtle text-info" th:text="${cita.especialidad}"></span></td>
-                                <td class="text-end">
-                                    <a th:href="@{/medico/atender/{id}(id=${cita.id})}" class="btn btn-sm btn-primary rounded-pill px-3">
-                                        Atender <i class="bi bi-arrow-right ms-1"></i>
-                                    </a>
-                                </td>
                             </tr>
                             <tr th:if="${#lists.isEmpty(citasPendientes)}">
-                                <td colspan="4" class="text-center py-4 text-muted">No tienes pacientes pendientes asignados.</td>
+                                <td colspan="3" class="text-center py-4 text-muted" th:text="${trad.getTraduccion('medico.tabla.vacia')}">No hay citas próximas programadas.</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            <div class="card border-0 shadow-sm p-4 bg-white">
-                <h5 class="fw-bold mb-4">Acciones Rápidas</h5>
-                <div class="row g-3">
-                    <div class="col-md-6 col-lg-3">
-                        <div class="border p-3 rounded text-center card-stat bg-white h-100">
-                            <i class="bi bi-search fs-2 text-info mb-2"></i>
-                            <h6 class="fw-bold">Buscar Paciente</h6>
-                            <a th:href="@{/medico/pacientes}" class="btn btn-sm btn-info text-white w-100 mt-2">Abrir</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </main>
     <div th:replace="~{Reutilizable/layoutMedico :: scripts_medico}"></div>

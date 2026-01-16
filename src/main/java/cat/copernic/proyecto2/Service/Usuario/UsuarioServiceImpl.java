@@ -1,7 +1,7 @@
 package cat.copernic.proyecto2.Service.Usuario;
 
-import cat.copernic.proyecto2.DAO.RolDAO;
-import cat.copernic.proyecto2.DAO.UsuarioDAO;
+import cat.copernic.proyecto2.DAO.JPA.RolDAO;
+import cat.copernic.proyecto2.DAO.JPA.UsuarioDAO;
 import cat.copernic.proyecto2.Domain.Persona.Rol;
 import cat.copernic.proyecto2.Domain.Persona.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +35,18 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Transactional(readOnly = true)
     public Page<Usuario> buscarPorUsername(String query, Pageable pageable) {
         return usuarioDAO.findByUsernameContainingIgnoreCase(query, pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Usuario> listarPaginado(String query, Boolean activo, Pageable pageable) {
+        // Si no tienes una Query personalizada en el DAO, puedes usar este enfoque:
+        if ((query == null || query.isEmpty()) && activo == null) {
+            return usuarioDAO.findAll(pageable);
+        }
+        // Suponiendo que añades el método findByFilters al UsuarioDAO igual que en
+        // Paciente
+        return usuarioDAO.findByFilters(query, activo, pageable);
     }
 
     @Override

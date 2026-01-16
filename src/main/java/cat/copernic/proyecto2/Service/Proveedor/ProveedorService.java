@@ -1,26 +1,16 @@
 package cat.copernic.proyecto2.Service.Proveedor;
 
-import java.util.List;
-
 import cat.copernic.proyecto2.Domain.Farmacia.Proveedor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import java.util.List;
 
 public interface ProveedorService {
     Proveedor crearProveedor(Proveedor proveedor);
-
     Proveedor actualizarProveedor(Long id, Proveedor datosProveedor);
-
-    void DesactivarProveedor(Long id);
-
+    void desactivarProveedor(Long id);
     void activarProveedor(Long id);
-
-    void EliminarProveedor(Long id);
-
     Proveedor buscarPorID(Long id);
-
     List<Proveedor> listarTodos();
-
-    List<Proveedor> listarActivos();
-
-    List<Proveedor> buscarPorNombreOCif(String termino);
-
+    Page<Proveedor> listarPaginado(String query, Boolean activo, Pageable pageable);
 }

@@ -3,10 +3,7 @@ package cat.copernic.proyecto2.Domain.Administración;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import org.springframework.format.annotation.DateTimeFormat;
 
 @Data
 @Entity

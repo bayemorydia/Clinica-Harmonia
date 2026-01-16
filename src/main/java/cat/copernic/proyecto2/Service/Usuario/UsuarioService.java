@@ -12,4 +12,5 @@ public interface UsuarioService {
     Page<Usuario> buscarPorUsername(String query, Pageable pageable);
     Usuario buscarUsuario(Long id);
     void guardar(Usuario usuario);
+    Page<Usuario> listarPaginado(String query, Boolean activo, Pageable pageable);
 }

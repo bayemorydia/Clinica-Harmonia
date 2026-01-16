@@ -5,12 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import cat.copernic.proyecto2.Domain.Recepción.Paciente;
 import cat.copernic.proyecto2.Service.Paciente.PacienteService;
@@ -25,29 +20,56 @@ public class PacienteController {
     private PacienteService pacienteService;
 
     @Autowired
-    private TraduccionService traduccionService; // Inyección de traducciones
+    private TraduccionService traduccionService;
 
     @GetMapping("")
     public String listarPacientes(
             @RequestParam(value = "query", required = false, defaultValue = "") String query,
+            @RequestParam(value = "activo", required = false) Boolean activo,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             Model model) {
-        Page<Paciente> pacientePage = pacienteService.getPacientesPaginados(query, page, size);
+
+        Page<Paciente> pacientePage = pacienteService.getPacientesPaginados(query, activo, page, size);
+
         model.addAttribute("pacientes", pacientePage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", pacientePage.getTotalPages());
         model.addAttribute("totalElements", pacientePage.getTotalElements());
         model.addAttribute("size", size);
         model.addAttribute("query", query);
+        model.addAttribute("activo", activo);
         model.addAttribute("trad", traduccionService);
+
         return "Paciente/listaPacientes";
+    }
+
+    @GetMapping("/search")
+    public String search(
+            @RequestParam(value = "query", required = false, defaultValue = "") String query,
+            @RequestParam(value = "activo", required = false) Boolean activo,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            Model model) {
+
+        Page<Paciente> pacientePage = pacienteService.getPacientesPaginados(query, activo, page, size);
+
+        model.addAttribute("pacientes", pacientePage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", pacientePage.getTotalPages());
+        model.addAttribute("totalElements", pacientePage.getTotalElements());
+        model.addAttribute("size", size);
+        model.addAttribute("query", query);
+        model.addAttribute("activo", activo);
+        model.addAttribute("trad", traduccionService);
+
+        return "Paciente/listaPacientes :: tablaPacientes";
     }
 
     @GetMapping("/anadir")
     public String mostrarFormularioAnadir(Model model) {
         model.addAttribute("paciente", new Paciente());
-        model.addAttribute("trad", traduccionService); // Pasar traducciones
+        model.addAttribute("trad", traduccionService);
         return "Paciente/formularioPaciente";
     }
 
@@ -73,14 +95,11 @@ public class PacienteController {
 
         if (result.hasErrors()) {
             if ("detalle".equals(origen)) {
-                // Recuperamos el paciente de la DB para asegurar que tenemos la edad correcta
                 Paciente pacienteExistente = pacienteService.findPacienteById(paciente.getId());
                 if (pacienteExistente != null) {
                     model.addAttribute("edad", pacienteService.getEdadPaciente(pacienteExistente));
-                    // Opcional: restauramos la fecha en el objeto actual para evitar NPE en la
-                    // vista
-                    paciente.setFechaNacimiento(pacienteExistente.getFechaNacimiento());
                     paciente.setUsuario(pacienteExistente.getUsuario());
+                    paciente.setFechaNacimiento(pacienteExistente.getFechaNacimiento());
                 }
                 return "Paciente/detallePaciente";
             }
@@ -89,22 +108,23 @@ public class PacienteController {
 
         try {
             pacienteService.savePaciente(paciente, imagen);
-
             if ("detalle".equals(origen)) {
                 return "redirect:/pacientes/detalle/" + paciente.getId() + "?success";
             }
             return "redirect:/pacientes";
         } catch (Exception e) {
+            // Pasamos el mensaje de la excepción (ej: "DNI duplicado") a la vista
             model.addAttribute("error", e.getMessage());
 
             if ("detalle".equals(origen)) {
-                // En caso de excepción (ej. DNI duplicado), volvemos a cargar los datos
-                // necesarios para la vista
                 Paciente pacienteExistente = pacienteService.findPacienteById(paciente.getId());
                 if (pacienteExistente != null) {
                     model.addAttribute("edad", pacienteService.getEdadPaciente(pacienteExistente));
-                    paciente.setFechaNacimiento(pacienteExistente.getFechaNacimiento());
+                    // Restauramos datos sensibles que no vienen en el form para no perderlos al
+                    // recargar
                     paciente.setUsuario(pacienteExistente.getUsuario());
+                    paciente.setFechaAlta(pacienteExistente.getFechaAlta());
+                    paciente.setFechaNacimiento(pacienteExistente.getFechaNacimiento());
                 }
                 return "Paciente/detallePaciente";
             }
@@ -130,7 +150,7 @@ public class PacienteController {
             return "redirect:/pacientes";
 
         model.addAttribute("paciente", paciente);
-        model.addAttribute("trad", traduccionService); // Pasar traducciones
+        model.addAttribute("trad", traduccionService);
         return "Paciente/confirmarEliminarPaciente";
     }
 
@@ -142,20 +162,5 @@ public class PacienteController {
             pacienteService.savePaciente(paciente, null);
         }
         return "redirect:/pacientes";
-    }
-
-    @GetMapping("/search")
-    public String search(@RequestParam(value = "query", required = false) String query,
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size,
-            Model model) {
-        Page<Paciente> pacientePage = pacienteService.getPacientesPaginados(query, page, size);
-        model.addAttribute("pacientes", pacientePage.getContent());
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", pacientePage.getTotalPages());
-        model.addAttribute("totalElements", pacientePage.getTotalElements());
-        model.addAttribute("size", size);
-        model.addAttribute("trad", traduccionService);
-        return "Paciente/listaPacientes :: tablaPacientes";
     }
 }

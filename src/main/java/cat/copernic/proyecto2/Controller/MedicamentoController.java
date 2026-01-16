@@ -2,56 +2,114 @@ package cat.copernic.proyecto2.Controller;
 
 import cat.copernic.proyecto2.Domain.Farmacia.Medicamento;
 import cat.copernic.proyecto2.Service.Medicamento.MedicamentoService;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import cat.copernic.proyecto2.Service.Traduccion.TraduccionService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import java.util.List;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequestMapping("/medicamentos") // Ruta base para este controlador
+@RequestMapping("/medicamentos")
+@RequiredArgsConstructor
 public class MedicamentoController {
 
-    @Autowired
-    private MedicamentoService medicamentoService;
+    private final MedicamentoService medicamentoService;
+    private final TraduccionService traduccionService;
 
-    // 1. Listar todos los medicamentos
-    @GetMapping("/listar")
-    public String listar(Model model) {
-        List<Medicamento> listaMedicamentos = medicamentoService.listarMedicamentos();
-        model.addAttribute("medicamentos", listaMedicamentos);
-        return "farmacia/ListaMedicamentos"; // Retorna el archivo HTML: src/main/resources/templates/farmacia/lista-medicamentos.html
+    @GetMapping({ "", "/listar" })
+    public String listar(@RequestParam(defaultValue = "") String query,
+            @RequestParam(required = false) Boolean activo,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size, Model model) {
+
+        Page<Medicamento> medsPage = medicamentoService.getMedicamentosPaginados(query, activo, page, size);
+
+        model.addAttribute("medicamentos", medsPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", medsPage.getTotalPages());
+        model.addAttribute("totalElements", medsPage.getTotalElements());
+        model.addAttribute("size", size);
+        model.addAttribute("query", query);
+        model.addAttribute("activo", activo);
+        model.addAttribute("trad", traduccionService);
+        return "Farmacia/ListaMedicamentos";
     }
 
-    // 2. Mostrar formulario para añadir un nuevo medicamento
+    @GetMapping("/search")
+    public String search(@RequestParam(defaultValue = "") String query,
+            @RequestParam(required = false) Boolean activo,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size, Model model) {
+
+        Page<Medicamento> medsPage = medicamentoService.getMedicamentosPaginados(query, activo, page, size);
+        model.addAttribute("medicamentos", medsPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", medsPage.getTotalPages());
+        model.addAttribute("totalElements", medsPage.getTotalElements());
+        model.addAttribute("size", size);
+        model.addAttribute("trad", traduccionService);
+        return "Farmacia/ListaMedicamentos :: tablaMedicamentos";
+    }
+
     @GetMapping("/nuevo")
-    public String formularioNuevo(Medicamento medicamento) {
-        return "farmacia/FormMedicamento"; // Retorna el archivo HTML del formulario
+    public String nuevo(Model model) {
+        model.addAttribute("medicamento", new Medicamento());
+        model.addAttribute("trad", traduccionService);
+        return "Farmacia/FormMedicamento";
     }
 
-    // 3. Guardar el medicamento (Nuevo o Editado)
+    @GetMapping("/detalle/{id}")
+    public String detalle(@PathVariable Long id, Model model) {
+        model.addAttribute("medicamento", medicamentoService.encontrarMedicamento(id));
+        model.addAttribute("trad", traduccionService);
+        return "Farmacia/FormMedicamento";
+    }
+
     @PostMapping("/guardar")
-    public String guardar(Medicamento medicamento) {
-        medicamentoService.guardar(medicamento);
-        return "redirect:/medicamentos/listar"; // Redirige a la lista después de guardar
+    public String guardar(@Valid @ModelAttribute("medicamento") Medicamento medicamento, BindingResult result,
+            Model model,
+            RedirectAttributes flash) {
+        if (result.hasErrors()) {
+            model.addAttribute("trad", traduccionService);
+            return "Farmacia/FormMedicamento";
+        }
+        try {
+            medicamentoService.guardar(medicamento);
+            flash.addFlashAttribute("success", "Operación realizada con éxito.");
+            return "redirect:/medicamentos";
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("trad", traduccionService);
+            return "Farmacia/FormMedicamento";
+        }
     }
 
-    // 4. Editar un medicamento existente
-    @GetMapping("/editar/{id}")
-    public String editar(Medicamento medicamento, Model model) {
-        medicamento = medicamentoService.encontrarMedicamento(medicamento);
-        model.addAttribute("medicamento", medicamento);
-        return "farmacia/FormMedicamento";
+    @GetMapping("/confirmarDesactivar/{id}")
+    public String confirmar(@PathVariable Long id, Model model) {
+        model.addAttribute("medicamento", medicamentoService.encontrarMedicamento(id));
+        model.addAttribute("trad", traduccionService);
+        return "Farmacia/confirmarDesactivarMedicamento";
     }
 
-    // 5. Eliminar un medicamento
-    @GetMapping("/eliminar/{id}")
-    public String eliminar(Medicamento medicamento) {
-        medicamentoService.eliminar(medicamento);
-        return "redirect:/medicamentos/listar";
+    @PostMapping("/desactivar")
+    public String desactivar(@RequestParam Long id, RedirectAttributes flash) {
+        medicamentoService.eliminarLogica(id);
+        flash.addFlashAttribute("warning", "Medicamento desactivado.");
+        return "redirect:/medicamentos";
+    }
+
+    @PostMapping("/activar/{id}")
+    public String activar(@PathVariable Long id, RedirectAttributes flash) {
+        try {
+            medicamentoService.activarLogica(id);
+            flash.addFlashAttribute("success", "Medicamento reactivado.");
+        } catch (Exception e) {
+            flash.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/medicamentos";
     }
 }

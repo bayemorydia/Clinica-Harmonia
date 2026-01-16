@@ -1,65 +1,88 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Formulario de Medicamento</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <div th:replace="~{Reutilizable/layout :: head_general}"></div>
+    <title th:text="${medicamento.id == null ? 'Nuevo Medicamento' : 'Detalle Medicamento'}"></title>
 </head>
+<body class="bg-light">
+    <div th:replace="~{Reutilizable/layout :: menu}"></div>
+    <main class="content">
+        <div class="container py-4">
+            <form th:action="@{/medicamentos/guardar}" th:object="${medicamento}" method="post">
+                <input type="hidden" th:field="*{id}" />
+                <input type="hidden" th:field="*{activo}" />
 
-<body class="container mt-5">
+                <div class="row g-4 justify-content-center">
+                    <div class="col-lg-10">
+                        <div class="card shadow-sm border-0" style="border-radius: 15px;">
+                            <div class="card-header bg-white border-0 py-4 px-4 d-flex align-items-center">
+                                <div class="bg-success bg-opacity-10 p-3 rounded-3 me-3"><i class="bi bi-capsule text-success fs-3"></i></div>
+                                <div>
+                                    <h3 class="mb-0 fw-bold text-dark" th:text="${medicamento.id == null ? 'Nuevo Medicamento' : 'Edición de Producto'}"></h3>
+                                    <p class="mb-0 text-muted small">Catálogo maestro de productos sanitarios.</p>
+                                </div>
+                            </div>
 
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h3 class="mb-0" th:text="${medicamento.id != null} ? 'Editar Medicamento' : 'Nuevo Medicamento'">
-                    </h3>
+                            <div class="card-body p-4 p-md-5">
+                                <div th:if="${error}" class="alert alert-danger rounded-pill px-4 border-0 mb-4" th:text="${error}"></div>
+                                
+                                <div class="row">
+                                    <div class="col-xl-4 col-lg-5 mb-4">
+                                        <h5 class="fw-bold text-success mb-3">Datos Técnicos</h5>
+                                        <div class="mb-3">
+                                            <label class="form-label small fw-bold text-secondary text-uppercase">Nombre Comercial</label>
+                                            <input type="text" th:field="*{nombre}" class="form-control bg-light border-0 py-2" th:classappend="${#fields.hasErrors('nombre')} ? 'is-invalid'">
+                                            <div class="invalid-feedback" th:errors="*{nombre}"></div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label small fw-bold text-secondary text-uppercase">Código Referencia</label>
+                                            <input type="text" th:field="*{codigo}" class="form-control bg-light border-0 py-2" th:classappend="${#fields.hasErrors('codigo')} ? 'is-invalid'">
+                                            <div class="invalid-feedback" th:errors="*{codigo}"></div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label small fw-bold text-secondary text-uppercase">Categoría</label>
+                                            <input type="text" th:field="*{tipo}" class="form-control bg-light border-0 py-2" th:classappend="${#fields.hasErrors('tipo')} ? 'is-invalid'">
+                                            <div class="invalid-feedback" th:errors="*{tipo}"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xl-8 col-lg-7">
+                                        <h5 class="fw-bold text-success mb-3">Gestión Comercial</h5>
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label small fw-bold text-secondary text-uppercase">Stock Actual</label>
+                                                <input type="number" th:field="*{stockActual}" class="form-control bg-light border-0 py-2" th:classappend="${#fields.hasErrors('stockActual')} ? 'is-invalid'">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label small fw-bold text-secondary text-uppercase">Stock Mínimo</label>
+                                                <input type="number" th:field="*{stockMinimo}" class="form-control bg-light border-0 py-2" th:classappend="${#fields.hasErrors('stockMinimo')} ? 'is-invalid'">
+                                            </div>
+                                            <div class="col-12 mt-4">
+                                                <div class="p-3 bg-success bg-opacity-10 rounded-3">
+                                                    <label class="form-label small fw-bold text-success text-uppercase">Precio de Venta Unitario (€)</label>
+                                                    <input type="number" step="0.01" th:field="*{precioUnitario}" class="form-control border-success border-opacity-25 py-2 fs-5 fw-bold" th:classappend="${#fields.hasErrors('precioUnitario')} ? 'is-invalid'">
+                                                    <div class="invalid-feedback" th:errors="*{precioUnitario}"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card-footer bg-white border-0 p-0 mt-5 d-flex justify-content-between">
+                                    <a th:href="@{/medicamentos}" class="btn btn-outline-secondary rounded-pill px-4 shadow-sm">
+                                        <i class="bi bi-arrow-left me-2"></i> Volver
+                                    </a>
+                                    <button type="submit" class="btn btn-success rounded-pill px-5 shadow-lg fw-bold">
+                                        <i class="bi bi-save me-2"></i> Guardar Cambios
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <form th:action="@{/medicamentos/guardar}" th:object="${medicamento}" method="post">
-
-                        <input type="hidden" th:field="*{id}" />
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Nombre del Medicamento</label>
-                                <input type="text" th:field="*{nombre}" class="form-control"
-                                    placeholder="Ej: Paracetamol" required />
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Código</label>
-                                <input type="text" th:field="*{codigo}" class="form-control" placeholder="Ej: MED-001"
-                                    required />
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Tipo / Categoría</label>
-                            <input type="text" th:field="*{tipo}" class="form-control" placeholder="Ej: Analgésico" />
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Stock Actual</label>
-                                <input type="number" th:field="*{stockActual}" class="form-control" min="0" />
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Stock Mínimo</label>
-                                <input type="number" th:field="*{stockMinimo}" class="form-control" min="0" />
-                            </div>
-                        </div>
-
-                        <div class="mt-4 border-top pt-3 text-end">
-                            <a th:href="@{/medicamentos/listar}" class="btn btn-outline-secondary me-2">Cancelar</a>
-                            <button type="submit" class="btn btn-success">Guardar Medicamento</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+            </form>
         </div>
-    </div>
-
+    </main>
+    <div th:replace="~{Reutilizable/layout :: scripts}"></div>
 </body>
-
 </html>

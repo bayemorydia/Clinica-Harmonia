@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.ToString;
+import lombok.EqualsAndHashCode; // <--- IMPORTANTE: AÑADIR ESTE IMPORT
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -38,7 +39,7 @@ public class Paciente {
     private String numeroSeguridadSocial;
     private String direccion;
     private LocalDate fechaAlta;
-    private String rutaFoto; // Agregado para imagen
+    private String rutaFoto; 
     @Column(name = "activo")
     private boolean activo = true;
 
@@ -46,14 +47,18 @@ public class Paciente {
     @OneToOne
     @ToString.Exclude
     @JoinColumn(name = "usuario_id")
+    @EqualsAndHashCode.Exclude // <--- AÑADIR ESTO (Rompe el bucle con Usuario)
     private Usuario usuario;
 
     // Historial clínico
     @OneToOne(mappedBy = "paciente", cascade = CascadeType.ALL)
+    @ToString.Exclude //
+    @EqualsAndHashCode.Exclude // <--- RECOMENDADO: Evita bucles si Historial tiene referencia a Paciente
     private HistorialClinico historial;
 
     // Citas
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude // <--- AÑADIR ESTO (Mejora rendimiento y evita errores)
     @OneToMany(mappedBy = "paciente")
     private List<Cita> citas;
 }

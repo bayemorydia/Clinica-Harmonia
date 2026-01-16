@@ -1,136 +1,139 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
-    <div th:replace="~{Reutilizable/layout :: head_general}"></div>
-    <title th:text="${trad.getTraduccion('nomina.detalle.titulo')}">Detalle Nómina</title>
+    <div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: head_medico}"></div>
+    <div sec:authorize="hasRole('ADMINISTRADOR')" th:replace="~{Reutilizable/layout :: head_general}"></div>
+    
+    <title th:text="${empleado.nombre + ' ' + empleado.apellidos}">Detalle Nómina</title>
 </head>
 
 <body class="bg-light">
-<div th:replace="~{Reutilizable/layout :: menu}"></div>
+    <div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: menu_medico}"></div>
+    <div sec:authorize="hasRole('ADMINISTRADOR')" th:replace="~{Reutilizable/layout :: menu}"></div>
 
-<main class="content">
-    <div class="container-fluid py-4">
+    <main th:class="${#authorization.expression('hasRole(''MEDICO'')')} ? 'content-medico' : 'content'">
+        <div class="container-fluid py-4">
 
-        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show rounded-3 mb-4 shadow-sm">
-            <i class="bi bi-exclamation-octagon-fill me-2"></i>
-            <span th:text="${error}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-
-        <nav aria-label="breadcrumb" class="mb-4">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item">
-                    <a th:href="@{/nominas}" th:text="${trad.getTraduccion('nomina.lista.titulo')}">Nóminas</a>
-                </li>
-                <li class="breadcrumb-item active" th:text="${trad.getTraduccion('nomina.breadcrumb.detalle')}">Detalle</li>
-            </ol>
-        </nav>
-
-        <div class="row g-4">
-
-            <div class="col-lg-4">
-                <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
-                    <div class="card-header bg-primary py-4 border-0"></div>
-
-                    <div class="card-body text-center position-relative" style="margin-top:-50px;">
-
-                        <div class="bg-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow-sm"
-                             style="width:100px;height:100px;border:5px solid white;">
-                            <h1 class="mb-0 fw-bold text-primary"
-                                th:text="${empleado.nombre != null && !empleado.nombre.isEmpty() ? #strings.substring(empleado.nombre,0,1) : 'E'}">E</h1>
-                        </div>
-
-                        <h4 class="fw-bold mb-1"
-                            th:text="${empleado.nombre + ' ' + empleado.apellidos}">
-                            Nombre Apellido
-                        </h4>
-
-                        <p class="text-muted small mb-4"
-                           th:text="${empleado.email}">
-                            email@ejemplo.com
-                        </p>
-
-                        <div th:if="${empleado.usuario != null}"
-                             class="mb-4 p-2 rounded-3 bg-light border">
-                            <div class="fw-bold small text-uppercase text-muted mb-1" th:text="${trad.getTraduccion('empleado.label.usuario_acceso')}">
-                                Usuario de acceso
-                            </div>
-                            <div class="text-primary fw-bold">
-                                <i class="bi bi-person-badge-fill me-2"></i>
-                                <span th:text="${empleado.usuario.username}"></span>
-                            </div>
-                        </div>
-
-                        <div th:if="${empleado.activa}" class="text-success fw-bold">
-                            <i class="bi bi-circle-fill me-1 small"></i> <span th:text="${trad.getTraduccion('empleados.estado.activo')}">Activo</span>
-                        </div>
-                        <div th:unless="${empleado.activa}" class="text-danger fw-bold">
-                            <i class="bi bi-circle-fill me-1 small"></i> <span th:text="${trad.getTraduccion('empleados.estado.inactivo')}">Inactivo</span>
-                        </div>
-
-                    </div>
-
-                    <div class="card-footer bg-light text-center py-3">
-                        <small class="text-muted">
-                            <span th:text="${trad.getTraduccion('empleado.label.fecha_alta')}">Fecha alta:</span>
-                            <span class="fw-bold"
-                                  th:text="${empleado.fecha_alta != null ? #temporals.format(empleado.fecha_alta,'dd/MM/yyyy') : '-'}">
-                            </span>
-                        </small>
-                    </div>
-                </div>
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show rounded-3 mb-4 shadow-sm">
+                <i class="bi bi-exclamation-octagon-fill me-2"></i>
+                <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-alert="alert"></button>
             </div>
 
-            <div class="col-lg-8">
-                <div class="card shadow-sm border-0 rounded-4">
-                    <div class="card-body p-4 p-md-5">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a th:href="@{/nominas}">Nóminas</a>
+                    </li>
+                    <li class="breadcrumb-item active">Detalle</li>
+                </ol>
+            </nav>
 
-                        <h5 class="fw-bold mb-4" th:text="${trad.getTraduccion('nomina.detalle.titulo')}">Detalle Nómina</h5>
+            <div class="row g-4">
 
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label small fw-bold" th:text="${trad.getTraduccion('nomina.tabla.periodo')}">Periodo</label>
-                                <p class="form-control rounded-3 bg-light mb-0"
-                                   th:text="${nomina.periodo}">01/2026</p>
+                <div class="col-lg-4">
+                    <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+                        <div class="card-header bg-primary py-4 border-0"></div>
+
+                        <div class="card-body text-center position-relative" style="margin-top:-50px;">
+
+                            <div class="bg-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow-sm"
+                                 style="width:100px;height:100px;border:5px solid white;">
+                                <h1 class="mb-0 fw-bold text-primary"
+                                    th:text="${#strings.substring(empleado.nombre,0,1)}">E</h1>
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label small fw-bold" th:text="${trad.getTraduccion('empleado.label.salario')}">Salario Base</label>
-                                <p class="form-control rounded-3 bg-light mb-0"
-                                   th:text="${nomina.salarioBase} + ' €'">1200</p>
+
+                            <h4 class="fw-bold mb-1"
+                                th:text="${empleado.nombre + ' ' + empleado.apellidos}">
+                                Nombre Apellido
+                            </h4>
+
+                            <p class="text-muted small mb-4"
+                               th:text="${empleado.email}">
+                                email@ejemplo.com
+                            </p>
+                            <div th:if="${empleado.usuario != null}"
+                                 class="mb-4 p-2 rounded-3 bg-light border">
+                                <div class="fw-bold small text-uppercase text-muted mb-1">
+                                    Usuario de acceso
+                                </div>
+                                <div class="text-primary fw-bold">
+                                    <i class="bi bi-person-badge-fill me-2"></i>
+                                    <span th:text="${empleado.usuario.username}"></span>
+                                </div>
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label small fw-bold" th:text="${trad.getTraduccion('nomina.tabla.complementos')}">Complementos</label>
-                                <p class="form-control rounded-3 bg-light mb-0"
-                                   th:text="${nomina.complementos} + ' €'">200</p>
+
+                            <div th:if="${empleado.activa}" class="text-success fw-bold">
+                                <i class="bi bi-circle-fill me-1 small"></i> Activo
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label small fw-bold" th:text="${trad.getTraduccion('nomina.tabla.deducciones')}">Deducciones</label>
-                                <p class="form-control rounded-3 bg-light mb-0"
-                                   th:text="${nomina.deducciones} + ' €'">100</p>
+                            <div th:unless="${empleado.activa}" class="text-danger fw-bold">
+                                <i class="bi bi-circle-fill me-1 small"></i> Inactivo
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label small fw-bold" th:text="${trad.getTraduccion('nomina.tabla.total')}">Total a Pagar</label>
-                                <p class="form-control rounded-3 bg-light mb-0 fw-bold text-success"
-                                   th:text="${nomina.totalPagar} + ' €'">1300</p>
-                            </div>
+
                         </div>
 
-                        <div class="text-end mt-4">
-                            <a th:href="@{/nominas}" class="btn btn-light rounded-pill" th:text="${trad.getTraduccion('boton.volver')}">
-                                Volver
-                            </a>
+                        <div class="card-footer bg-light text-center py-3">
+                            <small class="text-muted">
+                                Fecha alta:
+                                <span class="fw-bold"
+                                      th:text="${empleado.fecha_alta != null ? #temporals.format(empleado.fecha_alta,'dd/MM/yyyy') : '-'}">
+                                </span>
+                            </small>
                         </div>
-
                     </div>
                 </div>
+
+                <div class="col-lg-8">
+                    <div class="card shadow-sm border-0 rounded-4">
+                        <div class="card-body p-4 p-md-5">
+
+                            <h5 class="fw-bold mb-4">Detalle Nómina</h5>
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Periodo</label>
+                                    <p class="form-control rounded-3 bg-light mb-0"
+                                       th:text="${nomina.periodo}">01/2026</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Salario Base</label>
+                                    <p class="form-control rounded-3 bg-light mb-0"
+                                       th:text="${nomina.salarioBase}">1200</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Complementos</label>
+                                    <p class="form-control rounded-3 bg-light mb-0"
+                                       th:text="${nomina.complementos}">200</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Deducciones</label>
+                                    <p class="form-control rounded-3 bg-light mb-0"
+                                       th:text="${nomina.deducciones}">100</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Total a Pagar</label>
+                                    <p class="form-control rounded-3 bg-light mb-0 fw-bold text-success"
+                                       th:text="${nomina.totalPagar}">1300</p>
+                                </div>
+                            </div>
+
+                            <div class="text-end mt-4">
+                                <a th:href="@{/nominas}" class="btn btn-light rounded-pill">
+                                    Volver
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
             </div>
-
         </div>
-    </div>
-</main>
+    </main>
 
-<div th:replace="~{Reutilizable/layout :: scripts}"></div>
+    <div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: scripts_medico}"></div>
+    <div sec:authorize="hasRole('ADMINISTRADOR')" th:replace="~{Reutilizable/layout :: scripts}"></div>
 
 </body>
 </html>

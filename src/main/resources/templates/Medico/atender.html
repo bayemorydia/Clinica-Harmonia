@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{Reutilizable/layoutMedico :: head_medico}"></th:block>
+    <title th:text="${trad.getTraduccion('atencion.titulo')} + ' - ' + ${paciente.nombre}">Atención Médica</title>
+</head>
+<body class="bg-light">
+
+    <th:block th:insert="~{Reutilizable/layoutMedico :: menu_medico}"></th:block>
+
+    <main class="content-medico">
+        <div class="container-fluid py-4">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="d-flex align-items-center gap-3">
+                    <a th:href="@{/medico/agenda}" class="btn btn-white btn-sm shadow-sm rounded-circle border">
+                        <i class="bi bi-arrow-left"></i>
+                    </a>
+                    <div>
+                        <h2 class="fw-bold text-dark mb-0">
+                            <i class="bi bi-person-circle text-primary me-2"></i>
+                            <span th:text="${paciente.nombre} + ' ' + ${paciente.apellidos}">Paciente</span>
+                        </h2>
+                        <small class="text-muted" th:text="'DNI: ' + ${paciente.dni}">DNI</small>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <div class="btn-group shadow-sm">
+                        <a th:href="@{/medico/cita/estado/{id}/ANULADA(id=${cita.id})}" class="btn btn-outline-danger btn-sm px-3">
+                            <i class="bi bi-x-circle me-1"></i> Anular
+                        </a>
+                        <a th:href="@{/medico/cita/estado/{id}/NO_PRESENTADO(id=${cita.id})}" class="btn btn-outline-warning btn-sm px-3 text-dark">
+                            <i class="bi bi-person-x me-1"></i> No presentado
+                        </a>
+                    </div>
+                    <span class="badge bg-info text-dark rounded-pill px-3 d-flex align-items-center">
+                        <i class="bi bi-clock me-1"></i> <span th:text="${#temporals.format(cita.fechaHora, 'HH:mm')}">09:00</span>
+                    </span>
+                </div>
+            </div>
+
+            <form th:action="@{/medico/finalizar-consulta}" method="post" id="formConsulta">
+                <input type="hidden" name="citaId" th:value="${cita.id}">
+
+                <div class="row g-4">
+                    <div class="col-lg-7">
+                        <div class="card shadow-sm border-0 mb-4" style="border-radius: 15px;">
+                            <div class="card-header bg-white py-3">
+                                <h5 class="card-title fw-bold mb-0 text-primary">
+                                    <i class="bi bi-journal-medical me-2"></i>Datos de la Consulta
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold text-muted small">MOTIVO REGISTRADO</label>
+                                    <p class="form-control-plaintext border-start border-primary border-4 ps-3 bg-light"
+                                       th:text="${cita.motivo}">Motivo</p>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="diagnostico" class="form-label fw-bold text-muted small">DIAGNÓSTICO</label>
+                                    <textarea class="form-control border-0 bg-light" id="diagnostico" 
+                                              name="diagnostico" rows="4" 
+                                              placeholder="Escriba aquí sus observaciones y diagnóstico..." required
+                                              style="border-radius: 10px;"></textarea>
+                                </div>
+
+                                <div class="mb-0">
+                                    <label for="descripcion" class="form-label fw-bold text-muted small">RECOMENDACIONES / TRATAMIENTO ADICIONAL</label>
+                                    <textarea class="form-control border-0 bg-light" id="descripcion"
+                                              name="descripcion" rows="3" 
+                                              placeholder="Reposo, dieta, ejercicios, etc..."
+                                              style="border-radius: 10px;"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-5">
+                        <div class="card shadow-sm border-0" style="border-radius: 15px;">
+                            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                                <h5 class="card-title fw-bold mb-0 text-primary">
+                                    <i class="bi bi-capsule me-2"></i>Receta Médica
+                                </h5>
+                                <button type="button" class="btn btn-sm btn-outline-primary rounded-pill" onclick="agregarMedicamento()">
+                                    <i class="bi bi-plus-lg"></i> Añadir
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div id="recetaContainer">
+                                    <div class="text-center py-4 text-muted" id="sinMeds">
+                                        <i class="bi bi-prescription2 fs-1 d-block mb-2"></i>
+                                        <small>Sin medicamentos añadidos</small>
+                                    </div>
+                                </div>
+
+                                <hr class="my-4">
+
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-success btn-lg rounded-pill shadow-sm">
+                                        <i class="bi bi-check2-circle me-2"></i>Finalizar y Guardar
+                                    </button>
+                                    <small class="text-center text-muted">Asegúrese de revisar los datos antes de finalizar.</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <template id="medTemplate">
+        <div class="medicamento-item bg-light p-3 rounded-3 mb-3 border-start border-success border-4 position-relative">
+            <button type="button" class="btn-close position-absolute top-0 end-0 m-2" style="font-size: 0.7rem;"
+                    onclick="this.parentElement.remove(); verificarMeds();"></button>
+            <div class="mb-2">
+                <label class="small fw-bold text-muted">Medicamento</label>
+                <select name="meds[]" class="form-select form-select-sm border-0 shadow-none" required>
+                    <option value="" disabled selected>Seleccione un medicamento...</option>
+                    <option th:each="med : ${listaMedicamentos}" 
+                            th:value="${med.nombre}" 
+                            th:text="${med.nombre} + ' (' + ${med.tipo} + ')'"></option>
+                </select>
+            </div>
+            <div>
+                <label class="small fw-bold text-muted">Posología</label>
+                <input type="text" name="dosis[]" class="form-control form-control-sm border-0 shadow-none"
+                       placeholder="Ej: 1 cada 8 horas por 5 días" required>
+            </div>
+        </div>
+    </template>
+
+    <th:block th:insert="~{Reutilizable/layoutMedico :: scripts_medico}"></th:block>
+
+    <script>
+        function agregarMedicamento() {
+            const container = document.getElementById('recetaContainer');
+            const template = document.getElementById('medTemplate');
+            const sinMeds = document.getElementById('sinMeds');
+
+            if (sinMeds) sinMeds.style.display = 'none';
+
+            const clone = template.content.cloneNode(true);
+            container.appendChild(clone);
+        }
+
+        function verificarMeds() {
+            const container = document.getElementById('recetaContainer');
+            const sinMeds = document.getElementById('sinMeds');
+            if (container.querySelectorAll('.medicamento-item').length === 0) {
+                sinMeds.style.display = 'block';
+            }
+        }
+    </script>
+
+    <style>
+        .btn-white { background-color: white; color: #6c757d; }
+        .btn-white:hover { background-color: #f8f9fa; color: #0d6efd; }
+        .form-control:focus, .form-select:focus {
+            background-color: #fff !important;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.05);
+            border: 1px solid #dee2e6 !important;
+        }
+        .medicamento-item { transition: all 0.2s ease; }
+        .medicamento-item:hover { transform: translateX(5px); }
+    </style>
+</body>
+</html>

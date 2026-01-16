@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/admin/usuarios")
@@ -20,73 +21,75 @@ public class UsuarioController {
     @Autowired
     private TraduccionService trad;
 
-    @GetMapping
+    @GetMapping({"", "/listar"})
     public String listar(Model model,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        Page<Usuario> usuariosPage = usuarioService.listarUsuarios(PageRequest.of(page, size));
+            @RequestParam(value = "query", required = false, defaultValue = "") String query,
+            @RequestParam(value = "activo", required = false) Boolean activo,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size) {
+        
+        Page<Usuario> usuariosPage = usuarioService.listarPaginado(query, activo, PageRequest.of(page, size));
 
         model.addAttribute("usuarios", usuariosPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", usuariosPage.getTotalPages());
         model.addAttribute("totalElements", usuariosPage.getTotalElements());
         model.addAttribute("size", size);
+        model.addAttribute("query", query);
+        model.addAttribute("activo", activo);
         model.addAttribute("trad", trad);
 
         return "Usuario/listaUsuario";
     }
 
     @GetMapping("/search")
-    public String search(@RequestParam(required = false) String query,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+    public String search(@RequestParam(value = "query", required = false, defaultValue = "") String query,
+            @RequestParam(value = "activo", required = false) Boolean activo,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
             Model model) {
 
-        Page<Usuario> usuariosPage = (query == null || query.isEmpty())
-                ? usuarioService.listarUsuarios(PageRequest.of(page, size))
-                : usuarioService.buscarPorUsername(query, PageRequest.of(page, size));
+        Page<Usuario> usuariosPage = usuarioService.listarPaginado(query, activo, PageRequest.of(page, size));
 
         model.addAttribute("usuarios", usuariosPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", usuariosPage.getTotalPages());
         model.addAttribute("totalElements", usuariosPage.getTotalElements());
         model.addAttribute("size", size);
+        model.addAttribute("query", query);
+        model.addAttribute("activo", activo);
         model.addAttribute("trad", trad);
 
         return "Usuario/listaUsuario :: tablaUsuarios";
     }
 
-    @GetMapping("/activar/{id}")
-    public String activar(@PathVariable Long id) {
+    @PostMapping("/activar/{id}")
+    public String activar(@PathVariable Long id, RedirectAttributes flash) {
         Usuario u = usuarioService.buscarUsuario(id);
         if (u != null) {
             u.setActivo(true);
-            usuarioService.guardar(u); // Asegúrate que el método sea guardar o guardarUsuario
+            usuarioService.guardar(u);
+            flash.addFlashAttribute("success", "Usuario reactivado.");
         }
         return "redirect:/admin/usuarios";
     }
 
-    // 1. Mostrar la página de confirmación
     @GetMapping("/confirmarDesactivar/{id}")
     public String confirmarDesactivar(@PathVariable("id") Long id, Model model) {
         Usuario u = usuarioService.buscarUsuario(id); 
-        
-        if (u == null) {
-            return "redirect:/admin/usuarios";
-        }
-        
+        if (u == null) return "redirect:/admin/usuarios";
         model.addAttribute("usuario", u);
         model.addAttribute("trad", trad);
         return "Usuario/confirmarDesactivar"; 
     }
 
-    // 2. Procesar la desactivación (POST)
     @PostMapping("/desactivar")
-    public String desactivarUsuario(@RequestParam("id") Long id) {
+    public String desactivarUsuario(@RequestParam("id") Long id, RedirectAttributes flash) {
         Usuario u = usuarioService.buscarUsuario(id);
         if (u != null) {
             u.setActivo(false);
             usuarioService.guardar(u); 
+            flash.addFlashAttribute("warning", "Usuario desactivado.");
         }
         return "redirect:/admin/usuarios";
     }

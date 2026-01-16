@@ -1,131 +1,74 @@
 package cat.copernic.proyecto2.Service.Proveedor;
 
-import cat.copernic.proyecto2.DAO.ProveedorDAO;
+import cat.copernic.proyecto2.DAO.JPA.ProveedorDAO;
 import cat.copernic.proyecto2.Domain.Farmacia.Proveedor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDate;
 import java.util.List;
 
 @Service
-@Transactional
 public class ProveedorServiceImpl implements ProveedorService {
 
     @Autowired
     private ProveedorDAO proveedorDAO;
 
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Proveedor> listarPaginado(String query, Boolean activo, Pageable pageable) {
+        return proveedorDAO.findByFilters(query, activo, pageable);
+    }
+
+    @Override
+    @Transactional
     public Proveedor crearProveedor(Proveedor proveedor) {
-
-        if (proveedorDAO.BuscarProveedorCif(proveedor.getCif()).isPresent()) {
-            throw new IllegalArgumentException("❌ Ya existe un proveedor con ese CIF");
-        }
-
-        if (proveedor.getEmail() != null && proveedorDAO.BuscarProveedorEmail(proveedor.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("❌ Ya existe un proveedor con ese email");
-        }
-
-        if (proveedorDAO.BuscarProveedorNumero(proveedor.getTelefono()).isPresent()) {
-            throw new IllegalArgumentException("❌ Ya existe un proveedor con ese teléfono");
-        }
-
-        proveedor.setId(null);
+        if (proveedorDAO.findByCif(proveedor.getCif()).isPresent()) 
+            throw new IllegalArgumentException("El CIF ya existe.");
         proveedor.setFecha_alta(LocalDate.now());
-        proveedor.setFecha_baja(null);
         proveedor.setActivo(true);
-
         return proveedorDAO.save(proveedor);
     }
 
-    public Proveedor actualizarProveedor(Long id, Proveedor datosProveedor) {
-        Proveedor existente = proveedorDAO.findById(id)
-                .orElseThrow(() -> new RuntimeException("Proveedor no encontrado con id " + id));
-
-        // ---- Unicidad CIF ----
-        Proveedor otroCif = proveedorDAO.BuscarProveedorCif(datosProveedor.getCif()).orElse(null);
-        if (otroCif != null && !otroCif.getId().equals(id)) {
-            throw new IllegalArgumentException("❌ El CIF ya está en uso");
-        }
-
-        // ---- Unicidad Email (si viene informado) ----
-        if (datosProveedor.getEmail() != null) {
-            Proveedor otroEmail = proveedorDAO.BuscarProveedorEmail(datosProveedor.getEmail()).orElse(null);
-            if (otroEmail != null && !otroEmail.getId().equals(id)) {
-                throw new IllegalArgumentException("❌ El email ya está en uso");
-            }
-        }
-
-        // ---- Unicidad Teléfono ----
-        Proveedor otroTelefono = proveedorDAO.BuscarProveedorNumero(datosProveedor.getTelefono()).orElse(null);
-        if (otroTelefono != null && !otroTelefono.getId().equals(id)) {
-            throw new IllegalArgumentException("❌ El teléfono ya está en uso");
-        }
-
-        // ✅ Campos editables
-        existente.setNombre(datosProveedor.getNombre());
-        existente.setCif(datosProveedor.getCif());
-        existente.setTelefono(datosProveedor.getTelefono());
-        existente.setEmail(datosProveedor.getEmail());
-        existente.setDireccion(datosProveedor.getDireccion());
-
-        // ❌ No permitir modificar fecha_baja ni activo desde actualizar
-        // existente.setFecha_baja(datosProveedor.getFecha_baja());
-        // existente.setActivo(datosProveedor.isActivo());
-
-        return proveedorDAO.save(existente);
+    @Override
+    @Transactional
+    public Proveedor actualizarProveedor(Long id, Proveedor datos) {
+        Proveedor ex = buscarPorID(id);
+        ex.setNombre(datos.getNombre());
+        ex.setCif(datos.getCif());
+        ex.setTelefono(datos.getTelefono());
+        ex.setEmail(datos.getEmail());
+        ex.setDireccion(datos.getDireccion());
+        return proveedorDAO.save(ex);
     }
 
-    public void DesactivarProveedor(Long id) {
-        Proveedor existente = proveedorDAO.findById(id)
-                .orElseThrow(() -> new RuntimeException("Proveedor no encontrado con id " + id));
-
-        existente.setFecha_baja(LocalDate.now());
-        existente.setActivo(false);
-
-        proveedorDAO.save(existente);
+    @Override
+    @Transactional
+    public void desactivarProveedor(Long id) {
+        Proveedor p = buscarPorID(id);
+        p.setActivo(false);
+        p.setFecha_baja(LocalDate.now());
+        proveedorDAO.save(p);
     }
 
+    @Override
+    @Transactional
     public void activarProveedor(Long id) {
-        Proveedor existente = proveedorDAO.findById(id)
-                .orElseThrow(() -> new RuntimeException("Proveedor no encontrado con id " + id));
-
-        existente.setFecha_baja(null);
-        existente.setActivo(true);
-
-        proveedorDAO.save(existente);
+        Proveedor p = buscarPorID(id);
+        p.setActivo(true);
+        p.setFecha_baja(null);
+        proveedorDAO.save(p);
     }
 
-    public void EliminarProveedor(Long id) {
-        Proveedor existente = proveedorDAO.findById(id)
-                .orElseThrow(() -> new RuntimeException("Proveedor no encontrado con id " + id));
-
-        proveedorDAO.delete(existente);
-    }
-
+    @Override
     @Transactional(readOnly = true)
     public Proveedor buscarPorID(Long id) {
-        return proveedorDAO.findById(id)
-                .orElseThrow(() -> new RuntimeException("Proveedor no encontrado con id " + id));
+        return proveedorDAO.findById(id).orElseThrow(() -> new RuntimeException("Proveedor no encontrado"));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Proveedor> listarTodos() {
-        return proveedorDAO.findAll();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Proveedor> listarActivos() {
-        return proveedorDAO.BuscarProveedorActivo();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Proveedor> buscarPorNombreOCif(String termino) {
-        if (termino == null || termino.isBlank()) return listarTodos();
-        return proveedorDAO.buscarProveedorPorNombreOCif(termino);
-    }
-
+    public List<Proveedor> listarTodos() { return proveedorDAO.findAll(); }
 }

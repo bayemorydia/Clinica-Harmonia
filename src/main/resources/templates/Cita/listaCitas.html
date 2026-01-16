@@ -1,42 +1,78 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
-    <div th:replace="~{Reutilizable/layout :: head_general}"></div>
+    <div sec:authorize="hasAnyRole('ADMINISTRADOR', 'MEDICO')" th:replace="~{Reutilizable/layout :: head_general}"></div>
+    <div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: head_recepcion}"></div>
     <title th:text="${trad.getTraduccion('mod.citas')}">Gestión de Citas</title>
     <style>
-        .clickable-row { cursor: pointer; transition: background-color 0.2s ease; }
-        .clickable-row:hover { background-color: rgba(0, 123, 255, 0.05) !important; }
-        .page-link {
-            color: #6c757d; border: none; background: #f1f3f5; margin: 0 3px;
-            border-radius: 8px !important; width: 32px; height: 32px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 0.85rem; transition: all 0.2s ease;
+        .clickable-row {
+            cursor: pointer;
+            transition: background-color 0.2s ease;
         }
+
+        .clickable-row:hover {
+            background-color: rgba(0, 123, 255, 0.05) !important;
+        }
+
+        .page-link {
+            color: #6c757d;
+            border: none;
+            background: #f1f3f5;
+            margin: 0 3px;
+            border-radius: 8px !important;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
         .page-item.active .page-link {
-            background-color: #0d6efd !important; color: white !important;
+            background-color: #0d6efd !important;
+            color: white !important;
             box-shadow: 0 4px 10px rgba(13, 110, 253, 0.2);
         }
-        .page-item.disabled .page-link { background-color: #f8f9fa; color: #dee2e6; }
-        .select-paginacion-clean {
-            display: inline-block; width: 75px; padding: 0.375rem 1.75rem 0.375rem 0.75rem;
-            font-size: 0.85rem; border: 1px solid #dee2e6; border-radius: 8px;
-            appearance: none; cursor: pointer;
+
+        .page-item.disabled .page-link {
+            background-color: #f8f9fa;
+            color: #dee2e6;
         }
-        .table-footer { padding: 1.25rem 1.5rem; background-color: #ffffff; border-top: 1px solid #edf2f7; }
+
+        .select-paginacion-clean {
+            display: inline-block;
+            width: 75px;
+            padding: 0.375rem 1.75rem 0.375rem 0.75rem;
+            font-size: 0.85rem;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            appearance: none;
+            cursor: pointer;
+        }
+
+        .table-footer {
+            padding: 1.25rem 1.5rem;
+            background-color: #ffffff;
+            border-top: 1px solid #edf2f7;
+        }
     </style>
 </head>
 
 <body>
-    <div th:replace="~{Reutilizable/layout :: menu}"></div>
+    <div sec:authorize="hasAnyRole('ADMINISTRADOR', 'MEDICO')" th:replace="~{Reutilizable/layout :: menu}"></div>
+    <div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: menu_recepcion}"></div>
 
-    <main class="content">
+    <main th:class="${#authorization.expression('hasRole(''RECEPCIONISTA'')')} ? 'content-recepcion' : 'content'">
         <div class="container-fluid">
 
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
-                    <h2 class="fw-bold text-dark mb-1" th:text="${trad.getTraduccion('mod.citas')}">Gestión de Citas</h2>
-                    <p class="text-muted small mb-0" th:text="${trad.getTraduccion('citas.listado.subtitulo')}">Programación de servicios médicos.</p>
+                    <h2 class="fw-bold text-dark mb-1" th:text="${trad.getTraduccion('mod.citas')}">Gestión de Citas
+                    </h2>
+                    <p class="text-muted small mb-0" th:text="${trad.getTraduccion('citas.listado.subtitulo')}">
+                        Programación de servicios médicos.</p>
                 </div>
                 <a th:href="@{/citas/nueva}" class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold">
                     <i class="bi bi-calendar-plus me-2"></i>
@@ -46,77 +82,115 @@
 
             <div class="card shadow-sm border-0 mb-4" style="border-radius: 15px;">
                 <div class="card-body">
-                    <div class="input-group">
-                        <span class="input-group-text bg-white border-end-0 text-muted">
-                            <i class="bi bi-search"></i>
-                        </span>
-                        <input type="text" id="searchInput" class="form-control border-start-0 ps-0 shadow-none"
-                            th:placeholder="${trad.getTraduccion('citas.placeholder.buscar')}" th:value="${query}">
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0 text-muted">
+                                    <i class="bi bi-search"></i>
+                                </span>
+                                <input type="text" id="searchInput" class="form-control border-start-0 ps-0 shadow-none"
+                                    th:placeholder="${trad.getTraduccion('citas.placeholder.buscar')}"
+                                    th:value="${query}">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <select id="statusFilter" class="form-select shadow-none" style="border-radius: 8px;"
+                                onchange="updateTable(0)">
+                                <option value="" th:text="${trad.getTraduccion('pacientes.filtro.todos')}">Todos los
+                                    estados</option>
+                                <option th:each="est : ${estadosCita}" th:value="${est}"
+                                    th:text="${trad.getTraduccion('citas.estado.' + est.name())}"
+                                    th:selected="${est == estadoFiltro}"></option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="card shadow-sm border-0" style="border-radius: 15px; overflow: hidden;">
                 <div class="card-body p-0" id="tablaContainer">
-                    
+
                     <div th:fragment="tablaCitas">
                         <div class="table-responsive">
                             <table class="table table-hover align-middle mb-0">
                                 <thead class="bg-light">
                                     <tr>
-                                        <th class="ps-4 py-3 border-0 text-secondary small fw-bold" th:text="${trad.getTraduccion('citas.tabla.fechahora')}">FECHA Y HORA</th>
-                                        <th class="py-3 border-0 text-secondary small fw-bold" th:text="${trad.getTraduccion('citas.tabla.paciente')}">PACIENTE</th>
-                                        <th class="py-3 border-0 text-secondary small fw-bold" th:text="${trad.getTraduccion('citas.tabla.medico')}">MÉDICO</th>
-                                        <th class="py-3 border-0 text-secondary small fw-bold" th:text="${trad.getTraduccion('citas.tabla.estado')}">ESTADO</th>
-                                        <th class="py-3 border-0 text-secondary small fw-bold text-center" th:text="${trad.getTraduccion('citas.tabla.acciones')}">ACCIONES</th>
+                                        <th class="ps-4 py-3 border-0 text-secondary small fw-bold"
+                                            th:text="${trad.getTraduccion('citas.tabla.fechahora')}">FECHA Y HORA</th>
+                                        <th class="py-3 border-0 text-secondary small fw-bold"
+                                            th:text="${trad.getTraduccion('citas.tabla.paciente')}">PACIENTE</th>
+                                        <th class="py-3 border-0 text-secondary small fw-bold"
+                                            th:text="${trad.getTraduccion('citas.tabla.medico')}">MÉDICO</th>
+                                        <th class="py-3 border-0 text-secondary small fw-bold"
+                                            th:text="${trad.getTraduccion('citas.tabla.estado')}">ESTADO</th>
+                                        <th class="py-3 border-0 text-secondary small fw-bold text-center"
+                                            th:text="${trad.getTraduccion('citas.tabla.acciones')}">ACCIONES</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr th:if="${#lists.isEmpty(citas)}">
-                                        <td colspan="5" class="text-center py-5 text-muted" th:text="${trad.getTraduccion('citas.tabla.vacio')}">No hay citas.</td>
+                                        <td colspan="5" class="text-center py-5 text-muted"
+                                            th:text="${trad.getTraduccion('citas.tabla.vacio')}">No hay citas.</td>
                                     </tr>
-                                    <tr th:each="c : ${citas}" class="border-bottom clickable-row" 
+                                    <tr th:each="c : ${citas}" class="border-bottom clickable-row"
                                         th:data-href="@{'/citas/detalle/' + ${c.id}}">
-                                        
+
                                         <td class="ps-4 py-3">
                                             <div class="d-flex align-items-center">
-                                                <div class="bg-primary bg-opacity-10 text-primary rounded-3 d-flex flex-column align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
-                                                    <span class="fw-bold small" th:text="${#temporals.format(c.fechaHora, 'HH:mm')}"></span>
-                                                    <span style="font-size: 0.6rem; text-transform: uppercase;" th:text="${#temporals.format(c.fechaHora, 'dd MMM')}"></span>
+                                                <div class="bg-primary bg-opacity-10 text-primary rounded-3 d-flex flex-column align-items-center justify-content-center me-3"
+                                                    style="width: 50px; height: 50px;">
+                                                    <span class="fw-bold small"
+                                                        th:text="${#temporals.format(c.fechaHora, 'HH:mm')}"></span>
+                                                    <span style="font-size: 0.6rem; text-transform: uppercase;"
+                                                        th:text="${#temporals.format(c.fechaHora, 'dd MMM')}"></span>
                                                 </div>
                                                 <div>
-                                                    <div class="fw-bold text-dark mb-0" th:text="${#temporals.format(c.fechaHora, 'dd/MM/yyyy')}"></div>
+                                                    <div class="fw-bold text-dark mb-0"
+                                                        th:text="${#temporals.format(c.fechaHora, 'dd/MM/yyyy')}"></div>
                                                 </div>
                                             </div>
                                         </td>
 
                                         <td>
-                                            <div class="fw-bold text-dark mb-0" th:text="${c.paciente.nombre + ' ' + c.paciente.apellidos}"></div>
+                                            <div class="fw-bold text-dark mb-0"
+                                                th:text="${c.paciente.nombre + ' ' + c.paciente.apellidos}"></div>
                                             <div class="text-muted small" th:text="${c.paciente.dni}"></div>
                                         </td>
 
                                         <td>
                                             <div class="fw-bold text-dark mb-0">
                                                 <i class="bi bi-person-badge me-1 text-muted"></i>
-                                                <span th:text="${c.profesional != null ? c.profesional.nombre + ' ' + c.profesional.apellidos : 'No asignado'}"></span>
+                                                <span
+                                                    th:text="${c.profesional != null ? c.profesional.nombre + ' ' + c.profesional.apellidos : 'No asignado'}"></span>
                                             </div>
-                                            <div class="badge bg-info-subtle text-info mt-1" th:text="${c.especialidad}"></div>
+                                            <div class="badge bg-info-subtle text-info mt-1"
+                                                th:text="${c.especialidad}"></div>
                                         </td>
 
                                         <td>
-                                            <span class="badge rounded-pill px-3 py-2" 
-                                                  th:classappend="${c.estado.name() == 'PROGRAMADA' ? 'bg-primary-subtle text-primary' : (c.estado.name() == 'ANULADA' ? 'bg-danger-subtle text-danger' : 'bg-success-subtle text-success')}"
-                                                  th:text="${trad.getTraduccion('citas.estado.' + c.estado.name())}"></span>
+                                            <span class="badge rounded-pill px-3 py-2"
+                                                th:classappend="${c.estado.name() == 'PROGRAMADA' ? 'bg-primary-subtle text-primary' : (c.estado.name() == 'ANULADA' ? 'bg-danger-subtle text-danger' : 'bg-success-subtle text-success')}"
+                                                th:text="${trad.getTraduccion('citas.estado.' + c.estado.name())}"></span>
                                         </td>
 
                                         <td class="py-3 text-center" onclick="event.stopPropagation();">
-                                            <div th:if="${c.estado.name() != 'ANULADA'}">
+                                            <div th:if="${c.estado.name() != 'ANULADA'}" class="d-inline-flex gap-2">
+                                                
+                                                <a th:href="@{/citas/factura/{id}(id=${c.id})}" 
+                                                   class="btn btn-sm btn-outline-dark rounded-pill px-3 shadow-sm"
+                                                   title="Descargar Factura">
+                                                    <i class="bi bi-file-earmark-pdf-fill"></i>
+                                                </a>
+
                                                 <a th:href="@{'/citas/confirmarEliminar/' + ${c.id}}" class="btn btn-sm btn-outline-danger rounded-pill px-3 shadow-sm">
                                                     <i class="bi bi-x-circle me-1"></i>
                                                     <span th:text="${trad.getTraduccion('btn.anular')}">Anular</span>
                                                 </a>
+
                                             </div>
-                                            <span th:if="${c.estado.name() == 'ANULADA'}" class="text-muted small italic">-</span>
+                                            <span th:unless="${c.estado.name() == 'PROGRAMADA'}"
+                                                class="text-muted small italic"
+                                                th:text="${trad.getTraduccion('citas.tabla.no_accion')}">-</span>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -125,16 +199,18 @@
 
                         <div class="table-footer d-flex justify-content-between align-items-center">
                             <div class="text-muted small">
-                                <span th:text="${trad.getTraduccion('tabla.info.mostrando')}">Mostrando</span>
-                                <span class="fw-bold" th:text="${totalElements > 0 ? (currentPage * size) + 1 : 0}"></span>
-                                <span th:text="${trad.getTraduccion('tabla.info.a')}">a</span>
+                                <span th:text="${trad.getTraduccion('pacientes.tabla.mostrar')}">Mostrando</span>
+                                <span class="fw-bold"
+                                    th:text="${totalElements > 0 ? (currentPage * size) + 1 : 0}"></span>
+                                <span th:text="${trad.getTraduccion('pacientes.paginacion.a')}">a</span>
                                 <span class="fw-bold" th:text="${(currentPage * size) + citas.size()}"></span>
-                                <span th:text="${trad.getTraduccion('tabla.info.de')}">de</span>
+                                <span th:text="${trad.getTraduccion('pacientes.paginacion.de')}">de</span>
                                 <span class="fw-bold" th:text="${totalElements}"></span>
                             </div>
 
                             <div class="d-flex align-items-center gap-4">
-                                <select id="pageSize" class="select-paginacion-clean shadow-none" onchange="updateTable(0)">
+                                <select id="pageSize" class="select-paginacion-clean shadow-none"
+                                    onchange="updateTable(0)">
                                     <option value="10" th:selected="${size == 10}">10</option>
                                     <option value="20" th:selected="${size == 20}">20</option>
                                     <option value="50" th:selected="${size == 50}">50</option>
@@ -143,17 +219,21 @@
                                 <nav th:if="${totalPages > 1}">
                                     <ul class="pagination pagination-sm mb-0">
                                         <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                                            <a class="page-link" href="javascript:void(0)" th:onclick="'changePage(' + (${currentPage} - 1) + ')'">
+                                            <a class="page-link" href="javascript:void(0)"
+                                                th:onclick="'changePage(' + (${currentPage} - 1) + ')'">
                                                 <i class="bi bi-chevron-left"></i>
                                             </a>
                                         </li>
                                         <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
                                             th:if="${i >= currentPage - 1 and i <= currentPage + 1}"
                                             th:classappend="${i == currentPage} ? 'active'">
-                                            <a class="page-link" href="javascript:void(0)" th:onclick="'changePage(' + ${i} + ')'" th:text="${i + 1}"></a>
+                                            <a class="page-link" href="javascript:void(0)"
+                                                th:onclick="'changePage(' + ${i} + ')'" th:text="${i + 1}"></a>
                                         </li>
-                                        <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
-                                            <a class="page-link" href="javascript:void(0)" th:onclick="'changePage(' + (${currentPage} + 1) + ')'">
+                                        <li class="page-item"
+                                            th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
+                                            <a class="page-link" href="javascript:void(0)"
+                                                th:onclick="'changePage(' + (${currentPage} + 1) + ')'">
                                                 <i class="bi bi-chevron-right"></i>
                                             </a>
                                         </li>
@@ -168,7 +248,8 @@
         </div>
     </main>
 
-    <div th:replace="~{Reutilizable/layout :: scripts}"></div>
+    <div sec:authorize="hasAnyRole('ADMINISTRADOR', 'MEDICO')" th:replace="~{Reutilizable/layout :: scripts}"></div>
+    <div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: scripts_recepcion}"></div>
 
     <script th:inline="javascript">
         document.addEventListener("DOMContentLoaded", () => {
@@ -194,24 +275,28 @@
         function updateTable(page = 0) {
             const query = document.getElementById('searchInput').value;
             const size = document.getElementById('pageSize').value;
+            const estado = document.getElementById('statusFilter').value;
             const container = document.getElementById('tablaContainer');
 
+            let url = `/citas?query=${encodeURIComponent(query)}&page=${page}&size=${size}`;
+            if (estado) url += `&estado=${estado}`;
+
+            fetch(url, {
             // IMPORTANTE: La URL debe coincidir con la de tu @GetMapping en el Controller
-            // Si tu controlador escucha en /citas, usa /citas
             fetch(`/citas?query=${encodeURIComponent(query)}&page=${page}&size=${size}`, {
                 headers: {
-                    'X-Requested-With': 'XMLHttpRequest' // Indica a Spring que es una petición AJAX
+                    'X-Requested-With': 'XMLHttpRequest'
                 }
             })
-            .then(response => {
-                if (!response.ok) throw new Error("Error en la respuesta");
-                return response.text();
-            })
-            .then(html => {
-                container.innerHTML = html;
-                initTableEvents();
-            })
-            .catch(err => console.error("Error actualizando la tabla:", err));
+                .then(response => {
+                    if (!response.ok) throw new Error("Error en la respuesta");
+                    return response.text();
+                })
+                .then(html => {
+                    container.innerHTML = html;
+                    initTableEvents();
+                })
+                .catch(err => console.error("Error actualizando la tabla:", err));
         }
 
         function changePage(page) {
@@ -222,4 +307,5 @@
         }
     </script>
 </body>
+
 </html>
