@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <div th:replace="~{Reutilizable/layout :: head_general}"></div>
+    <div sec:authorize="hasAnyRole('ADMINISTRADOR', 'MEDICO')" th:replace="~{Reutilizable/layout :: head_general}"></div>
+    <div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: head_recepcion}"></div>
     <title th:text="${cita.id == null ? trad.getTraduccion('citas.form.titulo.nuevo') : trad.getTraduccion('citas.form.titulo.editar')}"></title>
 </head>
-<body>
-    <div th:replace="~{Reutilizable/layout :: menu}"></div>
+<body class="bg-light">
+    <div sec:authorize="hasAnyRole('ADMINISTRADOR', 'MEDICO')" th:replace="~{Reutilizable/layout :: menu}"></div>
+    <div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: menu_recepcion}"></div>
 
-    <main class="content">
+    <main th:class="${#authorization.expression('hasRole(''RECEPCIONISTA'')')} ? 'content-recepcion' : 'content'">
         <div class="container-fluid">
             <form th:action="@{/citas/guardar}" th:object="${cita}" method="post" id="citaForm">
                 <input type="hidden" th:field="*{id}" />
@@ -98,7 +100,8 @@
         </div>
     </main>
 
-    <div th:replace="~{Reutilizable/layout :: scripts}"></div>
+    <div sec:authorize="hasAnyRole('ADMINISTRADOR', 'MEDICO')" th:replace="~{Reutilizable/layout :: scripts}"></div>
+    <div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: scripts_recepcion}"></div>
 
     <script>
         // Validación final antes de enviar para evitar minutos distintos a 00

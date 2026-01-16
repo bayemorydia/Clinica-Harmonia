@@ -127,4 +127,27 @@ public class CitaServiceImpl implements CitaService {
         return citaDAO.findByProfesionalIdAndFechaHoraBetweenAndEstadoOrderByFechaHoraAsc(
                 medicoId, fecha.atStartOfDay(), fecha.atTime(23, 59, 59), EstadoCita.PROGRAMADA);
     }
+
+    // --- IMPLEMENTACIÓN DE LOS NUEVOS MÉTODOS PARA RECEPCIÓN ---
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Cita> listarCitasDeHoyGlobal() {
+        return listarCitasPorDiaGlobal(LocalDate.now());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Cita> listarCitasPorDiaGlobal(LocalDate fecha) {
+        // Rango de 00:00 a 23:59 del día solicitado
+        LocalDateTime inicio = fecha.atStartOfDay();
+        LocalDateTime fin = fecha.atTime(23, 59, 59);
+
+        // Llamada al nuevo método del DAO
+        return citaDAO.findByFechaHoraBetweenAndEstadoNotOrderByFechaHoraAsc(
+                inicio, 
+                fin, 
+                EstadoCita.ANULADA
+        );
+    }
 }

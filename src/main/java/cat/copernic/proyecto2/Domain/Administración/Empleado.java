@@ -54,7 +54,6 @@ public class Empleado {
 
     @OneToOne
     @JoinColumn(name = "usuario_id")
-
     private Usuario usuario;
 
 
@@ -76,6 +75,9 @@ public class Empleado {
 
     @OneToMany(mappedBy = "profesional")
     private List<Cita> citasAtendidas = new ArrayList<>();
+
+
+
 
 
 }
