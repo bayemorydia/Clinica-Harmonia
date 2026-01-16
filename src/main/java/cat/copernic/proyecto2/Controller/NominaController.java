@@ -11,11 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -61,6 +63,7 @@ public class NominaController {
     // FORMULARIO NUEVA NÓMINA
     // ---------------------------
     @GetMapping("/nuevo/{id}")
+    @PreAuthorize("hasRole('RRHH')")
     public String mostrarFormularioCrear(@PathVariable("id") Long id, Model model) {
         Empleado empleado = empleadoService.obtenerPorId(id);
         if (empleado == null) {
@@ -88,7 +91,8 @@ public class NominaController {
     @PostMapping("/guardar")
     public String guardarNomina(@Valid @ModelAttribute("nomina") Nomina nomina,
                                 BindingResult result,
-                                Model model) {
+                                Model model,
+                                RedirectAttributes redirectAttributes) {
         model.addAttribute("trad", traduccionService);
 
         // Validar errores de formulario
@@ -123,8 +127,8 @@ public class NominaController {
                 .subtract(nomina.getDeducciones()));
 
         nominaService.saveNomina(nomina);
-        return "redirect:/listarNominas";
-    }
+        return "redirect:/empleado/" + nomina.getEmpleado().getId();
+        }
 
     // ---------------------------
     // DETALLE DEL EMPLEADO
@@ -136,16 +140,11 @@ public class NominaController {
             @RequestParam(defaultValue = "10") int size,
             Model model) {
 
-        Empleado empleado = empleadoService.obtenerPorId(id);
-        if (empleado == null) {
-            model.addAttribute("error", "Empleado no encontrado");
-            return "redirect:/listarNominas";
-        }
-
+       Nomina nomina = nominaService.findById(id);
         // Paginación de nóminas por empleado
         Page<Nomina> nominasPage = nominaService.getNominasPorEmpleado(id, PageRequest.of(page, size));
 
-        model.addAttribute("empleado", empleado);
+        model.addAttribute("empleado",  nomina.getEmpleado());
         model.addAttribute("empleadoNominas", nominasPage.getContent()); // solo la página actual
         model.addAttribute("currentPage", nominasPage.getNumber());
         model.addAttribute("totalPages", nominasPage.getTotalPages());

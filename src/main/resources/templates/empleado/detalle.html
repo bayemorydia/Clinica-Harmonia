@@ -2,15 +2,30 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
-    <div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: head_medico}"></div>
-    <div sec:authorize="hasRole('ADMINISTRADOR')" th:replace="~{Reutilizable/layout :: head_general}"></div>
+    <th:block sec:authorize="hasRole('ADMINISTRADOR')"
+              th:replace="~{Reutilizable/layout :: head_general}" />
+
+    <th:block sec:authorize="hasRole('MEDICO')"
+              th:replace="~{Reutilizable/layoutMedico :: head_medico}" />
+
+    <th:block sec:authorize="hasRole('RRHH')"
+              th:replace="~{Reutilizable/layoutRRHH :: head_RRHH}" />
 
     <title th:text="${empleado.nombre} + ' ' + ${empleado.apellidos}">Detalle Empleado</title>
 </head>
 
 <body class="bg-light">
-<div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: menu_medico}"></div>
-<div sec:authorize="hasRole('ADMINISTRADOR')" th:replace="~{Reutilizable/layout :: menu}"></div>
+<!-- ADMINISTRADOR -->
+<div sec:authorize="hasRole('ADMINISTRADOR')"
+     th:replace="~{Reutilizable/layout :: menu}"></div>
+
+<!-- MÉDICO -->
+<div sec:authorize="hasRole('MEDICO')"
+     th:replace="~{Reutilizable/layoutMedico :: menu_medico}"></div>
+
+<!-- RRHH -->
+<div sec:authorize="hasRole('RRHH')"
+     th:replace="~{Reutilizable/layoutRRHH :: menu_RRHH}"></div>
 
 <main th:class="${#authorization.expression('hasRole(''ROLE_MEDICO'')')} ? 'content-medico' : 'content'">
     <div class="container-fluid py-4">
@@ -130,26 +145,26 @@
                                         <label class="form-label small fw-bold text-secondary" th:text="${trad.getTraduccion('empleado.label.email')}">Correo Electrónico</label>
                                         <input type="email" th:field="*{email}" class="form-control rounded-3 bg-light" th:readonly="${#authorization.expression('hasRole(''ROLE_MEDICO'')')}">
                                     </div>
-                                    <div class="col-md-6" sec:authorize="hasRole('ADMINISTRADOR')">
+                                    <div class="col-md-6" sec:authorize="hasAnyRole('ADMINISTRADOR','RRHH')">
                                         <label class="form-label small fw-bold text-secondary" th:text="${trad.getTraduccion('empleado.label.salario')}">Salario Base (€)</label>
                                         <input type="number" step="0.01" th:field="*{salarioBase}" class="form-control rounded-3 bg-light">
                                     </div>
-                                    <div class="col-md-6" sec:authorize="hasRole('ADMINISTRADOR')">
+                                    <div class="col-md-6" sec:authorize="hasAnyRole('ADMINISTRADOR','RRHH')">
                                         <label class="form-label small fw-bold text-secondary" th:text="${trad.getTraduccion('empleado.label.rol')}">Rol</label>
                                         <select th:field="*{rol.id}" class="form-select rounded-3 bg-light">
                                             <option value="" disabled th:selected="${empleado.rol == null}" th:text="${trad.getTraduccion('empleado.select.rol')}">-- Selecciona un rol --</option>
                                             <option th:each="r : ${roles}" th:value="${r.id}" th:text="${r.nombre}"></option>
                                         </select>
                                     </div>
-                                    <div class="col-md-4" sec:authorize="hasRole('ADMINISTRADOR')">
+                                    <div class="col-md-4" sec:authorize="hasAnyRole('ADMINISTRADOR','RRHH')">
                                         <label class="form-label small fw-bold text-secondary" th:text="${trad.getTraduccion('empleado.label.inicio')}">Hora Inicio</label>
                                         <input type="time" th:field="*{inicio}" class="form-control rounded-3 bg-light">
                                     </div>
-                                    <div class="col-md-4" sec:authorize="hasRole('ADMINISTRADOR')">
+                                    <div class="col-md-4" sec:authorize="hasAnyRole('ADMINISTRADOR','RRHH')">
                                         <label class="form-label small fw-bold text-secondary" th:text="${trad.getTraduccion('empleado.label.fin')}">Hora Fin</label>
                                         <input type="time" th:field="*{fin}" class="form-control rounded-3 bg-light">
                                     </div>
-                                    <div class="col-md-4" sec:authorize="hasRole('ADMINISTRADOR')">
+                                    <div class="col-md-4" sec:authorize="hasAnyRole('ADMINISTRADOR','RRHH')">
                                         <label class="form-label small fw-bold text-secondary" th:text="${trad.getTraduccion('empleado.label.turno')}">Turno</label>
                                         <select th:field="*{turno.id}" class="form-select" required>
                                             <option value="" disabled selected th:text="${trad.getTraduccion('empleado.select.turno')}">-- Selecciona un turno --</option>
@@ -162,12 +177,12 @@
                             <div class="card-footer bg-white border-0 p-0 text-end">
                                 <hr class="my-4 opacity-25">
 
-                                <button type="submit" sec:authorize="hasRole('ADMINISTRADOR')"
+                                <button type="submit" sec:authorize="hasAnyRole('ADMINISTRADOR','RRHH')"
                                         class="btn btn-primary rounded-pill px-5 py-3 fw-bold shadow-lg hover-lift">
                                     <i class="bi bi-save me-2"></i> <span th:text="${trad.getTraduccion('boton.guardar_cambios')}">Guardar Cambios</span>
                                 </button>
                                 <a th:href="@{'/empleados/empleado/' + ${empleado.id}}"
-                                   sec:authorize="hasRole('ADMINISTRADOR')"
+                                   sec:authorize="hasAnyRole('ADMINISTRADOR','RRHH')"
                                    class="btn btn-success rounded-pill px-5 py-3 fw-bold shadow-lg hover-lift ms-2">
                                     <i class="bi bi-file-earmark-text me-2"></i> <span th:text="${trad.getTraduccion('empleados.btn.nominas')}">Nómina</span>
                                 </a>
@@ -185,9 +200,16 @@
         </form>
     </div>
 </main>
+<div sec:authorize="hasRole('ADMINISTRADOR')"
+     th:replace="~{Reutilizable/layout :: scripts}"></div>
 
-<div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: scripts_medico}"></div>
-<div sec:authorize="hasRole('ADMINISTRADOR')" th:replace="~{Reutilizable/layout :: scripts}"></div>
+<!-- MÉDICO -->
+<div sec:authorize="hasRole('MEDICO')"
+     th:replace="~{Reutilizable/layoutMedico :: scripts_medico}"></div>
+
+<!-- RRHH -->
+<div sec:authorize="hasRole('RRHH')"
+     th:replace="~{Reutilizable/layoutRRHH :: scripts_RRHH}"></div>
 
 <style>
     .hover-lift:hover {

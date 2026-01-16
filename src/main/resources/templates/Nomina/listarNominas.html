@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <div th:replace="~{Reutilizable/layout :: head_general}"></div>
-    <title th:text="${trad.getTraduccion('nomina.lista.titulo')} + ' - ' + ${empleado.nombre} + ' ' + ${empleado.apellidos}">Nóminas</title>
+    <title th:text="${trad.getTraduccion('nomina.lista.titulo')}">Nóminas</title>
     <style>
         .clickable-row { cursor:pointer; transition: background-color 0.2s; }
         .clickable-row:hover { background-color: rgba(0,123,255,0.05)!important; }
@@ -14,14 +16,27 @@
     </style>
 </head>
 <body>
-<div th:replace="~{Reutilizable/layout :: menu}"></div>
+<!-- ADMINISTRADOR -->
+<!-- ADMINISTRADOR -->
+<div sec:authorize="hasRole('ADMINISTRADOR')"
+     th:replace="~{Reutilizable/layout :: menu}"></div>
+
+<!-- MÉDICO -->
+<div sec:authorize="hasRole('MEDICO')"
+     th:replace="~{Reutilizable/layoutMedico :: menu_medico}"></div>
+
+<!-- RRHH -->
+<div sec:authorize="hasRole('RRHH')"
+     th:replace="~{Reutilizable/layoutRRHH :: menu_RRHH}"></div>
+
+
 
 <main class="content">
     <div class="container-fluid py-4">
 
         <div class="mb-4">
             <h2 class="fw-bold text-dark" th:text="${trad.getTraduccion('nomina.lista.titulo')}">Nóminas</h2>
-            <p class="text-muted" th:text="${trad.getTraduccion('nomina.lista.subtitulo')} + ': ' + ${empleado.nombre} + ' ' + ${empleado.apellidos}">Historial de pagos para el empleado</p>
+            <p class="text-muted" th:text="${trad.getTraduccion('nomina.lista.subtitulo')}">Historial de pagos de empleados</p>
         </div>
 
         <div class="card shadow-sm border-0" style="border-radius:15px; overflow:hidden;">
@@ -43,12 +58,13 @@
                             <td colspan="6" class="text-center py-5 text-muted" th:text="${trad.getTraduccion('nomina.tabla.vacia')}">No se han encontrado nóminas.</td>
                         </tr>
                         <tr th:each="nomina : ${nominas}" class="clickable-row"
-                            th:data-href="@{'/nominas/detalle/' + ${nomina.id}}">
+                            th:data-href="@{'/nominas/DetalleNomina/' + ${nomina.id}}">
                             <td th:text="${nomina.periodo}">01/2026</td>
                             <td th:text="${nomina.salarioBase} + '€'">1000€</td>
                             <td th:text="${nomina.complementos} + '€'">200€</td>
                             <td th:text="${nomina.deducciones} + '€'">50€</td>
                             <td th:text="${nomina.totalPagar} + '€'" class="fw-bold text-success">1150€</td>
+                            <td th:text="${nomina.empleado != null ? nomina.empleado.nombre + ' ' + nomina.empleado.apellidos : 'Sin empleado'}">Empleado</td>
                             <td>
                                 <a th:href="@{'/nominas/imprimir/' + ${nomina.id}}" class="btn btn-sm btn-outline-danger rounded-pill px-3" target="_blank" onclick="event.stopPropagation();">
                                     <i class="bi bi-printer me-1"></i> <span th:text="${trad.getTraduccion('btn.imprimir')}">Imprimir</span>
@@ -106,7 +122,18 @@
     </div>
 </main>
 
-<div th:replace="~{Reutilizable/layout :: scripts}"></div>
+<!-- ADMINISTRADOR -->
+<div sec:authorize="hasRole('ADMINISTRADOR')"
+     th:replace="~{Reutilizable/layout :: scripts}"></div>
+
+<!-- MÉDICO -->
+<div sec:authorize="hasRole('MEDICO')"
+     th:replace="~{Reutilizable/layoutMedico :: scripts_medico}"></div>
+
+<!-- RRHH -->
+<div sec:authorize="hasRole('RRHH')"
+     th:replace="~{Reutilizable/layoutRRHH :: scripts_RRHH}"></div>
+
 
 <script th:inline="javascript">
     document.addEventListener("DOMContentLoaded", () => {

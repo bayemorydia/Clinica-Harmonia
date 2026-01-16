@@ -1,9 +1,20 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
-    <div th:replace="~{Reutilizable/layout :: head_general}"></div>
-    <title th:text="${trad != null ? trad.getTraduccion('empleados.lista.titulo') : 'Lista de Empleados'}">Lista de Empleados</title>
+    <title th:text="${trad != null ? trad.getTraduccion('empleados.lista.titulo') : 'Lista de Empleados'}"></title>
+
+    <th:block sec:authorize="hasRole('ADMINISTRADOR')"
+              th:replace="~{Reutilizable/layout :: head_general}" />
+
+    <th:block sec:authorize="hasRole('MEDICO')"
+              th:replace="~{Reutilizable/layoutMedico :: head_medico}" />
+
+    <th:block sec:authorize="hasRole('RRHH')"
+              th:replace="~{Reutilizable/layoutRRHH :: head_RRHH}" />
+
 
     <style>
         .clickable-row { cursor: pointer; transition: background-color 0.2s ease; }
@@ -17,7 +28,17 @@
 </head>
 
 <body>
-<div th:replace="~{Reutilizable/layout :: menu}"></div>
+<!-- ADMINISTRADOR -->
+<div sec:authorize="hasRole('ADMINISTRADOR')"
+     th:replace="~{Reutilizable/layout :: menu}"></div>
+
+<!-- MÉDICO -->
+<div sec:authorize="hasRole('MEDICO')"
+     th:replace="~{Reutilizable/layoutMedico :: menu_medico}"></div>
+
+<!-- RRHH -->
+<div sec:authorize="hasRole('RRHH')"
+     th:replace="~{Reutilizable/layoutRRHH :: menu_RRHH}"></div>
 
 <main class="content">
     <div class="container-fluid">
@@ -140,7 +161,17 @@
     </div>
 </main>
 
-<div th:replace="~{Reutilizable/layout :: scripts}"></div>
+<!-- ADMINISTRADOR -->
+<div sec:authorize="hasRole('ADMINISTRADOR')"
+     th:replace="~{Reutilizable/layout :: scripts}"></div>
+
+<!-- MÉDICO -->
+<div sec:authorize="hasRole('MEDICO')"
+     th:replace="~{Reutilizable/layoutMedico :: scripts_medico}"></div>
+
+<!-- RRHH -->
+<div sec:authorize="hasRole('RRHH')"
+     th:replace="~{Reutilizable/layoutRRHH :: scripts_RRHH}"></div>
 
 <script th:inline="javascript">
     document.addEventListener("DOMContentLoaded", () => {

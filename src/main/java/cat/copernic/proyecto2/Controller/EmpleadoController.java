@@ -4,7 +4,7 @@ import cat.copernic.proyecto2.Domain.Administración.Empleado;
 import cat.copernic.proyecto2.Service.Empleado.EmpleadoService;
 import cat.copernic.proyecto2.Service.Rol.RolService;
 import cat.copernic.proyecto2.Service.Traduccion.TraduccionService;
-import cat.copernic.proyecto2.Service.Usuario.UsuarioService;
+import cat.copernic.proyecto2.Service.Usuario.empleado.EmpleadoUsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -39,7 +39,7 @@ public class EmpleadoController {
     private TraduccionService traduccionService;
 
     @Autowired
-    private UsuarioService usuarioService;
+    private EmpleadoUsuarioService EmpleadoUsuarioService;
 
     @Autowired
     private TurnoService turnoService;
@@ -98,10 +98,10 @@ public class EmpleadoController {
         }
 
         try {
-            empleado.setUsuario(usuarioService.crearUsuarioPaciente(
+            empleado.setUsuario(EmpleadoUsuarioService.crearEmpleadoConUsuario(
                     empleado.getNombre(),
                     empleado.getApellidos(),
-                    empleado.getDni()));
+                    empleado.getDni(),empleado.getRol().getNombre()));
 
             empleadoService.crear(empleado);
             redirectAttrs.addFlashAttribute("success", "Empleado guardado correctamente ✅");

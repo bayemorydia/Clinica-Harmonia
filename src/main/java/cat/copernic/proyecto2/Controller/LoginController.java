@@ -13,6 +13,11 @@ public class LoginController {
         return "redirect:/home";
     }
 
+    @GetMapping("/login")
+    public String login() {
+        return "login"; // Debe existir src/main/resources/templates/login.html
+    }
+
     @GetMapping("/home")
     public String redirectAfterLogin(HttpServletRequest request) {
         if (request.isUserInRole("ROLE_ADMINISTRADOR")) {
@@ -20,6 +25,8 @@ public class LoginController {
         } else if (request.isUserInRole("ROLE_MEDICO")) {
             return "redirect:/medico/dashboard";
         } else if (request.isUserInRole("ROLE_RRHH")) {
+            return "redirect:/RRHH/dashboard";
+        }else if (request.isUserInRole("ROLE_PACIENTE")) {
             return "redirect:/RRHH/dashboard";
         }
 
