@@ -11,5 +11,6 @@ public interface EmpleadoUsuarioService {
     Page<Usuario> buscarPorUsername(String query, Pageable pageable);
     Usuario buscarUsuario(Long id);
     void guardar(Usuario usuario);
+    void actualizarRolUsuario(Long usuarioId, String nuevoRolNombre);
 }
 

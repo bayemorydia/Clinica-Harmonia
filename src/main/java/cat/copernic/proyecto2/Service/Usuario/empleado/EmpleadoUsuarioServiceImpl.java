@@ -1,8 +1,8 @@
 package cat.copernic.proyecto2.Service.Usuario.empleado;
 
-import cat.copernic.proyecto2.DAO.EmpleadoDAO;
-import cat.copernic.proyecto2.DAO.RolDAO;
-import cat.copernic.proyecto2.DAO.UsuarioDAO;
+import cat.copernic.proyecto2.DAO.JPA.EmpleadoDAO;
+import cat.copernic.proyecto2.DAO.JPA.RolDAO;
+import cat.copernic.proyecto2.DAO.JPA.UsuarioDAO;
 import cat.copernic.proyecto2.Domain.Persona.Rol;
 import cat.copernic.proyecto2.Domain.Persona.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,4 +90,23 @@ public class EmpleadoUsuarioServiceImpl implements EmpleadoUsuarioService {
         }
         return intento;
     }
+
+    @Override
+    @Transactional
+    public void actualizarRolUsuario(Long usuarioId, String nuevoRolNombre) {
+
+        Usuario usuario = usuarioDAO.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        Rol nuevoRol = rolDAO.findByNombre(nuevoRolNombre)
+                .orElseThrow(() -> new RuntimeException("El rol '" + nuevoRolNombre + "' no existe"));
+
+        Set<Rol> nuevosRoles = new HashSet<>();
+        nuevosRoles.add(nuevoRol);
+
+        usuario.setRoles(nuevosRoles);
+
+        usuarioDAO.save(usuario);
+    }
+
 }

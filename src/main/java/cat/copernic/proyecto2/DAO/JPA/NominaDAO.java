@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 @Repository
 public interface NominaDAO extends JpaRepository<Nomina, Long> {
     // Aquí puedes añadir consultas personalizadas si las necesitas
@@ -15,4 +17,7 @@ public interface NominaDAO extends JpaRepository<Nomina, Long> {
 
     Page<Nomina> findByEmpleadoId(Long empleadoId, Pageable pageable);
 
+    List<Nomina> findByPeriodo(String periodo);
+
+    List<Nomina> findByPeriodoContaining(String anyo);
 }

@@ -14,6 +14,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import java.time.LocalDate;
 import java.math.BigDecimal;
+import jakarta.validation.constraints.Min;
 
 @Data
 @Entity
@@ -47,6 +48,7 @@ public class Empleado {
     @JoinColumn(name = "rol_id")
     private Rol rol;
 
+    @Min(value = 0, message = "El salario no puede ser negativo")
     @NotNull(message = "El salario base es obligatorio")
     private BigDecimal salarioBase;
     @Column(nullable = false)

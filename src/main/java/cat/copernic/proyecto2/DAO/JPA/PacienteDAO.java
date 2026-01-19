@@ -1,6 +1,7 @@
 package cat.copernic.proyecto2.DAO.JPA;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,4 +39,7 @@ public interface PacienteDAO extends JpaRepository<Paciente, Long> {
            "LOWER(CONCAT(p.nombre, ' ', p.apellidos)) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
            "LOWER(p.dni) LIKE LOWER(CONCAT('%', :query, '%'))")
     Page<Paciente> findByNombreOrDni(@Param("query") String query, Pageable pageable);
+
+
+    Optional<Paciente> findByUsuarioUsername(String username);
 }

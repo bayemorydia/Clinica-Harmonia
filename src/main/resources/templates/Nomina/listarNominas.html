@@ -4,6 +4,7 @@
 <head>
     <div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: head_medico}"></div>
     <div sec:authorize="hasRole('ADMINISTRADOR')" th:replace="~{Reutilizable/layout :: head_general}"></div>
+    <th:block sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layoutRRHH :: head_RRHH}"></th:block>
 
     <title>Listado de Nóminas</title>
 
@@ -60,15 +61,38 @@
             background-color: #ffffff;
             border-top: 1px solid #edf2f7;
         }
+        .export-panel {
+            background: #e9ecef;
+            padding: 5px 15px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
     </style>
 </head>
 
 <body>
     <div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: menu_medico}"></div>
     <div sec:authorize="hasRole('ADMINISTRADOR')" th:replace="~{Reutilizable/layout :: menu}"></div>
+    <div th:replace="~{Reutilizable/layout :: menu}"></div>
+    <div sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layoutRRHH :: menu_RRHH}"></div>
 
     <main th:class="${#authorization.expression('hasRole(''MEDICO'')')} ? 'content-medico' : 'content'">
         <div class="container-fluid">
+
+            <div class="d-flex justify-content-end mb-3">
+                <div class="export-panel shadow-sm">
+                    <span class="small fw-bold text-secondary text-uppercase">Exportar:</span>
+                    <select id="periodoExport" class="form-select form-select-sm border-0 bg-transparent shadow-none" style="width: 120px; cursor:pointer;">
+                        <option value="MES">Este Mes</option>
+                        <option value="ANYO">Este Año</option>
+                    </select>
+                    <button onclick="descargarNominasAsincrono()" id="btnDownload" class="btn btn-success btn-sm rounded-circle p-2" title="Descargar CSV">
+                        <i class="bi bi-file-earmark-arrow-down"></i>
+                    </button>
+                </div>
+            </div>
 
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
@@ -76,6 +100,8 @@
                     <p class="text-muted small mb-0">Gestión y visualización de nóminas de empleados.</p>
                 </div>
             </div>
+
+
 
             <div class="card shadow-sm border-0 mb-4" style="border-radius: 15px;">
                 <div class="card-body">
@@ -184,6 +210,7 @@
 
     <div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: scripts_medico}"></div>
     <div sec:authorize="hasRole('ADMINISTRADOR')" th:replace="~{Reutilizable/layout :: scripts}"></div>
+    <div sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layoutRRHH :: scripts_RRHH}"></div>
 
     <script th:inline="javascript">
         document.addEventListener("DOMContentLoaded", () => {
@@ -227,6 +254,34 @@
             if (page < 0 || page >= totalPages) return;
             updateTable(page);
         }
+        function descargarNominasAsincrono() {
+            const periodo = document.getElementById('periodoExport').value;
+            const btn = document.getElementById('btnDownload');
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+
+            fetch(`/nominas/exportar?periodo=${periodo}`)
+                .then(res => {
+                    if(!res.ok) throw new Error();
+                    return res.blob();
+                })
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `Nominas_${periodo}.csv`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                })
+                .catch(() => alert('Error al generar el reporte'))
+                .finally(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="bi bi-file-earmark-arrow-down"></i>';
+                });
+        }
+
     </script>
 
 </body>

@@ -134,7 +134,7 @@
 
                                     <div class="col-md-6" sec:authorize="hasRole('ADMINISTRADOR')">
                                         <label class="form-label small fw-bold text-secondary" th:text="${trad.getTraduccion('empleado.label.salario')}">Salario Base (€)</label>
-                                        <input type="number" step="0.01" th:field="*{salarioBase}"
+                                        <input type="number" step="0.01" min="0" th:field="*{salarioBase}"
                                                class="form-control rounded-3 bg-light"
                                                th:classappend="${#fields.hasErrors('salarioBase')} ? 'is-invalid' : ''">
                                         <div class="invalid-feedback" th:errors="*{salarioBase}"></div>

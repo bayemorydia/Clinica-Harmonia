@@ -1,6 +1,6 @@
 package cat.copernic.proyecto2.Service.Vacaciones.RRHH;
 import cat.copernic.proyecto2.Domain.Administración.Vacaciones;
-import cat.copernic.proyecto2.DAO.VacacionesDAO;
+import cat.copernic.proyecto2.DAO.JPA.VacacionesDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import cat.copernic.proyecto2.Domain.Administración.EstadoVacaciones;

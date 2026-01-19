@@ -17,7 +17,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.http.*;
 
+import org.springframework.web.bind.annotation.*;
+import java.util.concurrent.CompletableFuture;
 import java.math.BigDecimal;
 
 @Controller
@@ -226,6 +229,20 @@ public class NominaController {
         model.addAttribute("activePage", "nominas");
 
         return "Nomina/detalleNomina"; 
+    }
+
+    @GetMapping("/exportar")
+    @ResponseBody
+    public CompletableFuture<ResponseEntity<byte[]>> exportarNominas(@RequestParam String periodo) {
+        // Llama al servicio que genere el CSV/Excel de nóminas
+        return nominaService.generarReporteAsync(periodo)
+                .thenApply(bytes -> {
+                    HttpHeaders headers = new HttpHeaders();
+                    headers.setContentType(MediaType.APPLICATION_OCTET_STREAM); // Para descarga genérica
+                    headers.setContentDisposition(ContentDisposition.attachment()
+                            .filename("Nominas_" + periodo + ".csv").build());
+                    return new ResponseEntity<>(bytes, headers, HttpStatus.OK);
+                });
     }
 
 }
