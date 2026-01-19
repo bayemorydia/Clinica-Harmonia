@@ -146,4 +146,9 @@ public class PacienteServiceImpl implements PacienteService {
         if (idActual != null && encontrado.getId().equals(idActual)) return false;
         return true;
     }
+    @Override
+    public Paciente buscarPorUsername(String username) {
+        return pacienteDAO.findByUsuarioUsername(username)
+                .orElse(null); // Retorna null si no encuentra al paciente
+    }
 }

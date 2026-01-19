@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <!-- Head del layout -->
+    <th:block th:replace="~{Reutilizable/layoutRRHH :: head_RRHH}"></th:block>
+
+    <title>Dashboard RRHH</title>
+
+    <!-- Estilos propios del dashboard -->
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+
+        .card-custom {
+            border-radius: 20px;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            cursor: pointer;
+        }
+
+        .card-custom:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 1rem 2rem rgba(0,0,0,0.15);
+        }
+
+        .icon-circle {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            margin-right: 1rem;
+        }
+
+        .bg-light-blue   { background: #cfe2ff; color: #084298; }
+        .bg-light-green  { background: #d1e7dd; color: #0f5132; }
+        .bg-light-red    { background: #f8d7da; color: #842029; }
+        .bg-light-yellow { background: #fff3cd; color: #664d03; }
+
+        .action-card {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 1rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .action-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 .5rem 1rem rgba(0,0,0,0.12);
+        }
+    </style>
+</head>
+
+<body th:with="activePage='dashboard'">
+
+<!-- Sidebar -->
+<div sec:authorize="hasRole('RRHH')"
+     th:replace="~{Reutilizable/layoutRRHH :: menu_RRHH}"></div>
+
+<!-- CONTENIDO -->
+<main class="content">
+    <div class="container-fluid py-3">
+
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold mb-1">Dashboard RRHH</h2>
+                <p class="text-muted">Control rápido de empleados y nóminas.</p>
+            </div>
+
+            <span class="badge bg-white shadow-sm text-dark p-2 px-3 rounded-pill border">
+                <i class="bi bi-clock me-2 text-primary"></i>
+                <span th:text="${#temporals.format(#temporals.createNow(), 'dd/MM/yyyy')}"></span>
+            </span>
+        </div>
+
+        <!-- Métricas -->
+        <div class="row g-4 mb-5">
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card-custom d-flex align-items-center p-3 bg-light-blue">
+                    <div class="icon-circle bg-white text-primary">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0 fw-bold">Total Empleados</h6>
+                        <h3 class="fw-bold mb-0" th:text="${totalEmpleados ?: 0}">0</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card-custom d-flex align-items-center p-3 bg-light-green">
+                    <div class="icon-circle bg-white text-success">
+                        <i class="bi bi-person-check"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0 fw-bold">Empleados Activos</h6>
+                        <h3 class="fw-bold mb-0" th:text="${empleadosActivos ?: 0}">0</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card-custom d-flex align-items-center p-3 bg-light-red">
+                    <div class="icon-circle bg-white text-danger">
+                        <i class="bi bi-person-x"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0 fw-bold">Empleados Inactivos</h6>
+                        <h3 class="fw-bold mb-0" th:text="${empleadosInactivos ?: 0}">0</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card-custom d-flex align-items-center p-3 bg-light-yellow">
+                    <div class="icon-circle bg-white text-warning">
+                        <i class="bi bi-file-earmark-text"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0 fw-bold">Nóminas Pendientes</h6>
+                        <h3 class="fw-bold mb-0" th:text="${nominasPendientes ?: 0}">0</h3>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Acciones rápidas -->
+        <div class="card border-0 shadow-sm p-4 bg-white">
+            <h5 class="fw-bold mb-4">Acciones Rápidas</h5>
+
+            <div class="row g-3">
+                <div class="col-md-6 col-lg-3">
+                    <a th:href="@{/RRHH/empleados}" class="text-decoration-none">
+                        <div class="action-card text-center">
+                            <i class="bi bi-people fs-2 text-primary mb-2"></i>
+                            <h6 class="fw-bold">Gestionar Empleados</h6>
+                            <small class="text-muted">Agregar, editar o eliminar empleados</small>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <a th:href="@{/RRHH/nominas}" class="text-decoration-none">
+                        <div class="action-card text-center">
+                            <i class="bi bi-file-earmark-text fs-2 text-success mb-2"></i>
+                            <h6 class="fw-bold">Nóminas</h6>
+                            <small class="text-muted">Generar y revisar nóminas</small>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<!-- Scripts -->
+<div sec:authorize="hasRole('RRHH')"
+     th:replace="~{Reutilizable/layoutRRHH :: scripts_RRHH}"></div>
+
+</body>
+</html>

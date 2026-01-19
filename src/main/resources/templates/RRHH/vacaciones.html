@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <!-- Usamos el head de RRHH -->
+    <th:block sec:authorize="hasRole('RRHH')"
+              th:insert="~{Reutilizable/layoutRRHH :: head_RRHH}"></th:block>
+    <title th:text="${trad.getTraduccion('vacaciones.titulo')}">Vacaciones</title>
+</head>
+
+<body class="bg-light">
+
+<!-- Sidebar RRHH -->
+<div sec:authorize="hasRole('RRHH')"
+     th:insert="~{Reutilizable/layoutRRHH :: menu_RRHH}"></div>
+
+<main class="content">
+    <div class="container-fluid py-4">
+
+        <!-- Cabecera -->
+        <div class="mb-4">
+            <h2 class="fw-bold text-dark mb-1"
+                th:text="${trad.getTraduccion('vacaciones.titulo')}">
+                Vacaciones
+            </h2>
+            <p class="text-muted"
+               th:text="${trad.getTraduccion('vacaciones.subtituloRRHH')}">
+                Gestiona las solicitudes de tus empleados
+            </p>
+        </div>
+
+        <div class="row g-4">
+
+            <!-- Columna izquierda: info general RRHH -->
+            <div class="col-lg-4">
+                <div class="card shadow-sm border-0 bg-primary text-white mb-4" style="border-radius: 15px;">
+                    <div class="card-body p-4 text-center">
+                        <i class="bi bi-people fs-1 mb-2"></i>
+                        <h6 class="text-white-50 text-uppercase small fw-bold">
+                            Solicitudes pendientes
+                        </h6>
+                        <h1 class="display-4 fw-bold mb-0" th:text="${pendientes}">0</h1>
+                        <small class="text-white-50">RRHH</small>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-0" style="border-radius: 15px;">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-3 text-primary">
+                            <i class="bi bi-info-circle me-2"></i>
+                            Gestión de Vacaciones
+                        </h5>
+                        <p class="text-muted mb-0">
+                            Desde este panel puedes aprobar o rechazar
+                            las solicitudes de vacaciones de los empleados.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna derecha: tabla de solicitudes -->
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0" style="border-radius: 15px;">
+                    <div class="card-header bg-white py-4 border-bottom-0">
+                        <h5 class="card-title fw-bold mb-0 text-primary">
+                            <i class="bi bi-clock-history me-2"></i>
+                            <span th:text="${trad.getTraduccion('vacaciones.solicitudes')}">
+                                Solicitudes
+                            </span>
+                        </h5>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Empleado</th>
+                                <th>Periodo</th>
+                                <th>Días</th>
+                                <th>Estado</th>
+                                <th class="text-end pe-4">Acciones</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            <tr th:each="vaca : ${solicitudes}">
+                                <td class="ps-4 fw-bold text-dark" th:text="${vaca.empleado.nombre}">Empleado</td>
+                                <td>
+                                        <span class="fw-bold text-dark"
+                                              th:text="${#temporals.format(vaca.fechaInicio,'dd/MM/yyyy')} + ' - ' + ${#temporals.format(vaca.fechaFin,'dd/MM/yyyy')}"></span>
+                                    <br>
+                                </td>
+                                <td th:text="${vaca.totalDias}">0</td>
+                                <td>
+                                        <span th:if="${vaca.estado.toString() == 'PENDIENTE'}"
+                                              class="badge rounded-pill px-3 shadow-sm"
+                                              style="background-color:#ffc107;color:#000;">
+                                            <i class="bi bi-hourglass-split me-1"></i>
+                                            Pendiente
+                                        </span>
+
+                                    <span th:if="${vaca.estado.toString() == 'ACEPTADA'}"
+                                          class="badge bg-success rounded-pill px-3 shadow-sm">
+                                            <i class="bi bi-check-circle me-1"></i>
+                                            Aceptada
+                                        </span>
+
+                                    <span th:if="${vaca.estado.toString() == 'RECHAZADA'}"
+                                          class="badge bg-danger rounded-pill px-3 shadow-sm">
+                                            <i class="bi bi-x-circle me-1"></i>
+                                            Rechazada
+                                        </span>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <form th:if="${vaca.estado.toString() == 'PENDIENTE'}"
+                                              th:action="@{/RRHH/vacaciones/gestion/aceptar/{id}(id=${vaca.id})}" method="post">
+                                            <button class="btn btn-success btn-sm px-3 shadow-sm">
+                                                <i class="bi bi-check-circle"></i>
+                                            </button>
+                                        </form>
+
+                                        <form th:if="${vaca.estado.toString() == 'PENDIENTE'}"
+                                              th:action="@{/RRHH/vacaciones/rechazar/{id}(id=${vaca.id})}" method="post">
+                                            <button class="btn btn-danger btn-sm px-3 shadow-sm">
+                                                <i class="bi bi-x-circle"></i>
+                                            </button>
+                                        </form>
+
+                                        <span th:if="${vaca.estado.toString() != 'PENDIENTE'}" class="text-muted">
+                                                <i class="bi bi-lock-fill"></i>
+                                            </span>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr th:if="${#lists.isEmpty(solicitudes)}">
+                                <td colspan="5" class="text-center py-5 text-muted">
+                                    <i class="bi bi-calendar2-range fs-1 d-block mb-3"></i>
+                                    <span th:text="${trad.getTraduccion('vacaciones.vacia')}">
+                                            No hay solicitudes
+                                        </span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<!-- Scripts RRHH -->
+<div sec:authorize="hasRole('RRHH')"
+     th:insert="~{Reutilizable/layoutRRHH :: scripts_RRHH}"></div>
+
+</body>
+</html>

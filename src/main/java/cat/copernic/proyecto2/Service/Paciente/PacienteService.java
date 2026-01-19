@@ -20,8 +20,9 @@ public interface PacienteService {
     long countPacientesActivos();
     // Cambiado de boolean a Boolean para permitir nulos (todos)
     Page<Paciente> getPacientesPaginados(String query, Boolean activo, int page, int size);
-    
-   
+
+
+    Paciente buscarPorUsername(String username);
 
     // Mantenemos este porque contiene lógica específica de validación que no tenías
     boolean existeDni(String dni, Long idActual);

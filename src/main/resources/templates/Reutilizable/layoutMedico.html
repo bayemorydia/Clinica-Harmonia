@@ -108,8 +108,8 @@
                 <a th:href="@{/medico/perfil/{id}(id=${medicoLogueado?.id})}" class="nav-link-med"
                     th:classappend="${activePage == 'perfil' ? 'active' : ''}">
                     <i class="bi bi-person-circle"></i>
-                    <span th:text="${#authorization.expression('hasRole(''ADMINISTRADOR'')')} 
-                                ? ${trad.getTraduccion('nav.perfil.admin')} 
+                    <span th:text="${#authorization.expression('hasRole(''ADMINISTRADOR'')')}
+                                ? ${trad.getTraduccion('nav.perfil.admin')}
                                 : ${trad.getTraduccion('nav.perfil.user')}">Perfil</span>
                 </a>
             </li>
@@ -148,7 +148,7 @@
                 const url = new URL(window.location.href);
                 url.searchParams.set('lang', lang);
                 window.location.href = url.toString();
-                
+
             }
         </script>
     </div>

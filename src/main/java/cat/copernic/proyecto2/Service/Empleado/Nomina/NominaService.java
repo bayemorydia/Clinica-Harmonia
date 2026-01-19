@@ -2,6 +2,8 @@ package cat.copernic.proyecto2.Service.Empleado.Nomina;
 
 import cat.copernic.proyecto2.Domain.Administración.Nomina;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -13,4 +15,5 @@ public interface NominaService {
     byte[] generarPdfNomina(Nomina nomina);
     Nomina findById(Long id);
     Page<Nomina> getNominasPorEmpleado(Long empleadoId, Pageable pageable);
+    CompletableFuture<byte[]> generarReporteAsync(String periodo);
 }

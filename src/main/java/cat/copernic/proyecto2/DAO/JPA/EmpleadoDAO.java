@@ -38,4 +38,6 @@ public interface EmpleadoDAO extends JpaRepository<Empleado, Long> {
         Optional<Empleado> findByTelefono(@Param("telefono") String telefono);
 
         Optional<Empleado> findByUsuarioUsername(String username);
+
+
 }

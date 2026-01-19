@@ -1,6 +1,7 @@
 package cat.copernic.proyecto2.Service.Empleado.Nomina;
 
 import cat.copernic.proyecto2.DAO.JPA.NominaDAO;
+import cat.copernic.proyecto2.Domain.Administración.Empleado;
 import cat.copernic.proyecto2.Domain.Administración.Nomina;
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfPCell;
@@ -9,12 +10,17 @@ import com.lowagie.text.pdf.PdfWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.concurrent.CompletableFuture;
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal; // <--- IMPORTANTE
 import java.util.List;
+import java.nio.charset.StandardCharsets;
 
 @Service
 public class NominaServiceImpl implements NominaService {
@@ -78,7 +84,7 @@ public class NominaServiceImpl implements NominaService {
             titulo.setAlignment(Element.ALIGN_CENTER);
             document.add(titulo);
 
-            document.add(new Paragraph(" ")); 
+            document.add(new Paragraph(" "));
 
             // 3. Datos del Empleado
             PdfPTable datosEmpleado = new PdfPTable(2);
@@ -87,7 +93,7 @@ public class NominaServiceImpl implements NominaService {
 
             addDatoEmpleado(datosEmpleado, "Empleado:", nomina.getEmpleado().getNombre() + " " + nomina.getEmpleado().getApellidos(), boldFont, regularFont);
             addDatoEmpleado(datosEmpleado, "DNI/NIE:", nomina.getEmpleado().getDni(), boldFont, regularFont);
-            
+
             String depto = (nomina.getEmpleado().getDepartamento() != null) ? nomina.getEmpleado().getDepartamento() : "General";
             addDatoEmpleado(datosEmpleado, "Departamento:", depto, boldFont, regularFont);
             addDatoEmpleado(datosEmpleado, "Periodo:", nomina.getPeriodo(), boldFont, regularFont);
@@ -172,4 +178,44 @@ public class NominaServiceImpl implements NominaService {
         cellValor.setPadding(5);
         table.addCell(cellValor);
     }
+
+    @Async
+    @Override
+    public CompletableFuture<byte[]> generarReporteAsync(String periodo) {
+        List<Nomina> nominas;
+
+        // 1. Lógica para convertir "MES" o "ANYO" en valores reales
+        java.time.LocalDate hoy = java.time.LocalDate.now();
+        String mesActual = String.format("%02d/%d", hoy.getMonthValue(), hoy.getYear());
+        String anyoActual = String.valueOf(hoy.getYear());
+
+        if ("MES".equals(periodo)) {
+            nominas = nominaRepository.findByPeriodo(mesActual);
+        } else if ("ANYO".equals(periodo)) {
+            // Aquí necesitas un método en el DAO que busque por "contiene el año"
+            nominas = nominaRepository.findByPeriodoContaining(anyoActual);
+        } else {
+            nominas = nominaRepository.findAll();
+        }
+
+        // 2. Construcción del CSV (Asegúrate de completar el bucle)
+        StringBuilder sb = new StringBuilder();
+        sb.append("Empleado;Periodo;Salario Base;Complementos;Deducciones;Total\n");
+
+        for (Nomina n : nominas) {
+            String nombreCompleto = (n.getEmpleado() != null)
+                    ? n.getEmpleado().getNombre() + " " + n.getEmpleado().getApellidos()
+                    : "Sin Nombre";
+
+            sb.append(nombreCompleto).append(";")
+                    .append(n.getPeriodo()).append(";")
+                    .append(n.getSalarioBase()).append(";")
+                    .append(n.getComplementos()).append(";")
+                    .append(n.getDeducciones()).append(";")
+                    .append(n.getTotalPagar()).append("\n");
+        }
+
+        return CompletableFuture.completedFuture(sb.toString().getBytes(StandardCharsets.UTF_8));
+    }
+
 }

@@ -34,29 +34,29 @@
                             </div>
                             <div>
                                 <h3 class="mb-0 fw-bold text-dark" th:text="${trad.getTraduccion('empleado.baja.titulo')}">Confirmar Acción</h3>
-                                <p class="mb-0 text-muted small">Esta acción modificará el estado del registro</p>
+                                <p class="mb-0 text-muted small" th:text="${trad.getTraduccion('empleado.baja.subtitulo')}">Esta acción modificará el estado del registro</p>
                             </div>
                         </div>
                     </div>
 
                     <div class="card-body p-4 p-md-5 text-center">
-                        <p class="lead fw-semibold text-dark mb-4">¿Estás seguro de que deseas desactivar al empleado?</p>
+                        <p class="lead fw-semibold text-dark mb-4" th:text="${trad.getTraduccion('empleado.baja.pregunta')}">¿Estás seguro de que deseas desactivar al empleado?</p>
 
                         <div class="bg-light p-4 rounded-4 border border-light-subtle mb-4">
                             <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
                                  style="width: 60px; height: 60px;">
-                                <h4 class="mb-0 fw-bold" th:text="${#strings.substring(empleado.nombre,0,1)}"></h4>
+                                <h4 class="mb-0 fw-bold" th:text="${empleado.nombre != null && !empleado.nombre.isEmpty() ? #strings.substring(empleado.nombre,0,1) : 'N'}"></h4>
                             </div>
                             <h5 class="fw-bold mb-1 text-dark" th:text="${empleado.nombre} + ' ' + ${empleado.apellidos}"></h5>
-                            <p class="mb-0 text-muted font-monospace small" th:text="'DNI: ' + ${empleado.dni}"></p>
-                            <p class="mb-0 text-muted font-monospace small" th:text="'Departamento: ' + ${empleado.departamento}"></p>
+                            <p class="mb-0 text-muted font-monospace small" th:text="${trad.getTraduccion('empleado.label.dni')} + ': ' + ${empleado.dni}"></p>
+                            <p class="mb-0 text-muted font-monospace small" th:text="${trad.getTraduccion('empleado.label.departamento')} + ': ' + ${empleado.departamento}"></p>
                         </div>
 
                         <div class="alert alert-warning border-0 small mb-0 shadow-sm">
                             <i class="bi bi-info-circle me-2"></i>
                             <span th:text="${trad.getTraduccion('empleado.baja.aviso')}">
-                                    El empleado dejará de estar activo en el sistema, pero sus datos no serán borrados permanentemente.
-                                </span>
+                                El empleado dejará de estar activo en el sistema, pero sus datos no serán borrados permanentemente.
+                            </span>
                         </div>
 
                         <form th:action="@{'/empleados/baja/' + ${empleado.id}}" method="post" class="mt-5">
@@ -64,7 +64,7 @@
 
                             <div class="d-flex justify-content-center gap-3">
                                 <a th:href="@{/empleados}" class="btn btn-light px-4 py-2 fw-bold text-secondary rounded-pill">
-                                    <span th:text="${trad.getTraduccion('btn.cancelar')}">Cancelar</span>
+                                    <span th:text="${trad.getTraduccion('boton.cancelar')}">Cancelar</span>
                                 </a>
                                 <button type="submit" class="btn btn-warning px-4 py-2 fw-bold shadow-sm rounded-pill transition-all hover-lift">
                                     <i class="bi bi-person-x-fill me-2"></i>
@@ -75,7 +75,7 @@
                     </div>
 
                     <div class="card-footer bg-light bg-opacity-50 border-0 py-3 text-center">
-                        <small class="text-muted italic">Módulo de Gestión de Recursos Humanos</small>
+                        <small class="text-muted italic" th:text="${trad.getTraduccion('modulo.rrhh')}">Módulo de Gestión de Recursos Humanos</small>
                     </div>
                 </div>
             </div>

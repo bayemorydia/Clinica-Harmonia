@@ -1,5 +1,6 @@
 package cat.copernic.proyecto2.Controller;
-
+import cat.copernic.proyecto2.Domain.Administración.Empleado;
+import cat.copernic.proyecto2.Domain.Recepción.Paciente;
 import cat.copernic.proyecto2.Domain.Recepción.Cita;
 import cat.copernic.proyecto2.Domain.Recepción.EstadoCita;
 import cat.copernic.proyecto2.Service.Cita.CitaService;
@@ -11,6 +12,7 @@ import cat.copernic.proyecto2.Service.Cita.FacturaPdfService; // <--- NUEVO IMPO
 import jakarta.servlet.http.HttpServletResponse; // <--- NUEVO IMPORT
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -34,7 +36,6 @@ public class CitaController {
     private final PacienteService pacienteService;
     private final EmpleadoService empleadoService;
     private final TraduccionService traduccionService;
-
     @Autowired
     private FacturaPdfService facturaPdfService; // <--- INYECCIÓN DEL SERVICIO PDF
 

@@ -5,6 +5,7 @@
     <div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: head_medico}"></div>
     <div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: head_recepcion}"></div>
     <div sec:authorize="!hasAnyRole('MEDICO', 'RECEPCIONISTA')" th:replace="~{Reutilizable/layout :: head_general}"></div>
+    <div sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layoutRRHH :: head_RRHH}"></div>
 
     <title th:text="${empleado.nombre} + ' ' + ${empleado.apellidos}">Detalle Empleado</title>
 </head>
@@ -13,6 +14,7 @@
     <div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: menu_medico}"></div>
     <div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: menu_recepcion}"></div>
     <div sec:authorize="!hasAnyRole('MEDICO', 'RECEPCIONISTA')" th:replace="~{Reutilizable/layout :: menu}"></div>
+    <div sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layoutRRHH :: menu_RRHH}"></div>
 
     <main th:class="${#authorization.expression('hasAnyRole(''ROLE_MEDICO'', ''ROLE_RECEPCIONISTA'')')} ? (${#authorization.expression('hasRole(''ROLE_MEDICO'')')} ? 'content-medico' : 'content-recepcion') : 'content'">
         <div class="container-fluid py-4">
@@ -146,27 +148,27 @@
                                                    th:readonly="${#authorization.expression('hasAnyRole(''ROLE_MEDICO'', ''ROLE_RECEPCIONISTA'')')}">
                                         </div>
                                         
-                                        <div class="col-md-6" sec:authorize="hasRole('ADMINISTRADOR')">
+                                        <div class="col-md-6" sec:authorize="hasAnyRole('ADMINISTRADOR','RRHH')">
                                             <label class="form-label small fw-bold text-secondary">Salario Base (€)</label>
                                             <input type="number" step="0.01" th:field="*{salarioBase}"
                                                    class="form-control rounded-3 bg-light">
                                         </div>
-                                        <div class="col-md-6" sec:authorize="hasRole('ADMINISTRADOR')">
+                                        <div class="col-md-6" sec:authorize="hasAnyRole('ADMINISTRADOR','RRHH')">
                                             <label class="form-label small fw-bold text-secondary">Rol</label>
                                             <select th:field="*{rol.id}" class="form-select rounded-3 bg-light">
                                                 <option value="" disabled th:selected="${empleado.rol == null}">-- Selecciona un rol --</option>
                                                 <option th:each="r : ${roles}" th:value="${r.id}" th:text="${r.nombre}"></option>
                                             </select>
                                         </div>
-                                        <div class="col-md-4" sec:authorize="hasRole('ADMINISTRADOR')">
+                                        <div class="col-md-4" sec:authorize="hasAnyRole('ADMINISTRADOR','RRHH')">
                                             <label class="form-label small fw-bold text-secondary">Hora Inicio</label>
                                             <input type="time" th:field="*{inicio}" class="form-control rounded-3 bg-light">
                                         </div>
-                                        <div class="col-md-4" sec:authorize="hasRole('ADMINISTRADOR')">
+                                        <div class="col-md-4" sec:authorize="hasAnyRole('ADMINISTRADOR','RRHH')">
                                             <label class="form-label small fw-bold text-secondary">Hora Fin</label>
                                             <input type="time" th:field="*{fin}" class="form-control rounded-3 bg-light">
                                         </div>
-                                        <div class="col-md-4" sec:authorize="hasRole('ADMINISTRADOR')">
+                                        <div class="col-md-4" sec:authorize="hasAnyRole('ADMINISTRADOR','RRHH')">
                                             <label class="form-label small fw-bold text-secondary">Turno</label>
                                             <select th:field="*{turno.id}" class="form-select" required>
                                                 <option value="" disabled selected>-- Selecciona un turno --</option>
@@ -179,12 +181,12 @@
                                 <div class="card-footer bg-white border-0 p-0 text-end">
                                     <hr class="my-4 opacity-25">
 
-                                    <button type="submit" sec:authorize="hasRole('ADMINISTRADOR')"
+                                    <button type="submit" sec:authorize="hasAnyRole('ADMINISTRADOR','RRHH')"
                                             class="btn btn-primary rounded-pill px-5 py-3 fw-bold shadow-lg hover-lift">
                                         <i class="bi bi-save me-2"></i> Guardar Cambios
                                     </button>
-                                    <a th:href="@{'/empleados/empleado/' + ${empleado.id}}"
-                                       sec:authorize="hasRole('ADMINISTRADOR')"
+                                    <a th:href="@{'/nominas/DetalleNomina/' + ${empleado.id}}"
+                                       sec:authorize="hasAnyRole('ADMINISTRADOR','RRHH')"
                                        class="btn btn-success rounded-pill px-5 py-3 fw-bold shadow-lg hover-lift ms-2">
                                         <i class="bi bi-file-earmark-text me-2"></i> Nómina
                                     </a>
@@ -207,6 +209,7 @@
     <div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: scripts_medico}"></div>
     <div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: scripts_recepcion}"></div>
     <div sec:authorize="!hasAnyRole('MEDICO', 'RECEPCIONISTA')" th:replace="~{Reutilizable/layout :: scripts}"></div>
+    <div sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layoutRRHH :: scripts_RRHH}"></div>
 
     <style>
         .hover-lift:hover {

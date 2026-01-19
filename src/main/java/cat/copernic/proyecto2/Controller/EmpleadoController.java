@@ -2,6 +2,7 @@ package cat.copernic.proyecto2.Controller;
 
 import cat.copernic.proyecto2.Domain.Administración.Empleado;
 import cat.copernic.proyecto2.Domain.Persona.Usuario;
+import cat.copernic.proyecto2.Domain.Persona.Rol;
 import cat.copernic.proyecto2.Service.Empleado.EmpleadoService;
 import cat.copernic.proyecto2.Service.Empleado.Turno.TurnoService;
 import cat.copernic.proyecto2.Service.Rol.RolService;
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
+import cat.copernic.proyecto2.Service.Usuario.empleado.EmpleadoUsuarioService;
 @Controller
 @RequestMapping("/empleados")
 @RequiredArgsConstructor
@@ -26,6 +27,7 @@ public class EmpleadoController {
     private final TraduccionService traduccionService;
     private final UsuarioService usuarioService;
     private final TurnoService turnoService;
+    private final EmpleadoUsuarioService EmpleadoUsuarioService;
 
     private void cargarListasSoporte(Model model) {
         model.addAttribute("roles", rolService.listarRoles(PageRequest.of(0, 200)).getContent());
@@ -88,14 +90,18 @@ public class EmpleadoController {
     @PostMapping("/guardar")
     public String guardarEmpleado(@Valid @ModelAttribute("empleado") Empleado empleado,
             BindingResult result, Model model) {
+
         if (result.hasErrors()) {
             cargarListasSoporte(model);
             return "Empleado/añadir";
         }
         try {
-            Usuario usuarioCreado = usuarioService.crearUsuarioPaciente(
-                    empleado.getNombre(), empleado.getApellidos(), empleado.getDni());
-            empleado.setUsuario(usuarioCreado);
+            Usuario usuarioCreado = EmpleadoUsuarioService.crearEmpleadoConUsuario(
+                    empleado.getNombre(),
+                    empleado.getApellidos(),
+                    empleado.getDni(),
+                    empleado.getRol().getNombre()
+            );
             empleadoService.crear(empleado);
             return "redirect:/empleados";
         } catch (Exception e) {
@@ -115,11 +121,20 @@ public class EmpleadoController {
     @PostMapping("/actualizar")
     public String actualizarEmpleado(@RequestParam Long id, @Valid @ModelAttribute("empleado") Empleado empleado,
             BindingResult result, Model model) {
+
+
+        Rol rol =rolService.encontrarRol(empleado.getRol().getId());
+
+        Empleado empleadoUsuario= empleadoService.obtenerPorId(empleado.getId());
+
         if (result.hasErrors()) {
             cargarListasSoporte(model);
             return "Empleado/detalle";
         }
         try {
+
+            EmpleadoUsuarioService.actualizarRolUsuario(empleadoUsuario.getUsuario().getId(), rol.getNombre());
+
             empleadoService.actualizar(id, empleado);
             return "redirect:/empleados";
         } catch (Exception e) {
