@@ -28,9 +28,7 @@ public class DiagnosticoController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             Model model) {
-
         Page<Diagnostico> pagina = diagnosticoService.getDiagnosticosPaginados(keyword, activo, page, size);
-
         model.addAttribute("listaDiagnosticos", pagina.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", pagina.getTotalPages());
@@ -39,7 +37,6 @@ public class DiagnosticoController {
         model.addAttribute("keyword", keyword);
         model.addAttribute("activo", activo);
         model.addAttribute("trad", trad);
-
         return "Diagnostico/listaDiagnosticos";
     }
 
@@ -50,11 +47,7 @@ public class DiagnosticoController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             Model model) {
-
-        // Llamamos al método correcto del servicio que ya maneja la lógica de filtros y
-        // paginación
         Page<Diagnostico> paginaDiagnosticos = diagnosticoService.getDiagnosticosPaginados(keyword, activo, page, size);
-
         model.addAttribute("listaDiagnosticos", paginaDiagnosticos.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", paginaDiagnosticos.getTotalPages());
@@ -63,8 +56,6 @@ public class DiagnosticoController {
         model.addAttribute("keyword", keyword);
         model.addAttribute("activo", activo);
         model.addAttribute("trad", trad);
-
-        // Retornamos solo el fragmento de la tabla para la actualización AJAX
         return "Diagnostico/listaDiagnosticos :: tablaDiagnosticos";
     }
 

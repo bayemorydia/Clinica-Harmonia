@@ -4,7 +4,7 @@ import cat.copernic.proyecto2.Domain.Farmacia.Medicamento;
 import cat.copernic.proyecto2.Service.Medicamento.MedicamentoService;
 import cat.copernic.proyecto2.Service.Traduccion.TraduccionService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,20 +14,20 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/medicamentos")
-@RequiredArgsConstructor
 public class MedicamentoController {
 
-    private final MedicamentoService medicamentoService;
-    private final TraduccionService traduccionService;
+    @Autowired
+    private MedicamentoService medicamentoService;
+
+    @Autowired
+    private TraduccionService traduccionService;
 
     @GetMapping({ "", "/listar" })
     public String listar(@RequestParam(defaultValue = "") String query,
             @RequestParam(required = false) Boolean activo,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size, Model model) {
-
         Page<Medicamento> medsPage = medicamentoService.getMedicamentosPaginados(query, activo, page, size);
-
         model.addAttribute("medicamentos", medsPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", medsPage.getTotalPages());
@@ -44,7 +44,6 @@ public class MedicamentoController {
             @RequestParam(required = false) Boolean activo,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size, Model model) {
-
         Page<Medicamento> medsPage = medicamentoService.getMedicamentosPaginados(query, activo, page, size);
         model.addAttribute("medicamentos", medsPage.getContent());
         model.addAttribute("currentPage", page);

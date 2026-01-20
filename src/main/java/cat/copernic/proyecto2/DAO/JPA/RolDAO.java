@@ -11,15 +11,15 @@ import java.util.List;
 
 public interface RolDAO extends JpaRepository<Rol, Long> {
 
-        Optional<Rol> findByNombre(String nombre);
+    Optional<Rol> findByNombre(String nombre);
 
-        @Query("SELECT r FROM Rol r WHERE " +
-                        "(:activo IS NULL OR r.activo = :activo) AND " +
-                        "(LOWER(r.nombre) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
-                        "LOWER(r.descripcion) LIKE LOWER(CONCAT('%', :query, '%')))")
-        Page<Rol> findByFilters(@Param("query") String query,
-                        @Param("activo") Boolean activo,
-                        Pageable pageable);
+    @Query("SELECT r FROM Rol r WHERE " +
+            "(:activo IS NULL OR r.activo = :activo) AND " +
+            "(LOWER(r.nombre) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "LOWER(r.descripcion) LIKE LOWER(CONCAT('%', :query, '%')))")
+    Page<Rol> findByFilters(@Param("query") String query,
+            @Param("activo") Boolean activo,
+            Pageable pageable);
 
     @Query("SELECT r FROM Rol r WHERE r.nombre IN ('RRHH', 'RECEPCIONISTA', 'MEDICO')")
     List<Rol> findRolesEspecificos();

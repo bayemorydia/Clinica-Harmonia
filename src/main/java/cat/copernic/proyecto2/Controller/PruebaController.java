@@ -4,7 +4,7 @@ import cat.copernic.proyecto2.Domain.PersonalSanitario.PruebaMedica;
 import cat.copernic.proyecto2.Service.Prueba.PruebaService;
 import cat.copernic.proyecto2.Service.Traduccion.TraduccionService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,11 +14,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/pruebas")
-@RequiredArgsConstructor
 public class PruebaController {
 
-    private final PruebaService pruebaService;
-    private final TraduccionService traduccionService;
+    @Autowired
+    private PruebaService pruebaService;
+
+    @Autowired
+    private TraduccionService traduccionService;
 
     @GetMapping({ "", "/listar" })
     public String listar(
@@ -27,9 +29,7 @@ public class PruebaController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             Model model) {
-
         Page<PruebaMedica> pagePruebas = pruebaService.getPruebasPaginadas(query, activo, page, size);
-
         model.addAttribute("pruebas", pagePruebas.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", pagePruebas.getTotalPages());
@@ -38,7 +38,6 @@ public class PruebaController {
         model.addAttribute("query", query);
         model.addAttribute("activo", activo);
         model.addAttribute("trad", traduccionService);
-
         return "Prueba/listaPruebas";
     }
 
@@ -49,9 +48,7 @@ public class PruebaController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             Model model) {
-
         Page<PruebaMedica> pagePruebas = pruebaService.getPruebasPaginadas(query, activo, page, size);
-
         model.addAttribute("pruebas", pagePruebas.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", pagePruebas.getTotalPages());
@@ -60,7 +57,6 @@ public class PruebaController {
         model.addAttribute("query", query);
         model.addAttribute("activo", activo);
         model.addAttribute("trad", traduccionService);
-
         return "Prueba/listaPruebas :: tablaPruebas";
     }
 

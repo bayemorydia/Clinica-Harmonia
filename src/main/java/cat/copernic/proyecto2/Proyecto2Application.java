@@ -7,7 +7,6 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
-
 import cat.copernic.proyecto2.DAO.Mongo.TraduccionDAO;
 
 @SpringBootApplication
@@ -19,5 +18,4 @@ public class Proyecto2Application {
 	public static void main(String[] args) {
 		SpringApplication.run(Proyecto2Application.class, args);
 	}
-
 }

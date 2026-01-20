@@ -29,9 +29,7 @@ public class PacienteController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             Model model) {
-
         Page<Paciente> pacientePage = pacienteService.getPacientesPaginados(query, activo, page, size);
-
         model.addAttribute("pacientes", pacientePage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", pacientePage.getTotalPages());
@@ -40,7 +38,6 @@ public class PacienteController {
         model.addAttribute("query", query);
         model.addAttribute("activo", activo);
         model.addAttribute("trad", traduccionService);
-
         return "Paciente/listaPacientes";
     }
 
@@ -51,9 +48,7 @@ public class PacienteController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             Model model) {
-
         Page<Paciente> pacientePage = pacienteService.getPacientesPaginados(query, activo, page, size);
-
         model.addAttribute("pacientes", pacientePage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", pacientePage.getTotalPages());
@@ -62,7 +57,6 @@ public class PacienteController {
         model.addAttribute("query", query);
         model.addAttribute("activo", activo);
         model.addAttribute("trad", traduccionService);
-
         return "Paciente/listaPacientes :: tablaPacientes";
     }
 
@@ -90,9 +84,7 @@ public class PacienteController {
             @RequestParam(value = "file", required = false) MultipartFile imagen,
             @RequestParam(value = "origen", required = false) String origen,
             Model model) {
-
         model.addAttribute("trad", traduccionService);
-
         if (result.hasErrors()) {
             if ("detalle".equals(origen)) {
                 Paciente pacienteExistente = pacienteService.findPacienteById(paciente.getId());
@@ -105,7 +97,6 @@ public class PacienteController {
             }
             return "Paciente/formularioPaciente";
         }
-
         try {
             pacienteService.savePaciente(paciente, imagen);
             if ("detalle".equals(origen)) {
@@ -113,15 +104,11 @@ public class PacienteController {
             }
             return "redirect:/pacientes";
         } catch (Exception e) {
-            // Pasamos el mensaje de la excepción (ej: "DNI duplicado") a la vista
             model.addAttribute("error", e.getMessage());
-
             if ("detalle".equals(origen)) {
                 Paciente pacienteExistente = pacienteService.findPacienteById(paciente.getId());
                 if (pacienteExistente != null) {
                     model.addAttribute("edad", pacienteService.getEdadPaciente(pacienteExistente));
-                    // Restauramos datos sensibles que no vienen en el form para no perderlos al
-                    // recargar
                     paciente.setUsuario(pacienteExistente.getUsuario());
                     paciente.setFechaAlta(pacienteExistente.getFechaAlta());
                     paciente.setFechaNacimiento(pacienteExistente.getFechaNacimiento());
@@ -148,7 +135,6 @@ public class PacienteController {
         Paciente paciente = pacienteService.findPacienteById(id);
         if (paciente == null)
             return "redirect:/pacientes";
-
         model.addAttribute("paciente", paciente);
         model.addAttribute("trad", traduccionService);
         return "Paciente/confirmarEliminarPaciente";

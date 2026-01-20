@@ -18,18 +18,18 @@ public class LoginController {
             return "redirect:/admin";
         } else if (request.isUserInRole("ROLE_MEDICO")) {
             return "redirect:/medico/dashboard";
-        } else if (request.isUserInRole("ROLE_PACIENTE")){
+        } else if (request.isUserInRole("ROLE_PACIENTE")) {
             return "redirect:/paciente/dashboard";
         } else if (request.isUserInRole("ROLE_RECEPCIONISTA")) {
             return "redirect:/recepcion/dashboard";
-        }else if (request.isUserInRole("ROLE_RRHH")) {
+        } else if (request.isUserInRole("ROLE_RRHH")) {
             return "redirect:/RRHH/dashboard";
         }
         return "redirect:/login?error=no-role";
     }
-    
+
     @GetMapping("/login")
     public String login() {
-        return "/Login/Login"; // busca templates/login.html
+        return "/Login/Login";
     }
 }

@@ -7,8 +7,10 @@ import lombok.Data;
 @Document(collection = "traducciones")
 @Data
 public class Traduccion {
+
     @Id
     private String id;
+    
     private String es;
     private String ca;
     private String en;

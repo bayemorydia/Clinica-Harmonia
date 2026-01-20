@@ -7,27 +7,33 @@ import cat.copernic.proyecto2.Service.Empleado.EmpleadoService;
 import cat.copernic.proyecto2.Service.Empleado.Turno.TurnoService;
 import cat.copernic.proyecto2.Service.Rol.RolService;
 import cat.copernic.proyecto2.Service.Traduccion.TraduccionService;
-import cat.copernic.proyecto2.Service.Usuario.UsuarioService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import cat.copernic.proyecto2.Service.Usuario.empleado.EmpleadoUsuarioService;
+
 @Controller
 @RequestMapping("/empleados")
-@RequiredArgsConstructor
 public class EmpleadoController {
 
-    private final EmpleadoService empleadoService;
-    private final RolService rolService;
-    private final TraduccionService traduccionService;
-    private final UsuarioService usuarioService;
-    private final TurnoService turnoService;
-    private final EmpleadoUsuarioService EmpleadoUsuarioService;
+    @Autowired
+    private EmpleadoService empleadoService;
+
+    @Autowired
+    private RolService rolService;
+
+    @Autowired
+    private TraduccionService traduccionService;
+
+    @Autowired
+    private TurnoService turnoService;
+
+    @Autowired
+    private EmpleadoUsuarioService EmpleadoUsuarioService;
 
     private void cargarListasSoporte(Model model) {
         model.addAttribute("roles", rolService.RolesConcretos());
@@ -43,9 +49,7 @@ public class EmpleadoController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             Model model) {
-
         Page<Empleado> empleadoPage = empleadoService.getEmpleadosPaginados(query, activo, page, size);
-
         model.addAttribute("empleados", empleadoPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", empleadoPage.getTotalPages());
@@ -54,7 +58,6 @@ public class EmpleadoController {
         model.addAttribute("query", query);
         model.addAttribute("activo", activo);
         model.addAttribute("trad", traduccionService);
-
         return "Empleado/listar";
     }
 
@@ -65,9 +68,7 @@ public class EmpleadoController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             Model model) {
-
         Page<Empleado> empleadoPage = empleadoService.getEmpleadosPaginados(query, activo, page, size);
-
         model.addAttribute("empleados", empleadoPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", empleadoPage.getTotalPages());
@@ -76,7 +77,6 @@ public class EmpleadoController {
         model.addAttribute("query", query);
         model.addAttribute("activo", activo);
         model.addAttribute("trad", traduccionService);
-
         return "Empleado/listar :: tablaEmpleados";
     }
 
@@ -90,7 +90,6 @@ public class EmpleadoController {
     @PostMapping("/guardar")
     public String guardarEmpleado(@Valid @ModelAttribute("empleado") Empleado empleado,
             BindingResult result, Model model) {
-
         if (result.hasErrors()) {
             cargarListasSoporte(model);
             return "Empleado/añadir";
@@ -100,8 +99,7 @@ public class EmpleadoController {
                     empleado.getNombre(),
                     empleado.getApellidos(),
                     empleado.getDni(),
-                    empleado.getRol().getNombre()
-            );
+                    empleado.getRol().getNombre());
             empleadoService.crear(empleado);
             return "redirect:/empleados";
         } catch (Exception e) {
@@ -121,20 +119,14 @@ public class EmpleadoController {
     @PostMapping("/actualizar")
     public String actualizarEmpleado(@RequestParam Long id, @Valid @ModelAttribute("empleado") Empleado empleado,
             BindingResult result, Model model) {
-
-
-        Rol rol =rolService.encontrarRol(empleado.getRol().getId());
-
-        Empleado empleadoUsuario= empleadoService.obtenerPorId(empleado.getId());
-
+        Rol rol = rolService.encontrarRol(empleado.getRol().getId());
+        Empleado empleadoUsuario = empleadoService.obtenerPorId(empleado.getId());
         if (result.hasErrors()) {
             cargarListasSoporte(model);
             return "Empleado/detalle";
         }
         try {
-
             EmpleadoUsuarioService.actualizarRolUsuario(empleadoUsuario.getUsuario().getId(), rol.getNombre());
-
             empleadoService.actualizar(id, empleado);
             return "redirect:/empleados";
         } catch (Exception e) {
@@ -157,18 +149,12 @@ public class EmpleadoController {
         return "redirect:/empleados";
     }
 
-    // CORRECCIÓN: Usamos PostMapping para activar y aseguramos la persistencia
     @PostMapping("/activar/{id}")
     public String activarEmpleado(@PathVariable Long id) {
         Empleado emp = empleadoService.obtenerPorId(id);
-        emp.setFecha_baja(null); // Eliminamos la fecha de baja
-        emp.setActiva(true); // Cambiamos el estado a true
-
-        // Usamos el método guardar/actualizar del servicio.
-        // Nota: Si el error persiste por validaciones de DNI,
-        // asegúrate de que los datos en la BD sean válidos (ej: 9 dígitos en teléfono).
+        emp.setFecha_baja(null);
+        emp.setActiva(true);
         empleadoService.actualizar(id, emp);
-
         return "redirect:/empleados";
     }
 }

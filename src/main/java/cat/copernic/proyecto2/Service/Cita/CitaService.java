@@ -31,5 +31,6 @@ public interface CitaService {
 
     // --- NUEVOS: Métodos para Recepción (Globales) ---
     List<Cita> listarCitasDeHoyGlobal();
+
     List<Cita> listarCitasPorDiaGlobal(LocalDate fecha);
 }

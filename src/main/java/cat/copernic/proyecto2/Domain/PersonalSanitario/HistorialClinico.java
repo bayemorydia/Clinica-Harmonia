@@ -21,10 +21,6 @@ public class HistorialClinico implements Serializable {
     @JoinColumn(name = "paciente_id", nullable = false, unique = true)
     private Paciente paciente;
 
-    /**
-     * Ordenamos los episodios por fecha descendente para que el paciente
-     * vea primero sus visitas más recientes.
-     */
     @OneToMany(mappedBy = "historial", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("fecha DESC")
     private List<EpisodioClinico> episodios;

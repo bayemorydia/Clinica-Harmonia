@@ -24,23 +24,26 @@ public class Empleado {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @NotBlank(message = "El nombre es obligatorio")
     private String nombre;
+
     @NotBlank(message = "Los apellidos son obligatorios")
     private String apellidos;
+
     @Pattern(regexp = "^([0-9]{8}[TRWAGMYFPDXBNJZSQVHLCKE]|[XYZ][0-9]{7}[TRWAGMYFPDXBNJZSQVHLCKE])$", message = "Formato de DNI o NIE no válido")
     @Column(unique = true, nullable = false)
     private String dni;
+
     @Email(message = "Formato de email incorrecto")
     private String email;
+
     @NotBlank(message = "El teléfono es obligatorio")
     @Pattern(regexp = "^[0-9]{9}$", message = "El teléfono debe tener 9 dígitos numéricos")
     private String telefono;
 
-
     private LocalDate fecha_alta;
     private LocalDate fecha_baja;
-
 
     @ManyToOne
     @JoinColumn(name = "rol_id")
@@ -49,13 +52,13 @@ public class Empleado {
     @Min(value = 0, message = "El salario no puede ser negativo")
     @NotNull(message = "El salario base es obligatorio")
     private BigDecimal salarioBase;
+
     @Column(nullable = false)
     private Boolean activa = true;
 
     @OneToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
-
 
     @NotNull(message = "La hora de inicio es obligatoria")
     @Column(nullable = false)
@@ -67,17 +70,11 @@ public class Empleado {
 
     @ManyToOne
     @JoinColumn(name = "turno_id")
-    private Turno turno ;  // valor por defecto en Java
-
+    private Turno turno ; 
 
     @OneToMany(mappedBy = "empleado", cascade = CascadeType.ALL)
     private List<Nomina> nominas = new ArrayList<>();
 
     @OneToMany(mappedBy = "profesional")
     private List<Cita> citasAtendidas = new ArrayList<>();
-
-
-
-
-
 }

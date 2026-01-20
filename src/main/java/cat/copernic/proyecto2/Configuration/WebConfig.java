@@ -9,24 +9,20 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
-/**
- * Configuración de la capa Web (MVC).
- * Gestiona la internacionalización (i18n) mediante sesiones y parámetros.
- */
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
     @Bean
     public LocaleResolver localeResolver() {
         SessionLocaleResolver slr = new SessionLocaleResolver();
-        slr.setDefaultLocale(Locale.of("es")); // Idioma por defecto
+        slr.setDefaultLocale(Locale.of("es"));
         return slr;
     }
 
     @Bean
     public LocaleChangeInterceptor localeChangeInterceptor() {
         LocaleChangeInterceptor lci = new LocaleChangeInterceptor();
-        lci.setParamName("lang"); // Parámetro para cambiar idioma (?lang=ca)
+        lci.setParamName("lang");
         return lci;
     }
 

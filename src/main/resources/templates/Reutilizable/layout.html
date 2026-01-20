@@ -179,15 +179,7 @@
                 </a>
             </li>
 
-            <li>
-                <a th:href="@{/proveedores}" class="nav-link">
-                    <i class="bi bi-truck"></i>
-                    <span th:text="${trad.getTraduccion('mod.proveedores')}">Proveedores</span>
-                </a>
-            </li>
         </ul>
-
-        <hr>
 
         <form th:action="@{/logout}" method="post">
             <button type="submit" class="btn btn-light w-100 text-danger text-start px-3 shadow-none">

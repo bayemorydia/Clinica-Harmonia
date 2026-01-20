@@ -19,7 +19,6 @@ public class PasswordController {
     @Autowired
     private EmpleadoUsuarioServiceImpl usuarioService;
 
-    // 1️⃣ Formulario de DNI/NIE
     @GetMapping("/forgot")
     public String forgotPasswordForm() {
         return "Login/forgot-password";
@@ -30,40 +29,33 @@ public class PasswordController {
         try {
             Empleado empleado = empleadoService.obtenerPorDni(dni);
             Usuario usuario = empleado.getUsuario();
-
             if (usuario == null) {
                 model.addAttribute("error", "El empleado no tiene usuario asociado");
                 return "Login/forgot-password";
             }
-
             model.addAttribute("dni", dni);
-            return "Login/reset-password"; // Redirige al formulario de nueva contraseña
+            return "Login/reset-password";
         } catch (Exception e) {
             model.addAttribute("error", "DNI/NIE no encontrado");
             return "Login/forgot-password";
         }
     }
 
-    // 2️⃣ Formulario de nueva contraseña
     @PostMapping("/reset")
     public String resetPassword(@RequestParam String dni,
-                                @RequestParam String newPassword,
-                                @RequestParam String confirmPassword,
-                                Model model) {
+            @RequestParam String newPassword,
+            @RequestParam String confirmPassword,
+            Model model) {
         if (!newPassword.equals(confirmPassword)) {
             model.addAttribute("error", "Las contraseñas no coinciden");
             model.addAttribute("dni", dni);
             return "Login/reset-password";
         }
-
         try {
             Empleado empleado = empleadoService.obtenerPorDni(dni);
             Usuario usuario = empleado.getUsuario();
-
-            // Actualizamos la contraseña usando el service de Usuario
             usuario.setPasswordHash(usuarioService.getPasswordEncoder().encode(newPassword));
             usuarioService.guardar(usuario);
-
             model.addAttribute("success", "Contraseña actualizada correctamente. Puedes iniciar sesión.");
             return "Login/Login";
         } catch (Exception e) {

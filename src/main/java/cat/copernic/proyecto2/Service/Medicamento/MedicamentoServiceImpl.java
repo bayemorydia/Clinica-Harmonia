@@ -34,12 +34,6 @@ public class MedicamentoServiceImpl implements MedicamentoService {
     @Transactional
     public void guardar(Medicamento medicamento) {
         // Validación: solo obligamos precio > 0 si el producto se guarda como ACTIVO
-        if (medicamento.isActivo()) {
-            if (medicamento.getPrecioUnitario() == null || medicamento.getPrecioUnitario() <= 0) {
-                throw new IllegalArgumentException(
-                        "El precio del medicamento debe ser mayor que cero para estar activo.");
-            }
-        }
         medicamentoDAO.save(medicamento);
     }
 
@@ -62,9 +56,6 @@ public class MedicamentoServiceImpl implements MedicamentoService {
     @Transactional
     public void activarLogica(Long id) {
         medicamentoDAO.findById(id).ifPresent(m -> {
-            if (m.getPrecioUnitario() == null || m.getPrecioUnitario() <= 0) {
-                throw new RuntimeException("No se puede activar un producto sin un precio válido.");
-            }
             m.setActivo(true);
             medicamentoDAO.save(m);
         });

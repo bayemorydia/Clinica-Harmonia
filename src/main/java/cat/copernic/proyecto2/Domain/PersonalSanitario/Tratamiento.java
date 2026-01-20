@@ -31,10 +31,6 @@ public class Tratamiento implements Serializable {
     @JoinColumn(name = "episodio_id", nullable = false)
     private EpisodioClinico episodio;
 
-    /**
-     * Es recomendable incluir al paciente directamente (como en Prueba y Receta)
-     * para facilitar auditorías y consultas rápidas sin pasar por Episodio.
-     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "paciente_id", nullable = false)
     private Paciente paciente;

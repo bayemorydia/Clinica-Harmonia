@@ -1,8 +1,6 @@
 package cat.copernic.proyecto2.Controller;
 
 import cat.copernic.proyecto2.Domain.Administración.Empleado;
-import cat.copernic.proyecto2.Domain.Administración.EstadoVacaciones;
-import cat.copernic.proyecto2.Domain.Administración.Vacaciones;
 import cat.copernic.proyecto2.Domain.PersonalSanitario.EpisodioClinico;
 import cat.copernic.proyecto2.Domain.PersonalSanitario.LineaReceta;
 import cat.copernic.proyecto2.Domain.PersonalSanitario.PruebaMedica;
@@ -16,10 +14,8 @@ import cat.copernic.proyecto2.Service.Cita.CitaService;
 import cat.copernic.proyecto2.Service.Consulta.ConsultaService;
 import cat.copernic.proyecto2.Service.Empleado.EmpleadoService;
 import cat.copernic.proyecto2.Service.Empleado.Nomina.NominaService;
-import cat.copernic.proyecto2.Service.Vacaciones.VacacionesService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,9 +41,6 @@ public class MedicoController {
     private EmpleadoService empleadoService;
 
     @Autowired
-    private VacacionesService vacacionesService;
-
-    @Autowired
     private NominaService nominaService;
 
     @Autowired
@@ -56,36 +49,27 @@ public class MedicoController {
     @Autowired
     private PruebaService pruebaService;
 
-    // --- DASHBOARD ---
     @GetMapping("/dashboard")
     public String dashboard(Model model, Authentication auth) {
         model.addAttribute("trad", traduccionService);
         model.addAttribute("activePage", "dashboard");
-
         Empleado medico = empleadoService.obtenerPorUsername(auth.getName());
         model.addAttribute("medicoLogueado", medico);
-
         LocalDateTime inicioHoy = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
         LocalDateTime finHoy = LocalDateTime.now().withHour(23).withMinute(59).withSecond(59).withNano(0);
-
         model.addAttribute("totalPacientes", citaService.countPacientesPendientesPorMedico(medico.getId()));
         model.addAttribute("citasHoy", citaService.countCitasHoyPorMedico(medico.getId(), inicioHoy, finHoy));
         model.addAttribute("citasPendientes", citaService.obtenerCitasPendientesMedico(medico.getId()));
-
         return "Medico/dashboard";
     }
 
-   
-    // --- PERFIL Y AGENDA ---
     @GetMapping("/perfil/{id}")
     public String verPerfil(@PathVariable("id") Long id, Model model) {
         model.addAttribute("trad", traduccionService);
         model.addAttribute("activePage", "perfil");
-
         Empleado medico = empleadoService.obtenerPorId(id);
         model.addAttribute("empleado", medico);
         model.addAttribute("medicoLogueado", medico);
-
         return "Empleado/detalle";
     }
 
@@ -95,7 +79,6 @@ public class MedicoController {
         Empleado medico = empleadoService.obtenerPorUsername(auth.getName());
         LocalDate hoy = LocalDate.now();
         LocalDate fechaBusqueda;
-
         try {
             fechaBusqueda = (fechaStr == null) ? hoy : LocalDate.parse(fechaStr);
             if (fechaBusqueda.isBefore(hoy))
@@ -103,42 +86,28 @@ public class MedicoController {
         } catch (Exception e) {
             fechaBusqueda = hoy;
         }
-
         model.addAttribute("medicoLogueado", medico);
         model.addAttribute("citas", citaService.obtenerCitasDia(medico.getId(), fechaBusqueda));
         model.addAttribute("fechaActual", fechaBusqueda);
         model.addAttribute("hoy", hoy);
         model.addAttribute("activePage", "agenda");
         model.addAttribute("trad", traduccionService);
-
         return "Medico/agenda";
     }
 
     @GetMapping("/atender/{id}")
     public String atenderPaciente(@PathVariable("id") Long id, Model model, Authentication auth) {
-        // 1. Obtener el médico logueado (como haces en la agenda)
-        // Usamos Authentication auth y el mismo servicio/método
         Empleado medico = empleadoService.obtenerPorUsername(auth.getName());
         model.addAttribute("listaMedicamentos", medicamentoService.listarMedicamentos());
         model.addAttribute("listaTratamientos", pruebaService.listarPruebas());
-
-        // 2. Obtener la cita
         Cita cita = citaService.findCitaById(id);
-
-        // 3. Pasar todos los objetos al modelo
-        // Es vital que el nombre sea 'medicoLogueado' para el layoutMedico
         model.addAttribute("medicoLogueado", medico);
         model.addAttribute("cita", cita);
         model.addAttribute("paciente", cita.getPaciente());
-
-        // Objetos vacíos para vincular con el formulario (th:object)
         model.addAttribute("episodio", new EpisodioClinico());
         model.addAttribute("tratamiento", new Tratamiento());
-
-        // Datos de control de la interfaz
         model.addAttribute("activePage", "agenda");
         model.addAttribute("trad", traduccionService);
-
         return "Medico/atender";
     }
 
@@ -150,33 +119,25 @@ public class MedicoController {
             @RequestParam(value = "dosis[]", required = false) List<String> dosis,
             @RequestParam(value = "pruebaTipo[]", required = false) List<String> pruebaTipos,
             @RequestParam(value = "pruebaResultado[]", required = false) List<String> pruebaResultados) {
-
-        // 1. Procesar Líneas de Receta
         List<LineaReceta> lineas = new ArrayList<>();
         if (meds != null) {
             for (int i = 0; i < meds.size(); i++) {
                 LineaReceta lr = new LineaReceta();
-                lr.setMedicamento(meds.get(i));
                 lr.setDosis(dosis.get(i));
                 lineas.add(lr);
             }
         }
-
-        // 2. Procesar Pruebas Médicas
         List<PruebaMedica> pruebas = new ArrayList<>();
         if (pruebaTipos != null) {
             for (int i = 0; i < pruebaTipos.size(); i++) {
-                if (!pruebaTipos.get(i).isBlank()) { // Solo si el tipo no está vacío
+                if (!pruebaTipos.get(i).isBlank()) {
                     PruebaMedica pm = new PruebaMedica();
                     pm.setNombre(pruebaTipos.get(i));
                     pruebas.add(pm);
                 }
             }
         }
-
-        // 3. Llamada al servicio con el nuevo parámetro de pruebas
         consultaService.finalizarConsulta(citaId, episodio, tratamiento, pruebas, lineas);
-
         return "redirect:/medico/agenda?success=true";
     }
 
@@ -190,11 +151,9 @@ public class MedicoController {
     public String listarMisNominas(Model model, Authentication auth,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-
         Empleado medico = empleadoService.obtenerPorUsername(auth.getName());
         org.springframework.data.domain.Page<cat.copernic.proyecto2.Domain.Administración.Nomina> paginaNominas = nominaService
                 .getNominasPorEmpleado(medico.getId(), org.springframework.data.domain.PageRequest.of(page, size));
-
         model.addAttribute("medicoLogueado", medico);
         model.addAttribute("nominas", paginaNominas.getContent());
         model.addAttribute("currentPage", page);
@@ -203,8 +162,7 @@ public class MedicoController {
         model.addAttribute("size", size);
         model.addAttribute("activePage", "nominas");
         model.addAttribute("trad", traduccionService);
-        model.addAttribute("query", ""); // Para que el input de búsqueda no de error
-
+        model.addAttribute("query", "");
         return "Nomina/listarNominas";
     }
 
@@ -212,18 +170,15 @@ public class MedicoController {
     public String searchNominas(Model model, Authentication auth,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-
         Empleado medico = empleadoService.obtenerPorUsername(auth.getName());
         org.springframework.data.domain.Page<cat.copernic.proyecto2.Domain.Administración.Nomina> paginaNominas = nominaService
                 .getNominasPorEmpleado(medico.getId(), org.springframework.data.domain.PageRequest.of(page, size));
-
         model.addAttribute("nominas", paginaNominas.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", paginaNominas.getTotalPages());
         model.addAttribute("totalElements", paginaNominas.getTotalElements());
         model.addAttribute("size", size);
         model.addAttribute("trad", traduccionService);
-
         return "Nomina/listarNominas :: tablaNominas";
     }
 
@@ -235,28 +190,19 @@ public class MedicoController {
             @RequestParam(required = false) List<String> medNombre,
             @RequestParam(required = false) List<String> medDosis,
             @RequestParam(required = false) List<Double> medPrecio) {
-
-        // 1. Cargar objetos de Pruebas desde los IDs del catálogo
         List<PruebaMedica> pruebas = new ArrayList<>();
         if (pruebasIds != null) {
             pruebasIds.forEach(id -> pruebas.add(pruebaService.encontrarPrueba(id)));
         }
-
-        // 2. Construir líneas de receta con el nuevo campo de precio
         List<LineaReceta> lineas = new ArrayList<>();
         if (medNombre != null) {
             for (int i = 0; i < medNombre.size(); i++) {
                 LineaReceta lr = new LineaReceta();
-                lr.setMedicamento(medNombre.get(i));
                 lr.setDosis(medDosis.get(i));
-                lr.setPrecioUnitario(medPrecio.get(i)); // Capturamos el precio unitario
                 lineas.add(lr);
             }
         }
-
-        // 3. Llamar al servicio corregido
         consultaService.finalizarConsulta(citaId, episodio, tratamiento, pruebas, lineas);
-
         return "redirect:/medico/dashboard?success";
     }
 }

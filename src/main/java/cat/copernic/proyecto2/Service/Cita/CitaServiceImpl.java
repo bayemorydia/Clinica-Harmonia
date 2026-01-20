@@ -145,9 +145,8 @@ public class CitaServiceImpl implements CitaService {
 
         // Llamada al nuevo método del DAO
         return citaDAO.findByFechaHoraBetweenAndEstadoNotOrderByFechaHoraAsc(
-                inicio, 
-                fin, 
-                EstadoCita.ANULADA
-        );
+                inicio,
+                fin,
+                EstadoCita.ANULADA);
     }
 }

@@ -1,4 +1,5 @@
 package cat.copernic.proyecto2.Controller;
+
 import cat.copernic.proyecto2.Domain.Administración.Empleado;
 import cat.copernic.proyecto2.Domain.Recepción.Paciente;
 import cat.copernic.proyecto2.Domain.Recepción.Cita;
@@ -7,13 +8,9 @@ import cat.copernic.proyecto2.Service.Cita.CitaService;
 import cat.copernic.proyecto2.Service.Paciente.PacienteService;
 import cat.copernic.proyecto2.Service.Empleado.EmpleadoService;
 import cat.copernic.proyecto2.Service.Traduccion.TraduccionService;
-import cat.copernic.proyecto2.Service.Cita.FacturaPdfService; // <--- NUEVO IMPORT
-import cat.copernic.proyecto2.Domain.Recepción.Paciente; // <--- AÑADIR ESTA
-import cat.copernic.proyecto2.Domain.Administración.Empleado; // <--- AÑADIR ESTA
-
-import jakarta.servlet.http.HttpServletResponse; // <--- NUEVO IMPORT
+import cat.copernic.proyecto2.Service.Cita.FacturaPdfService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -21,26 +18,31 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.io.IOException; // <--- NUEVO IMPORT
-import java.text.DateFormat; // <--- NUEVO IMPORT
-import java.text.SimpleDateFormat; // <--- NUEVO IMPORT
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Date; // <--- NUEVO IMPORT
+import java.util.Date;
 
 @Controller
 @RequestMapping("/citas")
-@RequiredArgsConstructor
 public class CitaController {
 
-    private final CitaService citaService;
-    private final PacienteService pacienteService;
-    private final EmpleadoService empleadoService;
-    private final TraduccionService traduccionService;
     @Autowired
-    private FacturaPdfService facturaPdfService; // <--- INYECCIÓN DEL SERVICIO PDF
+    private CitaService citaService;
+
+    @Autowired
+    private PacienteService pacienteService;
+
+    @Autowired
+    private EmpleadoService empleadoService;
+
+    @Autowired
+    private TraduccionService traduccionService;
+
+    @Autowired
+    private FacturaPdfService facturaPdfService;
 
     private void cargarListasFormulario(Model model) {
         model.addAttribute("pacientes", pacienteService.getAllPacientes());
@@ -57,9 +59,7 @@ public class CitaController {
             @RequestParam(name = "size", defaultValue = "10") int size,
             @RequestHeader(value = "X-Requested-With", required = false) String requestedWith,
             Model model) {
-
         Page<Cita> paginaCitas = citaService.getCitasPaginadas(query, estado, page, size);
-
         model.addAttribute("citas", paginaCitas.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", paginaCitas.getTotalPages());
@@ -69,7 +69,6 @@ public class CitaController {
         model.addAttribute("estadoFiltro", estado);
         model.addAttribute("estadosCita", EstadoCita.values());
         model.addAttribute("trad", traduccionService);
-
         if ("XMLHttpRequest".equals(requestedWith)) {
             return "Cita/listaCitas :: tablaCitas";
         }
@@ -134,32 +133,19 @@ public class CitaController {
         return "redirect:/citas";
     }
 
-    // ==========================================
-    // NUEVO MÉTODO PARA GENERAR LA FACTURA PDF
-    // ==========================================
     @GetMapping("/factura/{id}")
     public void descargarFactura(@PathVariable("id") Long id, HttpServletResponse response) throws IOException {
-        
-        // Usamos tu método 'findCitaById' que ya tenías implementado
-        Cita cita = citaService.findCitaById(id); 
-        
+        Cita cita = citaService.findCitaById(id);
         if (cita != null) {
-            // Configuramos la respuesta HTTP
             response.setContentType("application/pdf");
-            
             DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm");
             String currentDateTime = dateFormatter.format(new Date());
-            
             String headerKey = "Content-Disposition";
             String headerValue = "attachment; filename=Factura_Cita_" + id + "_" + currentDateTime + ".pdf";
-            
             response.setHeader(headerKey, headerValue);
-
-            // Generamos el PDF usando el servicio inyectado
             facturaPdfService.exportar(response, cita);
         } else {
-             // Si la cita no existe, devolvemos error 404
-             response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
     }
 

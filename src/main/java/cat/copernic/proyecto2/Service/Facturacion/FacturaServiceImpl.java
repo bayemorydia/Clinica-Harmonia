@@ -80,7 +80,7 @@ public class FacturaServiceImpl implements FacturaService {
     public CompletableFuture<byte[]> generarReporteAsync(String periodo) {
         try {
             // Simulamos carga de trabajo pesada para el Thread
-            Thread.sleep(4000); 
+            Thread.sleep(4000);
 
             LocalDate fechaLimite = switch (periodo) {
                 case "DIA" -> LocalDate.now();
@@ -91,15 +91,14 @@ public class FacturaServiceImpl implements FacturaService {
             };
 
             List<Factura> facturas = facturaDAO.findByFechaEmisionAfter(fechaLimite);
-            
+
             StringBuilder csv = new StringBuilder("ID;Fecha;Cliente/Proveedor;Tipo;Total\n");
             for (Factura f : facturas) {
-                String ente = (f.getPaciente() != null) ? f.getPaciente().getNombre() : (f.getProveedor() != null ? f.getProveedor().getNombre() : "N/A");
+                String ente = f.getPaciente().getNombre();
                 csv.append(f.getId()).append(";")
-                   .append(f.getFechaEmision()).append(";")
-                   .append(ente).append(";")
-                   .append(f.getTipo()).append(";")
-                   .append(f.getTotal()).append("€\n");
+                        .append(f.getFechaEmision()).append(";")
+                        .append(ente).append(";")
+                        .append(f.getTotal()).append("€\n");
             }
             return CompletableFuture.completedFuture(csv.toString().getBytes());
         } catch (InterruptedException e) {
