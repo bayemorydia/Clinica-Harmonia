@@ -41,7 +41,8 @@ public class FacturaController {
     @GetMapping("/detalle/{id}")
     public String verDetalleFactura(@PathVariable("id") Long id, Model model) {
         Factura factura = facturaService.findFacturaById(id);
-        if (factura == null) return "redirect:/admin/facturas";
+        if (factura == null)
+            return "redirect:/admin/facturas";
         model.addAttribute("factura", factura);
         model.addAttribute("trad", traduccionService);
         return "Facturacion/detalleFactura";
@@ -51,20 +52,20 @@ public class FacturaController {
     @ResponseBody
     public CompletableFuture<ResponseEntity<byte[]>> exportar(@RequestParam String periodo) {
         return facturaService.generarReporteAsync(periodo)
-            .thenApply(bytes -> {
-                HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-                headers.setContentDisposition(ContentDisposition.attachment()
-                    .filename("Reporte_" + periodo + ".csv").build());
-                return new ResponseEntity<>(bytes, headers, HttpStatus.OK);
-            });
+                .thenApply(bytes -> {
+                    HttpHeaders headers = new HttpHeaders();
+                    headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+                    headers.setContentDisposition(ContentDisposition.attachment()
+                            .filename("Reporte_" + periodo + ".csv").build());
+                    return new ResponseEntity<>(bytes, headers, HttpStatus.OK);
+                });
     }
 
     @GetMapping("/search")
     public String search(@RequestParam(value = "query", required = false) String query,
-                         @RequestParam(value = "page", defaultValue = "0") int page,
-                         @RequestParam(value = "size", defaultValue = "10") int size,
-                         Model model) {
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            Model model) {
         Page<Factura> facturaPage = facturaService.getFacturasPaginadas(query, page, size);
         model.addAttribute("facturas", facturaPage.getContent());
         model.addAttribute("currentPage", page);

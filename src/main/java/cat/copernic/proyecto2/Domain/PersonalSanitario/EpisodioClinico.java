@@ -25,9 +25,7 @@ public class EpisodioClinico {
     private Empleado medico;
 
     private LocalDateTime fecha;
-
     private String motivoConsulta;
-    private String observaciones;
 
     @ManyToMany
     @JoinTable(name = "episodio_pruebas", joinColumns = @JoinColumn(name = "episodio_id"), inverseJoinColumns = @JoinColumn(name = "prueba_id"))
@@ -40,6 +38,6 @@ public class EpisodioClinico {
     private List<RecetaMedica> recetas;
 
     @ManyToOne
-    @JoinColumn(name = "diagnostico_id") // Esta es la FK en la tabla SQL
+    @JoinColumn(name = "diagnostico_id")
     private Diagnostico diagnostico;
 }

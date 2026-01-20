@@ -4,7 +4,6 @@ import cat.copernic.proyecto2.Domain.Administración.Empleado;
 import java.time.LocalDateTime;
 import org.springframework.format.annotation.DateTimeFormat;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -14,7 +13,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @Entity
 @Table(name = "Cita")
-@EqualsAndHashCode(onlyExplicitlyIncluded = true) // Importante para que el Select funcione
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Cita {
 
     @Id
@@ -24,7 +23,7 @@ public class Cita {
 
     @ToString.Exclude
     @NotNull(message = "Debe seleccionar un paciente")
-    @ManyToOne(fetch = FetchType.EAGER) // Aseguramos carga para evitar LazyInitializationException
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "paciente_id")
     private Paciente paciente;
 
@@ -38,8 +37,9 @@ public class Cita {
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime fechaHora;
 
-    @NotBlank(message = "La especialidad es obligatoria")
-    private String especialidad;
+    @Enumerated(EnumType.STRING)
+    @NotNull(message = "La especialidad es obligatoria")
+    private Especialidad especialidad;
 
     @Size(max = 500)
     private String motivo;

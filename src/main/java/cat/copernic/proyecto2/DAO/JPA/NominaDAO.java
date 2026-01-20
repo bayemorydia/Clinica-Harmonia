@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public interface NominaDAO extends JpaRepository<Nomina, Long> {
-    
+
     // AGREGAR ESTE MÉTODO para que concuerde con AccionEmpleado
     List<Nomina> findByEmpleado(Empleado empleado);
 

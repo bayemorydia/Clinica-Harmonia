@@ -9,7 +9,7 @@ import java.time.LocalDate;
 
 @Data
 @Entity
-@Table(name="RecetaMedica") // Corregido: antes decía Empleado
+@Table(name="RecetaMedica")
 public class RecetaMedica {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

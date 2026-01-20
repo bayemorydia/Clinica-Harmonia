@@ -1,5 +1,6 @@
 package cat.copernic.proyecto2.Domain.PersonalSanitario;
 
+import cat.copernic.proyecto2.Domain.Farmacia.Medicamento;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -16,9 +17,9 @@ public class LineaReceta {
     @JoinColumn(name = "receta_id")
     private RecetaMedica receta;
 
-    private String medicamento; // Nombre del medicamento del catálogo
-    private String dosis;
+    @ManyToOne
+    @JoinColumn(name = "medicamento_id")
+    private Medicamento medicamento;
     
-    // Almacena el precio capturado del medicamento para la factura final
-    private Double precioUnitario; 
+    private String dosis; 
 }

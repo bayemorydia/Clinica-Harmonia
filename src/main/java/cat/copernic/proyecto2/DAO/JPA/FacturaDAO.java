@@ -2,7 +2,6 @@ package cat.copernic.proyecto2.DAO.JPA;
 
 import cat.copernic.proyecto2.Domain.Facturacion.Factura;
 import cat.copernic.proyecto2.Domain.Recepción.Paciente;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,10 +18,8 @@ public interface FacturaDAO extends JpaRepository<Factura, Long> {
      * Proveedor.
      */
     @Query("SELECT f FROM Factura f WHERE " +
-            "LOWER(f.tipo) LIKE LOWER(concat('%', :query, '%')) OR " +
             "LOWER(f.paciente.nombre) LIKE LOWER(concat('%', :query, '%')) OR " +
-            "LOWER(f.paciente.apellidos) LIKE LOWER(concat('%', :query, '%')) OR " +
-            "LOWER(f.proveedor.nombre) LIKE LOWER(concat('%', :query, '%'))")
+            "LOWER(f.paciente.apellidos) LIKE LOWER(concat('%', :query, '%'))")
     Page<Factura> findByNombreOrTipo(@Param("query") String query, Pageable pageable);
 
     /**

@@ -21,6 +21,7 @@ public class Nomina {
 
     @NotNull(message = "El período es obligatorio")
     private String periodo;
+    
     @NotNull(message = "El salario base es obligatorio")
     private BigDecimal salarioBase;
 

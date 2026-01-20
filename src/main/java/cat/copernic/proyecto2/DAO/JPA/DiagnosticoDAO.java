@@ -9,15 +9,17 @@ import org.springframework.data.repository.query.Param;
 
 public interface DiagnosticoDAO extends JpaRepository<Diagnostico, Long> {
 
-    boolean existsByCodigo(String codigo);
-    long countByActivoTrue();
-    boolean existsByNombre(String nombre);
+        boolean existsByCodigo(String codigo);
 
-    @Query("SELECT d FROM Diagnostico d WHERE " +
-            "(:activo IS NULL OR d.activo = :activo) AND " +
-            "(LOWER(d.nombre) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "LOWER(d.codigo) LIKE LOWER(CONCAT('%', :keyword, '%')))")
-    Page<Diagnostico> findByFilters(@Param("keyword") String keyword,
-            @Param("activo") Boolean activo,
-            Pageable pageable);
+        long countByActivoTrue();
+
+        boolean existsByNombre(String nombre);
+
+        @Query("SELECT d FROM Diagnostico d WHERE " +
+                        "(:activo IS NULL OR d.activo = :activo) AND " +
+                        "(LOWER(d.nombre) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+                        "LOWER(d.codigo) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+        Page<Diagnostico> findByFilters(@Param("keyword") String keyword,
+                        @Param("activo") Boolean activo,
+                        Pageable pageable);
 }

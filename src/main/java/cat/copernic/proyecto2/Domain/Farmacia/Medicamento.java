@@ -1,10 +1,8 @@
 package cat.copernic.proyecto2.Domain.Farmacia;
 
-import cat.copernic.proyecto2.Domain.Facturacion.LineaFactura;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
-import java.util.List;
 
 @Data
 @Entity
@@ -25,18 +23,5 @@ public class Medicamento {
     @NotBlank(message = "Debes especificar un tipo o categoría")
     private String tipo;
 
-    @Min(value = 0, message = "El stock actual no puede ser inferior a 0")
-    private int stockActual;
-
-    @Min(value = 0, message = "El stock mínimo no puede ser inferior a 0")
-    private int stockMinimo;
-
-    @NotNull(message = "El precio unitario es obligatorio")
-    @Positive(message = "El precio debe ser un número positivo mayor que cero") // VALIDACIÓN CLAVE
-    private Double precioUnitario;
-
     private boolean activo = true;
-
-    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL)
-    private List<LineaFactura> lineasFactura;
 }

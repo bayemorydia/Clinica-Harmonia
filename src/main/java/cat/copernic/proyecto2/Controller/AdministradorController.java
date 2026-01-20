@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/admin")
 public class AdministradorController {
+
     @Autowired
     private EmpleadoService empleadoService;
 
@@ -48,5 +49,4 @@ public class AdministradorController {
         model.addAttribute("totalDiagnosticosActivas", diagnosticoService.countDiagnosticosActivos());
         return "Administrador/home";
     }
-
 }

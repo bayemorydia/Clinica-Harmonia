@@ -9,7 +9,7 @@ import java.util.List;
 public interface VacacionesDAO extends JpaRepository<Vacaciones, Long> {
     // Método actual que ya tienes
     List<Vacaciones> findByEmpleadoId(Long empleadoId);
-    
+
     // AGREGAR ESTE MÉTODO para que concuerde con AccionEmpleado
     List<Vacaciones> findByEmpleado(Empleado empleado);
 

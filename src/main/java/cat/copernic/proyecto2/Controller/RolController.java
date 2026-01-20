@@ -4,7 +4,7 @@ import cat.copernic.proyecto2.Domain.Persona.Rol;
 import cat.copernic.proyecto2.Service.Rol.RolService;
 import cat.copernic.proyecto2.Service.Traduccion.TraduccionService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,11 +14,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/roles")
-@RequiredArgsConstructor
 public class RolController {
 
-    private final RolService rolService;
-    private final TraduccionService traduccionService;
+    @Autowired
+    private RolService rolService;
+
+    @Autowired
+    private TraduccionService traduccionService;
 
     @GetMapping({ "", "/listar" })
     public String listar(
@@ -27,9 +29,7 @@ public class RolController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             Model model) {
-
         Page<Rol> rolesPage = rolService.getRolesPaginados(query, activo, page, size);
-
         model.addAttribute("roles", rolesPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", rolesPage.getTotalPages());
@@ -38,7 +38,6 @@ public class RolController {
         model.addAttribute("query", query);
         model.addAttribute("activo", activo);
         model.addAttribute("trad", traduccionService);
-
         return "Rol/listaRol";
     }
 
@@ -49,9 +48,7 @@ public class RolController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             Model model) {
-
         Page<Rol> rolesPage = rolService.getRolesPaginados(query, activo, page, size);
-
         model.addAttribute("roles", rolesPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", rolesPage.getTotalPages());
@@ -60,8 +57,6 @@ public class RolController {
         model.addAttribute("query", query);
         model.addAttribute("activo", activo);
         model.addAttribute("trad", traduccionService);
-
-        // Retorna solo el fragmento de la tabla para la actualización AJAX
         return "Rol/listaRol :: tablaRoles";
     }
 

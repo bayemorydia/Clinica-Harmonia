@@ -9,20 +9,20 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface MedicamentoDAO extends JpaRepository<Medicamento, Long> {
-    Medicamento findByNombre(String nombre);
+        Medicamento findByNombre(String nombre);
 
-    Medicamento findByCodigo(String codigo);
+        Medicamento findByCodigo(String codigo);
 
-    List<Medicamento> findByNombreContainingIgnoreCase(String nombre);
+        List<Medicamento> findByNombreContainingIgnoreCase(String nombre);
 
-    long countByActivoTrue();
+        long countByActivoTrue();
 
-    @Query("SELECT m FROM Medicamento m WHERE " +
-            "(:activo IS NULL OR m.activo = :activo) AND " +
-            "(LOWER(m.nombre) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
-            "LOWER(m.codigo) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
-            "LOWER(m.tipo) LIKE LOWER(CONCAT('%', :query, '%')))")
-    Page<Medicamento> findByFilters(@Param("query") String query,
-            @Param("activo") Boolean activo,
-            Pageable pageable);
+        @Query("SELECT m FROM Medicamento m WHERE " +
+                        "(:activo IS NULL OR m.activo = :activo) AND " +
+                        "(LOWER(m.nombre) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+                        "LOWER(m.codigo) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+                        "LOWER(m.tipo) LIKE LOWER(CONCAT('%', :query, '%')))")
+        Page<Medicamento> findByFilters(@Param("query") String query,
+                        @Param("activo") Boolean activo,
+                        Pageable pageable);
 }

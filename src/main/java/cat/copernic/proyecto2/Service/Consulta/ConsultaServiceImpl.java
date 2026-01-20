@@ -68,21 +68,6 @@ public class ConsultaServiceImpl implements ConsultaService {
             receta.setPaciente(cita.getPaciente());
             receta.setMedico(cita.getProfesional());
             receta.setFechaEmision(LocalDate.now());
-
-            for (LineaReceta linea : lineas) {
-                linea.setReceta(receta);
-                // Si el precio viene nulo desde la vista, lo buscamos en el catálogo de
-                // medicamentos
-                if (linea.getPrecioUnitario() == null) {
-                    List<Medicamento> meds = medicamentoDAO.findByNombreContainingIgnoreCase(linea.getMedicamento());
-                    if (!meds.isEmpty()) {
-                        // Se usa getPrecioUnitario() corregido
-                        linea.setPrecioUnitario(meds.get(0).getPrecioUnitario());
-                    } else {
-                        linea.setPrecioUnitario(0.0);
-                    }
-                }
-            }
             receta.setLineas(new ArrayList<>(lineas));
             if (episodio.getRecetas() == null)
                 episodio.setRecetas(new ArrayList<>());

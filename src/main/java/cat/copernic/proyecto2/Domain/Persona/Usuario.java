@@ -6,7 +6,7 @@ import java.util.Set;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
-import lombok.EqualsAndHashCode; // <--- IMPORTANTE: AÑADIR ESTE IMPORT
+import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
@@ -25,7 +25,7 @@ public class Usuario {
 
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
     @ToString.Exclude
-    @EqualsAndHashCode.Exclude // <--- AÑADIR ESTO
+    @EqualsAndHashCode.Exclude
     private Empleado empleado;
 
     @Column(name = "telegram_chat_id", unique = true)
@@ -33,7 +33,7 @@ public class Usuario {
 
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
     @ToString.Exclude
-    @EqualsAndHashCode.Exclude // <--- AÑADIR ESTO (Rompe el bucle con Paciente)
+    @EqualsAndHashCode.Exclude
     private Paciente paciente;
 
     @ManyToMany(fetch = FetchType.EAGER)

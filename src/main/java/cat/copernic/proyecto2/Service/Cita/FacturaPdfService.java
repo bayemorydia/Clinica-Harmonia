@@ -6,7 +6,6 @@ import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import org.springframework.stereotype.Service;
-
 import jakarta.servlet.http.HttpServletResponse;
 import java.awt.Color;
 import java.io.IOException;
@@ -41,19 +40,19 @@ public class FacturaPdfService {
         PdfPTable tabla = new PdfPTable(2); // 2 columnas
         tabla.setWidthPercentage(100f);
         tabla.setSpacingBefore(10);
-        tabla.setWidths(new float[] {3.0f, 4.0f}); // Anchos relativos
+        tabla.setWidths(new float[] { 3.0f, 4.0f }); // Anchos relativos
 
         // Cabecera de la tabla
         PdfPCell celdaHeader = new PdfPCell();
         celdaHeader.setBackgroundColor(Color.LIGHT_GRAY);
         celdaHeader.setPadding(5);
-        
+
         Font fontCabecera = FontFactory.getFont(FontFactory.HELVETICA_BOLD);
         fontCabecera.setColor(Color.WHITE);
 
         celdaHeader.setPhrase(new Phrase("Concepto", fontCabecera));
         tabla.addCell(celdaHeader);
-        
+
         celdaHeader.setPhrase(new Phrase("Detalle", fontCabecera));
         tabla.addCell(celdaHeader);
 
@@ -85,7 +84,8 @@ public class FacturaPdfService {
 
         // 6. Pie de página
         document.add(new Paragraph("\n\n"));
-        Paragraph footer = new Paragraph("Gracias por confiar en nuestro centro médico.", FontFactory.getFont(FontFactory.HELVETICA_OBLIQUE, 10));
+        Paragraph footer = new Paragraph("Gracias por confiar en nuestro centro médico.",
+                FontFactory.getFont(FontFactory.HELVETICA_OBLIQUE, 10));
         footer.setAlignment(Paragraph.ALIGN_CENTER);
         document.add(footer);
 
