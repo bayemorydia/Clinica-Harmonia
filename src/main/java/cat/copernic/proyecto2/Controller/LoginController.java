@@ -24,14 +24,12 @@ public class LoginController {
             return "redirect:/recepcion/dashboard";
         }else if (request.isUserInRole("ROLE_RRHH")) {
             return "redirect:/RRHH/dashboard";
-        }else if (request.isUserInRole("ROLE_PACIENTE")) {
-            return "redirect:/paciente/dashboard";
         }
         return "redirect:/login?error=no-role";
     }
     
     @GetMapping("/login")
     public String login() {
-        return "login"; // busca templates/login.html
+        return "/Login/Login"; // busca templates/login.html
     }
 }

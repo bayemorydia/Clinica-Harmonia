@@ -41,8 +41,6 @@ public class Empleado {
     private LocalDate fecha_alta;
     private LocalDate fecha_baja;
 
-    @NotBlank(message = "El departamento es obligatorio")
-    private String departamento;
 
     @ManyToOne
     @JoinColumn(name = "rol_id")
