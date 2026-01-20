@@ -8,6 +8,8 @@ import cat.copernic.proyecto2.Service.Paciente.PacienteService;
 import cat.copernic.proyecto2.Service.Empleado.EmpleadoService;
 import cat.copernic.proyecto2.Service.Traduccion.TraduccionService;
 import cat.copernic.proyecto2.Service.Cita.FacturaPdfService; // <--- NUEVO IMPORT
+import cat.copernic.proyecto2.Domain.Recepción.Paciente; // <--- AÑADIR ESTA
+import cat.copernic.proyecto2.Domain.Administración.Empleado; // <--- AÑADIR ESTA
 
 import jakarta.servlet.http.HttpServletResponse; // <--- NUEVO IMPORT
 import jakarta.validation.Valid;
@@ -19,6 +21,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException; // <--- NUEVO IMPORT
 import java.text.DateFormat; // <--- NUEVO IMPORT
