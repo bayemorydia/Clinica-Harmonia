@@ -102,31 +102,9 @@ public class NominaController {
                 .add(nomina.getComplementos())
                 .subtract(nomina.getDeducciones()));
         nominaService.saveNomina(nomina);
-        return "redirect:/listarNominas";
+        return "redirect:/empleados/nominas/" + nomina.getEmpleado().getId();
     }
 
-    @GetMapping("/detalle/{id}")
-    public String detalleEmpleado(
-            @PathVariable("id") Long id,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            Model model) {
-        Empleado empleado = empleadoService.obtenerPorId(id);
-        if (empleado == null) {
-            model.addAttribute("error", "Empleado no encontrado");
-            return "redirect:/listarNominas";
-        }
-        Page<Nomina> nominasPage = nominaService.getNominasPorEmpleado(id, PageRequest.of(page, size));
-        model.addAttribute("empleado", empleado);
-        model.addAttribute("empleadoNominas", nominasPage.getContent());
-        model.addAttribute("currentPage", nominasPage.getNumber());
-        model.addAttribute("totalPages", nominasPage.getTotalPages());
-        model.addAttribute("totalElements", nominasPage.getTotalElements());
-        model.addAttribute("size", nominasPage.getSize());
-        model.addAttribute("trad", traduccionService);
-        cargarRoles(model);
-        return "Nomina/detalle";
-    }
 
     @PostMapping("/actualizar")
     public String actualizarNomina(@RequestParam Long id,
