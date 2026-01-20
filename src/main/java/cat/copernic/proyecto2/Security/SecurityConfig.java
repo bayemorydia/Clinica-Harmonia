@@ -15,15 +15,15 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    public PasswordEncoder passwordEncoder() { //Encriptador de contraseñas con Bcrypt
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public UserDetailsManager userDetailsService(DataSource dataSource) {
+    public UserDetailsManager userDetailsService(DataSource dataSource) { //Conector con la base de datos
         JdbcUserDetailsManager users = new JdbcUserDetailsManager(dataSource);
 
-        users.setUsersByUsernameQuery(
+        users.setUsersByUsernameQuery(//El primer método busca usuarios y el segundo sus roles
                 "SELECT username, password_hash, activo FROM usuario WHERE username = ?");
 
         users.setAuthoritiesByUsernameQuery(
@@ -34,7 +34,7 @@ public class SecurityConfig {
 
         return users;
     }
-
+    //Este método define las reglas de acceso URL por URL
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -49,6 +49,7 @@ public class SecurityConfig {
                         .requestMatchers("/Pacientes/**").hasRole("PACIENTE")
                         .requestMatchers("/recepcion/**").hasAnyRole("RECEPCIONISTA", "ADMINISTRADOR")
                         .requestMatchers("/vacaciones/**").hasAnyRole("ADMINISTRADOR", "MEDICO", "RECEPCIONISTA", "RRHH")
+                        .requestMatchers("/empleados/nuevo", "/empleados/guardar", "/empleados/editar/**").hasAnyRole("ADMINISTRADOR", "RRHH")
                         .anyRequest().authenticated())
                 .formLogin(form -> form
                         //.loginPage("/login") // Asegúrate de tener un login.html o quita esta
