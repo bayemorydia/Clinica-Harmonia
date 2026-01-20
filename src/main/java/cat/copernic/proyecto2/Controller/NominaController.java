@@ -149,7 +149,7 @@ public class NominaController {
         nominaService.updateNomina(id, nomina);
         return "redirect:/listarNominas";
     }
-
+//hola me llamo baye
     @GetMapping("/imprimir/{id}")
     public ResponseEntity<byte[]> imprimirNomina(@PathVariable Long id) {
         Nomina nomina = nominaService.findById(id);
