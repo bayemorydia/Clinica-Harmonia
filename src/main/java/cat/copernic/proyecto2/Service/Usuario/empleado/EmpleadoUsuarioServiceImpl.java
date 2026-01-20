@@ -109,4 +109,8 @@ public class EmpleadoUsuarioServiceImpl implements EmpleadoUsuarioService {
         usuarioDAO.save(usuario);
     }
 
+    public PasswordEncoder getPasswordEncoder() {
+        return this.passwordEncoder;
+    }
+
 }

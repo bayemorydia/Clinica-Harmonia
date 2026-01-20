@@ -30,7 +30,7 @@ public class EmpleadoController {
     private final EmpleadoUsuarioService EmpleadoUsuarioService;
 
     private void cargarListasSoporte(Model model) {
-        model.addAttribute("roles", rolService.listarRoles(PageRequest.of(0, 200)).getContent());
+        model.addAttribute("roles", rolService.RolesConcretos());
         turnoService.CrearTurnos();
         model.addAttribute("turnos", turnoService.listarTodos());
         model.addAttribute("trad", traduccionService);

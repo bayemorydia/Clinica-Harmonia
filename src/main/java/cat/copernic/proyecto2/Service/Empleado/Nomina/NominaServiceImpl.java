@@ -94,8 +94,6 @@ public class NominaServiceImpl implements NominaService {
             addDatoEmpleado(datosEmpleado, "Empleado:", nomina.getEmpleado().getNombre() + " " + nomina.getEmpleado().getApellidos(), boldFont, regularFont);
             addDatoEmpleado(datosEmpleado, "DNI/NIE:", nomina.getEmpleado().getDni(), boldFont, regularFont);
 
-            String depto = (nomina.getEmpleado().getDepartamento() != null) ? nomina.getEmpleado().getDepartamento() : "General";
-            addDatoEmpleado(datosEmpleado, "Departamento:", depto, boldFont, regularFont);
             addDatoEmpleado(datosEmpleado, "Periodo:", nomina.getPeriodo(), boldFont, regularFont);
 
             document.add(datosEmpleado);

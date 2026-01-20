@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.util.Optional;
+import java.util.List;
 
 public interface RolDAO extends JpaRepository<Rol, Long> {
 
@@ -19,4 +20,8 @@ public interface RolDAO extends JpaRepository<Rol, Long> {
         Page<Rol> findByFilters(@Param("query") String query,
                         @Param("activo") Boolean activo,
                         Pageable pageable);
+
+    @Query("SELECT r FROM Rol r WHERE r.nombre IN ('RRHH', 'RECEPCIONISTA', 'MEDICO')")
+    List<Rol> findRolesEspecificos();
+
 }

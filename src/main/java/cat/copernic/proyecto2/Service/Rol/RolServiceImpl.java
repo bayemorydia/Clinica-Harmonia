@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class RolServiceImpl implements RolService {
@@ -63,5 +63,11 @@ public class RolServiceImpl implements RolService {
     public Page<Rol> getRolesPaginados(String query, Boolean activo, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("nombre").ascending());
         return rolDAO.findByFilters(query, activo, pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List RolesConcretos() {
+        return rolDAO.findRolesEspecificos();
     }
 }

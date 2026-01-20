@@ -39,7 +39,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/css/**", "/js/**", "/img/**").permitAll()
+                        .requestMatchers("/login", "/css/**", "/js/**", "/img/**", "/password/**").permitAll()
                         .requestMatchers("/home").authenticated() // Cualquier logueado puede
                         // entrar aquí
                         .requestMatchers("/admin/**").hasRole("ADMINISTRADOR")
@@ -51,7 +51,7 @@ public class SecurityConfig {
                         .requestMatchers("/vacaciones/**").hasAnyRole("ADMINISTRADOR", "MEDICO", "RECEPCIONISTA", "RRHH")
                         .anyRequest().authenticated())
                 .formLogin(form -> form
-                        //.loginPage("/login") // Asegúrate de tener un login.html o quita esta
+                        .loginPage("/login") // Asegúrate de tener un login.html o quita esta
                         // línea para usar el de defecto
                         .defaultSuccessUrl("/home", true)
                         .permitAll())

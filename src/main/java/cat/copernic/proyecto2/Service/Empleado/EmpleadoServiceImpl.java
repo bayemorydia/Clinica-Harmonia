@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+
 import cat.copernic.proyecto2.DAO.JPA.EmpleadoDAO;
 import cat.copernic.proyecto2.Domain.Administración.Empleado;
 import cat.copernic.proyecto2.Domain.Administración.Nomina;
@@ -51,7 +53,6 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         existente.setDni(datos.getDni());
         existente.setEmail(datos.getEmail());
         existente.setTelefono(datos.getTelefono());
-        existente.setDepartamento(datos.getDepartamento());
         existente.setRol(datos.getRol());
         existente.setSalarioBase(datos.getSalarioBase());
         existente.setFecha_baja(datos.getFecha_baja());
@@ -118,4 +119,9 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     public Page<Nomina> listarNominasPorEmpleado(Long empleadoId, String search, int page, int size) {
         return empleadoDAO.findByEmpleado(empleadoId, search, PageRequest.of(page, size));
     }
+    @Transactional(readOnly = true)
+    public Empleado obtenerPorDni(String dni) {
+        return empleadoDAO.obtenerPorDni(dni);
+    }
+
 }
