@@ -11,6 +11,7 @@ public interface UsuarioDAO extends JpaRepository<Usuario, Long> {
     boolean existsByUsername(String username);
 
     Page<Usuario> findByUsernameContainingIgnoreCase(String username, Pageable pageable);
+    Usuario findByTelegramChatId(Long telegramChatId);
 
     @Query("SELECT u FROM Usuario u WHERE " +
             "(:activo IS NULL OR u.activo = :activo) AND " +

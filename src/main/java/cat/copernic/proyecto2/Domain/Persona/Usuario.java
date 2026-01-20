@@ -28,6 +28,9 @@ public class Usuario {
     @EqualsAndHashCode.Exclude // <--- AÑADIR ESTO
     private Empleado empleado;
 
+    @Column(name = "telegram_chat_id", unique = true)
+    private Long telegramChatId;
+
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude // <--- AÑADIR ESTO (Rompe el bucle con Paciente)
