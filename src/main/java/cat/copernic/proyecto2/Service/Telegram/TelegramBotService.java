@@ -12,6 +12,7 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -22,28 +23,22 @@ public class TelegramBotService extends TelegramLongPollingBot {
     private final UsuarioDAO usuarioDAO;
     private final PacienteDAO pacienteDAO;
     private final EmpleadoDAO empleadoDAO;
-    private final CitaDAO citaDAO;
-    private final FacturaDAO facturaDAO;
-    private final NominaDAO nominaDAO;
-    private final VacacionesDAO vacacionesDAO;
-    private final ValidacionesService validacionesService; // Inyectamos tu servicio
+    private final ValidacionesService validacionesService;
+    private final List<TelegramAccion> acciones; // Lista de todas las acciones (AccionPaciente, etc.)
 
     public TelegramBotService(
             @Value("${telegram.bot.token}") String botToken,
             @Value("${telegram.bot.name}") String botName,
             UsuarioDAO usuarioDAO, PacienteDAO pacienteDAO, EmpleadoDAO empleadoDAO,
-            CitaDAO citaDAO, FacturaDAO facturaDAO, NominaDAO nominaDAO,
-            VacacionesDAO vacacionesDAO, ValidacionesService validacionesService) {
+            ValidacionesService validacionesService,
+            List<TelegramAccion> acciones) {
         super(botToken);
         this.botName = botName;
         this.usuarioDAO = usuarioDAO;
         this.pacienteDAO = pacienteDAO;
         this.empleadoDAO = empleadoDAO;
-        this.citaDAO = citaDAO;
-        this.facturaDAO = facturaDAO;
-        this.nominaDAO = nominaDAO;
-        this.vacacionesDAO = vacacionesDAO;
         this.validacionesService = validacionesService;
+        this.acciones = acciones;
     }
 
     @Override
@@ -53,111 +48,86 @@ public class TelegramBotService extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        if (!update.hasMessage() || !update.getMessage().hasText())
-            return;
+        if (!update.hasMessage() || !update.getMessage().hasText()) return;
 
-        String messageText = update.getMessage().getText().trim();
+        String messageText = update.getMessage().getText();
         long chatId = update.getMessage().getChatId();
-
-        // 1. Buscamos si el dispositivo (chatId) ya está vinculado a un usuario
         Usuario usuario = usuarioDAO.findByTelegramChatId(chatId);
 
-        // --- FLUJO PARA USUARIOS NO VINCULADOS ---
         if (usuario == null) {
-            String dniCandidato = messageText.toUpperCase();
-
+            String dniCandidato = messageText.trim().toUpperCase();
             try {
-                // Intentamos validar si lo que ha escrito tiene formato de DNI/NIE
                 validacionesService.validarDocumentoIdentidad(dniCandidato);
-
-                // Si la validación no lanza excepción, procedemos a buscarlo en la DB
                 procesarVinculacionDirecta(chatId, dniCandidato);
-
             } catch (RuntimeException e) {
-                // Si falla la validación (no es un DNI o la letra está mal)
                 enviarMensaje(chatId, "👋 <b>¡Hola! Bienvenido a la Clínica Harmonía.</b>\n\n" +
-                        "No te reconozco. Por favor, <b>escribe tu DNI o NIE</b> para acceder a tu panel personal.");
+                        "No te reconozco. Por favor, <b>escribe tu DNI o NIE</b> para acceder.");
             }
             return;
         }
 
-        // --- FLUJO PARA USUARIOS YA VINCULADOS ---
-        String respuesta = procesarComandosAgente(messageText.toLowerCase(), usuario);
+        // BUSCAR ACCIÓN COMPATIBLE
+        String respuesta = null;
+        for (TelegramAccion accion : acciones) {
+            if (accion.soporte(messageText)) {
+                // Verificar si el usuario tiene el rol necesario
+                boolean tieneRol = usuario.getRoles().stream()
+                        .anyMatch(r -> r.getNombre().equalsIgnoreCase(accion.rolPermitido()));
+                
+                if (tieneRol || accion.rolPermitido().equals("TODOS")) {
+                    respuesta = accion.ejecutar(update, usuario);
+                    break;
+                }
+            }
+        }
+
+        if (respuesta == null) {
+            respuesta = generarMenuAyuda(usuario);
+        }
+
         enviarMensaje(chatId, respuesta);
     }
 
+    private String generarMenuAyuda(Usuario usuario) {
+        StringBuilder sb = new StringBuilder("👋 Hola <b>" + usuario.getUsername() + "</b>\n\n");
+        sb.append("<b>Comandos disponibles:</b>\n");
+        for (TelegramAccion acc : acciones) {
+            boolean tieneRol = usuario.getRoles().stream()
+                    .anyMatch(r -> r.getNombre().equalsIgnoreCase(acc.rolPermitido()));
+            if (tieneRol) {
+                sb.append("• ").append(acc.descripcion()).append("\n");
+            }
+        }
+        return sb.toString();
+    }
+
     private void procesarVinculacionDirecta(long chatId, String dni) {
-        // 1. Buscamos en Pacientes
         Optional<Paciente> pac = Optional.ofNullable(pacienteDAO.findByDni(dni));
         if (pac.isPresent()) {
             vincular(chatId, pac.get().getUsuario(), "Paciente: " + pac.get().getNombre());
             return;
         }
-
-        // 2. Si no es paciente, buscamos en Empleados
         Optional<Empleado> emp = empleadoDAO.findByDni(dni);
         if (emp.isPresent()) {
             vincular(chatId, emp.get().getUsuario(), "Empleado: " + emp.get().getNombre());
             return;
         }
-
-        // 3. Si el DNI es válido pero no existe en nuestra DB
-        enviarMensaje(chatId, "❌ El DNI/NIE <b>" + dni
-                + "</b> no consta en nuestra base de datos. Por favor, contacta con administración.");
+        enviarMensaje(chatId, "❌ El DNI <b>" + dni + "</b> no consta en nuestra base de datos.");
     }
 
     private void vincular(long chatId, Usuario u, String info) {
         if (u != null) {
             u.setTelegramChatId(chatId);
             usuarioDAO.save(u);
-            enviarMensaje(chatId, "✅ <b>¡Identidad confirmada!</b>\nVinculado como " + info +
-                    ".\n\nEscribe <b>'hola'</b> para ver qué puedo hacer por ti.");
-        } else {
-            enviarMensaje(chatId,
-                    "⚠️ Tu perfil existe, pero no tienes un usuario de acceso creado. Contacta con soporte.");
+            enviarMensaje(chatId, "✅ <b>¡Identidad confirmada!</b>\nVinculado como " + info + ".");
         }
-    }
-
-    private String procesarComandosAgente(String cmd, Usuario usuario) {
-        StringBuilder ayuda = new StringBuilder("<b>Comandos disponibles:</b>\n\n");
-
-        // Lógica de Paciente
-        if (usuario.getPaciente() != null) {
-            Paciente p = usuario.getPaciente();
-            if (cmd.contains("mi perfil"))
-                return "👤 <b>Perfil</b>:\n- " + p.getNombre() + " " + p.getApellidos() + "\n- DNI: " + p.getDni();
-            if (cmd.contains("mis citas")) {
-                var citas = citaDAO.findByPaciente(p);
-                if (citas.isEmpty())
-                    return "No tienes citas programadas.";
-                StringBuilder sb = new StringBuilder("📅 <b>Tus Citas</b>:\n");
-                citas.forEach(c -> sb.append("- ").append(c.getFechaHora()).append(" (").append(c.getEspecialidad())
-                        .append(")\n"));
-                return sb.toString();
-            }
-            ayuda.append("• mi perfil\n• mis citas\n• facturas\n");
-        }
-
-        // Lógica de Empleado
-        if (usuario.getEmpleado() != null) {
-            Empleado e = usuario.getEmpleado();
-            if (cmd.contains("nominas"))
-                return "💰 Tienes " + nominaDAO.findByEmpleado(e).size() + " nóminas.";
-            ayuda.append("• mi perfil\n• nominas\n• vacaciones\n");
-        }
-
-        return "👋 Hola <b>" + usuario.getUsername() + "</b>\n\n" + ayuda.toString();
     }
 
     public void enviarMensaje(long chatId, String texto) {
         SendMessage message = new SendMessage();
         message.setChatId(String.valueOf(chatId));
         message.setText(texto);
-        message.setParseMode("HTML"); // Importante para que las negritas funcionen sin errores
-        try {
-            execute(message);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
+        message.setParseMode("HTML");
+        try { execute(message); } catch (TelegramApiException e) { e.printStackTrace(); }
     }
 }

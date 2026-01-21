@@ -25,13 +25,13 @@ public class PacienteServiceImpl implements PacienteService {
     @Autowired
     private PacienteDAO pacienteDAO;
 
-    @Autowired(required = false) // Opcional por si fallaba la inyección
+    @Autowired
     private ImagenService imagenService;
 
     @Autowired(required = false)
     private ValidacionesService validacionesService;
 
-    @Autowired(required = false)
+    @Autowired
     private UsuarioService usuarioService;
 
     @Override
@@ -41,63 +41,60 @@ public class PacienteServiceImpl implements PacienteService {
 
     @Override
     @Transactional
-    public void savePaciente(Paciente paciente, MultipartFile file) {
-        String nombreImagenNueva = null;
-
-        if (imagenService != null && file != null && !file.isEmpty()) {
-             nombreImagenNueva = imagenService.guardarImagen(file, "Paciente");
+    public void savePaciente(Paciente pacienteForm, MultipartFile file) {
+        if (pacienteForm.getDni() != null) {
+            pacienteForm.setDni(pacienteForm.getDni().toUpperCase().trim());
         }
 
-        if (paciente.getDni() != null) {
-            paciente.setDni(paciente.getDni().toUpperCase().trim());
-        }
-
-        if (paciente.getId() == null || paciente.getId() == 0) {
-            // NUEVO
-            if (validacionesService != null) validacionesService.validarDocumentoIdentidad(paciente.getDni());
-            validarDuplicados(paciente);
-            paciente.setFechaAlta(LocalDate.now());
-            paciente.setActivo(true); // Asegurar que nace activo
+        // --- CASO 1: NUEVO PACIENTE ---
+        if (pacienteForm.getId() == null || pacienteForm.getId() == 0) {
+            if (validacionesService != null)
+                validacionesService.validarDocumentoIdentidad(pacienteForm.getDni());
+            validarDuplicados(pacienteForm);
+            
+            pacienteForm.setFechaAlta(LocalDate.now());
+            pacienteForm.setActivo(true);
 
             Usuario nuevoUsuario = usuarioService.crearUsuarioPaciente(
-                    paciente.getNombre(), paciente.getApellidos(), paciente.getDni());
-            paciente.setUsuario(nuevoUsuario);
+                    pacienteForm.getNombre(), pacienteForm.getApellidos(), pacienteForm.getDni());
+            pacienteForm.setUsuario(nuevoUsuario);
 
-            paciente.setRutaFoto(nombreImagenNueva != null ? nombreImagenNueva : "default-user.png");
+            String nombreImagen = imagenService.guardarImagen(file, "Paciente");
+            pacienteForm.setRutaFoto(nombreImagen);
+            
+            pacienteDAO.save(pacienteForm);
+
+        // --- CASO 2: EDICIÓN (Update Parcial) ---
         } else {
-            Paciente existente = pacienteDAO.findById(paciente.getId()).orElse(null);
-            if (existente != null) {
-                paciente.setFechaAlta(existente.getFechaAlta());
-                paciente.setUsuario(existente.getUsuario());
+            Paciente pacienteBD = pacienteDAO.findById(pacienteForm.getId())
+                    .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
 
-                if (!existente.getDni().equals(paciente.getDni())) {
-                     if (validacionesService != null) validacionesService.validarDocumentoIdentidad(paciente.getDni());
-                     validarDuplicados(paciente);
+            // Actualizamos los datos de texto si vienen en el formulario
+            if (pacienteForm.getNombre() != null) pacienteBD.setNombre(pacienteForm.getNombre());
+            if (pacienteForm.getApellidos() != null) pacienteBD.setApellidos(pacienteForm.getApellidos());
+            if (pacienteForm.getFechaNacimiento() != null) pacienteBD.setFechaNacimiento(pacienteForm.getFechaNacimiento());
+            if (pacienteForm.getTelefono() != null) pacienteBD.setTelefono(pacienteForm.getTelefono());
+            if (pacienteForm.getEmail() != null) pacienteBD.setEmail(pacienteForm.getEmail());
+            if (pacienteForm.getDireccion() != null) pacienteBD.setDireccion(pacienteForm.getDireccion());
+            pacienteBD.setActivo(pacienteForm.isActivo());
+            
+            // Si hay una foto nueva, la procesamos
+            if (file != null && !file.isEmpty()) {
+                if (pacienteBD.getRutaFoto() != null && !pacienteBD.getRutaFoto().equals("default-user.png")) {
+                    imagenService.eliminarImagen(pacienteBD.getRutaFoto(), "Paciente");
                 }
-
-                if (nombreImagenNueva != null) {
-                    if (imagenService != null) imagenService.eliminarImagen(existente.getRutaFoto(), "Paciente");
-                    paciente.setRutaFoto(nombreImagenNueva);
-                } else {
-                    paciente.setRutaFoto(existente.getRutaFoto());
-                }
+                String nuevoNombre = imagenService.guardarImagen(file, "Paciente");
+                pacienteBD.setRutaFoto(nuevoNombre);
             }
+
+            pacienteDAO.save(pacienteBD);
         }
-        pacienteDAO.save(paciente);
     }
 
     private void validarDuplicados(Paciente paciente) {
         if (paciente.getId() == null || paciente.getId() == 0) {
             if (pacienteDAO.existsByDni(paciente.getDni())) {
                 throw new RuntimeException("El DNI/NIE ya está registrado en el sistema");
-            }
-            if (paciente.getNumeroSeguridadSocial() != null && !paciente.getNumeroSeguridadSocial().isEmpty() 
-                    && pacienteDAO.existsByNumeroSeguridadSocial(paciente.getNumeroSeguridadSocial())) {
-                throw new RuntimeException("El número de Seguridad Social ya está registrado");
-            }
-            if (paciente.getEmail() != null && !paciente.getEmail().isEmpty() 
-                    && pacienteDAO.existsByEmail(paciente.getEmail())) {
-                throw new RuntimeException("El correo electrónico ya está registrado");
             }
         }
     }
@@ -108,23 +105,25 @@ public class PacienteServiceImpl implements PacienteService {
     }
 
     @Override
+    public Paciente encontrarPorDni(String dni) {
+        return pacienteDAO.findByDni(dni);
+    }
+
+    @Override
     @Transactional
     public void deletePaciente(Long id) {
         Paciente p = findPacienteById(id);
         if (p != null) {
             p.setActivo(false);
-            if (p.getUsuario() != null) {
-                p.getUsuario().setActivo(false);
-            }
             pacienteDAO.save(p);
         }
     }
 
     @Override
     public String getEdadPaciente(Paciente paciente) {
-        if (paciente == null || paciente.getFechaNacimiento() == null) return "Fecha no disponible";
-        Period periodo = Period.between(paciente.getFechaNacimiento(), LocalDate.now());
-        return periodo.getYears() + " años"; // Simplificado
+        if (paciente == null || paciente.getFechaNacimiento() == null)
+            return "N/D";
+        return Period.between(paciente.getFechaNacimiento(), LocalDate.now()).getYears() + " años";
     }
 
     @Override
@@ -138,17 +137,16 @@ public class PacienteServiceImpl implements PacienteService {
         return pacienteDAO.findByFilters(query, activo, pageable);
     }
 
-    // --- EL ÚNICO MÉTODO EXTRA NECESARIO ---
     @Override
     public boolean existeDni(String dni, Long idActual) {
         Paciente encontrado = pacienteDAO.findByDni(dni);
-        if (encontrado == null) return false;
-        if (idActual != null && encontrado.getId().equals(idActual)) return false;
-        return true;
+        if (encontrado == null)
+            return false;
+        return idActual == null || !encontrado.getId().equals(idActual);
     }
+
     @Override
     public Paciente buscarPorUsername(String username) {
-        return pacienteDAO.findByUsuarioUsername(username)
-                .orElse(null); // Retorna null si no encuentra al paciente
+        return pacienteDAO.findByUsuarioUsername(username).orElse(null);
     }
 }

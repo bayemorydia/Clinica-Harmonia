@@ -4,8 +4,8 @@ import cat.copernic.proyecto2.DAO.JPA.CitaDAO;
 import cat.copernic.proyecto2.Domain.Administración.Empleado;
 import cat.copernic.proyecto2.Domain.Recepción.Cita;
 import cat.copernic.proyecto2.Domain.Recepción.EstadoCita;
+import cat.copernic.proyecto2.Domain.Recepción.Paciente;
 import cat.copernic.proyecto2.Service.Empleado.EmpleadoService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,7 +27,7 @@ public class CitaServiceImpl implements CitaService {
     private CitaDAO citaDAO;
 
     @Autowired
-    private EmpleadoService empleadoService; // Inyección necesaria
+    private EmpleadoService empleadoService;
 
     @Override
     @Transactional(readOnly = true)
@@ -59,40 +59,27 @@ public class CitaServiceImpl implements CitaService {
     @Override
     @Transactional
     public void saveCita(Cita cita) throws Exception {
-        if (cita.getFechaHora() == null)
-            throw new Exception("La fecha y hora son obligatorias.");
-
+        if (cita.getFechaHora() == null) throw new Exception("La fecha y hora son obligatorias.");
         LocalDateTime fechaNormalizada = cita.getFechaHora().truncatedTo(ChronoUnit.HOURS);
         cita.setFechaHora(fechaNormalizada);
-
         if (fechaNormalizada.isBefore(LocalDateTime.now().truncatedTo(ChronoUnit.HOURS))) {
             throw new Exception("No se pueden agendar citas en el pasado.");
         }
-
         int diaSemana = fechaNormalizada.getDayOfWeek().getValue();
-        if (diaSemana > 5)
-            throw new Exception("Solo se pueden agendar citas de lunes a viernes.");
-
+        if (diaSemana > 5) throw new Exception("Solo se pueden agendar citas de lunes a viernes.");
         int hora = fechaNormalizada.getHour();
-        if (hora < 8 || hora >= 17)
-            throw new Exception("El horario de atención es de 08:00 a 17:00.");
-        if (hora == 13)
-            throw new Exception("El horario de 13:00 a 14:00 es la hora de almuerzo.");
+        if (hora < 8 || hora >= 17) throw new Exception("El horario de atención es de 08:00 a 17:00.");
+        if (hora == 13) throw new Exception("El horario de 13:00 a 14:00 es la hora de almuerzo.");
 
-        Optional<Cita> confP = citaDAO.findByPacienteAndFechaHoraAndEstadoNot(cita.getPaciente(), fechaNormalizada,
-                EstadoCita.ANULADA);
+        Optional<Cita> confP = citaDAO.findByPacienteAndFechaHoraAndEstadoNot(cita.getPaciente(), fechaNormalizada, EstadoCita.ANULADA);
         if (confP.isPresent() && (cita.getId() == null || !confP.get().getId().equals(cita.getId()))) {
             throw new Exception("El paciente ya tiene una cita a esta hora.");
         }
-
-        Optional<Cita> confM = citaDAO.findByProfesionalAndFechaHoraAndEstadoNot(cita.getProfesional(),
-                fechaNormalizada, EstadoCita.ANULADA);
+        Optional<Cita> confM = citaDAO.findByProfesionalAndFechaHoraAndEstadoNot(cita.getProfesional(), fechaNormalizada, EstadoCita.ANULADA);
         if (confM.isPresent() && (cita.getId() == null || !confM.get().getId().equals(cita.getId()))) {
             throw new Exception("El médico ya tiene una cita asignada a esta hora.");
         }
-
-        if (cita.getId() == null)
-            cita.setEstado(EstadoCita.PROGRAMADA);
+        if (cita.getId() == null) cita.setEstado(EstadoCita.PROGRAMADA);
         citaDAO.save(cita);
     }
 
@@ -100,7 +87,6 @@ public class CitaServiceImpl implements CitaService {
     @Transactional
     public void anularCita(Long id) {
         Cita cita = findCitaById(id);
-        // Regla de negocio: Solo se pueden anular citas PROGRAMADAS
         if (cita != null && cita.getEstado() == EstadoCita.PROGRAMADA) {
             cita.setEstado(EstadoCita.ANULADA);
             citaDAO.save(cita);
@@ -130,20 +116,15 @@ public class CitaServiceImpl implements CitaService {
     public Map<LocalDate, Long> obtenerResumenAgendaAnual(Long medicoId, int anio) {
         LocalDateTime inicio = LocalDateTime.of(anio, 1, 1, 0, 0);
         LocalDateTime fin = LocalDateTime.of(anio, 12, 31, 23, 59);
-        return citaDAO
-                .findByProfesionalIdAndFechaHoraBetweenAndEstadoNotOrderByFechaHoraAsc(medicoId, inicio, fin,
-                        EstadoCita.ANULADA)
+        return citaDAO.findByProfesionalIdAndFechaHoraBetweenAndEstadoNotOrderByFechaHoraAsc(medicoId, inicio, fin, EstadoCita.ANULADA)
                 .stream().collect(Collectors.groupingBy(c -> c.getFechaHora().toLocalDate(), Collectors.counting()));
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Cita> obtenerCitasDia(Long medicoId, LocalDate fecha) {
-        return citaDAO.findByProfesionalIdAndFechaHoraBetweenAndEstadoOrderByFechaHoraAsc(
-                medicoId, fecha.atStartOfDay(), fecha.atTime(23, 59, 59), EstadoCita.PROGRAMADA);
+        return citaDAO.findByProfesionalIdAndFechaHoraBetweenAndEstadoOrderByFechaHoraAsc(medicoId, fecha.atStartOfDay(), fecha.atTime(23, 59, 59), EstadoCita.PROGRAMADA);
     }
-
-    // --- IMPLEMENTACIÓN DE LOS NUEVOS MÉTODOS PARA RECEPCIÓN ---
 
     @Override
     @Transactional(readOnly = true)
@@ -154,14 +135,12 @@ public class CitaServiceImpl implements CitaService {
     @Override
     @Transactional(readOnly = true)
     public List<Cita> listarCitasPorDiaGlobal(LocalDate fecha) {
-        // Rango de 00:00 a 23:59 del día solicitado
-        LocalDateTime inicio = fecha.atStartOfDay();
-        LocalDateTime fin = fecha.atTime(23, 59, 59);
+        return citaDAO.findByFechaHoraBetweenAndEstadoNotOrderByFechaHoraAsc(fecha.atStartOfDay(), fecha.atTime(23, 59, 59), EstadoCita.ANULADA);
+    }
 
-        // Llamada al nuevo método del DAO
-        return citaDAO.findByFechaHoraBetweenAndEstadoNotOrderByFechaHoraAsc(
-                inicio,
-                fin,
-                EstadoCita.ANULADA);
+    @Override
+    @Transactional(readOnly = true)
+    public List<Cita> findByPaciente(Paciente paciente) {
+        return citaDAO.findByPaciente(paciente);
     }
 }

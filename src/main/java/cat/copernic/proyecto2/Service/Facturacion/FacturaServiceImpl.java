@@ -3,6 +3,7 @@ package cat.copernic.proyecto2.Service.Facturacion;
 import cat.copernic.proyecto2.DAO.JPA.FacturaDAO;
 import cat.copernic.proyecto2.Domain.Facturacion.Factura;
 import cat.copernic.proyecto2.Domain.Facturacion.LineaFactura;
+import cat.copernic.proyecto2.Domain.Recepción.Paciente;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -79,9 +80,7 @@ public class FacturaServiceImpl implements FacturaService {
     @Override
     public CompletableFuture<byte[]> generarReporteAsync(String periodo) {
         try {
-            // Simulamos carga de trabajo pesada para el Thread
             Thread.sleep(4000);
-
             LocalDate fechaLimite = switch (periodo) {
                 case "DIA" -> LocalDate.now();
                 case "SEMANA" -> LocalDate.now().minusWeeks(1);
@@ -89,21 +88,24 @@ public class FacturaServiceImpl implements FacturaService {
                 case "ANYO" -> LocalDate.now().minusYears(1);
                 default -> LocalDate.now().minusYears(100);
             };
-
             List<Factura> facturas = facturaDAO.findByFechaEmisionAfter(fechaLimite);
-
-            StringBuilder csv = new StringBuilder("ID;Fecha;Cliente/Proveedor;Tipo;Total\n");
+            StringBuilder csv = new StringBuilder("ID;Fecha;Cliente/Proveedor;Total\n");
             for (Factura f : facturas) {
-                String ente = f.getPaciente().getNombre();
                 csv.append(f.getId()).append(";")
                         .append(f.getFechaEmision()).append(";")
-                        .append(ente).append(";")
+                        .append(f.getPaciente().getNombre()).append(";")
                         .append(f.getTotal()).append("€\n");
             }
             return CompletableFuture.completedFuture(csv.toString().getBytes());
         } catch (InterruptedException e) {
             return CompletableFuture.failedFuture(e);
         }
+    }
+
+    @Override
+    @Transactional
+    public List<Factura> findByPaciente(Paciente paciente) {
+        return facturaDAO.findByPaciente(paciente);
     }
 
     private void recalcularTotales(Factura factura) {
