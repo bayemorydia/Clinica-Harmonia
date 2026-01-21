@@ -1,0 +1,1800 @@
+[{
+  "_id": "home.bienvenida",
+  "es": "Sistema Médico",
+  "ca": "Sistema Mèdic",
+  "en": "Medical System"
+},
+{
+  "_id": "home.subtitulo",
+  "es": "Panel Central de Administración",
+  "ca": "Panel Central d'Administració",
+  "en": "Central Administration Panel"
+},
+{
+  "_id": "mod.pacientes",
+  "es": "Pacientes",
+  "ca": "Pacients",
+  "en": "Patients"
+},
+{
+  "_id": "mod.pacientes.desc",
+  "es": "Gestión de expedientes, historial clínico y datos personales.",
+  "ca": "Gestió d'expedients, historial clínic i dades personals.",
+  "en": "Management of records, clinical history and personal data."
+},
+{
+  "_id": "mod.empleados",
+  "es": "Empleados",
+  "ca": "Empleats",
+  "en": "Employees"
+},
+{
+  "_id": "mod.empleados.desc",
+  "es": "Control de personal médico, enfermería y administración.",
+  "ca": "Control de personal mèdic, infermeria i administració.",
+  "en": "Control of medical, nursing and administration staff."
+},
+{
+  "_id": "mod.proveedores",
+  "es": "Proveedores",
+  "ca": "Proveïdors",
+  "en": "Suppliers"
+},
+{
+  "_id": "mod.proveedores.desc",
+  "es": "Gestión de suministros y contactos de laboratorios.",
+  "ca": "Gestió de subministraments i contactes de laboratoris.",
+  "en": "Management of supplies and laboratory contacts."
+},
+{
+  "_id": "mod.citas",
+  "es": "Citas Médicas",
+  "ca": "Cites Mèdiques",
+  "en": "Medical Appointments"
+},
+{
+  "_id": "mod.citas.desc",
+  "es": "Programación de consultas y gestión de la agenda clínica.",
+  "ca": "Programació de consultes i gestió de l'agenda clínica.",
+  "en": "Consultation scheduling and clinical agenda management."
+},
+{
+  "_id": "mod.medicamentos",
+  "es": "Medicamentos",
+  "ca": "Medicaments",
+  "en": "Medicines"
+},
+{
+  "_id": "mod.medicamentos.desc",
+  "es": "Catálogo de fármacos, stock disponible y dosis.",
+  "ca": "Catàleg de fàrmacs, estoc disponible i dosis.",
+  "en": "Drug catalog, available stock and doses."
+},
+{
+  "_id": "mod.tratamientos",
+  "es": "Pruebas Médicas",
+  "ca": "Proves Mèdiques",
+  "en": "Medical Tests"
+},
+{
+  "_id": "mod.tratamientos.desc",
+  "es": "Seguimiento de planes médicos y procedimientos.",
+  "ca": "Seguiment de plans mèdics i procediments.",
+  "en": "Follow-up of medical plans and procedures."
+},
+{
+  "_id": "nav.inicio",
+  "es": "Inicio",
+  "ca": "Inici",
+  "en": "Home"
+},
+{
+  "_id": "idioma.selector",
+  "es": "Idioma",
+  "ca": "Idioma",
+  "en": "Language"
+},
+{
+  "_id": "pacientes.tabla.nombre",
+  "es": "Nombre Completo",
+  "ca": "Nom i Cognom",
+  "en": "Full Name"
+},
+{
+  "_id": "pacientes.tabla.estado",
+  "es": "Estado",
+  "ca": "Estat",
+  "en": "Status"
+},
+{
+  "_id": "pacientes.btn.anadir",
+  "es": "Añadir Paciente",
+  "ca": "Afegir Pacient",
+  "en": "Add Patient"
+},
+{
+  "_id": "pacientes.form.titulo",
+  "es": "Datos del Paciente",
+  "ca": "Dades del Pacient",
+  "en": "Patient Data"
+},
+{
+  "_id": "pacientes.msg.confirmar",
+  "es": "¿Está seguro de que desea desactivar este paciente?",
+  "ca": "Està segur que desitja desactivar aquest pacient?",
+  "en": "Are you sure you want to deactivate this patient?"
+},
+{
+  "_id": "nav.admin",
+  "es": "Administrador",
+  "ca": "Administrador",
+  "en": "Administrator"
+},
+{
+  "_id": "mod.admin.desc",
+  "es": "Bienvenido al centro de mando de la clínica.",
+  "ca": "Benvingut al centre de comandament de la clínica.",
+  "en": "Welcome to the clinic's command center."
+},
+{
+  "_id": "mod.admin.gestion_global",
+  "es": "Gestión Global de la Aplicación",
+  "ca": "Gestió Global de l'Aplicació",
+  "en": "Global Application Management"
+},
+{
+  "_id": "mod.admin.roles.titulo",
+  "es": "Gestión de Roles",
+  "ca": "Gestió de Rols",
+  "en": "Role Management"
+},
+{
+  "_id": "mod.admin.roles.desc",
+  "es": "Configurar permisos del sistema",
+  "ca": "Configura els permisos del sistema",
+  "en": "Configure system permissions"
+},
+{
+  "_id": "mod.admin.usuarios.titulo",
+  "es": "Cuentas de Usuario",
+  "ca": "Comptes d'Usuari",
+  "en": "User Accounts"
+},
+{
+  "_id": "mod.admin.usuarios.desc",
+  "es": "Control de accesos y activos",
+  "ca": "Control d'accessos i actius",
+  "en": "Access and asset control"
+},
+{
+  "_id": "mod.admin.proveedores.desc",
+  "es": "Entidades y suministros",
+  "ca": "Entitats i subministraments",
+  "en": "Entities and supplies"
+},
+{
+  "_id": "btn.entrar",
+  "es": "Entrar",
+  "ca": "Entrar",
+  "en": "Enter"
+},
+{
+  "_id": "footer.copy",
+  "es": "© 2026 Clínica Harmonia - Sistema de Gestión Integral",
+  "ca": "© 2026 Clínica Harmonia - Sistema de Gestió Integral",
+  "en": "© 2026 Harmonia Clinic - Comprehensive Management System"
+},
+{
+  "_id": "mod.pacientes.activos",
+  "es": "Total Activos",
+  "ca": "Total Actius",
+  "en": "Total Active"
+},
+{
+  "_id": "btn.logout",
+  "es": "Cerrar Sesión",
+  "ca": "Tanca la Sessió",
+  "en": "Log Out"
+},
+{
+  "_id": "pacientes.lista.titulo",
+  "es": "Listado de Pacientes",
+  "ca": "Llistat de Pacients",
+  "en": "Patient List"
+},
+{
+  "_id": "pacientes.tabla.dni",
+  "es": "DNI / NIE",
+  "ca": "DNI / NIE",
+  "en": "ID Card"
+},
+{
+  "_id": "pacientes.tabla.acciones",
+  "es": "Acciones",
+  "ca": "Accions",
+  "en": "Actions"
+},
+{
+  "_id": "pacientes.estado.activo",
+  "es": "Activo",
+  "ca": "Actiu",
+  "en": "Active"
+},
+{
+  "_id": "pacientes.estado.inactivo",
+  "es": "Inactivo",
+  "ca": "Inactiu",
+  "en": "Inactive"
+},
+{
+  "_id": "pacientes.btn.detalles",
+  "es": "Detalles",
+  "ca": "Detalls",
+  "en": "Details"
+},
+{
+  "_id": "pacientes.btn.desactivar",
+  "es": "Dar de baja",
+  "ca": "Donar de baixa",
+  "en": "Unsubscribe"
+},
+{
+  "_id": "pacientes.btn.activar",
+  "es": "Dar de alta",
+  "ca": "Donar d'alta",
+  "en": "Register"
+},
+{
+  "_id": "paciente.form.titulo.nuevo",
+  "es": "Nuevo Registro de Paciente",
+  "ca": "Nou Registre de Pacient",
+  "en": "New Patient Registration"
+},
+{
+  "_id": "paciente.form.titulo.editar",
+  "es": "Editar Paciente",
+  "ca": "Editar Pacient",
+  "en": "Edit Patient"
+},
+{
+  "_id": "paciente.form.subtitulo",
+  "es": "Complete todos los campos obligatorios para el expediente.",
+  "ca": "Completeu tots els camps obligatoris per a l'expedient.",
+  "en": "Complete all mandatory fields for the medical record."
+},
+{
+  "_id": "paciente.form.sec.personal",
+  "es": "Información Personal",
+  "ca": "Informació Personal",
+  "en": "Personal Information"
+},
+{
+  "_id": "paciente.form.sec.personal.desc",
+  "es": "Datos básicos de identificación del paciente.",
+  "ca": "Dades bàsiques d'identificació del pacient.",
+  "en": "Basic patient identification data."
+},
+{
+  "_id": "paciente.form.nombre",
+  "es": "Nombre",
+  "ca": "Nom",
+  "en": "First Name"
+},
+{
+  "_id": "paciente.form.apellidos",
+  "es": "Apellidos",
+  "ca": "Cognoms",
+  "en": "Last Names"
+},
+{
+  "_id": "paciente.form.dni",
+  "es": "DNI / NIE",
+  "ca": "DNI / NIE",
+  "en": "National ID"
+},
+{
+  "_id": "paciente.form.nacimiento",
+  "es": "Fecha de Nacimiento",
+  "ca": "Data de Naixement",
+  "en": "Date of Birth"
+},
+{
+  "_id": "paciente.form.telefono",
+  "es": "Teléfono",
+  "ca": "Telèfon",
+  "en": "Phone Number"
+},
+{
+  "_id": "paciente.form.sec.contacto",
+  "es": "Contacto y Salud",
+  "ca": "Contacte i Salut",
+  "en": "Contact and Health"
+},
+{
+  "_id": "paciente.form.sec.contacto.desc",
+  "es": "Información para avisos y vinculación sanitaria.",
+  "ca": "Informació per a avisos i vinculació sanitària.",
+  "en": "Information for notifications and healthcare link."
+},
+{
+  "_id": "paciente.form.email",
+  "es": "Correo Electrónico",
+  "ca": "Correu Electrònic",
+  "en": "Email Address"
+},
+{
+  "_id": "paciente.form.seg_social",
+  "es": "Nº Seguridad Social",
+  "ca": "Nº Seguretat Social",
+  "en": "Social Security No."
+},
+{
+  "_id": "paciente.form.direccion",
+  "es": "Dirección",
+  "ca": "Adreça",
+  "en": "Home Address"
+},
+{
+  "_id": "paciente.form.foto",
+  "es": "Foto del Paciente",
+  "ca": "Foto del Pacient",
+  "en": "Patient Photo"
+},
+{
+  "_id": "btn.cancelar",
+  "es": "Cancelar",
+  "ca": "Cancel·lar",
+  "en": "Cancel"
+},
+{
+  "_id": "btn.guardar",
+  "es": "Guardar",
+  "ca": "Guardar",
+  "en": "Save"
+},
+{
+  "_id": "pacientes.lista.subtitulo",
+  "es": "Gestión y visualización de expedientes activos.",
+  "ca": "Gestió i visualització d'expedients actius.",
+  "en": "Management and visualization of active records."
+},
+{
+  "_id": "pacientes.detalle.titulo",
+  "es": "Perfil del Paciente",
+  "ca": "Perfil del Pacient",
+  "en": "Patient Profile"
+},
+{
+  "_id": "pacientes.detalle.edad",
+  "es": "años",
+  "ca": "anys",
+  "en": "years old"
+},
+{
+  "_id": "pacientes.form.seccion.personal",
+  "es": "Información Personal",
+  "ca": "Informació Personal",
+  "en": "Personal Information"
+},
+{
+  "_id": "pacientes.form.seccion.contacto",
+  "es": "Contacto y Ubicación",
+  "ca": "Contacte i Ubicació",
+  "en": "Contact & Location"
+},
+{
+  "_id": "pacientes.form.seccion.sanitaria",
+  "es": "Datos Sanitarios",
+  "ca": "Dades Sanitàries",
+  "en": "Health Data"
+},
+{
+  "_id": "pacientes.form.nombre",
+  "es": "Nombre",
+  "ca": "Nom",
+  "en": "First Name"
+},
+{
+  "_id": "pacientes.form.apellidos",
+  "es": "Apellidos",
+  "ca": "Cognoms",
+  "en": "Last Name"
+},
+{
+  "_id": "pacientes.form.dni",
+  "es": "DNI / NIE",
+  "ca": "DNI / NIE",
+  "en": "ID Number"
+},
+{
+  "_id": "pacientes.form.nacimiento",
+  "es": "Fecha de Nacimiento",
+  "ca": "Data de Naixement",
+  "en": "Date of Birth"
+},
+{
+  "_id": "pacientes.form.telefono",
+  "es": "Teléfono",
+  "ca": "Telèfon",
+  "en": "Phone Number"
+},
+{
+  "_id": "pacientes.form.email",
+  "es": "Correo Electrónico",
+  "ca": "Correu Electrònic",
+  "en": "Email Address"
+},
+{
+  "_id": "pacientes.form.direccion",
+  "es": "Dirección Completa",
+  "ca": "Adreça Completa",
+  "en": "Full Address"
+},
+{
+  "_id": "pacientes.form.nss",
+  "es": "Seguridad Social (NSS)",
+  "ca": "Seguretat Social (NSS)",
+  "en": "Social Security Number"
+},
+{
+  "_id": "pacientes.form.historial",
+  "es": "Historial Clínico",
+  "ca": "Historial Clínic",
+  "en": "Medical History"
+},
+{
+  "_id": "pacientes.form.historial.vacio",
+  "es": "Sin historial vinculado",
+  "ca": "Sense historial vinculat",
+  "en": "No history linked"
+},
+{
+  "_id": "pacientes.form.registro",
+  "es": "Registrado el",
+  "ca": "Registrat el",
+  "en": "Registered on"
+},
+{
+  "_id": "btn.volver",
+  "es": "Volver al listado",
+  "ca": "Tornar al llistat",
+  "en": "Back to list"
+},
+{
+  "_id": "edad.año",
+  "es": "año",
+  "ca": "any",
+  "en": "year"
+},
+{
+  "_id": "edad.años",
+  "es": "años",
+  "ca": "anys",
+  "en": "years"
+},
+{
+  "_id": "edad.mes",
+  "es": "mes",
+  "ca": "mes",
+  "en": "month"
+},
+{
+  "_id": "edad.meses",
+  "es": "meses",
+  "ca": "mesos",
+  "en": "months"
+},
+{
+  "_id": "edad.dia",
+  "es": "día",
+  "ca": "dia",
+  "en": "day"
+},
+{
+  "_id": "edad.dias",
+  "es": "días",
+  "ca": "dies",
+  "en": "days"
+},
+{
+  "_id": "edad.recien_nacido",
+  "es": "Recién nacido",
+  "ca": "Nounat",
+  "en": "Newborn"
+},
+{
+  "_id": "paciente.eliminar.titulo",
+  "es": "Confirmar Desactivación",
+  "ca": "Confirmar Desactivació",
+  "en": "Confirm Deactivation"
+},
+{
+  "_id": "paciente.eliminar.aviso",
+  "es": "El paciente dejará de estar activo en el sistema, pero sus datos no serán borrados permanentemente.",
+  "ca": "El pacient deixarà d'estar actiu en el sistema, però les seves dades no seran esborrades permanentment.",
+  "en": "The patient will no longer be active in the system, but their data will not be permanently deleted."
+},
+{
+  "_id": "btn.confirmar.desactivar",
+  "es": "Sí, Desactivar Paciente",
+  "ca": "Sí, Desactivar Pacient",
+  "en": "Yes, Deactivate Patient"
+},
+{
+  "_id": "pacientes.tabla.mostrar",
+  "es": "Mostrar",
+  "ca": "Mostrar",
+  "en": "Show"
+},
+{
+  "_id": "pacientes.form.usuario",
+  "es": "Usuario de acceso",
+  "ca": "Usuari d'accés",
+  "en": "Access Username"
+},
+{
+  "_id": "citas.btn.anadir",
+  "es": "Nueva Cita",
+  "ca": "Nova Cita",
+  "en": "New Appointment"
+},
+{
+  "_id": "citas.tabla.fechahora",
+  "es": "Fecha Y Hora",
+  "ca": "Data I Hora",
+  "en": "Date & Time"
+},
+{
+  "_id": "citas.tabla.paciente",
+  "es": "PACIENTE",
+  "ca": "PACIENT",
+  "en": "PATIENT"
+},
+{
+  "_id": "citas.tabla.medico",
+  "es": "MÉDICO / ESPECIALIDAD",
+  "ca": "METGE / ESPECIALITAT",
+  "en": "DOCTOR / SPECIALTY"
+},
+{
+  "_id": "citas.tabla.estado",
+  "es": "ESTADO",
+  "ca": "ESTAT",
+  "en": "STATUS"
+},
+{
+  "_id": "citas.estado.programada",
+  "es": "Programada",
+  "ca": "Programada",
+  "en": "Scheduled"
+},
+{
+  "_id": "citas.estado.realizada",
+  "es": "Realizada",
+  "ca": "Realitzada",
+  "en": "Completed"
+},
+{
+  "_id": "citas.estado.anulada",
+  "es": "Anulada",
+  "ca": "Anul·lada",
+  "en": "Cancelled"
+},
+{
+  "_id": "citas.btn.anular",
+  "es": "Anular Cita",
+  "ca": "Anul·lar Cita",
+  "en": "Cancel Appointment"
+},
+{
+  "_id": "citas.placeholder.buscar",
+  "es": "Buscar...",
+  "ca": "Cercar...",
+  "en": "Search..."
+},
+{
+  "_id": "citas.error.pasado",
+  "es": "No se pueden programar citas en el pasado.",
+  "ca": "No es poden programar cites en el passat.",
+  "en": "Appointments cannot be scheduled in the past."
+},
+{
+  "_id": "citas.error.duplicado.paciente",
+  "es": "El paciente ya tiene una cita programada para esta hora.",
+  "ca": "El pacient ja té una cita programada per a aquesta hora.",
+  "en": "The patient already has an appointment scheduled for this time."
+},
+{
+  "_id": "citas.error.duplicado.medico",
+  "es": "El profesional ya tiene otra cita asignada a esta hora.",
+  "ca": "El professional ja té una altra cita assignada a aquesta hora.",
+  "en": "The professional already has another appointment assigned at this time."
+},
+{
+  "_id": "citas.vacio",
+  "es": "No se han encontrado citas en la agenda.",
+  "ca": "No s'han trobat cites a l'agenda.",
+  "en": "No appointments found in the schedule."
+},
+{
+  "_id": "citas.form.titulo.nuevo",
+  "es": "Nueva Cita Médica",
+  "ca": "Nova Cita Mèdica",
+  "en": "New Medical Appointment"
+},
+{
+  "_id": "citas.form.titulo.editar",
+  "es": "Editar Cita Médica",
+  "ca": "Editar Cita Mèdica",
+  "en": "Edit Medical Appointment"
+},
+{
+  "_id": "citas.form.subtitulo",
+  "es": "Programación y asignación de consultas médicas",
+  "ca": "Programació i assignació de consultes mèdiques",
+  "en": "Scheduling and assignment of medical consultations"
+},
+{
+  "_id": "citas.form.sec.planificacion",
+  "es": "Planificación",
+  "ca": "Planificació",
+  "en": "Planning"
+},
+{
+  "_id": "citas.form.sec.planificacion.desc",
+  "es": "Seleccione el momento de la consulta y el paciente.",
+  "ca": "Seleccioni el moment de la consulta i el pacient.",
+  "en": "Select the appointment time and the patient."
+},
+{
+  "_id": "citas.form.sec.detalles",
+  "es": "Detalles Médicos",
+  "ca": "Detalls Mèdics",
+  "en": "Medical Details"
+},
+{
+  "_id": "citas.form.sec.detalles.desc",
+  "es": "Asigne el profesional y el motivo de la visita.",
+  "ca": "Assigni el professional i el motiu de la visita.",
+  "en": "Assign the professional and the reason for the visit."
+},
+{
+  "_id": "citas.form.medico",
+  "es": "Nombre del Médico",
+  "ca": "Nom del Metge",
+  "en": "Doctor's Name"
+},
+{
+  "_id": "citas.form.especialidad",
+  "es": "Especialidad",
+  "ca": "Especialitat",
+  "en": "Specialty"
+},
+{
+  "_id": "citas.form.motivo",
+  "es": "Motivo de la consulta",
+  "ca": "Motiu de la consulta",
+  "en": "Reason for consultation"
+},
+{
+  "_id": "citas.form.placeholder.motivo",
+  "es": "Describa brevemente el motivo de la visita...",
+  "ca": "Descrigui breument el motiu de la visita...",
+  "en": "Briefly describe the reason for the visit..."
+},
+{
+  "_id": "citas.form.horario.info",
+  "es": "Horario: 08:00 a 17:00 (Citas cada hora exacta).",
+  "ca": "Horari: 08:00 a 17:00 (Cites cada hora exacta).",
+  "en": "Schedule: 08:00 to 17:00 (Hourly appointments)."
+},
+{
+  "_id": "citas.listado.subtitulo",
+  "es": "Programación de servicios médicos y seguimiento de agenda.",
+  "ca": "Programació de serveis mèdics i seguiment d'agenda.",
+  "en": "Medical service scheduling and agenda tracking."
+},
+{
+  "_id": "citas.tabla.fecha",
+  "es": "FECHA Y HORA",
+  "ca": "DATA I HORA",
+  "en": "DATE & TIME"
+},
+{
+  "_id": "citas.tabla.acciones",
+  "es": "ACCIONES",
+  "ca": "ACCIONS",
+  "en": "ACTIONS"
+},
+{
+  "_id": "citas.tabla.vacio",
+  "es": "No se han encontrado citas en la agenda.",
+  "ca": "No s'han trobat cites a l'agenda.",
+  "en": "No appointments found in the agenda."
+},
+{
+  "_id": "citas.buscar.placeholder",
+  "es": "Buscar por paciente, médico o DNI...",
+  "ca": "Cercar per pacient, metge o DNI...",
+  "en": "Search by patient, doctor or ID..."
+},
+{
+  "_id": "citas.estado.PROGRAMADA",
+  "es": "Programada",
+  "ca": "Programada",
+  "en": "Scheduled"
+},
+{
+  "_id": "citas.estado.REALIZADA",
+  "es": "Realizada",
+  "ca": "Realitzada",
+  "en": "Completed"
+},
+{
+  "_id": "citas.estado.ANULADA",
+  "es": "Anulada",
+  "ca": "Anul·lada",
+  "en": "Cancelled"
+},
+{
+  "_id": "tabla.info.de",
+  "es": "de",
+  "ca": "de",
+  "en": "of"
+},
+{
+  "_id": "tabla.info.a",
+  "es": "a",
+  "ca": "a",
+  "en": "to"
+},
+{
+  "_id": "citas.form.seccion.paciente",
+  "es": "Información de Cita",
+  "ca": "Informació de Cita",
+  "en": "Appointment Info"
+},
+{
+  "_id": "citas.form.seccion.paciente.desc",
+  "es": "Seleccione el paciente y el momento de la consulta.",
+  "ca": "Seleccioni el pacient i el moment de la consulta.",
+  "en": "Select the patient and the appointment time."
+},
+{
+  "_id": "citas.form.seccion.medico.desc",
+  "es": "Asigne el empleado responsable de la visita.",
+  "ca": "Assigni l'empleat responsable de la visita.",
+  "en": "Assign the employee responsible for the visit."
+},
+{
+  "_id": "citas.form.label.profesional",
+  "es": "Seleccionar Médico (Empleado)",
+  "ca": "Seleccionar Metge (Empleat)",
+  "en": "Select Doctor (Employee)"
+},
+{
+  "_id": "citas.form.label.especialidad",
+  "es": "Especialidad",
+  "ca": "Especialitat",
+  "en": "Specialty"
+},
+{
+  "_id": "citas.form.label.motivo",
+  "es": "Motivo de la consulta",
+  "ca": "Motiu de la consulta",
+  "en": "Reason for visit"
+},
+{
+  "_id": "citas.placeholder.medico",
+  "es": "Seleccione un médico...",
+  "ca": "Seleccioni un metge...",
+  "en": "Select a doctor..."
+},
+{
+  "_id": "citas.placeholder.especialidad",
+  "es": "Ej: Cardiología",
+  "ca": "Ex: Cardiologia",
+  "en": "E.g.: Cardiology"
+},
+{
+  "_id": "citas.placeholder.motivo",
+  "es": "Describa brevemente el motivo...",
+  "ca": "Descrigui breument el motiu...",
+  "en": "Briefly describe the reason..."
+},
+{
+  "_id": "citas.form.label.paciente",
+  "es": "Paciente",
+  "ca": "Pacient",
+  "en": "Patient"
+},
+{
+  "_id": "citas.form.label.medico",
+  "es": "Médico / Especialidad",
+  "ca": "Metge / Especialitat",
+  "en": "Doctor / Specialty"
+},
+{
+  "_id": "btn.anular",
+  "es": "Anular",
+  "ca": "Anul·lar",
+  "en": "Cancel"
+},
+{
+  "_id": "citas.estado.anulada.info",
+  "es": "Cita cancelada",
+  "ca": "Cita cancel·lada",
+  "en": "Appt. cancelled"
+},
+{
+  "_id": "citas.anular.titulo",
+  "es": "Anular Cita",
+  "ca": "Anul·lar Cita",
+  "en": "Cancel Appointment"
+},
+{
+  "_id": "citas.anular.confirmacion",
+  "es": "¿Anular Cita Médica?",
+  "ca": "Anul·lar Cita Mèdica?",
+  "en": "Cancel Medical Appointment?"
+},
+{
+  "_id": "citas.anular.subtitulo",
+  "es": "La cita se marcará como anulada y el horario quedará disponible para otros pacientes.",
+  "ca": "La cita es marcarà com a anul·lada i l'horari quedarà disponible per a altres pacients.",
+  "en": "The appointment will be marked as cancelled and the slot will be available for other patients."
+},
+{
+  "_id": "btn.confirmar.anular",
+  "es": "Confirmar Anulación",
+  "ca": "Confirmar Anul·lació",
+  "en": "Confirm Cancellation"
+},
+{
+  "_id": "citas.total.programadas",
+  "es": "Total Programadas",
+  "ca": "Total Programat",
+  "en": "Total Scheduled"
+},
+{
+  "_id": "rol.crear",
+  "es": "Crear Nuevo Rol",
+  "ca": "Crear Nou Rol",
+  "en": "Create New Role"
+},
+{
+  "_id": "rol.editar",
+  "es": "Modificar Rol",
+  "ca": "Modificar Rol",
+  "en": "Edit Role"
+},
+{
+  "_id": "roles.desactivar.titulo",
+  "es": "Desactivar Rol",
+  "ca": "Desactivar Rol",
+  "en": "Deactivate Role"
+},
+{
+  "_id": "roles.desactivar.confirmacion",
+  "es": "¿Desactivar este Rol?",
+  "ca": "Desactivar aquest Rol?",
+  "en": "Deactivate this Role?"
+},
+{
+  "_id": "roles.desactivar.subtitulo",
+  "es": "El rol dejará de estar disponible para ser asignado a nuevos usuarios.",
+  "ca": "El rol deixarà d'estar disponible per ser assignat a nous usuaris.",
+  "en": "The role will no longer be available to be assigned to new users."
+},
+{
+  "_id": "roles.btn.confirmar.desactivar",
+  "es": "Confirmar Desactivación",
+  "ca": "Confirmar Desactivació",
+  "en": "Confirm Deactivation"
+},
+{
+  "_id": "roles.desactivar.info.nombre",
+  "es": "Nombre del Rol",
+  "ca": "Nom del Rol",
+  "en": "Role Name"
+},
+{
+  "_id": "roles.desactivar.info.desc",
+  "es": "Descripción",
+  "ca": "Descripció",
+  "en": "Description"
+},
+{
+  "_id": "roles.lista.subtitulo",
+  "es": "Control de permisos y accesos del sistema.",
+  "ca": "Control de permisos i accessos del sistema.",
+  "en": "System permissions and access control."
+},
+{
+  "_id": "roles.tabla.id",
+  "es": "ID",
+  "ca": "ID",
+  "en": "ID"
+},
+{
+  "_id": "roles.tabla.estado",
+  "es": "ESTADO",
+  "ca": "ESTAT",
+  "en": "STATUS"
+},
+{
+  "_id": "roles.estado.activo",
+  "es": "Activo",
+  "ca": "Actiu",
+  "en": "Active"
+},
+{
+  "_id": "roles.estado.inactivo",
+  "es": "Inactivo",
+  "ca": "Inactiu",
+  "en": "Inactive"
+},
+{
+  "_id": "roles.vacio",
+  "es": "No se encontraron roles.",
+  "ca": "No s'han trobat rols.",
+  "en": "No roles found."
+},
+{
+  "_id": "tabla.info.mostrando",
+  "es": "Mostrando",
+  "ca": "Mostrant",
+  "en": "Showing"
+},
+{
+  "_id": "rol.nombre",
+  "es": "Nombre del Rol",
+  "ca": "Nom del Rol",
+  "en": "Role Name"
+},
+{
+  "_id": "rol.descripcion",
+  "es": "Descripción",
+  "ca": "Descripció",
+  "en": "Description"
+},
+{
+  "_id": "error.nombre.duplicado",
+  "es": "Ya existe un rol con ese nombre (mayúsculas o minúsculas).",
+  "ca": "Ja existeix un rol amb aquest nom (majúscules o minúscules).",
+  "en": "A role with that name already exists (case insensitive)."
+},
+{
+  "_id": "usuario.desactivar.titulo",
+  "es": "Confirmar Desactivación de Usuario",
+  "ca": "Confirmar Desactivació d'Usuari",
+  "en": "Confirm User Deactivation"
+},
+{
+  "_id": "usuario.desactivar.aviso",
+  "es": "El usuario no podrá iniciar sesión, pero sus datos y registros históricos se mantendrán en el sistema.",
+  "ca": "L'usuari no podrà iniciar sessió, però les seves dades i registres històrics es mantindran en el sistema.",
+  "en": "The user will not be able to log in, but their data and historical records will remain in the system."
+},
+{
+  "_id": "usuario.footer.seguridad",
+  "es": "Módulo de Seguridad de Acceso",
+  "ca": "Mòdul de Seguretat d'Accés",
+  "en": "Access Security Module"
+},
+{
+  "_id": "mod.facturacion.titulo",
+  "es": "Gestión de Facturación",
+  "ca": "Gestió de Facturació",
+  "en": "Billing Management"
+},
+{
+  "_id": "mod.facturacion.desc",
+  "es": "Control de ingresos por ventas y gastos de suministros.",
+  "ca": "Control d'ingressos per vendes i despeses de subministraments.",
+  "en": "Control of sales income and supply expenses."
+},
+{
+  "_id": "factura.fecha",
+  "es": "Fecha Emisión",
+  "ca": "Data Emissió",
+  "en": "Issue Date"
+},
+{
+  "_id": "factura.entidad",
+  "es": "Cliente / Proveedor",
+  "ca": "Client / Proveïdor",
+  "en": "Customer / Supplier"
+},
+{
+  "_id": "factura.total",
+  "es": "Importe Total",
+  "ca": "Import Total",
+  "en": "Total Amount"
+},
+{
+  "_id": "factura.tipo",
+  "es": "Tipo Factura",
+  "ca": "Tipus Factura",
+  "en": "Invoice Type"
+},
+{
+  "_id": "factura.lista.subtitulo",
+  "es": "Gestión de ingresos y gastos de la clínica.",
+  "ca": "Gestió d'ingressos i despeses de la clínica.",
+  "en": "Clinic income and expense management."
+},
+{
+  "_id": "btn.nuevo",
+  "es": "Nueva Factura",
+  "ca": "Nova Factura",
+  "en": "New Invoice"
+},
+{
+  "_id": "factura.tabla.fecha",
+  "es": "FECHA",
+  "ca": "DATA",
+  "en": "DATE"
+},
+{
+  "_id": "factura.tabla.cliente",
+  "es": "CLIENTE / PROVEEDOR",
+  "ca": "CLIENT / PROVEÏDOR",
+  "en": "CLIENT / SUPPLIER"
+},
+{
+  "_id": "factura.tabla.tipo",
+  "es": "TIPO",
+  "ca": "TIPUS",
+  "en": "TYPE"
+},
+{
+  "_id": "factura.tabla.total",
+  "es": "TOTAL",
+  "ca": "TOTAL",
+  "en": "TOTAL"
+},
+{
+  "_id": "factura.tabla.acciones",
+  "es": "ACCIONES",
+  "ca": "ACCIONS",
+  "en": "ACTIONS"
+},
+{
+  "_id": "nav.medico",
+  "es": "Panel Médico - Clínica Harmonia",
+  "ca": "Panel Mèdic - Clínica Harmonia",
+  "en": "Medical Panel - Harmonia Clinic"
+},
+{
+  "_id": "stat.pacientes",
+  "es": "Pacientes Asignados",
+  "ca": "Pacients Assignats",
+  "en": "Assigned Patients"
+},
+{
+  "_id": "stat.citas",
+  "es": "Citas para Hoy",
+  "ca": "Cites per Avui",
+  "en": "Appointments Today"
+},
+{
+  "_id": "home.acciones",
+  "es": "Acciones Rápidas",
+  "ca": "Accions Ràpides",
+  "en": "Quick Actions"
+},
+{
+  "_id": "btn.nueva_consulta",
+  "es": "Nueva Consulta",
+  "ca": "Nova Consulta",
+  "en": "New Consultation"
+},
+{
+  "_id": "btn.iniciar",
+  "es": "Iniciar",
+  "ca": "Iniciar",
+  "en": "Start"
+},
+{
+  "_id": "nav.agenda",
+  "es": "Mi Agenda",
+  "ca": "La meva Agenda",
+  "en": "My Schedule"
+},
+{
+  "_id": "nav.nominas",
+  "es": "Mis Nóminas",
+  "ca": "Les meves Nòmines",
+  "en": "My Paystubs"
+},
+{
+  "_id": "nav.vacaciones",
+  "es": "Mis Vacaciones",
+  "ca": "Les meves Vacances",
+  "en": "My Vacations"
+},
+{
+  "_id": "pacientes.form.estado",
+  "es": "Estado",
+  "ca": "Estat",
+  "en": "Status"
+},
+{
+  "_id": "estado.activo",
+  "es": "Activo",
+  "ca": "Actiu",
+  "en": "Active"
+},
+{
+  "_id": "estado.inactivo",
+  "es": "Inactivo",
+  "ca": "Inactiu",
+  "en": "Inactive"
+},
+{
+  "_id": "pacientes.form.edad",
+  "es": "Edad",
+  "ca": "Edat",
+  "en": "Age"
+},
+{
+  "_id": "agenda.titulo",
+  "es": "Mi Agenda Médica",
+  "ca": "La meva Agenda Mèdica",
+  "en": "My Medical Agenda"
+},
+{
+  "_id": "agenda.seccion.citas",
+  "es": "Citas Programadas",
+  "ca": "Cites Programades",
+  "en": "Scheduled Appointments"
+},
+{
+  "_id": "agenda.tabla.hora",
+  "es": "Hora",
+  "ca": "Hora",
+  "en": "Time"
+},
+{
+  "_id": "agenda.estado.pendiente",
+  "es": "Pendiente",
+  "ca": "Pendent",
+  "en": "Pending"
+},
+{
+  "_id": "agenda.btn.ver",
+  "es": "Ver Expediente",
+  "ca": "Veure Expedient",
+  "en": "View Records"
+},
+{
+  "_id": "agenda.resumen.titulo",
+  "es": "Resumen del Día",
+  "ca": "Resum del Dia",
+  "en": "Daily Summary"
+},
+{
+  "_id": "agenda.btn.hoy",
+  "es": "Hoy",
+  "ca": "Avui",
+  "en": "Today"
+},
+{
+  "_id": "agenda.tabla.paciente",
+  "es": "Paciente",
+  "ca": "Pacient",
+  "en": "Patient"
+},
+{
+  "_id": "agenda.tabla.motivo",
+  "es": "Motivo",
+  "ca": "Motiu",
+  "en": "Reason"
+},
+{
+  "_id": "agenda.tabla.estado",
+  "es": "Estado",
+  "ca": "Estat",
+  "en": "Status"
+},
+{
+  "_id": "agenda.tabla.acciones",
+  "es": "Acciones",
+  "ca": "Accions",
+  "en": "Actions"
+},
+{
+  "_id": "agenda.estado.completada",
+  "es": "Completada",
+  "ca": "Completada",
+  "en": "Completed"
+},
+{
+  "_id": "agenda.vacia",
+  "es": "No hay citas programadas para hoy",
+  "ca": "No hi ha cites programades per avui",
+  "en": "No appointments scheduled for today"
+},
+{
+  "_id": "agenda.resumen.total",
+  "es": "Total Citas:",
+  "ca": "Total Cites:",
+  "en": "Total Appts:"
+},
+{
+  "_id": "nav.identificado",
+  "es": "Identificado como:",
+  "ca": "Identificat com:",
+  "en": "Logged in as:"
+},
+{
+  "_id": "nav.perfil.admin",
+  "es": "Gestionar Perfil",
+  "ca": "Gestionar Perfil",
+  "en": "Manage Profile"
+},
+{
+  "_id": "nav.perfil.user",
+  "es": "Mi Perfil",
+  "ca": "El meu Perfil",
+  "en": "My Profile"
+},
+{
+  "_id": "agenda.calendario.label",
+  "es": "Seleccionar fecha",
+  "ca": "Seleccionar data",
+  "en": "Select date"
+},
+{
+  "_id": "vacaciones.titulo",
+  "es": "Solicitud de Vacaciones",
+  "ca": "Sol·licitud de Vacances",
+  "en": "Vacation Request"
+},
+{
+  "_id": "vacaciones.subtitulo",
+  "es": "Gestiona tus periodos de descanso y consulta su estado.",
+  "ca": "Gestiona els teus períodes de descans i consulta el seu estat.",
+  "en": "Manage your rest periods and check their status."
+},
+{
+  "_id": "vacaciones.disponibles",
+  "es": "Días Disponibles",
+  "ca": "Dies Disponibles",
+  "en": "Available Days"
+},
+{
+  "_id": "vacaciones.nueva.solicitud",
+  "es": "Nueva Solicitud",
+  "ca": "Nova Sol·licitud",
+  "en": "New Request"
+},
+{
+  "_id": "vacaciones.btn.enviar",
+  "es": "Enviar Solicitud",
+  "ca": "Enviar Sol·licitud",
+  "en": "Submit Request"
+},
+{
+  "_id": "vacaciones.historial",
+  "es": "Historial de Solicitudes",
+  "ca": "Historial de Sol·licituds",
+  "en": "Request History"
+},
+{
+  "_id": "vacaciones.estado.pendiente",
+  "es": "Pendiente",
+  "ca": "Pendent",
+  "en": "Pending"
+},
+{
+  "_id": "vacaciones.estado.confirmada",
+  "es": "Confirmada",
+  "ca": "Confirmada",
+  "en": "Confirmed"
+},
+{
+  "_id": "vacaciones.estado.rechazada",
+  "es": "Rechazada",
+  "ca": "Rebutjada",
+  "en": "Rejected"
+},
+{
+  "_id": "vacaciones.vacia",
+  "es": "No has realizado ninguna solicitud de vacaciones aún.",
+  "ca": "Encara no has realitzat cap sol·licitud de vacances.",
+  "en": "You haven't made any vacation requests yet."
+},
+{
+  "_id": "vacaciones.periodo.actual",
+  "es": "Periodo 2026",
+  "ca": "Període 2026",
+  "en": "2026 Period"
+},
+{
+  "_id": "vacaciones.label.inicio",
+  "es": "FECHA INICIO",
+  "ca": "DATA INICI",
+  "en": "START DATE"
+},
+{
+  "_id": "vacaciones.label.fin",
+  "es": "FECHA FIN",
+  "ca": "DATA FI",
+  "en": "END DATE"
+},
+{
+  "_id": "vacaciones.label.motivo",
+  "es": "Motivo",
+  "ca": "Motiu",
+  "en": "Reason"
+},
+{
+  "_id": "vacaciones.tabla.periodo",
+  "es": "Periodo",
+  "ca": "Període",
+  "en": "Period"
+},
+{
+  "_id": "vacaciones.tabla.dias",
+  "es": "Días",
+  "ca": "Dies",
+  "en": "Days"
+},
+{
+  "_id": "vacaciones.tabla.estado",
+  "es": "Estado",
+  "ca": "Estat",
+  "en": "Status"
+},
+{
+  "_id": "vacaciones.tabla.acciones",
+  "es": "Acciones",
+  "ca": "Accions",
+  "en": "Actions"
+},
+{
+  "_id": "vacaciones.comentario.vacio",
+  "es": "Sin comentarios adicionales",
+  "ca": "Sense comentaris addicionals",
+  "en": "No additional comments"
+},
+{
+  "_id": "vacaciones.error.solapamiento",
+  "es": "Ya tienes una solicitud pendiente o aceptada que coincide con estas fechas.",
+  "ca": "Ja tens una sol·licitud pendent o acceptada que coincideix amb aquestes dates.",
+  "en": "You already have a pending or accepted request that overlaps with these dates."
+},
+{
+  "_id": "vacaciones.error.fechas",
+  "es": "La fecha de fin no puede ser anterior a la de inicio.",
+  "ca": "La data de fi no pot ser anterior a la d'inici.",
+  "en": "The end date cannot be earlier than the start date."
+},
+{
+  "_id": "vacaciones.exito.solicitud",
+  "es": "Solicitud enviada correctamente.",
+  "ca": "Sol·licitud enviada correctament.",
+  "en": "Request sent successfully."
+},
+{
+  "_id": "nav.clinica.nombre",
+  "es": "Clínica Harmonia",
+  "ca": "Clínica Harmonia",
+  "en": "Harmonia Clinic"
+},
+{
+  "_id": "nav.seccion.admin",
+  "es": "Administración",
+  "ca": "Administració",
+  "en": "Administration"
+},
+{
+  "_id": "lang.es",
+  "es": "ESPAÑOL",
+  "ca": "ESPAÑOL",
+  "en": "SPANISH"
+},
+{
+  "_id": "lang.ca",
+  "es": "CATALÀ",
+  "ca": "CATALÀ",
+  "en": "CATALAN"
+},
+{
+  "_id": "lang.en",
+  "es": "ENGLISH",
+  "ca": "ENGLISH",
+  "en": "ENGLISH"
+},
+{
+  "_id": "nav.admin.dashboard",
+  "es": "Panel de Control",
+  "ca": "Panell de Control",
+  "en": "Dashboard"
+},
+{
+  "_id": "paciente.detalle.titulo",
+  "es": "Detalle Paciente",
+  "ca": "Detall Pacient",
+  "en": "Patient Details"
+},
+{
+  "_id": "paciente.alerta.guardar",
+  "es": "¡Datos actualizados correctamente!",
+  "ca": "Dades actualitzades correctament!",
+  "en": "Data updated successfully!"
+},
+{
+  "_id": "paciente.label.estado",
+  "es": "Estado:",
+  "ca": "Estat:",
+  "en": "Status:"
+},
+{
+  "_id": "paciente.estado.activo",
+  "es": "Activo",
+  "ca": "Actiu",
+  "en": "Active"
+},
+{
+  "_id": "paciente.estado.inactivo",
+  "es": "Inactivo",
+  "ca": "Inactiu",
+  "en": "Inactive"
+},
+{
+  "_id": "paciente.label.fechaAlta",
+  "es": "Fecha de Alta:",
+  "ca": "Data d'Alta:",
+  "en": "Registration Date:"
+},
+{
+  "_id": "paciente.seccion.personales",
+  "es": "Datos Personales",
+  "ca": "Dades Personals",
+  "en": "Personal Data"
+},
+{
+  "_id": "paciente.label.nombre",
+  "es": "Nombre",
+  "ca": "Nom",
+  "en": "First Name"
+},
+{
+  "_id": "paciente.label.apellidos",
+  "es": "Apellidos",
+  "ca": "Cognoms",
+  "en": "Last Name"
+},
+{
+  "_id": "paciente.label.dni",
+  "es": "DNI",
+  "ca": "DNI",
+  "en": "ID Card"
+},
+{
+  "_id": "paciente.label.ss",
+  "es": "Nº Seguridad Social",
+  "ca": "Núm. Seguretat Social",
+  "en": "Social Security No."
+},
+{
+  "_id": "paciente.seccion.contacto",
+  "es": "Dirección y Contacto",
+  "ca": "Adreça i Contacte",
+  "en": "Address and Contact"
+},
+{
+  "_id": "paciente.label.direccion",
+  "es": "Dirección Completa",
+  "ca": "Adreça Completa",
+  "en": "Full Address"
+},
+{
+  "_id": "paciente.label.telefono",
+  "es": "Teléfono",
+  "ca": "Telèfon",
+  "en": "Phone"
+},
+{
+  "_id": "paciente.label.email",
+  "es": "Correo Electrónico",
+  "ca": "Correu Electrònic",
+  "en": "Email Address"
+},
+{
+  "_id": "btn.guardarCambios",
+  "es": "Guardar Cambios",
+  "ca": "Desar Canvis",
+  "en": "Save Changes"
+},
+{
+  "_id": "cita.detalle.titulo_pestana",
+  "es": "Detalle Cita",
+  "ca": "Detall Cita",
+  "en": "Appointment Detail"
+},
+{
+  "_id": "cita.detalle.cabecera",
+  "es": "Información Detallada de la Cita",
+  "ca": "Informació Detallada de la Cita",
+  "en": "Detailed Appointment Information"
+},
+{
+  "_id": "cita.label.paciente",
+  "es": "Paciente",
+  "ca": "Pacient",
+  "en": "Patient"
+},
+{
+  "_id": "cita.label.medico",
+  "es": "Profesional Médico",
+  "ca": "Professional Metge",
+  "en": "Medical Professional"
+},
+{
+  "_id": "cita.label.especialidad",
+  "es": "Especialidad",
+  "ca": "Especialitat",
+  "en": "Specialty"
+},
+{
+  "_id": "cita.label.fechahora",
+  "es": "Fecha y Hora",
+  "ca": "Data i Hora",
+  "en": "Date and Time"
+},
+{
+  "_id": "cita.label.motivo",
+  "es": "Motivo de la Consulta",
+  "ca": "Motiu de la Consulta",
+  "en": "Reason for Consultation"
+},
+{
+  "_id": "cita.motivo.vacio",
+  "es": "Sin motivo especificado",
+  "ca": "Sense motiu especificat",
+  "en": "No reason specified"
+},
+{
+  "_id": "btn.volver_listado",
+  "es": "Volver al Listado",
+  "ca": "Tornar al Llistat",
+  "en": "Back to List"
+},
+{
+  "_id": "btn.anular_cita",
+  "es": "Anular Cita",
+  "ca": "Anul·lar Cita",
+  "en": "Cancel Appointment"
+},
+{
+  "_id": "facturacion.subtitulo",
+  "es": "Consulta y descarga de documentos contables.",
+  "ca": "Consulta i descàrrega de documents comptables.",
+  "en": "View and download accounting documents."
+},
+{
+  "_id": "facturacion.exportar.label",
+  "es": "Exportar:",
+  "ca": "Exportar:",
+  "en": "Export:"
+},
+{
+  "_id": "periodo.dia",
+  "es": "Hoy",
+  "ca": "Avui",
+  "en": "Today"
+},
+{
+  "_id": "periodo.semana",
+  "es": "Esta Semana",
+  "ca": "Aquesta Setmana",
+  "en": "This Week"
+},
+{
+  "_id": "periodo.mes",
+  "es": "Este Mes",
+  "ca": "Aquest Mes",
+  "en": "This Month"
+},
+{
+  "_id": "periodo.anyo",
+  "es": "Este Año",
+  "ca": "Aquest Any",
+  "en": "This Year"
+},
+{
+  "_id": "tabla.fecha",
+  "es": "FECHA",
+  "ca": "DATA",
+  "en": "DATE"
+},
+{
+  "_id": "tabla.cliente_proveedor",
+  "es": "CLIENTE / PROVEEDOR",
+  "ca": "CLIENT / PROVEÏDOR",
+  "en": "CLIENT / SUPPLIER"
+},
+{
+  "_id": "tabla.tipo",
+  "es": "TIPO",
+  "ca": "TIPUS",
+  "en": "TYPE"
+},
+{
+  "_id": "tabla.total",
+  "es": "TOTAL",
+  "ca": "TOTAL",
+  "en": "TOTAL"
+},
+{
+  "_id": "tabla.detalles",
+  "es": "DETALLES",
+  "ca": "DETALLS",
+  "en": "DETAILS"
+},
+{
+  "_id": "facturacion.vacia",
+  "es": "No se han encontrado facturas.",
+  "ca": "No s'han trobat factures.",
+  "en": "No invoices found."
+},
+{
+  "_id": "tipo.VENTA",
+  "es": "VENTA",
+  "ca": "VENDA",
+  "en": "SALE"
+},
+{
+  "_id": "tipo.COMPRA",
+  "es": "COMPRA",
+  "ca": "COMPRA",
+  "en": "PURCHASE"
+},
+{
+  "_id": "paginacion.de",
+  "es": "de",
+  "ca": "de",
+  "en": "of"
+},
+{
+  "_id": "paginacion.facturas",
+  "es": "facturas",
+  "ca": "factures",
+  "en": "invoices"
+},
+{
+  "_id": "alerta.error_reporte",
+  "es": "Error al generar el reporte",
+  "ca": "Error en generar l'informe",
+  "en": "Error generating report"
+},
+{
+  "_id": "medico.stat.pendientes",
+  "es": "Pacientes Pendientes",
+  "ca": "Pacients Pendents",
+  "en": "Pending Patients"
+},
+{
+  "_id": "medico.stat.hoy",
+  "es": "Mis Citas Hoy",
+  "ca": "Les Meves Cites Avui",
+  "en": "My Appointments Today"
+},
+{
+  "_id": "medico.tabla.titulo",
+  "es": "Próximas 5 Citas",
+  "ca": "Properes 5 Cites",
+  "en": "Next 5 Appointments"
+},
+{
+  "_id": "medico.tabla.vacia",
+  "es": "No hay citas próximas programadas.",
+  "ca": "No hi ha cites properes programades.",
+  "en": "No upcoming appointments scheduled."
+},
+{
+  "_id": "medico.acciones.titulo",
+  "es": "Acciones Rápidas",
+  "ca": "Accions Ràpides",
+  "en": "Quick Actions"
+},
+{
+  "_id": "medico.acciones.buscar",
+  "es": "Buscar Paciente",
+  "ca": "Cercar Pacient",
+  "en": "Search Patient"
+},
+{
+  "_id": "btn.abrir",
+  "es": "Abrir",
+  "ca": "Obrir",
+  "en": "Open"
+},
+{
+  "_id": "agenda.estado.programada",
+  "es": "Programada",
+  "ca": "Programada",
+  "en": "Scheduled"
+},
+{
+  "_id": "agenda.btn.atender",
+  "es": "Atender",
+  "ca": "Atendre",
+  "en": "Treat"
+},
+{
+  "_id": "atencion.titulo",
+  "es": "Atención al Paciente",
+  "ca": "Atenció al Pacient",
+  "en": "Patient Care"
+},
+{
+  "_id": "atencion.datos.paciente",
+  "es": "Datos del Paciente",
+  "ca": "Dades del Pacient",
+  "en": "Patient Data"
+},
+{
+  "_id": "atencion.tratamiento",
+  "es": "Diagnóstico y Tratamiento",
+  "ca": "Diagnòstic i Tractament",
+  "en": "Diagnosis & Treatment"
+},
+{
+  "_id": "atencion.medicamentos",
+  "es": "Prescribir Medicamentos",
+  "ca": "Prescriure Medicaments",
+  "en": "Prescribe Medications"
+},
+{
+  "_id": "atencion.placeholder.tratamiento",
+  "es": "Escriba las observaciones médicas...",
+  "ca": "Escriviu les observacions mèdiques...",
+  "en": "Write medical observations..."
+},
+{
+  "_id": "btn.finalizar",
+  "es": "Finalizar Visita",
+  "ca": "Finalitzar Visita",
+  "en": "Finish Visit"
+},
+{
+  "_id": "citas.estado.NO_PRESENTADO",
+  "es": "No presentado",
+  "ca": "No presentat",
+  "en": "No-show"
+},
+{
+  "_id": "pacientes.filtro.todos",
+  "es": "Todos los estados",
+  "ca": "Tots els estats",
+  "en": "All statuses"
+},
+{
+  "_id": "pacientes.tabla.vacia",
+  "es": "No se han encontrado datos.",
+  "ca": "No s'han trobat dades.",
+  "en": "No data found."
+},
+{
+  "_id": "pacientes.paginacion.a",
+  "es": "a",
+  "ca": "a",
+  "en": "to"
+},
+{
+  "_id": "pacientes.paginacion.de",
+  "es": "de",
+  "ca": "de",
+  "en": "of"
+},
+{
+  "_id": "mod.diagnosticos",
+  "es": "Diagnósticos",
+  "en": "Diagnostics",
+  "ca": "Diagnòstics"
+}]
