@@ -1,22 +1,30 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-<head>
-    <div sec:authorize="hasAnyRole('ADMINISTRADOR', 'MEDICO')" th:replace="~{Reutilizable/layout :: head_general}">
-    </div>
-    <div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: head_recepcion}"></div>
-    <title
-        th:text="${cita.id == null ? trad.getTraduccion('citas.form.titulo.nuevo') : trad.getTraduccion('citas.form.titulo.editar')}">
+<head sec:authorize="hasAnyRole('ADMINISTRADOR', 'MEDICO')">
+    <th:block th:replace="~{Reutilizable/layout :: head_general}"></th:block>
+    <title th:text="${cita.id == null ? trad.getTraduccion('citas.form.titulo.nuevo') : trad.getTraduccion('citas.form.titulo.editar')}">
+        Cita
     </title>
 </head>
 
+<head sec:authorize="hasRole('RECEPCIONISTA')" 
+      th:replace="~{Reutilizable/layoutRecepcion :: head_recepcion}">
+</head>
+
 <body class="bg-light">
+
     <div sec:authorize="hasAnyRole('ADMINISTRADOR', 'MEDICO')" th:replace="~{Reutilizable/layout :: menu}"></div>
-    <div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: menu_recepcion}"></div>
+    
+    <div sec:authorize="hasRole('RECEPCIONISTA')">
+        <div th:replace="~{Reutilizable/layoutRecepcion :: menu_recepcion}"></div>
+    </div>
 
     <main th:class="${#authorization.expression('hasRole(''RECEPCIONISTA'')')} ? 'content-recepcion' : 'content'">
         <div class="container-fluid">
+            
             <form th:action="@{/citas/guardar}" th:object="${cita}" method="post" id="citaForm">
+                
                 <input type="hidden" th:field="*{id}" />
                 <input type="hidden" th:field="*{estado}" th:if="*{id != null}" />
 
@@ -36,6 +44,7 @@
                     </div>
 
                     <div class="card-body p-4 p-lg-5">
+                        
                         <div th:if="${errorNegocio}"
                             class="alert alert-danger border-0 d-flex align-items-center mb-4 shadow-sm">
                             <i class="bi bi-exclamation-octagon-fill me-2"></i>
@@ -63,8 +72,7 @@
                                     class="form-control border-0 bg-light py-2"
                                     th:classappend="${#fields.hasErrors('fechaHora')} ? 'is-invalid'" required>
                                 <div class="invalid-feedback" th:errors="*{fechaHora}"></div>
-                                <small class="text-muted">Solo horas en punto (ej. 10:00). No se permiten citas
-                                    pasadas.</small>
+                                <small class="text-muted">Solo horas en punto (ej. 10:00). No se permiten citas pasadas.</small>
                             </div>
 
                             <div class="col-md-6">
@@ -116,17 +124,20 @@
     </main>
 
     <div sec:authorize="hasAnyRole('ADMINISTRADOR', 'MEDICO')" th:replace="~{Reutilizable/layout :: scripts}"></div>
-    <div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: scripts_recepcion}">
+    
+    <div sec:authorize="hasRole('RECEPCIONISTA')">
+        <div th:replace="~{Reutilizable/layoutRecepcion :: scripts_recepcion}"></div>
     </div>
 
     <script>
-        // Bloquear selección de fechas pasadas en el cliente
+        // Lógica JS del formulario
         const now = new Date();
         const year = now.getFullYear();
         const month = String(now.getMonth() + 1).padStart(2, '0');
         const day = String(now.getDate()).padStart(2, '0');
         const hours = String(now.getHours() + 1).padStart(2, '0');
-        document.getElementById('fechaHoraInput').min = `${year}-${month}-${day}T${hours}:00`;
+        // Si quieres bloquear el pasado:
+        // document.getElementById('fechaHoraInput').min = `${year}-${month}-${day}T${hours}:00`;
 
         document.getElementById('citaForm').addEventListener('submit', function (e) {
             const input = document.getElementById('fechaHoraInput');
@@ -142,5 +153,4 @@
         });
     </script>
 </body>
-
 </html>
