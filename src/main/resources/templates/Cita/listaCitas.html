@@ -282,8 +282,6 @@
             if (estado) url += `&estado=${estado}`;
 
             fetch(url, {
-            // IMPORTANTE: La URL debe coincidir con la de tu @GetMapping en el Controller
-            fetch(`/citas?query=${encodeURIComponent(query)}&page=${page}&size=${size}`, {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 }
@@ -298,14 +296,3 @@
                 })
                 .catch(err => console.error("Error actualizando la tabla:", err));
         }
-
-        function changePage(page) {
-            const totalPagesInput = document.getElementById('hiddenTotalPages');
-            const totalPages = totalPagesInput ? parseInt(totalPagesInput.value) : 0;
-            if (page < 0 || page >= totalPages) return;
-            updateTable(page);
-        }
-    </script>
-</body>
-
-</html>
