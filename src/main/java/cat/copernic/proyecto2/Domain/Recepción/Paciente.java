@@ -42,10 +42,6 @@ public class Paciente {
     @Email(message = "Formato de email incorrecto")
     private String email;
 
-    @Pattern(regexp = "^[0-9]{12}$", message = "El NSS debe tener exactamente 12 dígitos")
-    @Column(unique = true)
-    private String numeroSeguridadSocial;
-
     private String direccion;
     private LocalDate fechaAlta;
     private String rutaFoto; 

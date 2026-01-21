@@ -71,12 +71,14 @@ public class PacienteController {
     public String activarPaciente(@PathVariable("id") Long id) {
         Paciente paciente = pacienteService.findPacienteById(id);
         if (paciente != null) {
-            paciente.setActivo(true);
-            pacienteService.savePaciente(paciente, null);
+            paciente.setActivo(true); // Cambiamos a true
+            pacienteService.savePaciente(paciente, null); // Ahora el Service sí guardará este true
         }
+        // Redirigimos a la lista de activos para ver el resultado
         return "redirect:/pacientes";
     }
 
+    // MÉTODO UNIFICADO PARA CREAR (con foto) O EDITAR DATOS (sin foto obligatoria)
     @PostMapping("/guardar")
     public String guardarPaciente(
             @Valid @ModelAttribute("paciente") Paciente paciente,
@@ -84,39 +86,54 @@ public class PacienteController {
             @RequestParam(value = "file", required = false) MultipartFile imagen,
             @RequestParam(value = "origen", required = false) String origen,
             Model model) {
+
         model.addAttribute("trad", traduccionService);
+
         if (result.hasErrors()) {
             if ("detalle".equals(origen)) {
-                Paciente pacienteExistente = pacienteService.findPacienteById(paciente.getId());
-                if (pacienteExistente != null) {
-                    model.addAttribute("edad", pacienteService.getEdadPaciente(pacienteExistente));
-                    paciente.setUsuario(pacienteExistente.getUsuario());
-                    paciente.setFechaNacimiento(pacienteExistente.getFechaNacimiento());
+                Paciente px = pacienteService.findPacienteById(paciente.getId());
+                if (px != null) {
+                    model.addAttribute("edad", pacienteService.getEdadPaciente(px));
+                    paciente.setUsuario(px.getUsuario());
+                    paciente.setRutaFoto(px.getRutaFoto());
                 }
                 return "Paciente/detallePaciente";
             }
             return "Paciente/formularioPaciente";
         }
+
         try {
             pacienteService.savePaciente(paciente, imagen);
+            long timestamp = System.currentTimeMillis();
+
             if ("detalle".equals(origen)) {
-                return "redirect:/pacientes/detalle/" + paciente.getId() + "?success";
+                return "redirect:/pacientes/detalle/" + paciente.getId() + "?success&t=" + timestamp;
             }
-            return "redirect:/pacientes";
+            return "redirect:/pacientes?t=" + timestamp;
+
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
             if ("detalle".equals(origen)) {
-                Paciente pacienteExistente = pacienteService.findPacienteById(paciente.getId());
-                if (pacienteExistente != null) {
-                    model.addAttribute("edad", pacienteService.getEdadPaciente(pacienteExistente));
-                    paciente.setUsuario(pacienteExistente.getUsuario());
-                    paciente.setFechaAlta(pacienteExistente.getFechaAlta());
-                    paciente.setFechaNacimiento(pacienteExistente.getFechaNacimiento());
+                Paciente px = pacienteService.findPacienteById(paciente.getId());
+                if (px != null) {
+                    model.addAttribute("edad", pacienteService.getEdadPaciente(px));
+                    paciente.setUsuario(px.getUsuario());
+                    paciente.setRutaFoto(px.getRutaFoto());
                 }
                 return "Paciente/detallePaciente";
             }
             return "Paciente/formularioPaciente";
         }
+    }
+
+    // MÉTODO EXCLUSIVO PARA ACTUALIZAR LA FOTO DESDE DETALLE
+    @PostMapping("/actualizar-foto")
+    public String actualizarFoto(@RequestParam("id") Long id, @RequestParam("file") MultipartFile file) {
+        Paciente paciente = pacienteService.findPacienteById(id);
+        if (paciente != null && file != null && !file.isEmpty()) {
+            pacienteService.savePaciente(paciente, file);
+        }
+        return "redirect:/pacientes/detalle/" + id + "?success&t=" + System.currentTimeMillis();
     }
 
     @GetMapping("/detalle/{id}")
@@ -142,11 +159,7 @@ public class PacienteController {
 
     @PostMapping("/eliminar")
     public String desactivarPaciente(@RequestParam("id") Long id) {
-        Paciente paciente = pacienteService.findPacienteById(id);
-        if (paciente != null) {
-            paciente.setActivo(false);
-            pacienteService.savePaciente(paciente, null);
-        }
+        pacienteService.deletePaciente(id);
         return "redirect:/pacientes";
     }
 }

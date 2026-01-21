@@ -14,8 +14,6 @@ public interface PacienteDAO extends JpaRepository<Paciente, Long> {
        // --- Validaciones booleanas ---
        boolean existsByDni(String dni);
 
-       boolean existsByNumeroSeguridadSocial(String seguridadSocial);
-
        boolean existsByEmail(String email);
 
        @Query("SELECT p FROM Paciente p WHERE " +
