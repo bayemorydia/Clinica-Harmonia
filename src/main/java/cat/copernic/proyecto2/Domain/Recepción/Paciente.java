@@ -1,5 +1,6 @@
 package cat.copernic.proyecto2.Domain.Recepción;
 
+import cat.copernic.proyecto2.Domain.Facturacion.Factura; // <--- NUEVO IMPORT
 import cat.copernic.proyecto2.Domain.Persona.Usuario;
 import cat.copernic.proyecto2.Domain.PersonalSanitario.HistorialClinico;
 import jakarta.persistence.*;
@@ -8,6 +9,7 @@ import lombok.Data;
 import lombok.ToString;
 import lombok.EqualsAndHashCode;
 import java.time.LocalDate;
+import java.util.ArrayList; // <--- NUEVO IMPORT (Recomendado)
 import java.util.List;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -63,5 +65,11 @@ public class Paciente {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "paciente")
-    private List<Cita> citas;
+    private List<Cita> citas = new ArrayList<>(); // <--- Inicializado para seguridad
+
+    // --- NUEVA RELACIÓN PARA FACTURAS ---
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @OneToMany(mappedBy = "paciente", fetch = FetchType.LAZY)
+    private List<Factura> facturas = new ArrayList<>(); // <--- Inicializado para seguridad
 }
