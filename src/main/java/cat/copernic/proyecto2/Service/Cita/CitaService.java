@@ -1,5 +1,6 @@
 package cat.copernic.proyecto2.Service.Cita;
 
+import cat.copernic.proyecto2.Domain.Administración.Empleado;
 import cat.copernic.proyecto2.Domain.Recepción.Cita;
 import cat.copernic.proyecto2.Domain.Recepción.EstadoCita;
 import org.springframework.data.domain.Page;
@@ -14,6 +15,7 @@ public interface CitaService {
     void saveCita(Cita cita) throws Exception;
 
     void anularCita(Long id);
+    List<Empleado> listarMedicosActivos();
 
     long countCitasActivas();
 

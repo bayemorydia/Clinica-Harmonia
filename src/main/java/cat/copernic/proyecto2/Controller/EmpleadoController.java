@@ -7,6 +7,7 @@ import cat.copernic.proyecto2.Service.Empleado.EmpleadoService;
 import cat.copernic.proyecto2.Service.Empleado.Turno.TurnoService;
 import cat.copernic.proyecto2.Service.Rol.RolService;
 import cat.copernic.proyecto2.Service.Traduccion.TraduccionService;
+import cat.copernic.proyecto2.Service.Usuario.UsuarioService; // Inyectado el unificado
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,10 +16,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import cat.copernic.proyecto2.Service.Usuario.empleado.EmpleadoUsuarioService;
 import org.springframework.data.domain.Pageable;
 import cat.copernic.proyecto2.Service.Empleado.Nomina.NominaService;
 import cat.copernic.proyecto2.Domain.Administración.Nomina;
+
 @Controller
 @RequestMapping("/empleados")
 public class EmpleadoController {
@@ -36,7 +37,7 @@ public class EmpleadoController {
     private TurnoService turnoService;
 
     @Autowired
-    private EmpleadoUsuarioService EmpleadoUsuarioService;
+    private UsuarioService usuarioService; // Usando el servicio unificado
 
     @Autowired
     private NominaService nominaService;
@@ -95,19 +96,25 @@ public class EmpleadoController {
 
     @PostMapping("/guardar")
     public String guardarEmpleado(@Valid @ModelAttribute("empleado") Empleado empleado,
-                                  BindingResult result, Model model) {
-        empleado.setRol(rolService.encontrarRol(empleado.getRol().getId()));
+            BindingResult result, Model model) {
         if (result.hasErrors()) {
             cargarListasSoporte(model);
             return "Empleado/añadir";
         }
         try {
-            Usuario usuarioCreado = EmpleadoUsuarioService.crearEmpleadoConUsuario(
+            Rol rol = rolService.encontrarRol(empleado.getRol().getId());
+            empleado.setRol(rol);
+
+            // USANDO EL SERVICIO UNIFICADO (Contraseña automática por DNI/NIE)
+            Usuario usuarioCreado = usuarioService.crearUsuarioEmpleado(
                     empleado.getNombre(),
                     empleado.getApellidos(),
                     empleado.getDni(),
-                    empleado.getRol().getNombre());
+                    rol.getNombre());
+
+            empleado.setUsuario(usuarioCreado);
             empleadoService.crear(empleado);
+
             return "redirect:/empleados";
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
@@ -125,15 +132,21 @@ public class EmpleadoController {
 
     @PostMapping("/actualizar")
     public String actualizarEmpleado(@RequestParam Long id, @Valid @ModelAttribute("empleado") Empleado empleado,
-                                     BindingResult result, Model model) {
-        Rol rol = rolService.encontrarRol(empleado.getRol().getId());
-        Empleado empleadoUsuario = empleadoService.obtenerPorId(empleado.getId());
+            BindingResult result, Model model) {
         if (result.hasErrors()) {
             cargarListasSoporte(model);
             return "Empleado/detalle";
         }
         try {
-            EmpleadoUsuarioService.actualizarRolUsuario(empleadoUsuario.getUsuario().getId(), rol.getNombre());
+            Empleado empleadoExistente = empleadoService.obtenerPorId(id);
+            Rol rolNuevo = rolService.encontrarRol(empleado.getRol().getId());
+
+            // USANDO EL SERVICIO UNIFICADO PARA ACTUALIZAR ROL DE SEGURIDAD
+            if (empleadoExistente.getUsuario() != null) {
+                usuarioService.actualizarRolUsuario(empleadoExistente.getUsuario().getId(),
+                        rolNuevo.getNombre());
+            }
+
             empleadoService.actualizar(id, empleado);
             return "redirect:/empleados";
         } catch (Exception e) {
@@ -156,12 +169,9 @@ public class EmpleadoController {
         return "redirect:/empleados";
     }
 
-    @PostMapping("/activar/{id}")
-    public String activarEmpleado(@PathVariable Long id) {
-        Empleado emp = empleadoService.obtenerPorId(id);
-        emp.setFecha_baja(null);
-        emp.setActiva(true);
-        empleadoService.actualizar(id, emp);
+    @GetMapping("/activar/{id}")
+    public String activarEmpleado(@PathVariable("id") Long id) {
+        empleadoService.activarEmpleado(id);
         return "redirect:/empleados";
     }
 
@@ -172,14 +182,10 @@ public class EmpleadoController {
             @RequestParam(value = "size", defaultValue = "10") int size,
             Model model) {
 
-        // Obtener empleado
         Empleado empleado = empleadoService.obtenerPorId(id);
         model.addAttribute("empleado", empleado);
 
-        // Crear Pageable
         Pageable pageable = PageRequest.of(page, size);
-
-        // Obtener nóminas del empleado paginadas
         Page<Nomina> nominaPage = nominaService.getNominasPorEmpleado(id, pageable);
 
         model.addAttribute("nominas", nominaPage.getContent());
@@ -189,7 +195,6 @@ public class EmpleadoController {
         model.addAttribute("size", size);
         model.addAttribute("trad", traduccionService);
 
-        return "Empleado/nominasEmpleado"; // HTML que te creé antes
+        return "Empleado/nominasEmpleado";
     }
-
 }

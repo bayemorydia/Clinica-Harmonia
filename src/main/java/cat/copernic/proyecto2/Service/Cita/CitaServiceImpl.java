@@ -1,8 +1,11 @@
 package cat.copernic.proyecto2.Service.Cita;
 
 import cat.copernic.proyecto2.DAO.JPA.CitaDAO;
+import cat.copernic.proyecto2.Domain.Administración.Empleado;
 import cat.copernic.proyecto2.Domain.Recepción.Cita;
 import cat.copernic.proyecto2.Domain.Recepción.EstadoCita;
+import cat.copernic.proyecto2.Service.Empleado.EmpleadoService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +25,18 @@ public class CitaServiceImpl implements CitaService {
 
     @Autowired
     private CitaDAO citaDAO;
+
+    @Autowired
+    private EmpleadoService empleadoService; // Inyección necesaria
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Empleado> listarMedicosActivos() {
+        return empleadoService.listarTodos().stream()
+                .filter(e -> e.getRol() != null && "MEDICO".equalsIgnoreCase(e.getRol().getNombre()))
+                .filter(Empleado::getActiva)
+                .collect(Collectors.toList());
+    }
 
     @Override
     @Transactional(readOnly = true)

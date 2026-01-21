@@ -3,10 +3,7 @@ package cat.copernic.proyecto2.Service.Medicamento;
 import cat.copernic.proyecto2.DAO.JPA.MedicamentoDAO;
 import cat.copernic.proyecto2.Domain.Farmacia.Medicamento;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -33,7 +30,6 @@ public class MedicamentoServiceImpl implements MedicamentoService {
     @Override
     @Transactional
     public void guardar(Medicamento medicamento) {
-        // Validación: solo obligamos precio > 0 si el producto se guarda como ACTIVO
         medicamentoDAO.save(medicamento);
     }
 

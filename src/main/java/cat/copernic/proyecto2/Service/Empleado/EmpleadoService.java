@@ -23,5 +23,7 @@ public interface EmpleadoService {
 
     long ContarEmpleados();
 
+    Empleado obtenerPorDni(String dni);
+
     Page<Nomina> listarNominasPorEmpleado(Long empleadoId, String search, int page, int size);
 }

@@ -28,7 +28,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     @Transactional(readOnly = true)
     public Page<Usuario> listarUsuarios(Pageable pageable) {
-        return usuarioDAO.findAll(pageable); // Devuelve todos, activos e inactivos
+        return usuarioDAO.findAll(pageable);
     }
 
     @Override
@@ -40,12 +40,6 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     @Transactional(readOnly = true)
     public Page<Usuario> listarPaginado(String query, Boolean activo, Pageable pageable) {
-        // Si no tienes una Query personalizada en el DAO, puedes usar este enfoque:
-        if ((query == null || query.isEmpty()) && activo == null) {
-            return usuarioDAO.findAll(pageable);
-        }
-        // Suponiendo que añades el método findByFilters al UsuarioDAO igual que en
-        // Paciente
         return usuarioDAO.findByFilters(query, activo, pageable);
     }
 
@@ -64,21 +58,47 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     @Transactional
     public Usuario crearUsuarioPaciente(String nombre, String apellidos, String dni) {
+        return crearUsuarioBase(nombre, apellidos, dni, "PACIENTE");
+    }
+
+    @Override
+    @Transactional
+    public Usuario crearUsuarioEmpleado(String nombre, String apellidos, String dni, String rolNombre) {
+        return crearUsuarioBase(nombre, apellidos, dni, rolNombre);
+    }
+
+    private Usuario crearUsuarioBase(String nombre, String apellidos, String dni, String rolNombre) {
         Usuario nuevoUsuario = new Usuario();
         String nombreLimpio = nombre.toLowerCase().trim();
         String primerApellido = apellidos.toLowerCase().trim().split(" ")[0];
         String username = generarUsernameUnico(nombreLimpio, primerApellido);
+        
         nuevoUsuario.setUsername(username);
-        String passwordCifrado = passwordEncoder.encode(dni);
-        nuevoUsuario.setPasswordHash(passwordCifrado);
+        // Ciframos el DNI como contraseña inicial
+        nuevoUsuario.setPasswordHash(passwordEncoder.encode(dni.toUpperCase().trim()));
         nuevoUsuario.setActivo(true);
-        Rol rolPaciente = rolDAO.findByNombre("PACIENTE")
-                .orElseThrow(() -> new RuntimeException("Error: El rol 'PACIENTE' no existe"));
+
+        Rol rol = rolDAO.findByNombre(rolNombre.toUpperCase())
+                .orElseThrow(() -> new RuntimeException("Error: El rol '" + rolNombre + "' no existe"));
 
         Set<Rol> roles = new HashSet<>();
-        roles.add(rolPaciente);
+        roles.add(rol);
         nuevoUsuario.setRoles(roles);
+
         return usuarioDAO.save(nuevoUsuario);
+    }
+
+    @Override
+    @Transactional
+    public void actualizarRolUsuario(Long usuarioId, String nuevoRolNombre) {
+        Usuario usuario = usuarioDAO.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        Rol nuevoRol = rolDAO.findByNombre(nuevoRolNombre)
+                .orElseThrow(() -> new RuntimeException("El rol '" + nuevoRolNombre + "' no existe"));
+
+        usuario.getRoles().clear();
+        usuario.getRoles().add(nuevoRol);
+        usuarioDAO.save(usuario);
     }
 
     private String generarUsernameUnico(String nombre, String apellido) {

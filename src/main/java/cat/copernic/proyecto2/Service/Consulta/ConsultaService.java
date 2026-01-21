@@ -7,8 +7,15 @@ import java.util.List;
 
 public interface ConsultaService {
     HistorialClinico obtenerOSolucionarHistorial(Long pacienteId);
-    void guardarAtencion(EpisodioClinico episodio, List<LineaReceta> lineas, Long citaId);
-    List<Medicamento> buscarMedicamentos(String query);
-    void finalizarConsulta(Long citaId, EpisodioClinico episodio, Tratamiento tratamiento, List<PruebaMedica> pruebas,List<LineaReceta> lineas);
+    
+    // Método principal para finalizar la consulta con todos los datos
+    void finalizarConsulta(Long citaId, EpisodioClinico episodio, Tratamiento tratamiento, 
+                          List<PruebaMedica> pruebas, List<LineaReceta> lineas);
+    
     void cambiarEstadoCita(Long citaId, EstadoCita nuevoEstado);
+    
+    List<Medicamento> buscarMedicamentos(String query);
+    
+    // Método de soporte para compatibilidad con llamadas simplificadas
+    void guardarAtencion(EpisodioClinico episodio, List<LineaReceta> lineas, Long citaId);
 }

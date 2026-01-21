@@ -4,6 +4,7 @@ import cat.copernic.proyecto2.Domain.Administración.Empleado;
 import cat.copernic.proyecto2.Domain.Recepción.Paciente;
 import cat.copernic.proyecto2.Domain.Recepción.Cita;
 import cat.copernic.proyecto2.Domain.Recepción.EstadoCita;
+import cat.copernic.proyecto2.Domain.Recepción.Especialidad; // Añadido
 import cat.copernic.proyecto2.Service.Cita.CitaService;
 import cat.copernic.proyecto2.Service.Paciente.PacienteService;
 import cat.copernic.proyecto2.Service.Empleado.EmpleadoService;
@@ -46,8 +47,10 @@ public class CitaController {
 
     private void cargarListasFormulario(Model model) {
         model.addAttribute("pacientes", pacienteService.getAllPacientes());
-        model.addAttribute("profesionales", empleadoService.listarTodos());
+        // El Controller ya no filtra, el Service le da los médicos listos
+        model.addAttribute("profesionales", citaService.listarMedicosActivos());
         model.addAttribute("estadosCita", EstadoCita.values());
+        model.addAttribute("especialidades", Especialidad.values());
         model.addAttribute("trad", traduccionService);
     }
 
@@ -78,6 +81,7 @@ public class CitaController {
     @GetMapping("/nueva")
     public String mostrarFormularioNueva(Model model) {
         Cita cita = new Cita();
+        // Sugerir la próxima hora en punto disponible
         cita.setFechaHora(LocalDateTime.now().truncatedTo(ChronoUnit.HOURS).plusHours(1));
         model.addAttribute("cita", cita);
         cargarListasFormulario(model);
@@ -151,10 +155,12 @@ public class CitaController {
 
     @InitBinder
     public void initBinder(org.springframework.web.bind.WebDataBinder binder) {
+        // Registramos editores para que Spring sepa convertir los IDs de los selects en
+        // objetos reales
         binder.registerCustomEditor(Paciente.class, new java.beans.PropertyEditorSupport() {
             @Override
             public void setAsText(String text) {
-                if (text == null || text.isEmpty())
+                if (text == null || text.trim().isEmpty())
                     return;
                 setValue(pacienteService.findPacienteById(Long.parseLong(text)));
             }
@@ -162,7 +168,7 @@ public class CitaController {
         binder.registerCustomEditor(Empleado.class, new java.beans.PropertyEditorSupport() {
             @Override
             public void setAsText(String text) {
-                if (text == null || text.isEmpty())
+                if (text == null || text.trim().isEmpty())
                     return;
                 setValue(empleadoService.obtenerPorId(Long.parseLong(text)));
             }
