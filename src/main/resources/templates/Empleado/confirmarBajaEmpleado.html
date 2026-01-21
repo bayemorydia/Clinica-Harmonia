@@ -49,7 +49,6 @@
                             </div>
                             <h5 class="fw-bold mb-1 text-dark" th:text="${empleado.nombre} + ' ' + ${empleado.apellidos}"></h5>
                             <p class="mb-0 text-muted font-monospace small" th:text="${trad.getTraduccion('empleado.label.dni')} + ': ' + ${empleado.dni}"></p>
-                            <p class="mb-0 text-muted font-monospace small" th:text="${trad.getTraduccion('empleado.label.departamento')} + ': ' + ${empleado.departamento}"></p>
                         </div>
 
                         <div class="alert alert-warning border-0 small mb-0 shadow-sm">

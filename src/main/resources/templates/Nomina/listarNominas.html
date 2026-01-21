@@ -4,9 +4,10 @@
 <head>
     <div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: head_medico}"></div>
     <div sec:authorize="hasRole('ADMINISTRADOR')" th:replace="~{Reutilizable/layout :: head_general}"></div>
-    <th:block sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layoutRRHH :: head_RRHH}"></th:block>
+    <div sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layoutRRHH :: head_RRHH}"></div>
 
-    <title>Listado de Nóminas</title>
+    <title th:text="${trad != null ? trad.getTraduccion('mod.facturacion.titulo') : 'Listado de Nóminas'}">Listado de
+        Nóminas</title>
 
     <style>
         .clickable-row {
@@ -18,7 +19,6 @@
             background-color: rgba(0, 123, 255, 0.05) !important;
         }
 
-        /* Estilos Paginación */
         .page-link {
             color: #6c757d;
             border: none;
@@ -40,11 +40,6 @@
             box-shadow: 0 4px 10px rgba(13, 110, 253, 0.2);
         }
 
-        .page-item.disabled .page-link {
-            background-color: #f8f9fa;
-            color: #dee2e6;
-        }
-
         .select-paginacion-clean {
             display: inline-block;
             width: 75px;
@@ -61,6 +56,7 @@
             background-color: #ffffff;
             border-top: 1px solid #edf2f7;
         }
+
         .export-panel {
             background: #e9ecef;
             padding: 5px 15px;
@@ -73,35 +69,38 @@
 </head>
 
 <body>
-    <div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: menu_medico}"></div>
-    <div sec:authorize="hasRole('ADMINISTRADOR')" th:replace="~{Reutilizable/layout :: menu}"></div>
-    <div th:replace="~{Reutilizable/layout :: menu}"></div>
-    <div sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layoutRRHH :: menu_RRHH}"></div>
+    <nav>
+        <div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: menu_medico}"></div>
+        <div sec:authorize="hasRole('ADMINISTRADOR')" th:replace="~{Reutilizable/layout :: menu}"></div>
+        <div sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layoutRRHH :: menu_RRHH}"></div>
+    </nav>
 
     <main th:class="${#authorization.expression('hasRole(''MEDICO'')')} ? 'content-medico' : 'content'">
         <div class="container-fluid">
 
-            <div class="d-flex justify-content-end mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="fw-bold text-dark mb-1"
+                        th:text="${trad != null ? trad.getTraduccion('mod.nominas.titulo') : 'Listado de Nóminas'}">
+                        Listado de Nóminas</h2>
+                    <p class="text-muted small mb-0"
+                        th:text="${trad != null ? trad.getTraduccion('mod.admin.desc') : 'Gestión y visualización de nóminas.'}">
+                        Gestión de nóminas.</p>
+                </div>
+
                 <div class="export-panel shadow-sm">
                     <span class="small fw-bold text-secondary text-uppercase">Exportar:</span>
-                    <select id="periodoExport" class="form-select form-select-sm border-0 bg-transparent shadow-none" style="width: 120px; cursor:pointer;">
+                    <select id="periodoExport" class="form-select form-select-sm border-0 bg-transparent shadow-none"
+                        style="width: 120px; cursor:pointer;">
                         <option value="MES">Este Mes</option>
                         <option value="ANYO">Este Año</option>
                     </select>
-                    <button onclick="descargarNominasAsincrono()" id="btnDownload" class="btn btn-success btn-sm rounded-circle p-2" title="Descargar CSV">
+                    <button onclick="descargarNominasAsincrono()" id="btnDownload"
+                        class="btn btn-success btn-sm rounded-circle p-2">
                         <i class="bi bi-file-earmark-arrow-down"></i>
                     </button>
                 </div>
             </div>
-
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h2 class="fw-bold text-dark mb-1">Listado de Nóminas</h2>
-                    <p class="text-muted small mb-0">Gestión y visualización de nóminas de empleados.</p>
-                </div>
-            </div>
-
-
 
             <div class="card shadow-sm border-0 mb-4" style="border-radius: 15px;">
                 <div class="card-body">
@@ -109,14 +108,14 @@
                         <span class="input-group-text bg-white border-end-0 text-muted"><i
                                 class="bi bi-search"></i></span>
                         <input type="text" id="searchInput" class="form-control border-start-0 ps-0 shadow-none"
-                            placeholder="Buscar nómina..." th:value="${query}">
+                            th:placeholder="${trad != null ? trad.getTraduccion('citas.placeholder.buscar') : 'Buscar...'}"
+                            th:value="${query}">
                     </div>
                 </div>
             </div>
 
             <div class="card shadow-sm border-0" style="border-radius: 15px; overflow: hidden;">
                 <div class="card-body p-0" id="tablaContainer">
-
                     <div th:fragment="tablaNominas">
                         <div class="table-responsive">
                             <table class="table table-hover align-middle mb-0">
@@ -124,16 +123,13 @@
                                     <tr>
                                         <th class="ps-4 py-3 border-0 text-secondary small fw-bold">Empleado</th>
                                         <th class="py-3 border-0 text-secondary small fw-bold">Periodo</th>
-                                        <th class="py-3 border-0 text-secondary small fw-bold">Salario Base</th>
-                                        <th class="py-3 border-0 text-secondary small fw-bold">Complementos</th>
-                                        <th class="py-3 border-0 text-secondary small fw-bold">Deducciones</th>
                                         <th class="py-3 border-0 text-secondary small fw-bold">Total</th>
                                         <th class="py-3 border-0 text-secondary small fw-bold text-center">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr th:if="${#lists.isEmpty(nominas)}">
-                                        <td colspan="7" class="text-center py-5 text-muted">No se han encontrado
+                                        <td colspan="4" class="text-center py-5 text-muted">No se han encontrado
                                             nóminas.</td>
                                     </tr>
                                     <tr th:each="nomina : ${nominas}" class="border-bottom clickable-row"
@@ -141,14 +137,13 @@
                                         <td class="ps-4 py-3"
                                             th:text="${nomina.empleado.nombre} + ' ' + ${nomina.empleado.apellidos}">
                                             Empleado</td>
-                                        <td class="py-3" th:text="${nomina.periodo}">01/2026</td>
-                                        <td class="py-3" th:text="${nomina.salarioBase}">1000€</td>
-                                        <td class="py-3" th:text="${nomina.complementos}">200€</td>
-                                        <td class="py-3" th:text="${nomina.deducciones}">50€</td>
-                                        <td class="py-3 fw-bold text-success" th:text="${nomina.totalPagar}">1150€</td>
+                                        <td class="py-3" th:text="${nomina.periodo}">Periodo</td>
+                                        <td class="py-3 fw-bold text-success" th:text="${nomina.totalPagar} + '€'">Total
+                                        </td>
                                         <td class="py-3 text-center">
                                             <a th:href="@{'/nominas/imprimir/' + ${nomina.id}}"
-                                                class="btn btn-sm btn-outline-danger rounded-pill px-3" target="_blank">
+                                                class="btn btn-sm btn-outline-danger rounded-pill px-3" target="_blank"
+                                                onclick="event.stopPropagation();">
                                                 <i class="bi bi-printer me-1"></i> Imprimir
                                             </a>
                                         </td>
@@ -159,43 +154,29 @@
 
                         <div class="table-footer d-flex justify-content-between align-items-center">
                             <div class="text-muted small">
-                                <span class="fw-bold" th:text="${(currentPage * size) + 1}">1</span> a
-                                <span class="fw-bold" th:text="${(currentPage * size) + nominas.size()}">10</span>
-                                de <span class="fw-bold" th:text="${totalElements}">100</span> nóminas
+                                Mostrando <span class="fw-bold" th:text="${nominas.size()}">0</span> de <span
+                                    class="fw-bold" th:text="${totalElements}">0</span>
                             </div>
-
                             <div class="d-flex align-items-center gap-4">
-                                <div class="d-flex align-items-center gap-2">
-                                    <span class="text-muted small">Mostrar</span>
-                                    <select id="pageSize" class="select-paginacion-clean shadow-none"
-                                        onchange="updateTable(0)">
-                                        <option value="10" th:selected="${size == 10}">10</option>
-                                        <option value="20" th:selected="${size == 20}">20</option>
-                                        <option value="50" th:selected="${size == 50}">50</option>
-                                    </select>
-                                </div>
-
-                                <nav>
+                                <select id="pageSize" class="select-paginacion-clean shadow-none"
+                                    onchange="updateTable(0)">
+                                    <option value="10" th:selected="${size == 10}">10</option>
+                                    <option value="20" th:selected="${size == 20}">20</option>
+                                </select>
+                                <nav th:if="${totalPages > 1}">
                                     <ul class="pagination pagination-sm mb-0">
                                         <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
                                             <a class="page-link" href="javascript:void(0)"
-                                                th:onclick="'changePage(' + (${currentPage} - 1) + ')'">
-                                                <i class="bi bi-chevron-left"></i>
-                                            </a>
+                                                th:onclick="'changePage(' + (${currentPage} - 1) + ')'"><i
+                                                    class="bi bi-chevron-left"></i></a>
                                         </li>
-                                        <li class="page-item"
-                                            th:each="i : ${#numbers.sequence(0, totalPages > 0 ? totalPages - 1 : 0)}"
-                                            th:if="${totalPages > 0 and i >= currentPage - 1 and i <= currentPage + 1}"
-                                            th:classappend="${i == currentPage} ? 'active'">
-                                            <a class="page-link" href="javascript:void(0)"
-                                                th:onclick="'changePage(' + ${i} + ')'" th:text="${i + 1}">1</a>
-                                        </li>
+                                        <li class="page-item active"><span class="page-link"
+                                                th:text="${currentPage + 1}">1</span></li>
                                         <li class="page-item"
                                             th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
                                             <a class="page-link" href="javascript:void(0)"
-                                                th:onclick="'changePage(' + (${currentPage} + 1) + ')'">
-                                                <i class="bi bi-chevron-right"></i>
-                                            </a>
+                                                th:onclick="'changePage(' + (${currentPage} + 1) + ')'"><i
+                                                    class="bi bi-chevron-right"></i></a>
                                         </li>
                                     </ul>
                                 </nav>
@@ -213,77 +194,34 @@
     <div sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layoutRRHH :: scripts_RRHH}"></div>
 
     <script th:inline="javascript">
-        document.addEventListener("DOMContentLoaded", () => {
-            initTableEvents();
-            let searchTimeout;
-            const searchInput = document.getElementById('searchInput');
-
-            searchInput.addEventListener('input', () => {
-                clearTimeout(searchTimeout);
-                searchTimeout = setTimeout(() => updateTable(0), 400);
-            });
-        });
-
+        // Inicialización de clics en filas
         function initTableEvents() {
             document.querySelectorAll(".clickable-row").forEach(row => {
-                row.addEventListener("click", function (e) {
-                    if (e.target.closest('button') || e.target.closest('a')) return;
+                row.addEventListener("click", function () {
                     window.location.href = this.getAttribute("data-href");
                 });
             });
         }
 
+        // Búsqueda y Actualización AJAX
         function updateTable(page = 0) {
             const query = document.getElementById('searchInput').value;
             const size = document.getElementById('pageSize').value;
-            const container = document.getElementById('tablaContainer');
-
             fetch(`/nominas/search?query=${encodeURIComponent(query)}&page=${page}&size=${size}`)
-                .then(response => response.text())
+                .then(res => res.text())
                 .then(html => {
-                    container.innerHTML = html;
+                    document.getElementById('tablaContainer').innerHTML = html;
                     initTableEvents();
-                })
-                .catch(err => console.error("Error actualizando la tabla:", err));
-        }
-
-        function changePage(page) {
-            const totalPagesInput = document.getElementById('hiddenTotalPages');
-            const totalPages = totalPagesInput ? parseInt(totalPagesInput.value) : 0;
-
-            if (page < 0 || page >= totalPages) return;
-            updateTable(page);
-        }
-        function descargarNominasAsincrono() {
-            const periodo = document.getElementById('periodoExport').value;
-            const btn = document.getElementById('btnDownload');
-
-            btn.disabled = true;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
-
-            fetch(`/nominas/exportar?periodo=${periodo}`)
-                .then(res => {
-                    if(!res.ok) throw new Error();
-                    return res.blob();
-                })
-                .then(blob => {
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `Nominas_${periodo}.csv`;
-                    document.body.appendChild(a);
-                    a.click();
-                    a.remove();
-                })
-                .catch(() => alert('Error al generar el reporte'))
-                .finally(() => {
-                    btn.disabled = false;
-                    btn.innerHTML = '<i class="bi bi-file-earmark-arrow-down"></i>';
                 });
         }
 
-    </script>
+        function changePage(page) {
+            const total = parseInt(document.getElementById('hiddenTotalPages').value);
+            if (page >= 0 && page < total) updateTable(page);
+        }
 
+        document.addEventListener("DOMContentLoaded", initTableEvents);
+    </script>
 </body>
 
 </html>

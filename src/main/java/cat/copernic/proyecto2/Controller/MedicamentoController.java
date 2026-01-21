@@ -70,21 +70,14 @@ public class MedicamentoController {
 
     @PostMapping("/guardar")
     public String guardar(@Valid @ModelAttribute("medicamento") Medicamento medicamento, BindingResult result,
-            Model model,
-            RedirectAttributes flash) {
+            Model model, RedirectAttributes flash) {
         if (result.hasErrors()) {
             model.addAttribute("trad", traduccionService);
             return "Farmacia/FormMedicamento";
         }
-        try {
-            medicamentoService.guardar(medicamento);
-            flash.addFlashAttribute("success", "Operación realizada con éxito.");
-            return "redirect:/medicamentos";
-        } catch (Exception e) {
-            model.addAttribute("error", e.getMessage());
-            model.addAttribute("trad", traduccionService);
-            return "Farmacia/FormMedicamento";
-        }
+        medicamentoService.guardar(medicamento);
+        flash.addFlashAttribute("success", "Operación realizada con éxito.");
+        return "redirect:/medicamentos";
     }
 
     @GetMapping("/confirmarDesactivar/{id}")
@@ -103,12 +96,8 @@ public class MedicamentoController {
 
     @PostMapping("/activar/{id}")
     public String activar(@PathVariable Long id, RedirectAttributes flash) {
-        try {
-            medicamentoService.activarLogica(id);
-            flash.addFlashAttribute("success", "Medicamento reactivado.");
-        } catch (Exception e) {
-            flash.addFlashAttribute("error", e.getMessage());
-        }
+        medicamentoService.activarLogica(id);
+        flash.addFlashAttribute("success", "Medicamento reactivado.");
         return "redirect:/medicamentos";
     }
 }

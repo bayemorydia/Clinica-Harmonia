@@ -5,214 +5,135 @@
     <div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: head_medico}"></div>
     <div sec:authorize="hasRole('ADMINISTRADOR')" th:replace="~{Reutilizable/layout :: head_general}"></div>
     <div sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layoutRRHH :: head_RRHH}"></div>
-
-    <title th:text="${empleado.id == null ? trad.getTraduccion('empleado.titulo.nuevo') : trad.getTraduccion('empleado.titulo.editar')}">Formulario</title>
+    <title
+        th:text="${empleado.id == null ? trad.getTraduccion('empleado.titulo.nuevo') : trad.getTraduccion('empleado.titulo.editar')}">
+    </title>
 </head>
 
 <body class="bg-light">
-<div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: menu_medico}"></div>
-<div sec:authorize="hasRole('ADMINISTRADOR')" th:replace="~{Reutilizable/layout :: menu}"></div>
-<div sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layoutRRHH :: menu_RRHH}"></div>
+    <div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: menu_medico}"></div>
+    <div sec:authorize="hasRole('ADMINISTRADOR')" th:replace="~{Reutilizable/layout :: menu}"></div>
+    <div sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layoutRRHH :: menu_RRHH}"></div>
 
-<main th:class="${#authorization.expression('hasRole(''ROLE_MEDICO'')')} ? 'content-medico' : 'content'">
-    <div class="container-fluid py-4">
+    <main th:class="${#authorization.expression('hasRole(''ROLE_MEDICO'')')} ? 'content-medico' : 'content'">
+        <div class="container-fluid py-4">
+            <div th:if="${error}" class="alert alert-danger border-0 shadow-sm mb-4" th:text="${error}"></div>
 
-        <!-- 🔴 ALERTA DE ERRORES Y ÉXITO -->
-        <div th:if="${error}" class="alert alert-danger border-0 d-flex align-items-center mb-4">
-            <i class="bi bi-exclamation-octagon me-2"></i>
-            <div th:text="${error}"></div>
-        </div>
+            <form th:action="@{/empleados/guardar}" th:object="${empleado}" method="post">
+                <input type="hidden" th:field="*{id}" />
 
-        <div th:if="${success}" class="alert alert-success border-0 d-flex align-items-center mb-4">
-            <i class="bi bi-check-circle me-2"></i>
-            <div th:text="${success}"></div>
-        </div>
-
-
-        <form th:action="@{/empleados/guardar}" th:object="${empleado}" method="post">
-            <input type="hidden" th:field="*{id}" />
-            <input type="hidden" th:field="*{fecha_alta}" />
-            <input type="hidden" th:field="*{fecha_baja}" />
-            <input type="hidden" th:field="*{activa}" />
-
-            <div class="row g-4">
-                <div class="col-lg-4">
-                    <div class="card shadow-sm border-0 mb-4" style="border-radius: 15px; overflow: hidden;">
-                        <div class="card-header bg-info py-4 border-0"></div>
-                        <div class="card-body text-center position-relative" style="margin-top: -50px;">
-                            <div class="bg-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow-sm"
-                                 style="width: 100px; height: 100px; border: 5px solid white;">
-                                <h1 class="mb-0 fw-bold text-info" style="font-size: 2.5rem;"
-                                    th:text="${empleado.nombre != null && !empleado.nombre.isEmpty() ? #strings.substring(empleado.nombre,0,1) : 'N'}">A</h1>
+                <div class="row g-4">
+                    <div class="col-lg-12">
+                        <div class="card shadow-sm border-0" style="border-radius: 15px;">
+                            <div class="card-header bg-white border-0 py-4 px-4 d-flex align-items-center">
+                                <div class="bg-primary bg-opacity-10 p-3 rounded-3 me-3">
+                                    <i class="bi bi-person-plus text-primary fs-3"></i>
+                                </div>
+                                <div>
+                                    <h4 class="fw-bold mb-0 text-dark"
+                                        th:text="${empleado.id == null ? trad.getTraduccion('empleado.titulo.nuevo') : trad.getTraduccion('empleado.titulo.editar')}">
+                                    </h4>
+                                    <p class="text-muted small mb-0"
+                                        th:text="${trad.getTraduccion('pacientes.lista.subtitulo')}"></p>
+                                </div>
                             </div>
-                            <h4 class="fw-bold mb-1 text-dark"
-                                th:if="${empleado.nombre != null or empleado.apellidos != null}"
-                                th:text="${empleado.nombre} + ' ' + ${empleado.apellidos}">Nombre Apellido</h4>
 
-                            <h4 class="fw-bold mb-1 text-dark" th:unless="${empleado.nombre != null or empleado.apellidos != null}"
-                                th:text="${trad.getTraduccion('empleado.card.nuevo')}">
-                                Nuevo Empleado
-                            </h4>
-
-                            <p class="text-muted small mb-2" th:text="${empleado.email}">email@ejemplo.com</p>
-
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-8">
-                    <div class="card shadow-sm border-0" style="border-radius: 15px;">
-                        <div class="card-body p-4 p-md-5">
-
-                            <!-- DATOS PERSONALES -->
-                            <div class="mb-5">
-                                <h5 class="fw-bold mb-4 text-primary d-flex align-items-center">
-                                    <span class="bg-primary bg-opacity-10 p-2 rounded-3 me-3">
-                                        <i class="bi bi-person-vcard"></i>
-                                    </span>
-                                    <span th:text="${trad.getTraduccion('empleado.seccion.personales')}">Datos Personales</span>
-                                </h5>
+                            <div class="card-body p-4">
                                 <div class="row g-3">
                                     <div class="col-md-6">
-                                        <label class="form-label small fw-bold text-secondary" th:text="${trad.getTraduccion('empleado.label.nombre')}">Nombre</label>
+                                        <label class="form-label small fw-bold text-secondary text-uppercase"
+                                            th:text="${trad.getTraduccion('empleado.label.nombre')}"></label>
                                         <input type="text" th:field="*{nombre}"
-                                               class="form-control rounded-3 bg-light"
-                                               th:classappend="${#fields.hasErrors('nombre')} ? 'is-invalid' : ''"
-                                               th:readonly="${#authorization.expression('hasRole(''ROLE_MEDICO'')')}" required>
-                                        <div class="invalid-feedback" th:errors="*{nombre}"></div>
+                                            class="form-control bg-light border-0 py-2" required>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label small fw-bold text-secondary" th:text="${trad.getTraduccion('empleado.label.apellidos')}">Apellidos</label>
+                                        <label class="form-label small fw-bold text-secondary text-uppercase"
+                                            th:text="${trad.getTraduccion('empleado.label.apellidos')}"></label>
                                         <input type="text" th:field="*{apellidos}"
-                                               class="form-control rounded-3 bg-light"
-                                               th:classappend="${#fields.hasErrors('apellidos')} ? 'is-invalid' : ''"
-                                               th:readonly="${#authorization.expression('hasRole(''ROLE_MEDICO'')')}" required>
-                                        <div class="invalid-feedback" th:errors="*{apellidos}"></div>
+                                            class="form-control bg-light border-0 py-2" required>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label small fw-bold text-secondary" th:text="${trad.getTraduccion('empleado.label.dni')}">DNI / NIE</label>
+                                        <label class="form-label small fw-bold text-secondary text-uppercase"
+                                            th:text="${trad.getTraduccion('empleado.label.dni')}"></label>
                                         <input type="text" th:field="*{dni}"
-                                               class="form-control rounded-3 font-monospace bg-light"
-                                               th:classappend="${#fields.hasErrors('dni')} ? 'is-invalid' : ''"
-                                               th:readonly="${#authorization.expression('hasRole(''ROLE_MEDICO'')')}" required>
-                                        <div class="invalid-feedback" th:errors="*{dni}"></div>
-                                    </div>
-
-                                </div>
-                            </div>
-
-                            <!-- CONTACTO Y LABORAL -->
-                            <div class="mb-5">
-                                <h5 class="fw-bold mb-4 text-primary d-flex align-items-center">
-                                    <span class="bg-primary bg-opacity-10 p-2 rounded-3 me-3">
-                                        <i class="bi bi-envelope-at"></i>
-                                    </span>
-                                    <span th:text="${trad.getTraduccion('empleado.seccion.contacto')}">Contacto y Laboral</span>
-                                </h5>
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label small fw-bold text-secondary" th:text="${trad.getTraduccion('empleado.label.telefono')}">Teléfono</label>
-                                        <input type="text" th:field="*{telefono}"
-                                               class="form-control rounded-3 bg-light"
-                                               th:classappend="${#fields.hasErrors('telefono')} ? 'is-invalid' : ''"
-                                               th:readonly="${#authorization.expression('hasRole(''ROLE_MEDICO'')')}">
-                                        <div class="invalid-feedback" th:errors="*{telefono}"></div>
+                                            class="form-control bg-light border-0 py-2 font-monospace" required>
+                                        <div class="mt-2 small text-primary">
+                                            <i class="bi bi-info-circle me-1"></i>
+                                            <span
+                                                th:text="${trad.getTraduccion('empleado.aviso.password') ?: 'La contraseña inicial será el DNI'}"></span>
+                                        </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label small fw-bold text-secondary" th:text="${trad.getTraduccion('empleado.label.email')}">Correo Electrónico</label>
+                                        <label class="form-label small fw-bold text-secondary text-uppercase"
+                                            th:text="${trad.getTraduccion('empleado.label.email')}"></label>
                                         <input type="email" th:field="*{email}"
-                                               class="form-control rounded-3 bg-light"
-                                               th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''"
-                                               th:readonly="${#authorization.expression('hasRole(''ROLE_MEDICO'')')}">
-                                        <div class="invalid-feedback" th:errors="*{email}"></div>
+                                            class="form-control bg-light border-0 py-2" required>
                                     </div>
-
-                                    <div class="col-md-6" sec:authorize="hasRole('ADMINISTRADOR')">
-                                        <label class="form-label small fw-bold text-secondary" th:text="${trad.getTraduccion('empleado.label.salario')}">Salario Base (€)</label>
-                                        <input type="number" step="0.01" min="0" th:field="*{salarioBase}"
-                                               class="form-control rounded-3 bg-light"
-                                               th:classappend="${#fields.hasErrors('salarioBase')} ? 'is-invalid' : ''">
-                                        <div class="invalid-feedback" th:errors="*{salarioBase}"></div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-bold text-secondary text-uppercase"
+                                            th:text="${trad.getTraduccion('empleado.label.telefono')}"></label>
+                                        <input type="text" th:field="*{telefono}"
+                                            class="form-control bg-light border-0 py-2" required>
                                     </div>
-                                    <div class="col-md-6" sec:authorize="hasRole('ADMINISTRADOR')">
-                                        <label class="form-label small fw-bold text-secondary" th:text="${trad.getTraduccion('empleado.label.rol')}">Rol</label>
-                                        <select th:field="*{rol.id}" class="form-select rounded-3 bg-light">
-                                            <option value="" disabled th:selected="${empleado.rol == null}" th:text="${trad.getTraduccion('empleado.select.rol')}">-- Selecciona un rol --</option>
-                                            <option th:each="r : ${roles}" th:value="${r.id}" th:text="${r.nombre}"></option>
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-bold text-secondary text-uppercase"
+                                            th:text="${trad.getTraduccion('empleado.label.salario')}"></label>
+                                        <input type="number" step="0.01" th:field="*{salarioBase}"
+                                            class="form-control bg-light border-0 py-2" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-bold text-secondary text-uppercase"
+                                            th:text="${trad.getTraduccion('empleado.label.rol')}"></label>
+                                        <select th:field="*{rol.id}" class="form-select bg-light border-0 py-2"
+                                            required>
+                                            <option value="" th:text="${trad.getTraduccion('empleado.select.rol')}">
+                                            </option>
+                                            <option th:each="r : ${roles}" th:value="${r.id}" th:text="${r.nombre}">
+                                            </option>
                                         </select>
                                     </div>
-                                </div>
-                            </div>
-
-                            <!-- HORARIO Y TURNO -->
-                            <div class="mb-5" sec:authorize="hasRole('ADMINISTRADOR')">
-                                <h5 class="fw-bold mb-4 text-primary d-flex align-items-center">
-                                    <span class="bg-primary bg-opacity-10 p-2 rounded-3 me-3">
-                                        <i class="bi bi-clock"></i>
-                                    </span>
-                                    <span th:text="${trad.getTraduccion('empleado.seccion.horario')}">Horario y Turno</span>
-                                </h5>
-                                <div class="row g-3">
                                     <div class="col-md-6">
-                                        <label class="form-label small fw-bold text-secondary" th:text="${trad.getTraduccion('empleado.label.inicio')}">Hora Inicio</label>
+                                        <label class="form-label small fw-bold text-secondary text-uppercase"
+                                            th:text="${trad.getTraduccion('empleado.label.turno')}"></label>
+                                        <select th:field="*{turno.id}" class="form-select bg-light border-0 py-2"
+                                            required>
+                                            <option value="" th:text="${trad.getTraduccion('empleado.select.turno')}">
+                                            </option>
+                                            <option th:each="t : ${turnos}" th:value="${t.id}" th:text="${t.nombre}">
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label small fw-bold text-secondary text-uppercase"
+                                            th:text="${trad.getTraduccion('empleado.label.inicio')}"></label>
                                         <input type="time" th:field="*{inicio}"
-                                               class="form-control rounded-3 bg-light"
-                                               th:classappend="${#fields.hasErrors('inicio')} ? 'is-invalid' : ''" required>
-                                        <div class="invalid-feedback" th:errors="*{inicio}"></div>
+                                            class="form-control bg-light border-0 py-2" required>
                                     </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label small fw-bold text-secondary" th:text="${trad.getTraduccion('empleado.label.fin')}">Hora Fin</label>
-                                        <input type="time" th:field="*{fin}"
-                                               class="form-control rounded-3 bg-light"
-                                               th:classappend="${#fields.hasErrors('fin')} ? 'is-invalid' : ''" required>
-                                        <div class="invalid-feedback" th:errors="*{fin}"></div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label small fw-bold text-secondary" th:text="${trad.getTraduccion('empleado.label.turno')}">Tipo de Turno</label>
-                                        <select th:field="*{turno.id}" class="form-select rounded-3 bg-light" required>
-                                            <option value="" disabled selected th:text="${trad.getTraduccion('empleado.select.turno')}">-- Selecciona un turno --</option>
-                                            <option th:each="t : ${turnos}" th:value="${t.id}" th:text="${t.nombre}"></option>
-                                        </select>
-                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('turno')}" th:errors="*{turno}"></div>
+                                    <div class="col-md-3">
+                                        <label class="form-label small fw-bold text-secondary text-uppercase"
+                                            th:text="${trad.getTraduccion('empleado.label.fin')}"></label>
+                                        <input type="time" th:field="*{fin}" class="form-control bg-light border-0 py-2"
+                                            required>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="text-end">
-                                <button type="submit" sec:authorize="hasRole('ADMINISTRADOR')"
-                                        class="btn btn-primary rounded-pill px-5 py-3 fw-bold shadow-lg hover-lift">
-                                    <i class="bi bi-save me-2"></i> <span th:text="${trad.getTraduccion('boton.guardar')}">Guardar</span>
+                            <div class="card-footer bg-white border-0 p-4 d-flex justify-content-end gap-2">
+                                <a th:href="@{/empleados}" class="btn btn-light rounded-pill px-4"
+                                    th:text="${trad.getTraduccion('boton.cancelar')}"></a>
+                                <button type="submit" class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm">
+                                    <i class="bi bi-save me-2"></i>
+                                    <span th:text="${trad.getTraduccion('boton.guardar')}"></span>
                                 </button>
-                                <a th:href="@{/empleados}" sec:authorize="hasRole('ADMINISTRADOR')"
-                                   class="btn btn-light rounded-pill px-5 py-3 fw-bold shadow-lg hover-lift ms-2">
-                                    <span th:text="${trad.getTraduccion('boton.cancelar')}">Cancelar</span>
-                                </a>
                             </div>
-
                         </div>
                     </div>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
+    </main>
 
-    </div>
-</main>
-
-<div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: scripts_medico}"></div>
-<div sec:authorize="hasRole('ADMINISTRADOR')" th:replace="~{Reutilizable/layout :: scripts}"></div>
-<div sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layoutRRHH :: scripts_RRHH}"></div>
-
-<style>
-    .hover-lift:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15) !important;
-    }
-    input[readonly] {
-        background-color: #f8f9fa !important;
-        border-color: #e9ecef;
-        cursor: not-allowed;
-        color: #6c757d;
-    }
-</style>
+    <div th:replace="~{Reutilizable/layout :: scripts}"></div>
 </body>
+
 </html>

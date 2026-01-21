@@ -2,9 +2,10 @@ package cat.copernic.proyecto2.Controller;
 
 import cat.copernic.proyecto2.Domain.Administración.Empleado;
 import cat.copernic.proyecto2.Domain.Persona.Usuario;
-import cat.copernic.proyecto2.Service.Usuario.empleado.EmpleadoUsuarioServiceImpl;
-import cat.copernic.proyecto2.Service.Empleado.EmpleadoServiceImpl;
+import cat.copernic.proyecto2.Service.Usuario.UsuarioService;
+import cat.copernic.proyecto2.Service.Empleado.EmpleadoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -14,10 +15,13 @@ import org.springframework.web.bind.annotation.*;
 public class PasswordController {
 
     @Autowired
-    private EmpleadoServiceImpl empleadoService;
+    private EmpleadoService empleadoService;
 
     @Autowired
-    private EmpleadoUsuarioServiceImpl usuarioService;
+    private UsuarioService usuarioService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @GetMapping("/forgot")
     public String forgotPasswordForm() {
@@ -28,6 +32,11 @@ public class PasswordController {
     public String forgotPasswordSubmit(@RequestParam String dni, Model model) {
         try {
             Empleado empleado = empleadoService.obtenerPorDni(dni);
+            if (empleado == null) {
+                model.addAttribute("error", "DNI/NIE no encontrado");
+                return "Login/forgot-password";
+            }
+
             Usuario usuario = empleado.getUsuario();
             if (usuario == null) {
                 model.addAttribute("error", "El empleado no tiene usuario asociado");
@@ -36,7 +45,7 @@ public class PasswordController {
             model.addAttribute("dni", dni);
             return "Login/reset-password";
         } catch (Exception e) {
-            model.addAttribute("error", "DNI/NIE no encontrado");
+            model.addAttribute("error", "Error al buscar el documento");
             return "Login/forgot-password";
         }
     }
@@ -54,8 +63,12 @@ public class PasswordController {
         try {
             Empleado empleado = empleadoService.obtenerPorDni(dni);
             Usuario usuario = empleado.getUsuario();
-            usuario.setPasswordHash(usuarioService.getPasswordEncoder().encode(newPassword));
+
+            // Encriptamos con el passwordEncoder inyectado y guardamos a través del
+            // UsuarioService
+            usuario.setPasswordHash(passwordEncoder.encode(newPassword));
             usuarioService.guardar(usuario);
+
             model.addAttribute("success", "Contraseña actualizada correctamente. Puedes iniciar sesión.");
             return "Login/Login";
         } catch (Exception e) {

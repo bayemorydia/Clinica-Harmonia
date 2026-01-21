@@ -1,6 +1,7 @@
 package cat.copernic.proyecto2.Controller;
 
 import cat.copernic.proyecto2.Domain.Administración.Empleado;
+import cat.copernic.proyecto2.Domain.PersonalSanitario.Diagnostico;
 import cat.copernic.proyecto2.Domain.PersonalSanitario.EpisodioClinico;
 import cat.copernic.proyecto2.Domain.PersonalSanitario.LineaReceta;
 import cat.copernic.proyecto2.Domain.PersonalSanitario.PruebaMedica;
@@ -12,6 +13,7 @@ import cat.copernic.proyecto2.Service.Medicamento.MedicamentoService;
 import cat.copernic.proyecto2.Service.Prueba.PruebaService;
 import cat.copernic.proyecto2.Service.Cita.CitaService;
 import cat.copernic.proyecto2.Service.Consulta.ConsultaService;
+import cat.copernic.proyecto2.Service.Diagnostico.DiagnosticoService;
 import cat.copernic.proyecto2.Service.Empleado.EmpleadoService;
 import cat.copernic.proyecto2.Service.Empleado.Nomina.NominaService;
 import java.time.LocalDate;
@@ -48,6 +50,9 @@ public class MedicoController {
 
     @Autowired
     private PruebaService pruebaService;
+
+    @Autowired
+    private DiagnosticoService diagnosticoService;
 
     @GetMapping("/dashboard")
     public String dashboard(Model model, Authentication auth) {
@@ -98,45 +103,61 @@ public class MedicoController {
     @GetMapping("/atender/{id}")
     public String atenderPaciente(@PathVariable("id") Long id, Model model, Authentication auth) {
         Empleado medico = empleadoService.obtenerPorUsername(auth.getName());
-        model.addAttribute("listaMedicamentos", medicamentoService.listarMedicamentos());
-        model.addAttribute("listaTratamientos", pruebaService.listarPruebas());
         Cita cita = citaService.findCitaById(id);
+
         model.addAttribute("medicoLogueado", medico);
         model.addAttribute("cita", cita);
         model.addAttribute("paciente", cita.getPaciente());
+
+        // Listas para los Selectores Filtrables
+        model.addAttribute("listaMedicamentos", medicamentoService.listarMedicamentos());
+        model.addAttribute("listaPruebas", pruebaService.listarPruebas());
+        model.addAttribute("listaDiagnosticos", diagnosticoService.listarTodos());
+
         model.addAttribute("episodio", new EpisodioClinico());
         model.addAttribute("tratamiento", new Tratamiento());
-        model.addAttribute("activePage", "agenda");
         model.addAttribute("trad", traduccionService);
         return "Medico/atender";
     }
 
     @PostMapping("/finalizar-consulta")
     public String guardarConsulta(@RequestParam("citaId") Long citaId,
-            @ModelAttribute EpisodioClinico episodio,
+            @RequestParam("diagnosticoId") Long diagnosticoId,
             @ModelAttribute Tratamiento tratamiento,
-            @RequestParam(value = "meds[]", required = false) List<String> meds,
-            @RequestParam(value = "dosis[]", required = false) List<String> dosis,
-            @RequestParam(value = "pruebaTipo[]", required = false) List<String> pruebaTipos,
-            @RequestParam(value = "pruebaResultado[]", required = false) List<String> pruebaResultados) {
+            @RequestParam(value = "medIds[]", required = false) List<Long> medIds,
+            @RequestParam(value = "medDosis[]", required = false) List<String> medDosis,
+            @RequestParam(value = "pruebaIds[]", required = false) List<Long> pruebaIds) {
+
+        // 1. Preparar Episodio con el Diagnóstico seleccionado
+        EpisodioClinico episodio = new EpisodioClinico();
+        Diagnostico diag = diagnosticoService.buscarPorId(diagnosticoId)
+                .orElseThrow(() -> new RuntimeException("Diagnóstico no encontrado con ID: " + diagnosticoId));
+        episodio.setDiagnostico(diag);
+        episodio.setFecha(LocalDateTime.now());
+
+        // 2. Preparar Receta/Medicamentos
         List<LineaReceta> lineas = new ArrayList<>();
-        if (meds != null) {
-            for (int i = 0; i < meds.size(); i++) {
+        if (medIds != null) {
+            for (int i = 0; i < medIds.size(); i++) {
                 LineaReceta lr = new LineaReceta();
-                lr.setDosis(dosis.get(i));
+                lr.setMedicamento(medicamentoService.encontrarMedicamento(medIds.get(i)));
+                lr.setDosis(medDosis.get(i));
                 lineas.add(lr);
             }
         }
+
+        // 3. Preparar Pruebas
         List<PruebaMedica> pruebas = new ArrayList<>();
-        if (pruebaTipos != null) {
-            for (int i = 0; i < pruebaTipos.size(); i++) {
-                if (!pruebaTipos.get(i).isBlank()) {
-                    PruebaMedica pm = new PruebaMedica();
-                    pm.setNombre(pruebaTipos.get(i));
-                    pruebas.add(pm);
-                }
+        if (pruebaIds != null) {
+            for (Long pId : pruebaIds) {
+                pruebas.add(pruebaService.encontrarPrueba(pId));
             }
         }
+
+        // 4. Configurar fechas de tratamiento
+        tratamiento.setFechaInicio(LocalDate.now());
+        // La fechaFin viene del formulario
+
         consultaService.finalizarConsulta(citaId, episodio, tratamiento, pruebas, lineas);
         return "redirect:/medico/agenda?success=true";
     }

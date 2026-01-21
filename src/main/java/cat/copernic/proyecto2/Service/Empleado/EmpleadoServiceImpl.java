@@ -6,8 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
-
 import cat.copernic.proyecto2.DAO.JPA.EmpleadoDAO;
 import cat.copernic.proyecto2.Domain.Administración.Empleado;
 import cat.copernic.proyecto2.Domain.Administración.Nomina;
@@ -36,6 +34,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         empleado.setId(null);
         empleado.setFecha_alta(LocalDate.now());
         empleado.setActiva(true);
+        empleado.setFecha_baja(null);
         return empleadoDAO.save(empleado);
     }
 
@@ -55,22 +54,21 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         existente.setTelefono(datos.getTelefono());
         existente.setRol(datos.getRol());
         existente.setSalarioBase(datos.getSalarioBase());
-        existente.setFecha_baja(datos.getFecha_baja());
         existente.setInicio(datos.getInicio());
         existente.setFin(datos.getFin());
         existente.setTurno(datos.getTurno());
+        // No tocamos 'activa' ni 'fecha_baja' aquí para evitar conflictos con los
+        // métodos de estado
+
         return empleadoDAO.save(existente);
     }
 
     @Override
-    @Transactional
     public void activarEmpleado(Long id) {
         Empleado emp = empleadoDAO.findById(id)
                 .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));
         emp.setActiva(true);
-        emp.setFecha_baja(null);
-        // Al estar dentro de @Transactional, JPA sincroniza el cambio automáticamente
-        // al finalizar el método
+        emp.setFecha_baja(null); // Limpiamos la fecha de baja al activar
         empleadoDAO.save(emp);
     }
 
@@ -98,7 +96,6 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     @Transactional(readOnly = true)
     public Page<Empleado> getEmpleadosPaginados(String query, Boolean activo, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("apellidos").ascending());
-        // Se mapea 'activo' de la vista al campo 'activa' del DAO
         return empleadoDAO.findByFilters(query, activo, pageable);
     }
 
@@ -119,9 +116,10 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     public Page<Nomina> listarNominasPorEmpleado(Long empleadoId, String search, int page, int size) {
         return empleadoDAO.findByEmpleado(empleadoId, search, PageRequest.of(page, size));
     }
+
+    @Override
     @Transactional(readOnly = true)
     public Empleado obtenerPorDni(String dni) {
         return empleadoDAO.obtenerPorDni(dni);
     }
-
 }

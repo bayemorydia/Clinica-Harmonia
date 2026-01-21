@@ -3,7 +3,7 @@
 
 <head>
     <div th:replace="~{Reutilizable/layout :: head_general}"></div>
-    <title>Inventario de Medicamentos</title>
+    <title th:text="${trad.getTraduccion('mod.medicamentos')}">Medicamentos</title>
     <style>
         .clickable-row {
             cursor: pointer;
@@ -14,7 +14,6 @@
             background-color: rgba(25, 135, 84, 0.05) !important;
         }
 
-        /* Estilos Paginación idénticos a Paciente */
         .page-link {
             color: #6c757d;
             border: none;
@@ -31,14 +30,9 @@
         }
 
         .page-item.active .page-link {
-            background-color: #198754 !important; /* Verde Farmacia */
+            background-color: #198754 !important;
             color: white !important;
             box-shadow: 0 4px 10px rgba(25, 135, 84, 0.2);
-        }
-
-        .page-item.disabled .page-link {
-            background-color: #f8f9fa;
-            color: #dee2e6;
         }
 
         .select-paginacion-clean {
@@ -62,18 +56,18 @@
 
 <body>
     <div th:replace="~{Reutilizable/layout :: menu}"></div>
-
     <main class="content">
         <div class="container-fluid">
-
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
-                    <h2 class="fw-bold text-dark mb-1">Inventario de Medicamentos</h2>
-                    <p class="text-muted small mb-0">Gestión de stock, precios y catálogo de farmacia.</p>
+                    <h2 class="fw-bold text-dark mb-1" th:text="${trad.getTraduccion('mod.medicamentos')}">Inventario
+                    </h2>
+                    <p class="text-muted small mb-0" th:text="${trad.getTraduccion('mod.admin.desc')}">Catálogo de
+                        productos.</p>
                 </div>
                 <a th:href="@{/medicamentos/nuevo}" class="btn btn-success rounded-pill px-4 shadow-sm fw-bold">
                     <i class="bi bi-capsule me-2"></i>
-                    <span>Nuevo Medicamento</span>
+                    <span th:text="${trad.getTraduccion('btn.crear')}">Nuevo</span>
                 </a>
             </div>
 
@@ -82,17 +76,21 @@
                     <div class="row g-3">
                         <div class="col-md-8">
                             <div class="input-group">
-                                <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                                <span class="input-group-text bg-white border-end-0 text-muted"><i
+                                        class="bi bi-search"></i></span>
                                 <input type="text" id="searchInput" class="form-control border-start-0 ps-0 shadow-none"
-                                    placeholder="Buscar por nombre, código o tipo..." th:value="${query}">
+                                    th:placeholder="${trad.getTraduccion('citas.placeholder.buscar')}"
+                                    th:value="${query}">
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <select id="statusFilter" class="form-select shadow-none" style="border-radius: 8px;"
-                                onchange="updateTable(0)">
-                                <option value="" th:selected="${activo == null}">Todos los estados</option>
-                                <option value="true" th:selected="${activo == true}">Activos</option>
-                                <option value="false" th:selected="${activo == false}">Inactivos</option>
+                            <select id="statusFilter" class="form-select shadow-none" onchange="updateTable(0)">
+                                <option value="" th:selected="${activo == null}"
+                                    th:text="${trad.getTraduccion('pacientes.filtro.todos')}">Todos</option>
+                                <option value="true" th:selected="${activo == true}"
+                                    th:text="${trad.getTraduccion('pacientes.estado.activo')}">Activos</option>
+                                <option value="false" th:selected="${activo == false}"
+                                    th:text="${trad.getTraduccion('pacientes.estado.inactivo')}">Inactivos</option>
                             </select>
                         </div>
                     </div>
@@ -101,23 +99,21 @@
 
             <div class="card shadow-sm border-0" style="border-radius: 15px; overflow: hidden;">
                 <div class="card-body p-0" id="tablaContainer">
-
                     <div th:fragment="tablaMedicamentos">
                         <div class="table-responsive">
                             <table class="table table-hover align-middle mb-0">
                                 <thead class="bg-light">
                                     <tr>
-                                        <th class="ps-4 py-3 border-0 text-secondary small fw-bold">MEDICAMENTO</th>
+                                        <th class="ps-4 py-3 border-0 text-secondary small fw-bold">PRODUCTO</th>
                                         <th class="py-3 border-0 text-secondary small fw-bold">CÓDIGO</th>
-                                        <th class="py-3 border-0 text-secondary small fw-bold">STOCK</th>
-                                        <th class="py-3 border-0 text-secondary small fw-bold">PRECIO</th>
                                         <th class="py-3 border-0 text-secondary small fw-bold">ESTADO</th>
                                         <th class="py-3 border-0 text-secondary small fw-bold text-center">ACCIONES</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr th:if="${#lists.isEmpty(medicamentos)}">
-                                        <td colspan="6" class="text-center py-5 text-muted">No se han encontrado medicamentos.</td>
+                                        <td colspan="4" class="text-center py-5 text-muted"
+                                            th:text="${trad.getTraduccion('pacientes.tabla.vacia')}">Vacío</td>
                                     </tr>
                                     <tr th:each="m : ${medicamentos}" class="border-bottom clickable-row"
                                         th:onclick="|window.location.href='/medicamentos/detalle/' + ${m.id}|">
@@ -128,31 +124,35 @@
                                                     <i class="bi bi-capsule-pill"></i>
                                                 </div>
                                                 <div>
-                                                    <div class="fw-bold text-dark mb-0" th:text="${m.nombre}">Nombre</div>
+                                                    <div class="fw-bold text-dark mb-0" th:text="${m.nombre}">Nombre
+                                                    </div>
                                                     <div class="text-muted small" th:text="${m.tipo}">Tipo</div>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="py-3 text-secondary font-monospace" th:text="${m.codigo}">REF-000</td>
+                                        <td class="py-3 text-secondary font-monospace" th:text="${m.codigo}">COD</td>
                                         <td class="py-3">
-                                            <span th:text="${m.stockActual}" 
-                                                  th:class="${m.stockActual <= m.stockMinimo} ? 'text-danger fw-bold' : ''">0</span> ud.
-                                        </td>
-                                        <td class="py-3 fw-bold text-success" th:text="${m.precioUnitario + '€'}">0.00€</td>
-                                        <td class="py-3">
-                                            <span th:if="${m.activo}" class="badge rounded-pill bg-success-subtle text-success px-3 py-2" style="font-size: 0.75rem;">Activo</span>
-                                            <span th:unless="${m.activo}" class="badge rounded-pill bg-light text-secondary px-3 py-2" style="font-size: 0.75rem;">Inactivo</span>
+                                            <span th:if="${m.activo}"
+                                                class="badge rounded-pill bg-success-subtle text-success px-3 py-2"
+                                                th:text="${trad.getTraduccion('pacientes.estado.activo')}">Activo</span>
+                                            <span th:unless="${m.activo}"
+                                                class="badge rounded-pill bg-light text-secondary px-3 py-2"
+                                                th:text="${trad.getTraduccion('pacientes.estado.inactivo')}">Inactivo</span>
                                         </td>
                                         <td class="py-3 text-center" onclick="event.stopPropagation();">
-                                            <a th:if="${m.activo}" th:href="@{'/medicamentos/confirmarDesactivar/' + ${m.id}}"
+                                            <a th:if="${m.activo}"
+                                                th:href="@{'/medicamentos/confirmarDesactivar/' + ${m.id}}"
                                                 class="btn btn-sm btn-outline-danger rounded-pill px-3 shadow-sm">
-                                                <i class="bi bi-trash-fill me-1"></i>
-                                                <span>Dar de Baja</span>
+                                                <i class="bi bi-trash-fill me-1"></i> <span
+                                                    th:text="${trad.getTraduccion('pacientes.btn.desactivar')}">Baja</span>
                                             </a>
-                                            <form th:unless="${m.activo}" th:action="@{'/medicamentos/activar/' + ${m.id}}" method="post" style="display:inline;">
-                                                <button type="submit" class="btn btn-sm btn-outline-success rounded-pill px-3 shadow-sm">
-                                                    <i class="bi bi-check-circle-fill me-1"></i>
-                                                    <span>Activar</span>
+                                            <form th:unless="${m.activo}"
+                                                th:action="@{'/medicamentos/activar/' + ${m.id}}" method="post"
+                                                style="display:inline;">
+                                                <button type="submit"
+                                                    class="btn btn-sm btn-outline-success rounded-pill px-3 shadow-sm">
+                                                    <i class="bi bi-check-circle-fill me-1"></i> <span
+                                                        th:text="${trad.getTraduccion('pacientes.btn.activar')}">Activar</span>
                                                 </button>
                                             </form>
                                         </td>
@@ -160,43 +160,37 @@
                                 </tbody>
                             </table>
                         </div>
-
                         <div class="table-footer d-flex justify-content-between align-items-center">
                             <div class="text-muted small">
-                                <span class="fw-bold" th:text="${(currentPage * size) + 1}">1</span>
-                                <span>a</span>
+                                <span class="fw-bold" th:text="${(currentPage * size) + 1}">1</span> a
                                 <span class="fw-bold" th:text="${(currentPage * size) + medicamentos.size()}">10</span>
-                                <span>de</span>
+                                de
                                 <span class="fw-bold" th:text="${totalElements}">100</span>
-                                <span>medicamentos</span>
                             </div>
-
                             <div class="d-flex align-items-center gap-4">
-                                <div class="d-flex align-items-center gap-2">
-                                    <span class="text-muted small">Mostrar</span>
-                                    <select id="pageSize" class="select-paginacion-clean shadow-none" onchange="updateTable(0)">
-                                        <option value="10" th:selected="${size == 10}">10</option>
-                                        <option value="20" th:selected="${size == 20}">20</option>
-                                        <option value="50" th:selected="${size == 50}">50</option>
-                                    </select>
-                                </div>
-
-                                <nav>
+                                <select id="pageSize" class="select-paginacion-clean shadow-none"
+                                    onchange="updateTable(0)">
+                                    <option value="10" th:selected="${size == 10}">10</option>
+                                    <option value="20" th:selected="${size == 20}">20</option>
+                                    <option value="50" th:selected="${size == 50}">50</option>
+                                </select>
+                                <nav th:if="${totalPages > 0}">
                                     <ul class="pagination pagination-sm mb-0">
                                         <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                                            <a class="page-link" href="javascript:void(0)" th:onclick="'changePage(' + (${currentPage} - 1) + ')'">
-                                                <i class="bi bi-chevron-left"></i>
-                                            </a>
+                                            <a class="page-link" href="javascript:void(0)"
+                                                th:onclick="'changePage(' + (${currentPage} - 1) + ')'"><i
+                                                    class="bi bi-chevron-left"></i></a>
                                         </li>
-                                        <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages > 0 ? totalPages - 1 : 0)}"
-                                            th:if="${totalPages > 0 and i >= currentPage - 1 and i <= currentPage + 1}"
+                                        <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
                                             th:classappend="${i == currentPage} ? 'active'">
-                                            <a class="page-link" href="javascript:void(0)" th:onclick="'changePage(' + ${i} + ')'" th:text="${i + 1}">1</a>
+                                            <a class="page-link" href="javascript:void(0)"
+                                                th:onclick="'changePage(' + ${i} + ')'" th:text="${i + 1}">1</a>
                                         </li>
-                                        <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
-                                            <a class="page-link" href="javascript:void(0)" th:onclick="'changePage(' + (${currentPage} + 1) + ')'">
-                                                <i class="bi bi-chevron-right"></i>
-                                            </a>
+                                        <li class="page-item"
+                                            th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
+                                            <a class="page-link" href="javascript:void(0)"
+                                                th:onclick="'changePage(' + (${currentPage} + 1) + ')'"><i
+                                                    class="bi bi-chevron-right"></i></a>
                                         </li>
                                     </ul>
                                 </nav>
@@ -208,49 +202,27 @@
             </div>
         </div>
     </main>
-
     <div th:replace="~{Reutilizable/layout :: scripts}"></div>
-
     <script th:inline="javascript">
         function updateTable(page = 0) {
             const query = document.getElementById('searchInput').value;
             const size = document.getElementById('pageSize').value;
             const activo = document.getElementById('statusFilter').value;
             const container = document.getElementById('tablaContainer');
-
-            const params = new URLSearchParams({
-                query: query,
-                page: page,
-                size: size
-            });
-
-            if (activo !== "") {
-                params.append("activo", activo);
-            }
-
-            fetch(`/medicamentos/search?${params.toString()}`)
-                .then(response => response.text())
-                .then(html => {
-                    container.innerHTML = html;
-                })
-                .catch(err => console.error("Error:", err));
+            const params = new URLSearchParams({ query, page, size });
+            if (activo !== "") params.append("activo", activo);
+            fetch(`/medicamentos/search?${params.toString()}`).then(r => r.text()).then(html => { container.innerHTML = html; }).catch(err => console.error(err));
         }
-
         function changePage(page) {
             const totalPages = parseInt(document.getElementById('hiddenTotalPages').value);
-            if (page >= 0 && page < totalPages) {
-                updateTable(page);
-            }
+            if (page >= 0 && page < totalPages) updateTable(page);
         }
-
         let timeout = null;
-        document.getElementById('searchInput').addEventListener('keyup', function () {
+        document.getElementById('searchInput').addEventListener('keyup', () => {
             clearTimeout(timeout);
-            timeout = setTimeout(() => {
-                updateTable(0);
-            }, 500);
+            timeout = setTimeout(() => updateTable(0), 500);
         });
     </script>
 </body>
 
-</html> 
+</html>
