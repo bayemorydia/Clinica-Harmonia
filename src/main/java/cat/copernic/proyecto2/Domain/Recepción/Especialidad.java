@@ -5,5 +5,6 @@ public enum Especialidad {
     PEDIATRIA,
     CARDIOLOGIA,
     DERMATOLOGIA,
-    GINECOLOGIA
+    GINECOLOGIA,
+    Fisioterapia
 }
