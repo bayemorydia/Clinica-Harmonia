@@ -4,7 +4,7 @@ import cat.copernic.proyecto2.Domain.Administración.Empleado;
 import cat.copernic.proyecto2.Domain.Recepción.Paciente;
 import cat.copernic.proyecto2.Domain.Recepción.Cita;
 import cat.copernic.proyecto2.Domain.Recepción.EstadoCita;
-import cat.copernic.proyecto2.Domain.Recepción.Especialidad; // Añadido
+import cat.copernic.proyecto2.Domain.Recepción.Especialidad;
 import cat.copernic.proyecto2.Service.Cita.CitaService;
 import cat.copernic.proyecto2.Service.Paciente.PacienteService;
 import cat.copernic.proyecto2.Service.Empleado.EmpleadoService;
@@ -32,22 +32,17 @@ public class CitaController {
 
     @Autowired
     private CitaService citaService;
-
     @Autowired
     private PacienteService pacienteService;
-
     @Autowired
     private EmpleadoService empleadoService;
-
     @Autowired
     private TraduccionService traduccionService;
-
     @Autowired
     private FacturaPdfService facturaPdfService;
 
     private void cargarListasFormulario(Model model) {
         model.addAttribute("pacientes", pacienteService.getAllPacientes());
-        // El Controller ya no filtra, el Service le da los médicos listos
         model.addAttribute("profesionales", citaService.listarMedicosActivos());
         model.addAttribute("estadosCita", EstadoCita.values());
         model.addAttribute("especialidades", Especialidad.values());
@@ -62,7 +57,9 @@ public class CitaController {
             @RequestParam(name = "size", defaultValue = "10") int size,
             @RequestHeader(value = "X-Requested-With", required = false) String requestedWith,
             Model model) {
+
         Page<Cita> paginaCitas = citaService.getCitasPaginadas(query, estado, page, size);
+
         model.addAttribute("citas", paginaCitas.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", paginaCitas.getTotalPages());
@@ -72,6 +69,9 @@ public class CitaController {
         model.addAttribute("estadoFiltro", estado);
         model.addAttribute("estadosCita", EstadoCita.values());
         model.addAttribute("trad", traduccionService);
+
+        // Si es una petición AJAX (desde el JS), devolvemos solo el fragmento de la
+        // tabla
         if ("XMLHttpRequest".equals(requestedWith)) {
             return "Cita/listaCitas :: tablaCitas";
         }
@@ -81,7 +81,6 @@ public class CitaController {
     @GetMapping("/nueva")
     public String mostrarFormularioNueva(Model model) {
         Cita cita = new Cita();
-        // Sugerir la próxima hora en punto disponible
         cita.setFechaHora(LocalDateTime.now().truncatedTo(ChronoUnit.HOURS).plusHours(1));
         model.addAttribute("cita", cita);
         cargarListasFormulario(model);
@@ -93,17 +92,33 @@ public class CitaController {
             BindingResult result,
             Model model,
             RedirectAttributes flash) {
+
+        model.addAttribute("trad", traduccionService);
+
         if (result.hasErrors()) {
             cargarListasFormulario(model);
             return "Cita/formularioCita";
         }
+
         try {
             citaService.saveCita(cita);
             flash.addFlashAttribute("success", "Cita procesada con éxito");
             return "redirect:/citas";
         } catch (Exception e) {
+            // --- LA SOLUCIÓN AQUÍ ---
+            // 1. Añadimos el mensaje de error al modelo
             model.addAttribute("errorNegocio", e.getMessage());
+
+            // 2. En lugar de devolver la 'cita' con error, creamos una nueva limpia
+            Cita nuevaCita = new Cita();
+            // Sugerimos de nuevo la próxima hora válida para facilitar al usuario
+            nuevaCita.setFechaHora(LocalDateTime.now().truncatedTo(ChronoUnit.HOURS).plusHours(1));
+            model.addAttribute("cita", nuevaCita);
+
+            // 3. Recargamos las listas (pacientes, médicos, etc.)
             cargarListasFormulario(model);
+
+            // 4. Devolvemos a la vista del formulario
             return "Cita/formularioCita";
         }
     }
@@ -111,6 +126,7 @@ public class CitaController {
     @GetMapping("/confirmarEliminar/{id}")
     public String mostrarConfirmacionAnular(@PathVariable Long id, Model model) {
         Cita cita = citaService.findCitaById(id);
+        // IMPORTANTE: Solo permitir anular si está programada
         if (cita == null || cita.getEstado() != EstadoCita.PROGRAMADA) {
             return "redirect:/citas";
         }
@@ -126,7 +142,6 @@ public class CitaController {
             return "redirect:/citas";
         model.addAttribute("cita", cita);
         model.addAttribute("trad", traduccionService);
-        model.addAttribute("readOnly", true);
         return "Cita/detalleCita";
     }
 
@@ -155,8 +170,6 @@ public class CitaController {
 
     @InitBinder
     public void initBinder(org.springframework.web.bind.WebDataBinder binder) {
-        // Registramos editores para que Spring sepa convertir los IDs de los selects en
-        // objetos reales
         binder.registerCustomEditor(Paciente.class, new java.beans.PropertyEditorSupport() {
             @Override
             public void setAsText(String text) {

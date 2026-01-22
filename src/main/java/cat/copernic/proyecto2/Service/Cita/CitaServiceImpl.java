@@ -59,27 +59,41 @@ public class CitaServiceImpl implements CitaService {
     @Override
     @Transactional
     public void saveCita(Cita cita) throws Exception {
-        if (cita.getFechaHora() == null) throw new Exception("La fecha y hora son obligatorias.");
+        if (cita.getFechaHora() == null)
+            throw new Exception("La fecha y hora son obligatorias.");
         LocalDateTime fechaNormalizada = cita.getFechaHora().truncatedTo(ChronoUnit.HOURS);
         cita.setFechaHora(fechaNormalizada);
         if (fechaNormalizada.isBefore(LocalDateTime.now().truncatedTo(ChronoUnit.HOURS))) {
             throw new Exception("No se pueden agendar citas en el pasado.");
         }
-        int diaSemana = fechaNormalizada.getDayOfWeek().getValue();
-        if (diaSemana > 5) throw new Exception("Solo se pueden agendar citas de lunes a viernes.");
-        int hora = fechaNormalizada.getHour();
-        if (hora < 8 || hora >= 17) throw new Exception("El horario de atención es de 08:00 a 17:00.");
-        if (hora == 13) throw new Exception("El horario de 13:00 a 14:00 es la hora de almuerzo.");
+        int hora_s = fechaNormalizada.getHour();
+        boolean esMañana = (hora_s >= 8 && hora_s <= 12);
+        boolean esTarde = (hora_s >= 14 && hora_s <= 16);
 
-        Optional<Cita> confP = citaDAO.findByPacienteAndFechaHoraAndEstadoNot(cita.getPaciente(), fechaNormalizada, EstadoCita.ANULADA);
+        if (!esMañana && !esTarde) {
+            throw new Exception("El horario permitido es de 08:00-12:00 y 14:00-16:00.");
+        }
+        int diaSemana = fechaNormalizada.getDayOfWeek().getValue();
+        if (diaSemana > 5)
+            throw new Exception("Solo se pueden agendar citas de lunes a viernes.");
+        int hora = fechaNormalizada.getHour();
+        if (hora < 8 || hora >= 17)
+            throw new Exception("El horario de atención es de 08:00 a 17:00.");
+        if (hora == 13)
+            throw new Exception("El horario de 13:00 a 14:00 es la hora de almuerzo.");
+
+        Optional<Cita> confP = citaDAO.findByPacienteAndFechaHoraAndEstadoNot(cita.getPaciente(), fechaNormalizada,
+                EstadoCita.ANULADA);
         if (confP.isPresent() && (cita.getId() == null || !confP.get().getId().equals(cita.getId()))) {
             throw new Exception("El paciente ya tiene una cita a esta hora.");
         }
-        Optional<Cita> confM = citaDAO.findByProfesionalAndFechaHoraAndEstadoNot(cita.getProfesional(), fechaNormalizada, EstadoCita.ANULADA);
+        Optional<Cita> confM = citaDAO.findByProfesionalAndFechaHoraAndEstadoNot(cita.getProfesional(),
+                fechaNormalizada, EstadoCita.ANULADA);
         if (confM.isPresent() && (cita.getId() == null || !confM.get().getId().equals(cita.getId()))) {
             throw new Exception("El médico ya tiene una cita asignada a esta hora.");
         }
-        if (cita.getId() == null) cita.setEstado(EstadoCita.PROGRAMADA);
+        if (cita.getId() == null)
+            cita.setEstado(EstadoCita.PROGRAMADA);
         citaDAO.save(cita);
     }
 
@@ -116,14 +130,17 @@ public class CitaServiceImpl implements CitaService {
     public Map<LocalDate, Long> obtenerResumenAgendaAnual(Long medicoId, int anio) {
         LocalDateTime inicio = LocalDateTime.of(anio, 1, 1, 0, 0);
         LocalDateTime fin = LocalDateTime.of(anio, 12, 31, 23, 59);
-        return citaDAO.findByProfesionalIdAndFechaHoraBetweenAndEstadoNotOrderByFechaHoraAsc(medicoId, inicio, fin, EstadoCita.ANULADA)
+        return citaDAO
+                .findByProfesionalIdAndFechaHoraBetweenAndEstadoNotOrderByFechaHoraAsc(medicoId, inicio, fin,
+                        EstadoCita.ANULADA)
                 .stream().collect(Collectors.groupingBy(c -> c.getFechaHora().toLocalDate(), Collectors.counting()));
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Cita> obtenerCitasDia(Long medicoId, LocalDate fecha) {
-        return citaDAO.findByProfesionalIdAndFechaHoraBetweenAndEstadoOrderByFechaHoraAsc(medicoId, fecha.atStartOfDay(), fecha.atTime(23, 59, 59), EstadoCita.PROGRAMADA);
+        return citaDAO.findByProfesionalIdAndFechaHoraBetweenAndEstadoOrderByFechaHoraAsc(medicoId,
+                fecha.atStartOfDay(), fecha.atTime(23, 59, 59), EstadoCita.PROGRAMADA);
     }
 
     @Override
@@ -135,7 +152,8 @@ public class CitaServiceImpl implements CitaService {
     @Override
     @Transactional(readOnly = true)
     public List<Cita> listarCitasPorDiaGlobal(LocalDate fecha) {
-        return citaDAO.findByFechaHoraBetweenAndEstadoNotOrderByFechaHoraAsc(fecha.atStartOfDay(), fecha.atTime(23, 59, 59), EstadoCita.ANULADA);
+        return citaDAO.findByFechaHoraBetweenAndEstadoNotOrderByFechaHoraAsc(fecha.atStartOfDay(),
+                fecha.atTime(23, 59, 59), EstadoCita.ANULADA);
     }
 
     @Override

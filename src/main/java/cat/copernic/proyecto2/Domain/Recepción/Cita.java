@@ -38,6 +38,7 @@ public class Cita {
     private LocalDateTime fechaHora;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 50)
     @NotNull(message = "La especialidad es obligatoria")
     private Especialidad especialidad;
 

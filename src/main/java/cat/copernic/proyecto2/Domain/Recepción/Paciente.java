@@ -20,29 +20,34 @@ public class Paciente {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "El nombre es obligatorio")
+    @NotBlank(message = "{paciente.valid.nombre}")
     private String nombre;
 
-    @NotBlank(message = "Los apellidos son obligatorios")
+    @NotBlank(message = "{paciente.valid.apellidos}")
     private String apellidos;
 
-    @Pattern(regexp = "^([0-9]{8}[TRWAGMYFPDXBNJZSQVHLCKE]|[XYZ][0-9]{7}[TRWAGMYFPDXBNJZSQVHLCKE])$", message = "Formato de DNI o NIE no válido")
+    @NotBlank(message = "{paciente.valid.dni_obligatorio}")
+    @Pattern(regexp = "^([0-9]{8}[TRWAGMYFPDXBNJZSQVHLCKE]|[XYZ][0-9]{7}[TRWAGMYFPDXBNJZSQVHLCKE])$", 
+             message = "{paciente.valid.dni_formato}")
     @Column(unique = true, nullable = false)
     private String dni;
 
-    @Past(message = "La fecha de nacimiento debe ser una fecha pasada")
-    @NotNull(message = "La fecha de nacimiento es obligatoria")
+    @Past(message = "{paciente.valid.nacimiento_futuro}")
+    @NotNull(message = "{paciente.valid.nacimiento_obligatorio}")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate fechaNacimiento;
 
-    @Pattern(regexp = "^[0-9]{9}$", message = "El teléfono debe tener exactamente 9 dígitos")
-    @Column(unique = true)
+    @NotBlank(message = "{paciente.valid.telefono_obligatorio}")
+    @Pattern(regexp = "^[0-9]{9}$", message = "{paciente.valid.telefono_formato}")
     private String telefono;
 
-    @Email(message = "Formato de email incorrecto")
+    @NotBlank(message = "{paciente.valid.email_obligatorio}")
+    @Email(message = "{paciente.valid.email_formato}")
     private String email;
 
+    @NotBlank(message = "{paciente.valid.direccion_obligatorio}")
     private String direccion;
+
     private LocalDate fechaAlta;
     private String rutaFoto; 
 

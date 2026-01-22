@@ -69,15 +69,31 @@ public class MedicamentoController {
     }
 
     @PostMapping("/guardar")
-    public String guardar(@Valid @ModelAttribute("medicamento") Medicamento medicamento, BindingResult result,
-            Model model, RedirectAttributes flash) {
+    public String guardar(@Valid @ModelAttribute("medicamento") Medicamento medicamento,
+            BindingResult result,
+            Model model,
+            RedirectAttributes flash) {
+
+        // Validaciones de anotaciones (@NotBlank, @Size, etc)
         if (result.hasErrors()) {
             model.addAttribute("trad", traduccionService);
             return "Farmacia/FormMedicamento";
         }
-        medicamentoService.guardar(medicamento);
-        flash.addFlashAttribute("success", "Operación realizada con éxito.");
-        return "redirect:/medicamentos";
+
+        try {
+            medicamentoService.guardar(medicamento);
+            flash.addFlashAttribute("success", "Operación realizada con éxito.");
+            return "redirect:/medicamentos";
+        } catch (RuntimeException e) {
+            if ("CODIGO_DUPLICADO".equals(e.getMessage())) {
+                // Añadimos el error manualmente al BindingResult para que aparezca en el HTML
+                result.rejectValue("codigo", "error.medicamento",
+                        "Este código ya está registrado en el sistema.");
+                model.addAttribute("trad", traduccionService);
+                return "Farmacia/FormMedicamento";
+            }
+            throw e; // Otros errores
+        }
     }
 
     @GetMapping("/confirmarDesactivar/{id}")
