@@ -1,94 +1,200 @@
 package cat.copernic.proyecto2.Service.Cita;
 
+import cat.copernic.proyecto2.DAO.JPA.FacturaDAO;
+import cat.copernic.proyecto2.Domain.Facturacion.Factura;
+import cat.copernic.proyecto2.Domain.Facturacion.LineaFactura;
 import cat.copernic.proyecto2.Domain.Recepción.Cita;
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
-import org.springframework.stereotype.Service;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import java.awt.Color;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Service
 public class FacturaPdfService {
 
+    @Autowired
+    private FacturaDAO facturaDAO;
+
+    /**
+     * Método para el controlador que exportar directamente al flujo de respuesta.
+     */
     public void exportar(HttpServletResponse response, Cita cita) throws IOException {
-        // 1. Configuración del documento
+        try {
+            byte[] pdfBytes = generarFacturaCitaPdf(cita.getId());
+            response.getOutputStream().write(pdfBytes);
+            response.getOutputStream().flush();
+        } catch (Exception e) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Error al generar el PDF: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Genera el PDF usando la librería OpenPDF buscando la factura real en la BD.
+     */
+    public byte[] generarFacturaCitaPdf(Long citaId) throws Exception {
+        // Buscamos la factura en la base de datos vinculada a la cita
+        List<Factura> facturas = facturaDAO.findAll();
+        Factura factura = null;
+        for (Factura f : facturas) {
+            if (f.getLineas() != null && !f.getLineas().isEmpty()) {
+                if (f.getLineas().get(0).getConcepto().contains("(Cita #" + citaId + ")")) {
+                    factura = f;
+                    break;
+                }
+            }
+        }
+
+        if (factura == null) {
+            throw new Exception("No existe una factura registrada en la base de datos para la cita #" + citaId);
+        }
+
         Document document = new Document(PageSize.A4);
-        PdfWriter.getInstance(document, response.getOutputStream());
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        PdfWriter.getInstance(document, out);
 
         document.open();
 
-        // 2. Fuentes
-        Font fuenteTitulo = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18, Color.BLUE);
-        Font fuenteTexto = FontFactory.getFont(FontFactory.HELVETICA, 12, Color.BLACK);
+        // Estilos de fuente (OpenPDF usa java.awt.Color)
+        Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18, Color.BLACK);
+        Font boldFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
+        Font normalFont = FontFactory.getFont(FontFactory.HELVETICA, 12);
 
-        // 3. Título
-        Paragraph titulo = new Paragraph("Factura de Cita Médica", fuenteTitulo);
-        titulo.setAlignment(Paragraph.ALIGN_CENTER);
-        document.add(titulo);
-        document.add(new Paragraph("\n")); // Espacio
+        // Título
+        Paragraph title = new Paragraph("CLÍNICA HARMONIA", titleFont);
+        title.setAlignment(Element.ALIGN_CENTER);
+        document.add(title);
+        document.add(new Paragraph(" ")); // Espacio
 
-        // 4. Datos del Cliente y Cita
-        document.add(new Paragraph("ID Factura: " + "FACT-" + cita.getId(), fuenteTexto));
-        document.add(new Paragraph("Fecha de emisión: " + java.time.LocalDate.now(), fuenteTexto));
-        document.add(new Paragraph("\n"));
+        // Información de la Factura
+        document.add(new Paragraph("Número de Factura: " + factura.getId(), boldFont));
+        document.add(new Paragraph("Fecha de Emisión: " + factura.getFechaEmision(), normalFont));
+        String estadoTexto = factura.isActivo() ? "VIGENTE" : "ANULADA";
+        document.add(new Paragraph("Estado: " + estadoTexto, boldFont));
+        document.add(new Paragraph(" "));
 
-        // 5. Tabla de detalles
-        PdfPTable tabla = new PdfPTable(2); // 2 columnas
-        tabla.setWidthPercentage(100f);
-        tabla.setSpacingBefore(10);
-        tabla.setWidths(new float[] { 3.0f, 4.0f }); // Anchos relativos
+        // Información del Paciente
+        document.add(new Paragraph("DATOS DEL PACIENTE:", boldFont));
+        document.add(new Paragraph(
+                "Nombre: " + factura.getPaciente().getNombre() + " " + factura.getPaciente().getApellidos(),
+                normalFont));
+        document.add(new Paragraph("DNI: " + factura.getPaciente().getDni(), normalFont));
+        document.add(new Paragraph(" "));
 
-        // Cabecera de la tabla
-        PdfPCell celdaHeader = new PdfPCell();
-        celdaHeader.setBackgroundColor(Color.LIGHT_GRAY);
-        celdaHeader.setPadding(5);
+        // Tabla de productos/servicios
+        PdfPTable table = new PdfPTable(3);
+        table.setWidthPercentage(100);
+        table.setSpacingBefore(10f);
 
-        Font fontCabecera = FontFactory.getFont(FontFactory.HELVETICA_BOLD);
-        fontCabecera.setColor(Color.WHITE);
+        // Cabeceras de tabla
+        PdfPCell cell = new PdfPCell();
+        cell.setBackgroundColor(Color.LIGHT_GRAY);
+        cell.setPadding(5);
 
-        celdaHeader.setPhrase(new Phrase("Concepto", fontCabecera));
-        tabla.addCell(celdaHeader);
+        cell.setPhrase(new Phrase("Concepto", boldFont));
+        table.addCell(cell);
+        cell.setPhrase(new Phrase("Cantidad", boldFont));
+        table.addCell(cell);
+        cell.setPhrase(new Phrase("Subtotal", boldFont));
+        table.addCell(cell);
 
-        celdaHeader.setPhrase(new Phrase("Detalle", fontCabecera));
-        tabla.addCell(celdaHeader);
-
-        // Filas de datos
-        tabla.addCell("Paciente");
-        tabla.addCell(cita.getPaciente().getNombre() + " " + cita.getPaciente().getApellidos());
-
-        tabla.addCell("DNI");
-        tabla.addCell(cita.getPaciente().getDni());
-
-        tabla.addCell("Médico / Profesional");
-        if (cita.getProfesional() != null) {
-            tabla.addCell(cita.getProfesional().getNombre() + " " + cita.getProfesional().getApellidos());
-        } else {
-            tabla.addCell("No asignado");
+        // Filas de la factura
+        for (LineaFactura linea : factura.getLineas()) {
+            table.addCell(new Phrase(linea.getConcepto(), normalFont));
+            table.addCell(new Phrase(String.valueOf(linea.getCantidad()), normalFont));
+            table.addCell(new Phrase(linea.getSubtotal() + " €", normalFont));
         }
+        document.add(table);
 
-        tabla.addCell("Fecha y Hora Cita");
-        tabla.addCell(cita.getFechaHora().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
-
-        tabla.addCell("Especialidad");
-        tabla.addCell(cita.getEspecialidad().toString());
-
-        // Precio (Si no tienes precio en Cita, pon uno fijo o añádelo a la entidad)
-        tabla.addCell("Total a Pagar");
-        tabla.addCell("50.00 €"); // Ejemplo estático
-
-        document.add(tabla);
-
-        // 6. Pie de página
-        document.add(new Paragraph("\n\n"));
-        Paragraph footer = new Paragraph("Gracias por confiar en nuestro centro médico.",
-                FontFactory.getFont(FontFactory.HELVETICA_OBLIQUE, 10));
-        footer.setAlignment(Paragraph.ALIGN_CENTER);
-        document.add(footer);
+        // Totales
+        document.add(new Paragraph(" "));
+        Paragraph totales = new Paragraph();
+        totales.add(new Chunk("Subtotal: " + factura.getSubtotal() + " €\n", normalFont));
+        totales.add(new Chunk("IVA (21%): " + factura.getIva() + " €\n", normalFont));
+        totales.add(new Chunk("TOTAL A PAGAR: " + factura.getTotal() + " €", titleFont));
+        totales.setAlignment(Element.ALIGN_RIGHT);
+        document.add(totales);
 
         document.close();
+        return out.toByteArray();
+    }
+
+    public void exportarFacturaDirecta(HttpServletResponse response, Long facturaId) throws IOException {
+        try {
+            byte[] pdfBytes = generarPdfPorFacturaId(facturaId);
+            response.getOutputStream().write(pdfBytes);
+            response.getOutputStream().flush();
+        } catch (Exception e) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error: " + e.getMessage());
+        }
+    }
+
+    public byte[] generarPdfPorFacturaId(Long facturaId) throws Exception {
+        Factura factura = facturaDAO.findById(facturaId)
+                .orElseThrow(() -> new Exception("Factura no encontrada: " + facturaId));
+
+        Document document = new Document(PageSize.A4);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        PdfWriter.getInstance(document, out);
+        document.open();
+
+        // Fuentes
+        Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18, Color.BLACK);
+        Font boldFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, Color.BLACK);
+        Font normalFont = FontFactory.getFont(FontFactory.HELVETICA, 12, Color.BLACK);
+
+        // ... (Cabecera igual)
+
+        // 4. Información de Factura (Asegurar conversión a String)
+        document.add(new Paragraph("FACTURA #" + factura.getId(), boldFont));
+        String fecha = (factura.getFechaEmision() != null) ? factura.getFechaEmision().toString() : "N/A";
+        document.add(new Paragraph("Fecha: " + fecha, normalFont));
+
+        // Validación de Paciente
+        if (factura.getPaciente() != null) {
+            String nombre = (factura.getPaciente().getNombre() != null) ? factura.getPaciente().getNombre() : "";
+            String apellidos = (factura.getPaciente().getApellidos() != null) ? factura.getPaciente().getApellidos()
+                    : "";
+            document.add(new Paragraph("Paciente: " + nombre + " " + apellidos, normalFont));
+        }
+        document.add(new Paragraph(" "));
+
+        // 5. Tabla de conceptos
+        PdfPTable table = new PdfPTable(3);
+        table.setWidthPercentage(100);
+        table.setWidths(new float[] { 3f, 1f, 1f });
+
+        table.addCell(new Phrase("CONCEPTO", boldFont));
+        table.addCell(new Phrase("CANT.", boldFont));
+        table.addCell(new Phrase("SUBTOTAL", boldFont));
+
+        if (factura.getLineas() != null) {
+            for (LineaFactura linea : factura.getLineas()) {
+                table.addCell(new Phrase(linea.getConcepto() != null ? linea.getConcepto() : "-", normalFont));
+                table.addCell(new Phrase(String.valueOf(linea.getCantidad()), normalFont));
+                // Convertir float a String explícitamente
+                table.addCell(new Phrase(String.format("%.2f", linea.getSubtotal()) + " €", normalFont));
+            }
+        }
+        document.add(table);
+
+        // 6. Totales (Convertir BigDecimal a String de forma segura)
+        document.add(new Paragraph(" "));
+        Paragraph totales = new Paragraph();
+        totales.setAlignment(Element.ALIGN_RIGHT);
+
+        String totalTexto = (factura.getTotal() != null) ? factura.getTotal().toString() : "0.00";
+        totales.add(new Chunk("TOTAL: " + totalTexto + " €", titleFont));
+        document.add(totales);
+
+        document.close();
+        return out.toByteArray();
     }
 }

@@ -28,14 +28,18 @@ public class EpisodioClinico {
     private String motivoConsulta;
 
     @ManyToMany
-    @JoinTable(name = "episodio_pruebas", joinColumns = @JoinColumn(name = "episodio_id"), inverseJoinColumns = @JoinColumn(name = "prueba_id"))
+    @JoinTable(
+        name = "episodio_pruebas", 
+        joinColumns = @JoinColumn(name = "episodio_id"), 
+        inverseJoinColumns = @JoinColumn(name = "prueba_id")
+    )
     private List<PruebaMedica> pruebasAsignadas = new ArrayList<>();
 
     @OneToMany(mappedBy = "episodio", cascade = CascadeType.ALL)
-    private List<Tratamiento> tratamientos;
+    private List<Tratamiento> tratamientos = new ArrayList<>();
 
     @OneToMany(mappedBy = "episodio", cascade = CascadeType.ALL)
-    private List<RecetaMedica> recetas;
+    private List<RecetaMedica> recetas = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "diagnostico_id")

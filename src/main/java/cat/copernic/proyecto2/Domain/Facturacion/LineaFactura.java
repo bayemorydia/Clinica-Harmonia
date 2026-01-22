@@ -3,6 +3,7 @@ package cat.copernic.proyecto2.Domain.Facturacion;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
+import java.math.BigDecimal;
 
 @Data
 @Entity
@@ -15,8 +16,8 @@ public class LineaFactura {
 
     private String concepto;
     private int cantidad;
-    private float precioUnitario;
-    private float subtotal;
+    private BigDecimal precioUnitario;
+    private BigDecimal subtotal;
 
     @ManyToOne
     @JoinColumn(name = "factura_id")

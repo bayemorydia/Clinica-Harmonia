@@ -1,6 +1,7 @@
 package cat.copernic.proyecto2.Controller;
 
 import cat.copernic.proyecto2.Domain.Facturacion.Factura;
+import cat.copernic.proyecto2.Service.Cita.FacturaPdfService;
 import cat.copernic.proyecto2.Service.Facturacion.FacturaService;
 import cat.copernic.proyecto2.Service.Traduccion.TraduccionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,9 @@ public class FacturaController {
 
     @Autowired
     private FacturaService facturaService;
+
+    @Autowired
+    private FacturaPdfService facturaPdfService;
 
     @Autowired
     private TraduccionService traduccionService;
@@ -36,6 +40,51 @@ public class FacturaController {
         model.addAttribute("query", query);
         model.addAttribute("trad", traduccionService);
         return "Facturacion/listaFacturas";
+    }
+
+    @GetMapping("/descargar-pdf/{id}")
+    public ResponseEntity<byte[]> descargarPdf(@PathVariable("id") Long id) {
+        // 1. Validación inicial del ID
+        if (id == null || id <= 0) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        try {
+            // 2. Verificar si la factura existe antes de llamar al servicio de PDF
+            Factura factura = facturaService.findFacturaById(id);
+            if (factura == null) {
+                System.err.println("Error: No se encontró la factura con ID " + id);
+                return ResponseEntity.notFound().build();
+            }
+
+            // 3. Intento de generación del PDF
+            byte[] pdfBytes = facturaPdfService.generarPdfPorFacturaId(id);
+
+            // 4. Configuración de cabeceras
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            
+            // Usamos inline para que el navegador intente mostrar el error si el PDF está corrupto
+            // o attachment para forzar descarga. Cambia a .inline() si quieres ver el error en el navegador.
+            headers.setContentDisposition(ContentDisposition.attachment()
+                    .filename("Factura_" + id + ".pdf")
+                    .build());
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .contentLength(pdfBytes.length)
+                    .body(pdfBytes);
+
+        } catch (Exception e) {
+            // ESTO ES LO MÁS IMPORTANTE: Mira la consola de tu terminal/IDE
+            System.err.println("======= ERROR CRÍTICO GENERANDO PDF =======");
+            System.err.println("Mensaje: " + e.getMessage());
+            e.printStackTrace(); 
+            System.err.println("===========================================");
+            
+            // Devolvemos el error detallado en el cuerpo para depuración (solo en desarrollo)
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @GetMapping("/detalle/{id}")
@@ -62,7 +111,7 @@ public class FacturaController {
     }
 
     @GetMapping("/search")
-    public String search(@RequestParam(value = "query", required = false) String query,
+    public String search(@RequestParam(value = "query", required = false, defaultValue = "") String query,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             Model model) {

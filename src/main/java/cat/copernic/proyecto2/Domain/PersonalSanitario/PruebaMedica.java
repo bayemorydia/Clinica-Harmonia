@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 @Data
 @Entity
@@ -27,7 +28,7 @@ public class PruebaMedica implements Serializable {
 
     @NotNull(message = "El precio es obligatorio")
     @Column(nullable = false)
-    private Double precio;
+    private BigDecimal precio;
 
     @Column(name = "activo")
     private boolean activo = true;

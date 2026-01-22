@@ -20,7 +20,7 @@
                 style="border-radius: 15px; background: linear-gradient(to right, #ffffff, #f8f9fa);">
                 <div class="card-body p-4">
                     <div class="row align-items-center">
-                        <div class="col-md-7 d-flex align-items-center">
+                        <div class="col-md-6 d-flex align-items-center">
                             <a th:href="@{/medico/agenda}" class="btn btn-white shadow-sm rounded-circle border me-3">
                                 <i class="bi bi-arrow-left"></i>
                             </a>
@@ -40,11 +40,19 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-5 text-md-end mt-3 mt-md-0">
-                            <a th:href="@{/medico/paciente/historial/{id}(id=${paciente.id})}"
-                                class="btn btn-outline-primary rounded-pill px-4 fw-bold shadow-sm me-2">
-                                <i class="bi bi-folder2-open me-2"></i>Ver Historial Clínico
+
+                        <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                            <a th:href="@{'/medico/cita/no-asistio/' + ${cita.id}}"
+                                class="btn btn-outline-danger rounded-pill px-4 fw-bold shadow-sm me-2"
+                                onclick="return confirm('¿Está seguro de marcar al paciente como NO PRESENTADO? Se cancelará la atención actual.')">
+                                <i class="bi bi-person-x me-2"></i>No asistió
                             </a>
+
+                            <a th:href="@{/medico/paciente/historial/{id}(id=${paciente.id}, citaId=${cita.id})}"
+                                class="btn btn-outline-primary">
+                                <i class="bi bi- clock-history"></i> Ver Historial Completo
+                            </a>
+
                             <span class="badge bg-primary rounded-pill px-3 py-2 fs-6 shadow-sm">
                                 <i class="bi bi-clock me-1"></i> <span
                                     th:text="${#temporals.format(cita.fechaHora, 'HH:mm')}"></span>
@@ -55,8 +63,7 @@
                     <div class="mt-4 p-3 bg-primary bg-opacity-10 border-start border-primary border-4 rounded-3">
                         <label class="form-label fw-bold text-primary small text-uppercase mb-1">Motivo de la
                             visita</label>
-                        <p class="mb-0 fs-5 text-dark italic" th:text="${cita.motivo}">"El paciente presenta dolor
-                            lumbar desde hace tres días..."</p>
+                        <p class="mb-0 fs-5 text-dark italic" th:text="${cita.motivo}">Motivo...</p>
                     </div>
                 </div>
             </div>
@@ -67,16 +74,16 @@
                 <div class="row g-4">
                     <div class="col-lg-7">
                         <div class="card shadow-sm border-0 mb-4" style="border-radius: 15px;">
-                            <div class="card-header bg-white py-3">
+                            <div class="card-header bg-white py-3 border-bottom">
                                 <h5 class="card-title fw-bold mb-0 text-primary"><i
                                         class="bi bi-clipboard2-pulse me-2"></i>Evaluación Médica</h5>
                             </div>
                             <div class="card-body">
                                 <div class="mb-4">
                                     <label class="form-label fw-bold text-muted small text-uppercase">Diagnóstico
-                                        Principal (CIE-10)</label>
+                                        Principal (CIE-10) *</label>
                                     <select name="diagnosticoId" class="form-select select2-single" required>
-                                        <option value="">Buscar diagnóstico por nombre o código...</option>
+                                        <option value="">Buscar diagnóstico...</option>
                                         <option th:each="d : ${listaDiagnosticos}" th:value="${d.id}"
                                             th:text="${d.codigo} + ' - ' + ${d.nombre}"></option>
                                     </select>
@@ -84,28 +91,29 @@
 
                                 <div class="mb-4">
                                     <label class="form-label fw-bold text-muted small text-uppercase">Instrucciones y
-                                        Recomendaciones</label>
+                                        Recomendaciones *</label>
                                     <textarea class="form-control border-0 bg-light" name="descripcion" rows="4"
-                                        placeholder="Reposo, dieta, ejercicios recomendados, signos de alarma..."
-                                        required style="border-radius: 10px;"></textarea>
+                                        placeholder="Escriba el tratamiento obligatorio..." required
+                                        style="border-radius: 10px;"></textarea>
                                 </div>
 
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <label class="form-label fw-bold text-muted small text-uppercase">Fin del
-                                            Tratamiento</label>
+                                            Tratamiento *</label>
                                         <input type="date" name="fechaFin" class="form-control border-0 bg-light"
                                             required style="border-radius: 10px;">
-                                        <small class="text-muted">Fecha estimada de finalización</small>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label fw-bold text-muted small text-uppercase">Pruebas
-                                            Médicas Complementarias</label>
+                                            Complementarias</label>
                                         <select name="pruebaIds[]" class="form-select select2-multiple"
                                             multiple="multiple">
                                             <option th:each="p : ${listaPruebas}" th:value="${p.id}"
-                                                th:text="${p.nombre}"></option>
+                                                th:text="${p.nombre} + ' (' + ${p.precio} + '€)'"></option>
                                         </select>
+                                        <small class="text-info"><i class="bi bi-info-circle"></i> Se generará factura
+                                            automáticamente.</small>
                                     </div>
                                 </div>
                             </div>
@@ -126,7 +134,7 @@
                                 <div id="recetaContainer">
                                     <div class="text-center py-5 text-muted" id="sinMeds">
                                         <i class="bi bi-prescription2 fs-1 d-block mb-2 opacity-50"></i>
-                                        <p class="small mb-0">No se han prescrito medicamentos en esta consulta.</p>
+                                        <p class="small mb-0">No se han prescrito medicamentos.</p>
                                     </div>
                                 </div>
 
@@ -136,8 +144,8 @@
                                         class="btn btn-primary btn-lg rounded-pill shadow-sm py-3 fw-bold">
                                         <i class="bi bi-check2-circle me-2"></i>Finalizar Consulta
                                     </button>
-                                    <p class="text-center text-muted small mt-2">Esta acción cerrará la cita y guardará
-                                        el historial.</p>
+                                    <p class="text-center text-muted small mt-2">Guarda el historial y cierra la cita.
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -149,23 +157,18 @@
 
     <template id="medTemplate">
         <div
-            class="medicamento-item bg-light p-3 rounded-3 mb-3 border-start border-success border-4 position-relative shadow-sm">
+            class="medicamento-item bg-light p-3 rounded-3 mb-3 border-start border-success border-4 position-relative shadow-sm animate__animated animate__fadeIn">
             <button type="button" class="btn-close position-absolute top-0 end-0 m-2"
-                onclick="this.parentElement.remove(); verificarMeds();" style="font-size: 0.8rem;"></button>
+                onclick="this.parentElement.remove(); verificarMeds();"></button>
             <div class="mb-2">
-                <label class="small fw-bold text-muted text-uppercase" style="font-size: 0.65rem;">Medicamento</label>
                 <select name="medIds[]" class="form-select select2-dynamic" required>
-                    <option value="">Buscar en farmacia...</option>
+                    <option value="">Medicamento...</option>
                     <option th:each="med : ${listaMedicamentos}" th:value="${med.id}"
                         th:text="${med.nombre} + ' (' + ${med.tipo} + ')'"></option>
                 </select>
             </div>
-            <div>
-                <label class="small fw-bold text-muted text-uppercase" style="font-size: 0.65rem;">Dosis e
-                    Instrucciones</label>
-                <input type="text" name="medDosis[]" class="form-control form-control-sm border-0 shadow-none"
-                    placeholder="Ej: 500mg cada 8 horas por 7 días" required>
-            </div>
+            <input type="text" name="medDosis[]" class="form-control form-control-sm border-0"
+                placeholder="Instrucciones de dosis..." required>
         </div>
     </template>
 
@@ -175,37 +178,22 @@
 
     <script>
         $(document).ready(function () {
-            // Inicializar Select2
-            $('.select2-single').select2({ theme: 'bootstrap-5', width: '100%' });
-            $('.select2-multiple').select2({
-                theme: 'bootstrap-5',
-                width: '100%',
-                placeholder: 'Seleccione pruebas médicas...'
-            });
+            $('.select2-single').select2({ theme: 'bootstrap-5' });
+            $('.select2-multiple').select2({ theme: 'bootstrap-5', placeholder: 'Añadir pruebas...' });
 
-            // Establecer fecha mínima como hoy para el tratamiento
             const today = new Date().toISOString().split('T')[0];
             document.getElementsByName('fechaFin')[0].setAttribute('min', today);
         });
 
         function agregarMedicamento() {
-            const container = document.getElementById('recetaContainer');
-            const template = document.getElementById('medTemplate');
-            const sinMeds = document.getElementById('sinMeds');
-            if (sinMeds) sinMeds.style.display = 'none';
-
-            const clone = template.content.cloneNode(true);
-            const newItem = container.appendChild(clone.querySelector('.medicamento-item'));
-
-            $(newItem).find('.select2-dynamic').select2({ theme: 'bootstrap-5', width: '100%' });
+            $('#sinMeds').hide();
+            const clone = document.getElementById('medTemplate').content.cloneNode(true);
+            const newItem = document.getElementById('recetaContainer').appendChild(clone.querySelector('.medicamento-item'));
+            $(newItem).find('.select2-dynamic').select2({ theme: 'bootstrap-5' });
         }
 
         function verificarMeds() {
-            const container = document.getElementById('recetaContainer');
-            const sinMeds = document.getElementById('sinMeds');
-            if (container.querySelectorAll('.medicamento-item').length === 0) {
-                sinMeds.style.display = 'block';
-            }
+            if ($('#recetaContainer .medicamento-item').length === 0) $('#sinMeds').show();
         }
     </script>
 
@@ -231,11 +219,6 @@
         .btn-white {
             background-color: white;
             color: #6c757d;
-        }
-
-        .btn-white:hover {
-            background-color: #f8f9fa;
-            color: #0d6efd;
         }
 
         .content-medico {

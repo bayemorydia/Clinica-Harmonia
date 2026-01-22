@@ -14,6 +14,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -120,6 +124,19 @@ public class CitaController {
 
             // 4. Devolvemos a la vista del formulario
             return "Cita/formularioCita";
+        }
+    }
+
+    @GetMapping("/pdf/{id}")
+    public ResponseEntity<byte[]> descargarFacturaPdf(@PathVariable Long id) {
+        try {
+            byte[] pdf = facturaPdfService.generarFacturaCitaPdf(id);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("attachment", "factura_cita_" + id + ".pdf");
+            return new ResponseEntity<>(pdf, headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
