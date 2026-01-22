@@ -39,10 +39,13 @@
 
                         <form th:action="@{/nominas/guardar}" method="post" th:object="${nomina}">
 
+                            <!-- ID del empleado -->
                             <input type="hidden" th:field="*{empleado.id}"/>
 
+                            <!-- Salario Base ANUAL -->
                             <input type="hidden" th:field="*{salarioBase}" id="salarioBase"/>
 
+                            <!-- Período -->
                             <div class="mb-3">
                                 <label class="form-label fw-bold text-secondary" th:text="${trad.getTraduccion('nomina.tabla.periodo')}">Período</label>
                                 <input type="month"
@@ -51,36 +54,32 @@
                                        required>
                             </div>
 
+                            <!-- IRPF (solo porcentaje) -->
                             <div class="mb-3">
-                                <label class="form-label fw-bold text-secondary" th:text="${trad.getTraduccion('nomina.tabla.complementos') + ' (€)'}">Complementos (€)</label>
-                                <input type="number"
-                                       step="0.01"
-                                       th:field="*{complementos}"
-                                       id="complementos"
-                                       class="form-control rounded-3"
-                                       value="0">
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label fw-bold text-secondary" th:text="${trad.getTraduccion('nomina.tabla.deducciones') + ' (€)'}">Deducciones (€)</label>
+                                <label class="form-label fw-bold text-secondary">IRPF (%)</label>
                                 <input type="number"
                                        step="0.01"
                                        th:field="*{deducciones}"
                                        id="deducciones"
                                        class="form-control rounded-3"
-                                       value="0">
+                                       readonly>
                             </div>
 
+                            <!-- Total a pagar mensual -->
                             <div class="mb-3">
-                                <label class="form-label fw-bold text-secondary" th:text="${trad.getTraduccion('nomina.tabla.total') + ' (€)'}">Total a pagar (€)</label>
+                                <label class="form-label fw-bold text-secondary">Total a pagar mensual (€)</label>
                                 <input type="number"
                                        step="0.01"
-                                       th:field="*{totalPagar}"
-                                       id="totalPagar"
+                                       id="totalPagarMensual"
                                        class="form-control rounded-3"
-                                       readonly
-                                       required>
+                                       readonly>
                             </div>
+
+                            <!-- Campo oculto para enviar neto mensual al backend -->
+                            <input type="hidden" th:field="*{netoMensual}" id="netoMensual"/>
+
+                            <!-- Campos ocultos para enviar ANUAL -->
+                            <input type="hidden" th:field="*{totalPagar}" id="totalPagar"/>
 
                             <div class="d-flex justify-content-end mt-4">
                                 <a th:href="@{/nominas/detalle/{id}(id=${empleado.id})}" class="btn btn-light rounded-pill me-3" th:text="${trad.getTraduccion('boton.cancelar')}">
@@ -103,23 +102,38 @@
 
 <div th:replace="~{Reutilizable/layout :: scripts}"></div>
 
-<!-- SCRIPT CALCULAR TOTAL -->
+<!-- SCRIPT CALCULAR IRPF Y NETO MENSUAL -->
 <script th:inline="javascript">
     /*<![CDATA[*/
-    const salarioBase = parseFloat(document.getElementById('salarioBase').value) || 0;
-    const complementosInput = document.getElementById('complementos');
-    const deduccionesInput = document.getElementById('deducciones');
-    const totalPagarInput = document.getElementById('totalPagar');
+    const salarioBaseAnual = parseFloat(document.getElementById('salarioBase').value) || 0;
+    const deduccionesInput = document.getElementById('deducciones'); // % IRPF
+    const totalPagarInput = document.getElementById('totalPagar');    // neto anual
+    const totalPagarMensualInput = document.getElementById('totalPagarMensual'); // neto mensual mostrado
+    const netoMensualInput = document.getElementById('netoMensual');   // neto mensual enviado
 
-    function calcularTotal() {
-        const complementos = parseFloat(complementosInput.value) || 0;
-        const deducciones = parseFloat(deduccionesInput.value) || 0;
-        totalPagarInput.value = (salarioBase + complementos - deducciones).toFixed(2);
+    function obtenerIRPF(salarioAnual) {
+        if (salarioAnual <= 12450) return 19;
+        if (salarioAnual <= 20200) return 24;
+        if (salarioAnual <= 35200) return 30;
+        if (salarioAnual <= 60000) return 37;
+        return 45;
     }
 
-    complementosInput.addEventListener('input', calcularTotal);
-    deduccionesInput.addEventListener('input', calcularTotal);
-    window.addEventListener('DOMContentLoaded', calcularTotal);
+    function calcularNomina() {
+        const irpfPorcentaje = obtenerIRPF(salarioBaseAnual);
+        const irpfAnual = salarioBaseAnual * (irpfPorcentaje / 100);
+        const netoMensual = (salarioBaseAnual - irpfAnual) / 12;
+
+        // Mostrar al usuario
+        deduccionesInput.value = irpfPorcentaje.toFixed(2); // mostrar porcentaje
+        totalPagarMensualInput.value = netoMensual.toFixed(2);
+
+        // Enviar al backend
+        totalPagarInput.value = (salarioBaseAnual - irpfAnual).toFixed(2); // neto anual
+        netoMensualInput.value = netoMensual.toFixed(2); // neto mensual
+    }
+
+    window.addEventListener('DOMContentLoaded', calcularNomina);
     /*]]>*/
 </script>
 

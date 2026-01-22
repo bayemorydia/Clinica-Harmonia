@@ -21,4 +21,6 @@ public interface NominaDAO extends JpaRepository<Nomina, Long> {
     List<Nomina> findByPeriodo(String periodo);
 
     List<Nomina> findByPeriodoContaining(String anyo);
+
+   Nomina  findByEmpleadoIdAndPeriodo(Long id, String periodo);
 }
