@@ -1,85 +1,151 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <div th:replace="~{Reutilizable/layout :: head_general}"></div>
-    <title>Detalle de Factura</title>
+    <title th:text="'Detalle Factura #' + ${factura.id}"></title>
+    <style>
+        @media print {
+
+            .btn-group,
+            .content-sidebar,
+            .menu {
+                display: none !important;
+            }
+
+            .content {
+                margin-left: 0 !important;
+                padding: 0 !important;
+            }
+
+            .card {
+                border: none !important;
+                shadow: none !important;
+            }
+        }
+
+        .invoice-header {
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            color: white;
+            border-radius: 15px 15px 0 0;
+        }
+    </style>
 </head>
-<body>
+
+<body class="bg-light">
     <div th:replace="~{Reutilizable/layout :: menu}"></div>
+
     <main class="content">
-        <div class="container-fluid">
-            <div class="d-flex justify-content-between align-items-end mb-4">
+        <div class="container-fluid py-4">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
-                    <h2 class="fw-bold mb-1" th:text="'Factura #' + ${factura.id}"></h2>
-                    <span th:class="${factura.activo ? 'badge bg-success' : 'badge bg-danger'}" 
-                          th:text="${factura.activo ? 'ACTIVA' : 'DESACTIVADA'}"></span>
+                    <h2 class="fw-bold text-dark mb-1">
+                        <i class="bi bi-receipt me-2"></i>Factura #[[${factura.id}]]
+                    </h2>
+                    <div class="d-flex gap-2">
+                        <span th:class="${factura.activo ? 'badge bg-success' : 'badge bg-danger'}"
+                            th:text="${factura.activo ? 'DOCUMENTO VÁLIDO' : 'ANULADA'}"></span>
+                        <span
+                            th:class="${factura.estado.name() == 'PAGADA' ? 'badge bg-primary' : 'badge bg-warning text-dark'}"
+                            th:text="${factura.estado}"></span>
+                    </div>
                 </div>
                 <div class="btn-group shadow-sm">
-                    <button class="btn btn-white" onclick="window.print()"><i class="bi bi-printer me-2"></i>Imprimir</button>
-                    <a th:href="@{/admin/facturas}" class="btn btn-primary">Volver</a>
+                    <a th:href="@{/admin/facturas/descargar-pdf/{id}(id=${factura.id})}" class="btn btn-white border">
+                        <i class="bi bi-file-pdf me-2"></i>Descargar PDF
+                    </a>
+                    <a th:href="@{/admin/facturas}" class="btn btn-primary px-4">
+                        <i class="bi bi-arrow-left me-2"></i>Volver al Listado
+                    </a>
                 </div>
             </div>
 
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="card border-0 shadow-sm h-100" style="border-radius: 15px;">
-                        <div class="card-body">
-                            <h6 class="text-muted small fw-bold text-uppercase mb-3">Información del Receptor</h6>
+            <div class="card border-0 shadow-sm" style="border-radius: 15px;">
+                <div class="card-body p-4 border-bottom bg-light" style="border-radius: 15px 15px 0 0;">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-primary small fw-bold text-uppercase mb-3">Emisor (Nuestra Clínica)</h6>
+                            <h5 class="fw-bold mb-1">Clínica Harmonia</h5>
+                            <p class="text-muted small mb-0">CIF: B-12345678</p>
+                            <p class="text-muted small mb-0">Calle Salud, 123 - Terrassa</p>
+                            <p class="text-muted small">info@clinicacopernic.cat</p>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <h6 class="text-primary small fw-bold text-uppercase mb-3">Receptor (Cliente/Paciente)</h6>
                             <div th:if="${factura.paciente != null}">
-                                <h5 class="fw-bold" th:text="${factura.paciente.nombre + ' ' + factura.paciente.apellidos}"></h5>
-                                <p class="text-muted small mb-1"><i class="bi bi-card-text me-2"></i>[[${factura.paciente.dni}]]</p>
-                                <p class="text-muted small mb-1"><i class="bi bi-geo-alt me-2"></i>[[${factura.paciente.direccion}]]</p>
+                                <h5 class="fw-bold mb-1"
+                                    th:text="${factura.paciente.nombre + ' ' + factura.paciente.apellidos}"></h5>
+                                <p class="text-muted small mb-0"><i class="bi bi-card-text me-1"></i> DNI:
+                                    [[${factura.paciente.dni}]]</p>
+                                <p class="text-muted small mb-0"><i class="bi bi-geo-alt me-1"></i>
+                                    [[${factura.paciente.direccion}]]</p>
+                                <p class="text-muted small"><i class="bi bi-telephone me-1"></i>
+                                    [[${factura.paciente.telefono}]]</p>
                             </div>
                             <div th:if="${factura.proveedor != null}">
-                                <h5 class="fw-bold" th:text="${factura.proveedor.nombre}"></h5>
-                                <p class="text-muted small mb-1">ID Proveedor: [[${factura.proveedor.id}]]</p>
+                                <h5 class="fw-bold mb-1" th:text="${factura.proveedor.nombre}"></h5>
+                                <p class="text-muted small mb-0">ID Proveedor: [[${factura.proveedor.id}]]</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-md-8">
-                    <div class="card border-0 shadow-sm mb-4" style="border-radius: 15px;">
-                        <div class="card-body p-0">
-                            <table class="table mb-0">
-                                <thead class="bg-light">
-                                    <tr>
-                                        <th class="ps-4">CONCEPTO</th>
-                                        <th class="text-center">CANTIDAD</th>
-                                        <th class="text-end pe-4">SUBTOTAL</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr th:each="linea : ${factura.lineas}">
-                                        <td class="ps-4 py-3" th:text="${linea.concepto}"></td>
-                                        <td class="text-center py-3" th:text="${linea.cantidad}"></td>
-                                        <td class="text-end pe-4 py-3 fw-bold" th:text="${linea.subtotal} + ' €'"></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="card-footer bg-white border-top-0 p-4">
-                            <div class="row justify-content-end">
-                                <div class="col-md-4">
-                                    <div class="d-flex justify-content-between mb-2">
-                                        <span class="text-muted">Subtotal:</span>
-                                        <span class="fw-bold" th:text="${factura.subtotal} + ' €'"></span>
-                                    </div>
-                                    <div class="d-flex justify-content-between mb-2">
-                                        <span class="text-muted">IVA:</span>
-                                        <span class="fw-bold" th:text="${factura.iva} + ' €'"></span>
-                                    </div>
-                                    <div class="d-flex justify-content-between border-top pt-2">
-                                        <span class="fw-bold h5">TOTAL:</span>
-                                        <span class="fw-bold h5 text-primary" th:text="${factura.total} + ' €'"></span>
-                                    </div>
-                                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-4 py-3 text-secondary small fw-bold">CONCEPTO / DESCRIPCIÓN</th>
+                                    <th class="text-center py-3 text-secondary small fw-bold">CANTIDAD</th>
+                                    <th class="text-end pe-4 py-3 text-secondary small fw-bold">SUBTOTAL</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="linea : ${factura.lineas}">
+                                    <td class="ps-4 py-3">
+                                        <div class="fw-semibold text-dark" th:text="${linea.concepto}"></div>
+                                    </td>
+                                    <td class="text-center py-3" th:text="${linea.cantidad}"></td>
+                                    <td class="text-end pe-4 py-3 fw-bold text-dark" th:text="${linea.subtotal} + ' €'">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-white p-4">
+                    <div class="row justify-content-end">
+                        <div class="col-md-4 col-lg-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Subtotal:</span>
+                                <span class="fw-bold" th:text="${factura.subtotal} + ' €'"></span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">IVA (21%):</span>
+                                <span class="fw-bold" th:text="${factura.iva} + ' €'"></span>
+                            </div>
+                            <div class="d-flex justify-content-between border-top pt-3 mt-2">
+                                <span class="fw-bold h4 mb-0">TOTAL:</span>
+                                <span class="fw-bold h4 text-primary mb-0" th:text="${factura.total} + ' €'"></span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <div class="text-center mt-4">
+                <p class="text-muted small">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Este documento es una copia informativa de la factura original generada por el sistema.
+                    No se permiten modificaciones manuales una vez emitida.
+                </p>
+            </div>
+
         </div>
     </main>
+    <div th:replace="~{Reutilizable/layout :: scripts}"></div>
 </body>
+
 </html>

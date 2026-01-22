@@ -12,31 +12,15 @@ import java.util.List;
 
 public interface FacturaDAO extends JpaRepository<Factura, Long> {
 
-    /**
-     * Búsqueda paginada mejorada.
-     * Ahora busca por: Tipo de factura, Nombre/Apellido del Paciente O Nombre del
-     * Proveedor.
-     */
-    @Query("SELECT f FROM Factura f WHERE " +
-            "LOWER(f.paciente.nombre) LIKE LOWER(concat('%', :query, '%')) OR " +
-            "LOWER(f.paciente.apellidos) LIKE LOWER(concat('%', :query, '%'))")
-    Page<Factura> findByNombreOrTipo(@Param("query") String query, Pageable pageable);
+    @Query("SELECT DISTINCT f FROM Factura f LEFT JOIN f.lineas l WHERE " +
+            "LOWER(f.paciente.nombre) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "LOWER(f.paciente.apellidos) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "LOWER(l.concepto) LIKE LOWER(CONCAT('%', :query, '%'))")
+    Page<Factura> findByNombreOrConcepto(@Param("query") String query, Pageable pageable);
 
-    /**
-     * Cuenta solo las facturas que no han sido dadas de baja lógica.
-     */
-    long countByActivoTrue();
-
-    /**
-     * Método fundamental para el reporte asíncrono.
-     * Recupera facturas desde una fecha específica hasta hoy.
-     */
     List<Factura> findByFechaEmisionAfter(LocalDate fecha);
 
-    /**
-     * Opcional: Si quieres que el reporte solo incluya facturas activas
-     */
-    List<Factura> findByFechaEmisionAfterAndActivoTrue(LocalDate fecha);
+    long countByActivoTrue();
 
     List<Factura> findByPaciente(Paciente paciente);
 }

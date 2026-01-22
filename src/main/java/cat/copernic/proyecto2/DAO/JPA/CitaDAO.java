@@ -77,6 +77,10 @@ public interface CitaDAO extends JpaRepository<Cita, Long> {
                         LocalDateTime fin,
                         EstadoCita estado);
 
+        // En cat.copernic.proyecto2.DAO.JPA.CitaDAO
+        List<Cita> findByProfesionalIdAndFechaHoraBetweenOrderByFechaHoraAsc(
+                        Long profesionalId, LocalDateTime inicio, LocalDateTime fin);
+
         // Añade esto dentro de tu interfaz CitaDAO
         List<Cita> findByPaciente(Paciente paciente);
 }

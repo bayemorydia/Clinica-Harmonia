@@ -4,6 +4,7 @@ import cat.copernic.proyecto2.Domain.PersonalSanitario.PruebaMedica;
 import cat.copernic.proyecto2.Service.Prueba.PruebaService;
 import cat.copernic.proyecto2.Service.Traduccion.TraduccionService;
 import jakarta.validation.Valid;
+import java.math.BigDecimal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -63,7 +64,7 @@ public class PruebaController {
     @GetMapping("/nuevo")
     public String formularioNuevo(Model model) {
         PruebaMedica prueba = new PruebaMedica();
-        prueba.setPrecio(0.0);
+        prueba.setPrecio(new BigDecimal("0"));
         model.addAttribute("pruebaMedica", prueba);
         model.addAttribute("trad", traduccionService);
         return "Prueba/formPrueba";

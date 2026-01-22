@@ -3,13 +3,16 @@ package cat.copernic.proyecto2.Controller;
 import cat.copernic.proyecto2.Domain.Administración.Empleado;
 import cat.copernic.proyecto2.Domain.PersonalSanitario.Diagnostico;
 import cat.copernic.proyecto2.Domain.PersonalSanitario.EpisodioClinico;
+import cat.copernic.proyecto2.Domain.PersonalSanitario.HistorialClinico;
 import cat.copernic.proyecto2.Domain.PersonalSanitario.LineaReceta;
 import cat.copernic.proyecto2.Domain.PersonalSanitario.PruebaMedica;
 import cat.copernic.proyecto2.Domain.PersonalSanitario.Tratamiento;
 import cat.copernic.proyecto2.Domain.Recepción.Cita;
 import cat.copernic.proyecto2.Domain.Recepción.EstadoCita;
+import cat.copernic.proyecto2.Domain.Recepción.Paciente;
 import cat.copernic.proyecto2.Service.Traduccion.TraduccionService;
 import cat.copernic.proyecto2.Service.Medicamento.MedicamentoService;
+import cat.copernic.proyecto2.Service.Paciente.PacienteService;
 import cat.copernic.proyecto2.Service.Prueba.PruebaService;
 import cat.copernic.proyecto2.Service.Cita.CitaService;
 import cat.copernic.proyecto2.Service.Consulta.ConsultaService;
@@ -25,6 +28,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/medico")
@@ -54,6 +58,9 @@ public class MedicoController {
     @Autowired
     private DiagnosticoService diagnosticoService;
 
+    @Autowired
+    private PacienteService pacienteService;
+
     @GetMapping("/dashboard")
     public String dashboard(Model model, Authentication auth) {
         model.addAttribute("trad", traduccionService);
@@ -66,6 +73,60 @@ public class MedicoController {
         model.addAttribute("citasHoy", citaService.countCitasHoyPorMedico(medico.getId(), inicioHoy, finHoy));
         model.addAttribute("citasPendientes", citaService.obtenerCitasPendientesMedico(medico.getId()));
         return "Medico/dashboard";
+    }
+
+    @GetMapping("/paciente/historial/{pacienteId}")
+public String verHistorialClinico(
+        @PathVariable Long pacienteId,
+        @RequestParam(value = "citaId", required = false) Long citaId, // Recibimos el ID de la cita
+        @RequestParam(value = "fechaInicio", required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate fechaInicio,
+        @RequestParam(value = "fechaFin", required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate fechaFin,
+        Model model, 
+        Authentication auth) {
+
+        Empleado medico = empleadoService.obtenerPorUsername(auth.getName());
+
+        // 1. Obtenemos el historial completo (el Service ya hace la hidratación de
+        // datos Lazy)
+        HistorialClinico historial = consultaService.obtenerOSolucionarHistorial(pacienteId);
+
+        // 2. Obtenemos el paciente
+        Paciente paciente = pacienteService.findPacienteById(pacienteId);
+
+        // 3. Si no existe el historial, inicializamos uno vacío para evitar errores en
+        // la vista
+        if (historial == null) {
+            historial = new HistorialClinico();
+            historial.setPaciente(paciente);
+            historial.setEpisodios(new java.util.ArrayList<>());
+        }
+
+        // 4. LÓGICA DE FILTRADO POR FECHAS
+        if (fechaInicio != null || fechaFin != null) {
+            java.util.List<EpisodioClinico> episodiosFiltrados = historial.getEpisodios().stream()
+                    .filter(ep -> {
+                        java.time.LocalDate fechaEp = ep.getFecha().toLocalDate();
+                        boolean matches = true;
+                        if (fechaInicio != null && fechaEp.isBefore(fechaInicio))
+                            matches = false;
+                        if (fechaFin != null && fechaEp.isAfter(fechaFin))
+                            matches = false;
+                        return matches;
+                    })
+                    .collect(java.util.stream.Collectors.toList());
+
+            historial.setEpisodios(episodiosFiltrados);
+        }
+
+        // 5. Atributos del modelo
+        model.addAttribute("medicoLogueado", medico);
+        model.addAttribute("historial", historial);
+        model.addAttribute("citaIdOrigen", citaId);
+        model.addAttribute("paciente", paciente);
+        model.addAttribute("trad", traduccionService);
+        model.addAttribute("activePage", "agenda");
+
+        return "Medico/historial";
     }
 
     @GetMapping("/perfil/{id}")
@@ -81,22 +142,29 @@ public class MedicoController {
     @GetMapping("/agenda")
     public String mostrarAgenda(Model model, Authentication auth,
             @RequestParam(name = "fecha", required = false) String fechaStr) {
+
         Empleado medico = empleadoService.obtenerPorUsername(auth.getName());
         LocalDate hoy = LocalDate.now();
         LocalDate fechaBusqueda;
+
         try {
-            fechaBusqueda = (fechaStr == null) ? hoy : LocalDate.parse(fechaStr);
-            if (fechaBusqueda.isBefore(hoy))
-                fechaBusqueda = hoy;
+            // Si no hay fecha, usamos hoy. Si hay, la parseamos.
+            // HEMOS ELIMINADO el "if (fechaBusqueda.isBefore(hoy))"
+            fechaBusqueda = (fechaStr == null || fechaStr.isEmpty()) ? hoy : LocalDate.parse(fechaStr);
         } catch (Exception e) {
             fechaBusqueda = hoy;
         }
+
+        // El service ahora devolverá todas las citas del día (Realizadas, Ausentes,
+        // etc.)
+        // gracias al cambio que hicimos en el ServiceImpl usando NotEstado(ANULADA)
         model.addAttribute("medicoLogueado", medico);
         model.addAttribute("citas", citaService.obtenerCitasDia(medico.getId(), fechaBusqueda));
         model.addAttribute("fechaActual", fechaBusqueda);
         model.addAttribute("hoy", hoy);
         model.addAttribute("activePage", "agenda");
         model.addAttribute("trad", traduccionService);
+
         return "Medico/agenda";
     }
 
@@ -118,6 +186,42 @@ public class MedicoController {
         model.addAttribute("tratamiento", new Tratamiento());
         model.addAttribute("trad", traduccionService);
         return "Medico/atender";
+    }
+
+    @GetMapping("/resumen-cita/{citaId}")
+    public String verResumenCita(@PathVariable Long citaId, Model model, Authentication auth) {
+        Empleado medico = empleadoService.obtenerPorUsername(auth.getName());
+        Cita cita = citaService.findCitaById(citaId);
+
+        // Obtenemos el historial (el service ya carga todo lo necesario/Lazy)
+        HistorialClinico historial = consultaService.obtenerOSolucionarHistorial(cita.getPaciente().getId());
+
+        // FILTRO PRECISO: Buscamos el episodio que coincida exactamente con la fecha y
+        // hora de la cita
+        // Usamos chronounit para ignorar milisegundos si fuera necesario
+        EpisodioClinico episodio = historial.getEpisodios().stream()
+                .filter(e -> e.getFecha().isEqual(cita.getFechaHora()))
+                .findFirst()
+                .orElse(null);
+
+        // Si por algún motivo la hora exacta falla (por diferencia de segundos al
+        // guardar),
+        // usamos un margen de 1 minuto:
+        if (episodio == null) {
+            episodio = historial.getEpisodios().stream()
+                    .filter(e -> e.getFecha().isAfter(cita.getFechaHora().minusMinutes(1))
+                            && e.getFecha().isBefore(cita.getFechaHora().plusMinutes(1)))
+                    .findFirst()
+                    .orElse(null);
+        }
+
+        model.addAttribute("medicoLogueado", medico);
+        model.addAttribute("cita", cita);
+        model.addAttribute("episodio", episodio);
+        model.addAttribute("paciente", cita.getPaciente());
+        model.addAttribute("trad", traduccionService);
+
+        return "Medico/resumenCita";
     }
 
     @PostMapping("/finalizar-consulta")
@@ -162,9 +266,15 @@ public class MedicoController {
         return "redirect:/medico/agenda?success=true";
     }
 
-    @GetMapping("/cita/estado/{id}/{estado}")
-    public String cambiarEstado(@PathVariable Long id, @PathVariable String estado) {
-        consultaService.cambiarEstadoCita(id, EstadoCita.valueOf(estado));
+    @GetMapping("/cita/no-asistio/{id}")
+    public String marcarNoAsistio(@PathVariable Long id, RedirectAttributes flash) {
+        try {
+            // Usamos el servicio para cambiar el estado a AUSENTE
+            consultaService.cambiarEstadoCita(id, EstadoCita.NO_PRESENTADO);
+            flash.addFlashAttribute("warning", "La cita ha sido marcada como 'No asistió'.");
+        } catch (Exception e) {
+            flash.addFlashAttribute("error", "Error al actualizar la cita.");
+        }
         return "redirect:/medico/agenda";
     }
 

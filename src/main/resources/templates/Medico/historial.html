@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:insert="~{Reutilizable/layoutMedico :: head_medico}"></th:block>
+    <title th:text="'Historial - ' + ${paciente.nombre}">Historial Clínico</title>
+</head>
+
+<body class="bg-light">
+    <th:block th:insert="~{Reutilizable/layoutMedico :: menu_medico}"></th:block>
+
+    <main class="content-medico">
+        <div class="container-fluid py-4">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="d-flex align-items-center">
+                    <a th:href="${citaIdOrigen != null} ? @{/medico/atender/{id}(id=${citaIdOrigen})} : @{/medico/agenda}"
+                        class="btn btn-white shadow-sm rounded-circle border me-3">
+                        <i class="bi bi-arrow-left"></i>
+                    </a>
+                    <h2 class="fw-bold text-dark mb-0">Historial Clínico Completo</h2>
+                </div>
+
+                <form class="d-flex gap-2 align-items-center bg-white p-2 rounded-pill shadow-sm border" method="get">
+
+                    <input type="hidden" name="citaId" th:value="${citaIdOrigen}">
+
+                    <small class="text-muted fw-bold ms-2 text-uppercase" style="font-size: 0.7rem;">Filtrar:</small>
+                    <input type="date" name="fechaInicio"
+                        class="form-control form-control-sm border-0 bg-light rounded-pill"
+                        th:value="${param.fechaInicio}">
+                    <i class="bi bi-arrow-right text-muted"></i>
+                    <input type="date" name="fechaFin"
+                        class="form-control form-control-sm border-0 bg-light rounded-pill"
+                        th:value="${param.fechaFin}">
+
+                    <button type="submit" class="btn btn-primary btn-sm rounded-circle">
+                        <i class="bi bi-search"></i>
+                    </button>
+
+                    <a th:href="@{/medico/paciente/historial/{id}(id=${paciente.id}, citaId=${citaIdOrigen})}"
+                        class="btn btn-light btn-sm rounded-circle me-1">
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </a>
+                </form>
+            </div>
+
+            <div class="card shadow-sm border-0 overflow-hidden mb-4" style="border-radius: 15px;">
+                <div class="card-header bg-primary text-white p-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <h4 class="fw-bold mb-1" th:text="${paciente.nombre} + ' ' + ${paciente.apellidos}"></h4>
+                            <div class="d-flex gap-3 opacity-75 small">
+                                <span><i class="bi bi-card-text me-1"></i> DNI: [[${paciente.dni}]]</span>
+                                <span><i class="bi bi-calendar-event me-1"></i>
+                                    [[${T(java.time.Period).between(paciente.fechaNacimiento,
+                                    T(java.time.LocalDate).now()).getYears()}]] años</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <div class="small opacity-75">Última actualización:</div>
+                            <div class="fw-bold"
+                                th:text="${#temporals.format(T(java.time.LocalDateTime).now(), 'dd/MM/yyyy HH:mm')}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    <div th:if="${#lists.isEmpty(historial.episodios)}" class="text-center py-5">
+                        <i class="bi bi-file-earmark-medical fs-1 text-muted opacity-25"></i>
+                        <p class="text-muted mt-3">No se encontraron registros clínicos.</p>
+                    </div>
+
+                    <div th:unless="${#lists.isEmpty(historial.episodios)}" class="timeline">
+                        <div th:each="ep : ${historial.episodios}" class="card border-0 bg-light mb-4 shadow-sm"
+                            style="border-radius: 15px;">
+                            <div class="card-body p-4">
+                                <div class="d-flex justify-content-between align-items-start border-bottom pb-3 mb-3">
+                                    <div>
+                                        <span class="badge bg-primary rounded-pill mb-2 px-3 py-2"
+                                            th:text="${#temporals.format(ep.fecha, 'dd/MM/yyyy HH:mm')}"></span>
+                                        <h5 class="fw-bold text-dark mb-0" th:text="${ep.diagnostico.nombre}"></h5>
+                                    </div>
+                                    <div class="text-end">
+                                        <small class="text-muted d-block text-uppercase fw-bold"
+                                            style="font-size: 0.65rem;">Médico Responsable</small>
+                                        <span class="text-primary fw-bold">Dr. [[${ep.medico.nombre}]]
+                                            [[${ep.medico.apellidos}]]</span>
+                                    </div>
+                                </div>
+
+                                <div class="row g-4">
+                                    <div class="col-md-6 border-end">
+                                        <div class="mb-4">
+                                            <label class="fw-bold small text-muted text-uppercase d-block mb-1">Motivo
+                                                de la Consulta</label>
+                                            <p class="text-dark border-start border-3 border-primary ps-3"
+                                                th:text="${ep.motivoConsulta}"></p>
+                                        </div>
+                                        <div th:if="${not #lists.isEmpty(ep.pruebasAsignadas)}">
+                                            <label class="fw-bold small text-muted text-uppercase d-block mb-2">Pruebas
+                                                Médicas</label>
+                                            <div class="d-flex flex-wrap gap-2">
+                                                <span th:each="p : ${ep.pruebasAsignadas}"
+                                                    class="badge bg-white text-primary border px-3 py-2 rounded-pill small shadow-sm"
+                                                    th:text="${p.nombre}"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-4" th:if="${not #lists.isEmpty(ep.tratamientos)}">
+                                            <label
+                                                class="fw-bold small text-muted text-uppercase d-block mb-1">Tratamiento</label>
+                                            <div th:each="tr : ${ep.tratamientos}">
+                                                <p class="mb-1 text-dark" th:text="${tr.descripcion}"></p>
+                                                <small class="text-success fw-bold"><i
+                                                        class="bi bi-calendar-check me-1"></i>Finaliza:
+                                                    [[${tr.fechaFin}]]</small>
+                                            </div>
+                                        </div>
+                                        <div th:if="${not #lists.isEmpty(ep.recetas)}">
+                                            <label
+                                                class="fw-bold small text-muted text-uppercase d-block mb-2">Medicación</label>
+                                            <div th:each="receta : ${ep.recetas}"
+                                                class="bg-white p-3 rounded-3 border-start border-4 border-success shadow-sm">
+                                                <ul class="list-unstyled mb-0">
+                                                    <li th:each="linea : ${receta.lineas}">
+                                                        <span class="fw-bold text-dark"><i
+                                                                class="bi bi-capsule-pill text-success me-2"></i>[[${linea.medicamento.nombre}]]</span>
+                                                        <br><small class="text-muted ms-4">Dosis:
+                                                            [[${linea.dosis}]]</small>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <th:block th:insert="~{Reutilizable/layoutMedico :: scripts_medico}"></th:block>
+
+    <style>
+        .btn-white {
+            background-color: white;
+            color: #6c757d;
+        }
+
+        .btn-white:hover {
+            background-color: #f8f9fa;
+            color: #0d6efd;
+        }
+
+        .content-medico {
+            margin-left: 260px;
+            transition: all 0.3s;
+        }
+
+        .timeline .card:hover {
+            transform: translateY(-3px);
+            border-color: #dee2e6 !important;
+        }
+    </style>
+</body>
+
+</html>
