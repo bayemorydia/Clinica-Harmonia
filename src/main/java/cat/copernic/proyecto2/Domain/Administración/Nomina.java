@@ -25,10 +25,11 @@ public class Nomina {
     @NotNull(message = "El salario base es obligatorio")
     private BigDecimal salarioBase;
 
-    private BigDecimal complementos;
 
     private BigDecimal deducciones;
 
     @NotNull(message = "El total a pagar es obligatorio")
     private BigDecimal totalPagar;
+
+    private BigDecimal netoMensual;
 }

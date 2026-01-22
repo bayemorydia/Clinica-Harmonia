@@ -14,7 +14,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
-
+import cat.copernic.proyecto2.Service.Empleado.EmpleadoService;
 import java.util.concurrent.CompletableFuture;
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
@@ -27,6 +27,9 @@ public class NominaServiceImpl implements NominaService {
 
     @Autowired
     private NominaDAO nominaRepository;
+
+    @Autowired
+    private EmpleadoService empleadoService;
 
     @Override
     public Page<Nomina> getNominasPorEmpleado(Long empleadoId, Pageable pageable) {
@@ -54,7 +57,6 @@ public class NominaServiceImpl implements NominaService {
                 .orElseThrow(() -> new RuntimeException("Nómina no encontrada"));
         existente.setPeriodo(nomina.getPeriodo());
         existente.setSalarioBase(nomina.getSalarioBase());
-        existente.setComplementos(nomina.getComplementos());
         existente.setDeducciones(nomina.getDeducciones());
         existente.setEmpleado(nomina.getEmpleado());
         nominaRepository.save(existente);
@@ -118,16 +120,15 @@ public class NominaServiceImpl implements NominaService {
 
             // Filas (Aquí usamos BigDecimal)
             addFilaTabla(tabla, "Salario Base", nomina.getSalarioBase(), regularFont);
-            addFilaTabla(tabla, "Complementos", nomina.getComplementos(), regularFont);
-            addFilaTabla(tabla, "Deducciones", nomina.getDeducciones(), regularFont);
+            addFilaTabla(tabla, "IRPF", nomina.getDeducciones(), regularFont);
 
             // Total
-            PdfPCell cellTotalLabel = new PdfPCell(new Phrase("Total a Pagar", boldFont));
+            PdfPCell cellTotalLabel = new PdfPCell(new Phrase("Neto Mensual", boldFont));
             cellTotalLabel.setPadding(5);
             tabla.addCell(cellTotalLabel);
 
             // Controlamos nulos en el total por seguridad
-            BigDecimal total = (nomina.getTotalPagar() != null) ? nomina.getTotalPagar() : BigDecimal.ZERO;
+            BigDecimal total = (nomina.getNetoMensual() != null) ? nomina.getNetoMensual() : BigDecimal.ZERO;
             PdfPCell cellTotalValue = new PdfPCell(new Phrase(String.format("%.2f €", total), boldFont));
             cellTotalValue.setHorizontalAlignment(Element.ALIGN_RIGHT);
             cellTotalValue.setPadding(5);
@@ -176,44 +177,68 @@ public class NominaServiceImpl implements NominaService {
         cellValor.setPadding(5);
         table.addCell(cellValor);
     }
+    private void calcularNomina(Nomina nomina) {
+        BigDecimal salarioBase = nomina.getSalarioBase() != null ? nomina.getSalarioBase() : BigDecimal.ZERO;
+        BigDecimal irpfPorcentaje;
+
+        if (salarioBase.compareTo(BigDecimal.valueOf(12450)) <= 0) irpfPorcentaje = BigDecimal.valueOf(19);
+        else if (salarioBase.compareTo(BigDecimal.valueOf(20200)) <= 0) irpfPorcentaje = BigDecimal.valueOf(24);
+        else if (salarioBase.compareTo(BigDecimal.valueOf(35200)) <= 0) irpfPorcentaje = BigDecimal.valueOf(30);
+        else if (salarioBase.compareTo(BigDecimal.valueOf(60000)) <= 0) irpfPorcentaje = BigDecimal.valueOf(37);
+        else irpfPorcentaje = BigDecimal.valueOf(45);
+
+// Calculamos la cantidad en euros
+        BigDecimal deduccionesEuros = salarioBase.multiply(irpfPorcentaje).divide(BigDecimal.valueOf(100));
+        BigDecimal netoMensual = salarioBase.subtract(deduccionesEuros).divide(BigDecimal.valueOf(12), 2, BigDecimal.ROUND_HALF_UP);
+
+// Guardamos en la nómina
+        nomina.setDeducciones(irpfPorcentaje);          // cantidad en euros
+        nomina.setNetoMensual(netoMensual);
+        nomina.setTotalPagar(salarioBase.subtract(deduccionesEuros));
+    }
 
     @Async
-    @Override
-    public CompletableFuture<byte[]> generarReporteAsync(String periodo) {
-        List<Nomina> nominas;
+    public CompletableFuture<byte[]> generarYDescargarNominasTodos(String periodo) {
+        try (ByteArrayOutputStream baosZip = new ByteArrayOutputStream();
+             java.util.zip.ZipOutputStream zipOut = new java.util.zip.ZipOutputStream(baosZip)) {
 
-        // 1. Lógica para convertir "MES" o "ANYO" en valores reales
-        java.time.LocalDate hoy = java.time.LocalDate.now();
-        String mesActual = String.format("%02d/%d", hoy.getMonthValue(), hoy.getYear());
-        String anyoActual = String.valueOf(hoy.getYear());
+            List<Empleado> empleados = empleadoService.listarTodos();
 
-        if ("MES".equals(periodo)) {
-            nominas = nominaRepository.findByPeriodo(mesActual);
-        } else if ("ANYO".equals(periodo)) {
-            // Aquí necesitas un método en el DAO que busque por "contiene el año"
-            nominas = nominaRepository.findByPeriodoContaining(anyoActual);
-        } else {
-            nominas = nominaRepository.findAll();
+            for (Empleado e : empleados) {
+                // 1. Crear nómina si no existe
+                Nomina nomina;
+                if (!existeNominaMes(e.getId(), periodo)) {
+                    nomina = new Nomina();
+                    nomina.setEmpleado(e);
+                    nomina.setPeriodo(periodo);
+                    nomina.setSalarioBase(e.getSalarioBase() != null ? e.getSalarioBase() : BigDecimal.ZERO);
+                    nomina.setDeducciones(BigDecimal.ZERO);
+                    calcularNomina(nomina);
+                    nomina.setTotalPagar(nomina.getSalarioBase().subtract(nomina.getDeducciones()));
+                    saveNomina(nomina);
+                } else {
+                    // Si ya existe, la obtenemos
+                    nomina = nominaRepository.findByEmpleadoIdAndPeriodo(e.getId(), periodo);
+                }
+
+                // 2. Generar PDF
+                byte[] pdf = generarPdfNomina(nomina);
+
+                // 3. Agregar PDF al ZIP
+                java.util.zip.ZipEntry zipEntry = new java.util.zip.ZipEntry(
+                        "Nomina_" + e.getNombre() + "_" + e.getApellidos() + ".pdf");
+                zipOut.putNextEntry(zipEntry);
+                zipOut.write(pdf);
+                zipOut.closeEntry();
+            }
+
+            zipOut.finish();
+            return CompletableFuture.completedFuture(baosZip.toByteArray());
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return CompletableFuture.completedFuture(null);
         }
-
-        // 2. Construcción del CSV (Asegúrate de completar el bucle)
-        StringBuilder sb = new StringBuilder();
-        sb.append("Empleado;Periodo;Salario Base;Complementos;Deducciones;Total\n");
-
-        for (Nomina n : nominas) {
-            String nombreCompleto = (n.getEmpleado() != null)
-                    ? n.getEmpleado().getNombre() + " " + n.getEmpleado().getApellidos()
-                    : "Sin Nombre";
-
-            sb.append(nombreCompleto).append(";")
-                    .append(n.getPeriodo()).append(";")
-                    .append(n.getSalarioBase()).append(";")
-                    .append(n.getComplementos()).append(";")
-                    .append(n.getDeducciones()).append(";")
-                    .append(n.getTotalPagar()).append("\n");
-        }
-
-        return CompletableFuture.completedFuture(sb.toString().getBytes(StandardCharsets.UTF_8));
     }
 
 }

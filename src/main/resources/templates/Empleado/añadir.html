@@ -66,8 +66,8 @@
                                     <div class="col-md-6">
                                         <label class="form-label small fw-bold text-secondary text-uppercase"
                                             th:text="${trad.getTraduccion('empleado.label.email')}"></label>
-                                        <input type="email" th:field="*{email}"
-                                            class="form-control bg-light border-0 py-2" required>
+                                        <input type="email" th:field="*{email}" class="form-control bg-light border-0 py-2" readonly>
+
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label small fw-bold text-secondary text-uppercase"
@@ -134,6 +134,25 @@
     </main>
 
     <div th:replace="~{Reutilizable/layout :: scripts}"></div>
+    <script>
+        const nombreInput = document.querySelector('input[name="nombre"]');
+        const apellidosInput = document.querySelector('input[name="apellidos"]');
+        const emailInput = document.querySelector('input[name="email"]');
+
+        function generarEmail() {
+            const nombre = nombreInput.value.trim().toLowerCase();
+            const apellidos = apellidosInput.value.trim().toLowerCase().replace(/\s+/g, '.');
+            if(nombre && apellidos){
+                emailInput.value = `${nombre}.${apellidos}@Harmonia.com`;
+            } else {
+                emailInput.value = '';
+            }
+        }
+
+        nombreInput.addEventListener('input', generarEmail);
+        apellidosInput.addEventListener('input', generarEmail);
+    </script>
+
 </body>
 
 </html>

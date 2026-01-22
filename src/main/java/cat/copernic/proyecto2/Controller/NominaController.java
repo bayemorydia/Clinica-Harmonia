@@ -62,7 +62,6 @@ public class NominaController {
         Nomina nomina = new Nomina();
         nomina.setEmpleado(empleado);
         nomina.setSalarioBase(empleado.getSalarioBase() != null ? empleado.getSalarioBase() : BigDecimal.ZERO);
-        nomina.setComplementos(BigDecimal.ZERO);
         nomina.setDeducciones(BigDecimal.ZERO);
         nomina.setTotalPagar(nomina.getSalarioBase());
         model.addAttribute("empleado", empleado);
@@ -73,34 +72,35 @@ public class NominaController {
 
     @PostMapping("/guardar")
     public String guardarNomina(@Valid @ModelAttribute("nomina") Nomina nomina,
-            BindingResult result,
-            Model model) {
+                                BindingResult result,
+                                Model model) {
         model.addAttribute("trad", traduccionService);
+
         if (result.hasErrors()) {
             if (nomina.getEmpleado() != null) {
                 model.addAttribute("empleado", empleadoService.obtenerPorId(nomina.getEmpleado().getId()));
             }
             return "Nomina/crear";
         }
+
         Empleado empleado = empleadoService.obtenerPorId(nomina.getEmpleado().getId());
         if (empleado == null) {
             model.addAttribute("error", "Empleado no encontrado");
             return "Nomina/crear";
         }
+
         if (nominaService.existeNominaMes(empleado.getId(), nomina.getPeriodo())) {
             model.addAttribute("error", "Ya existe una nómina para este período");
             model.addAttribute("empleado", empleado);
             return "Nomina/crear";
         }
-        if (nomina.getSalarioBase() == null)
-            nomina.setSalarioBase(BigDecimal.ZERO);
-        if (nomina.getComplementos() == null)
-            nomina.setComplementos(BigDecimal.ZERO);
-        if (nomina.getDeducciones() == null)
-            nomina.setDeducciones(BigDecimal.ZERO);
-        nomina.setTotalPagar(nomina.getSalarioBase()
-                .add(nomina.getComplementos())
-                .subtract(nomina.getDeducciones()));
+
+        // Asegurarnos que anual y mensual están correctos
+        if (nomina.getSalarioBase() == null) nomina.setSalarioBase(BigDecimal.ZERO);
+        if (nomina.getDeducciones() == null) nomina.setDeducciones(BigDecimal.ZERO);
+        if (nomina.getTotalPagar() == null) nomina.setTotalPagar(nomina.getSalarioBase().subtract(nomina.getDeducciones()));
+
+
         nominaService.saveNomina(nomina);
         return "redirect:/empleados/nominas/" + nomina.getEmpleado().getId();
     }
@@ -117,12 +117,9 @@ public class NominaController {
         }
         if (nomina.getSalarioBase() == null)
             nomina.setSalarioBase(BigDecimal.ZERO);
-        if (nomina.getComplementos() == null)
-            nomina.setComplementos(BigDecimal.ZERO);
         if (nomina.getDeducciones() == null)
             nomina.setDeducciones(BigDecimal.ZERO);
         nomina.setTotalPagar(nomina.getSalarioBase()
-                .add(nomina.getComplementos())
                 .subtract(nomina.getDeducciones()));
         nominaService.updateNomina(id, nomina);
         return "redirect:/listarNominas";
@@ -157,16 +154,24 @@ public class NominaController {
         return "Nomina/detalleNomina";
     }
 
-    @GetMapping("/exportar")
+    @GetMapping("/descargarTodos")
     @ResponseBody
-    public CompletableFuture<ResponseEntity<byte[]>> exportarNominas(@RequestParam String periodo) {
-        return nominaService.generarReporteAsync(periodo)
-                .thenApply(bytes -> {
+    public CompletableFuture<ResponseEntity<byte[]>> descargarNominasTodos(@RequestParam String periodo) {
+        return nominaService.generarYDescargarNominasTodos(periodo)
+                .thenApply(zipBytes -> {
+                    if (zipBytes == null) {
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                .body(null);
+                    }
+
                     HttpHeaders headers = new HttpHeaders();
                     headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
                     headers.setContentDisposition(ContentDisposition.attachment()
-                            .filename("Nominas_" + periodo + ".csv").build());
-                    return new ResponseEntity<>(bytes, headers, HttpStatus.OK);
+                            .filename("Nominas_" + periodo + ".zip")
+                            .build());
+
+                    return new ResponseEntity<>(zipBytes, headers, HttpStatus.OK);
                 });
     }
+
 }

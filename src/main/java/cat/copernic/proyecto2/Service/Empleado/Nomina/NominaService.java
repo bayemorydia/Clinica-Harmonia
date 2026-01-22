@@ -15,5 +15,5 @@ public interface NominaService {
     byte[] generarPdfNomina(Nomina nomina);
     Nomina findById(Long id);
     Page<Nomina> getNominasPorEmpleado(Long empleadoId, Pageable pageable);
-    CompletableFuture<byte[]> generarReporteAsync(String periodo);
+    CompletableFuture<byte[]> generarYDescargarNominasTodos(String periodo);
 }
