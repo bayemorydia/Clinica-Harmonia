@@ -178,7 +178,7 @@
                                         <i class="bi bi-save me-2"></i> Guardar Cambios
                                     </button>
                                     <a th:href="@{'/empleados/nominas/' + ${empleado.id}}"
-                                       sec:authorize="hasAnyRole('ADMINISTRADOR','RRHH')"
+                                       sec:authorize="hasRole('RRHH')"
                                        class="btn btn-success rounded-pill px-5 py-3 fw-bold shadow-lg hover-lift ms-2">
                                         <i class="bi bi-file-earmark-text me-2"></i> Nómina
                                     </a>
@@ -201,7 +201,7 @@
     <div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: scripts_medico}"></div>
     <div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: scripts_recepcion}"></div>
     <div sec:authorize="!hasAnyRole('MEDICO', 'RECEPCIONISTA')" th:replace="~{Reutilizable/layout :: scripts}"></div>
-    <div sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layoutRRHH :: scripts_RRHH}"></div>
+    <div sec:authorize="hasRole('RRHH')" th:x   replace="~{Reutilizable/layoutRRHH :: scripts_RRHH}"></div>
 
     <style>
         .hover-lift:hover {

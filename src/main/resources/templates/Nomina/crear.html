@@ -1,13 +1,16 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
     <div th:replace="~{Reutilizable/layout :: head_general}"></div>
+    <div sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layoutRRHH :: head_RRHH}"></div>
+
     <title th:text="${trad.getTraduccion('nomina.crear.titulo')}">Crear Nómina</title>
 </head>
 
 <body class="bg-light">
 <div th:replace="~{Reutilizable/layout :: menu}"></div>
+<div sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layoutRRHH :: menu_RRHH}"></div>
 
 <main class="content">
     <div class="container-fluid py-4">
@@ -101,6 +104,7 @@
 </main>
 
 <div th:replace="~{Reutilizable/layout :: scripts}"></div>
+<div sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layoutRRHH :: scripts_RRHH}"></div>
 
 <!-- SCRIPT CALCULAR IRPF Y NETO MENSUAL -->
 <script th:inline="javascript">
