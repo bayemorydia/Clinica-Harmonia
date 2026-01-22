@@ -171,17 +171,20 @@ public class CitaController {
 
     @GetMapping("/factura/{id}")
     public void descargarFactura(@PathVariable("id") Long id, HttpServletResponse response) throws IOException {
-        Cita cita = citaService.findCitaById(id);
-        if (cita != null) {
+        try {
+            // Generamos los bytes buscando la factura asociada a la cita
+            byte[] pdfBytes = facturaPdfService.generarFacturaCitaPdf(id);
+
             response.setContentType("application/pdf");
-            DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm");
-            String currentDateTime = dateFormatter.format(new Date());
-            String headerKey = "Content-Disposition";
-            String headerValue = "attachment; filename=Factura_Cita_" + id + "_" + currentDateTime + ".pdf";
-            response.setHeader(headerKey, headerValue);
-            facturaPdfService.exportar(response, cita);
-        } else {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            String headerValue = "attachment; filename=Factura_Cita_" + id + ".pdf";
+            response.setHeader("Content-Disposition", headerValue);
+            response.setContentLength(pdfBytes.length);
+
+            response.getOutputStream().write(pdfBytes);
+            response.getOutputStream().flush();
+
+        } catch (Exception e) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error: " + e.getMessage());
         }
     }
 
