@@ -6,5 +6,5 @@ public enum Especialidad {
     CARDIOLOGIA,
     DERMATOLOGIA,
     GINECOLOGIA,
-    Fisioterapia
+    FISIOTERAPIA
 }

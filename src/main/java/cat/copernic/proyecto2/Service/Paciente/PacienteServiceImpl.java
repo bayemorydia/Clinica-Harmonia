@@ -10,7 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import cat.copernic.proyecto2.DAO.JPA.PacienteDAO;
 import cat.copernic.proyecto2.Domain.Persona.Usuario;
 import cat.copernic.proyecto2.Domain.Recepción.Paciente;
@@ -48,10 +47,12 @@ public class PacienteServiceImpl implements PacienteService {
 
         // --- CASO 1: NUEVO PACIENTE ---
         if (pacienteForm.getId() == null || pacienteForm.getId() == 0) {
-            if (validacionesService != null)
-                validacionesService.validarDocumentoIdentidad(pacienteForm.getDni());
-            validarDuplicados(pacienteForm);
-            
+            // Validar DNI duplicado
+            validacionesService.validarDocumentoIdentidad(pacienteForm.getDni());
+            if (pacienteDAO.existsByDni(pacienteForm.getDni())) {
+                throw new RuntimeException("DNI_DUPLICADO"); // El controller manejará este mensaje
+            }
+
             pacienteForm.setFechaAlta(LocalDate.now());
             pacienteForm.setActivo(true);
 
@@ -61,32 +62,28 @@ public class PacienteServiceImpl implements PacienteService {
 
             String nombreImagen = imagenService.guardarImagen(file, "Paciente");
             pacienteForm.setRutaFoto(nombreImagen);
-            
+
             pacienteDAO.save(pacienteForm);
 
-        // --- CASO 2: EDICIÓN (Update Parcial) ---
+            // --- CASO 2: EDICIÓN ---
         } else {
             Paciente pacienteBD = pacienteDAO.findById(pacienteForm.getId())
                     .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
 
-            // Actualizamos los datos de texto si vienen en el formulario
-            if (pacienteForm.getNombre() != null) pacienteBD.setNombre(pacienteForm.getNombre());
-            if (pacienteForm.getApellidos() != null) pacienteBD.setApellidos(pacienteForm.getApellidos());
-            if (pacienteForm.getFechaNacimiento() != null) pacienteBD.setFechaNacimiento(pacienteForm.getFechaNacimiento());
-            if (pacienteForm.getTelefono() != null) pacienteBD.setTelefono(pacienteForm.getTelefono());
-            if (pacienteForm.getEmail() != null) pacienteBD.setEmail(pacienteForm.getEmail());
-            if (pacienteForm.getDireccion() != null) pacienteBD.setDireccion(pacienteForm.getDireccion());
+            pacienteBD.setNombre(pacienteForm.getNombre());
+            pacienteBD.setApellidos(pacienteForm.getApellidos());
+            pacienteBD.setFechaNacimiento(pacienteForm.getFechaNacimiento());
+            pacienteBD.setTelefono(pacienteForm.getTelefono());
+            pacienteBD.setEmail(pacienteForm.getEmail());
+            pacienteBD.setDireccion(pacienteForm.getDireccion());
             pacienteBD.setActivo(pacienteForm.isActivo());
-            
-            // Si hay una foto nueva, la procesamos
+
             if (file != null && !file.isEmpty()) {
                 if (pacienteBD.getRutaFoto() != null && !pacienteBD.getRutaFoto().equals("default-user.png")) {
                     imagenService.eliminarImagen(pacienteBD.getRutaFoto(), "Paciente");
                 }
-                String nuevoNombre = imagenService.guardarImagen(file, "Paciente");
-                pacienteBD.setRutaFoto(nuevoNombre);
+                pacienteBD.setRutaFoto(imagenService.guardarImagen(file, "Paciente"));
             }
-
             pacienteDAO.save(pacienteBD);
         }
     }

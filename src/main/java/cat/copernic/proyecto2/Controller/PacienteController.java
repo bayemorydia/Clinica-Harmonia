@@ -78,7 +78,6 @@ public class PacienteController {
         return "redirect:/pacientes";
     }
 
-    // MÉTODO UNIFICADO PARA CREAR (con foto) O EDITAR DATOS (sin foto obligatoria)
     @PostMapping("/guardar")
     public String guardarPaciente(
             @Valid @ModelAttribute("paciente") Paciente paciente,
@@ -91,12 +90,7 @@ public class PacienteController {
 
         if (result.hasErrors()) {
             if ("detalle".equals(origen)) {
-                Paciente px = pacienteService.findPacienteById(paciente.getId());
-                if (px != null) {
-                    model.addAttribute("edad", pacienteService.getEdadPaciente(px));
-                    paciente.setUsuario(px.getUsuario());
-                    paciente.setRutaFoto(px.getRutaFoto());
-                }
+                model.addAttribute("edad", pacienteService.getEdadPaciente(paciente));
                 return "Paciente/detallePaciente";
             }
             return "Paciente/formularioPaciente";
@@ -104,23 +98,15 @@ public class PacienteController {
 
         try {
             pacienteService.savePaciente(paciente, imagen);
-            long timestamp = System.currentTimeMillis();
-
             if ("detalle".equals(origen)) {
-                return "redirect:/pacientes/detalle/" + paciente.getId() + "?success&t=" + timestamp;
+                return "redirect:/pacientes/detalle/" + paciente.getId() + "?success";
             }
-            return "redirect:/pacientes?t=" + timestamp;
-
-        } catch (Exception e) {
-            model.addAttribute("error", e.getMessage());
-            if ("detalle".equals(origen)) {
-                Paciente px = pacienteService.findPacienteById(paciente.getId());
-                if (px != null) {
-                    model.addAttribute("edad", pacienteService.getEdadPaciente(px));
-                    paciente.setUsuario(px.getUsuario());
-                    paciente.setRutaFoto(px.getRutaFoto());
-                }
-                return "Paciente/detallePaciente";
+            return "redirect:/pacientes";
+        } catch (RuntimeException e) {
+            if ("DNI_DUPLICADO".equals(e.getMessage())) {
+                model.addAttribute("error", traduccionService.getTraduccion("paciente.valid.dni_existe"));
+            } else {
+                model.addAttribute("error", e.getMessage());
             }
             return "Paciente/formularioPaciente";
         }

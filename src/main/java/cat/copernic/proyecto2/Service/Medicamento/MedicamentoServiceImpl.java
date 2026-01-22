@@ -30,6 +30,18 @@ public class MedicamentoServiceImpl implements MedicamentoService {
     @Override
     @Transactional
     public void guardar(Medicamento medicamento) {
+        // Validamos duplicidad de código
+        if (medicamento.getId() == null) {
+            // Caso nuevo: simplemente vemos si existe
+            if (existePorCodigo(medicamento.getCodigo())) {
+                throw new RuntimeException("CODIGO_DUPLICADO");
+            }
+        } else {
+            // Caso edición: vemos si existe en OTRO registro que no sea este ID
+            if (existePorCodigoYIdNo(medicamento.getCodigo(), medicamento.getId())) {
+                throw new RuntimeException("CODIGO_DUPLICADO");
+            }
+        }
         medicamentoDAO.save(medicamento);
     }
 
@@ -61,5 +73,19 @@ public class MedicamentoServiceImpl implements MedicamentoService {
     @Transactional(readOnly = true)
     public long countMedicamentosActivos() {
         return medicamentoDAO.countByActivoTrue();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existePorCodigo(String codigo) {
+        return medicamentoDAO.existsByCodigo(codigo);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existePorCodigoYIdNo(String codigo, Long id) {
+        Medicamento m = medicamentoDAO.findByCodigo(codigo);
+        // Si existe un medicamento con ese código y NO es el que estamos editando
+        return m != null && !m.getId().equals(id);
     }
 }
