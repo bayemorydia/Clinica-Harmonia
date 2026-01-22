@@ -12,15 +12,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.http.*;
-import org.springframework.web.bind.annotation.*;
 import cat.copernic.proyecto2.Service.Empleado.EmpleadoService;
 import java.util.concurrent.CompletableFuture;
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
-import java.math.BigDecimal; // <--- IMPORTANTE
+import java.math.BigDecimal;
 import java.util.List;
-import java.nio.charset.StandardCharsets;
 
 @Service
 public class NominaServiceImpl implements NominaService {

@@ -25,19 +25,6 @@
                     <h2 class="fw-bold text-dark mb-1" th:text="${trad.getTraduccion('mod.facturacion.titulo')}">Facturación</h2>
                     <p class="text-muted small mb-0">Gestión unificada de cobros por servicios médicos y pruebas.</p>
                 </div>
-                
-                <div class="export-panel shadow-sm">
-                    <span class="small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('facturacion.exportar.label')}">Exportar:</span>
-                    <select id="periodoExport" class="form-select form-select-sm border-0 bg-transparent shadow-none" style="width: 120px; cursor:pointer;">
-                        <option value="DIA" th:text="${trad.getTraduccion('periodo.dia')}">Hoy</option>
-                        <option value="SEMANA" th:text="${trad.getTraduccion('periodo.semana')}">Esta Semana</option>
-                        <option value="MES" th:text="${trad.getTraduccion('periodo.mes')}">Este Mes</option>
-                        <option value="ANYO" th:text="${trad.getTraduccion('periodo.anyo')}">Este Año</option>
-                    </select>
-                    <button onclick="descargarInformeAsincrono()" id="btnDownload" class="btn btn-success btn-sm rounded-circle p-2" title="Descargar CSV">
-                        <i class="bi bi-file-earmark-arrow-down"></i>
-                    </button>
-                </div>
             </div>
 
             <div class="card shadow-sm border-0 mb-4" style="border-radius: 15px;">
