@@ -73,7 +73,7 @@
         
         <div class="d-flex align-items-center mb-1 px-2">
             <i class="bi bi-hospital-fill text-primary fs-3 me-2"></i>
-            <span class="fs-5 fw-bold text-primary" th:text="${trad != null ? trad.getTraduccion('nav.clinica.nombre') : 'Clínica Harmonia'}">Clínica Harmonia</span>
+            <span class="fs-5 fw-bold text-primary" th:text="${trad.getTraduccion('nav.clinica.nombre')}">Clínica Harmonia</span>
         </div>
 
         <div class="lang-container">
@@ -85,7 +85,7 @@
         </div>
 
         <div class="mb-4 px-2">
-            <small class="text-muted d-block" th:text="${trad != null ? trad.getTraduccion('nav.identificado') : 'Usuario:'}">Usuario:</small>
+            <small class="text-muted d-block" th:text="${trad.getTraduccion('nav.identificado')}">Identificado como:</small>
             <span class="fw-bold text-dark">
                 <i class="bi bi-person-badge me-1"></i>
                 <span sec:authentication="name">Usuario</span>
@@ -98,7 +98,7 @@
                 <a th:href="@{/recepcion/dashboard}" class="nav-link-rec"
                    th:classappend="${activePage == 'dashboard' ? 'active' : ''}">
                     <i class="bi bi-speedometer2"></i>
-                    <span th:text="${trad != null ? trad.getTraduccion('nav.inicio') : 'Dashboard'}">Dashboard</span>
+                    <span th:text="${trad.getTraduccion('nav.inicio')}">Dashboard</span>
                 </a>
             </li>
 
@@ -106,7 +106,7 @@
                 <a th:href="@{/pacientes}" class="nav-link-rec"
                    th:classappend="${activePage == 'pacientes' ? 'active' : ''}">
                     <i class="bi bi-people"></i>
-                    <span th:text="${trad != null ? trad.getTraduccion('mod.pacientes') : 'Pacientes'}">Pacientes</span>
+                    <span th:text="${trad.getTraduccion('mod.pacientes')}">Pacientes</span>
                 </a>
             </li>
 
@@ -114,7 +114,7 @@
                 <a th:href="@{/citas}" class="nav-link-rec"
                    th:classappend="${activePage == 'citas' ? 'active' : ''}">
                     <i class="bi bi-calendar-check"></i>
-                    <span th:text="${trad != null ? trad.getTraduccion('mod.citas') : 'Agenda Citas'}">Citas</span>
+                    <span th:text="${trad.getTraduccion('mod.citas')}">Citas</span>
                 </a>
             </li>
 
@@ -124,7 +124,7 @@
                 <a th:href="@{/recepcion/perfil}" class="nav-link-rec"
                    th:classappend="${activePage == 'perfil' ? 'active' : ''}">
                     <i class="bi bi-person-circle"></i>
-                    <span th:text="${trad != null ? trad.getTraduccion('nav.perfil.user') : 'Mi Perfil'}">Perfil</span>
+                    <span th:text="${trad.getTraduccion('nav.perfil')}">Perfil</span>
                 </a>
             </li>
 
@@ -132,7 +132,7 @@
                 <a th:href="@{/recepcion/nominas}" class="nav-link-rec"
                    th:classappend="${activePage == 'nominas' ? 'active' : ''}">
                     <i class="bi bi-file-earmark-medical"></i>
-                    <span th:text="${trad != null ? trad.getTraduccion('nav.nominas') : 'Mis Nóminas'}">Mis Nóminas</span>
+                    <span th:text="${trad.getTraduccion('nav.nominas')}">Nóminas</span>
                 </a>
             </li>
 
@@ -140,7 +140,7 @@
                 <a th:href="@{/recepcion/vacaciones}" class="nav-link-rec"
                    th:classappend="${activePage == 'vacaciones' ? 'active' : ''}">
                     <i class="bi bi-sun"></i>
-                    <span th:text="${trad != null ? trad.getTraduccion('nav.vacaciones') : 'Vacaciones'}">Vacaciones</span>
+                    <span th:text="${trad.getTraduccion('nav.vacaciones')}">Vacaciones</span>
                 </a>
             </li>
 
@@ -151,7 +151,7 @@
         <form th:action="@{/logout}" method="post">
             <button type="submit" class="nav-link-rec text-danger border-0 bg-transparent w-100 text-start">
                 <i class="bi bi-box-arrow-left"></i>
-                <span th:text="${trad != null ? trad.getTraduccion('btn.logout') : 'Cerrar Sesión'}">Salir</span>
+                <span th:text="${trad.getTraduccion('btn.logout')}">Cerrar Sesión</span>
             </button>
         </form>
     </div>

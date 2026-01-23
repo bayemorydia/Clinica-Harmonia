@@ -3,18 +3,83 @@
 
 <head>
     <div th:replace="~{Reutilizable/layout :: head_general}"></div>
-    <title th:text="${trad.getTraduccion('mod.roles')} + ': ' + ${rol.nombre}">Detalle Rol</title>
+    <title th:text="${trad.getTraduccion('roles.detalle.titulo')} + ': ' + ${rol.nombre}">Detalle Rol</title>
+    <style>
+        :root {
+            --surface-color: #ffffff;
+            --background-color: #f8f9fa;
+            --primary-color: #0d6efd;
+            --text-main: #212529;
+            --text-muted: #6c757d;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-main);
+            font-family: 'Inter', -apple-system, sans-serif;
+        }
+
+        .glass-card {
+            background: var(--surface-color);
+            border-radius: 20px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-label-custom {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control-custom {
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e0e0e0;
+            background-color: #fcfcfc;
+            transition: all 0.2s ease;
+        }
+
+        .role-icon-container {
+            width: 80px;
+            height: 80px;
+            background: #e9ecef;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 2rem;
+            margin: 0 auto 1.5rem;
+            border: 3px solid #fff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+
+        .bg-success-soft { background-color: #e6f6ec; color: #0f5132; }
+        .bg-danger-soft { background-color: #fbe9eb; color: #842029; }
+
+        .btn-pill {
+            border-radius: 50px;
+            padding: 10px 25px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .btn-pill:hover { transform: translateY(-2px); }
+    </style>
 </head>
 
-<body class="bg-light">
+<body>
     <div th:replace="~{Reutilizable/layout :: menu}"></div>
 
-    <main class="content">
-        <div class="container-fluid py-4">
+    <main class="content py-5">
+        <div class="container">
 
             <div th:if="${param.success}" class="alert alert-success alert-dismissible fade show rounded-pill px-4 shadow-sm border-0 mb-4">
                 <i class="bi bi-check-circle-fill me-2"></i>
-                <span>¡Datos del rol actualizados correctamente!</span>
+                <span th:text="${trad.getTraduccion('roles.detalle.feedback.exito')}">¡Datos actualizados!</span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
 
@@ -28,71 +93,74 @@
                 <input type="hidden" th:field="*{id}" />
                 <input type="hidden" th:field="*{activo}" />
 
-                <div class="row g-4">
+                <div class="row g-4 justify-content-center">
+                    
                     <div class="col-lg-4">
-                        <div class="card shadow-sm border-0 mb-4" style="border-radius: 15px; overflow: hidden;">
-                            <div class="card-header bg-primary py-4 border-0"></div>
-                            <div class="card-body text-center position-relative" style="margin-top: -50px;">
-                                <div class="bg-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow-sm"
-                                    style="width: 100px; height: 100px; border: 5px solid white;">
-                                    <i class="bi bi-shield-lock-fill text-primary" style="font-size: 2.5rem;"></i>
-                                </div>
-                                <h4 class="fw-bold mb-1 text-dark" th:text="${rol.nombre}">Nombre Rol</h4>
-                                <p class="text-muted small mb-3">Identificador de Seguridad</p>
+                        <div class="glass-card p-4 text-center">
+                            <div class="role-icon-container">
+                                <i class="bi bi-shield-lock-fill"></i>
+                            </div>
+                            <h4 class="fw-bold mb-1 text-dark" th:text="${rol.nombre}">Nombre Rol</h4>
+                            <p class="text-muted small mb-4" th:text="${trad.getTraduccion('roles.detalle.id_seguridad')}">Identificador de Seguridad</p>
 
-                                <div class="mt-2 pt-3 border-top mx-3">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <span class="small text-muted">Estado:</span>
-                                        <span th:class="${rol.activo} ? 'badge rounded-pill bg-success-subtle text-success' : 'badge rounded-pill bg-danger-subtle text-danger'"
-                                              th:text="${rol.activo} ? 'Activo' : 'Inactivo'">
-                                        </span>
-                                    </div>
+                            <div class="pt-3 border-top">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="small text-muted" th:text="${trad.getTraduccion('roles.form.estado')}">Estado:</span>
+                                    <span th:class="${rol.activo} ? 'badge rounded-pill bg-success-soft px-3 py-2' : 'badge rounded-pill bg-danger-soft px-3 py-2'"
+                                          th:text="${rol.activo} ? ${trad.getTraduccion('pacientes.estado.activo')} : ${trad.getTraduccion('pacientes.estado.inactivo')}">
+                                    </span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-lg-8">
-                        <div class="card shadow-sm border-0" style="border-radius: 15px;">
-                            <div class="card-body p-4 p-md-5">
-                                <div class="mb-5">
-                                    <h5 class="fw-bold mb-4 text-primary d-flex align-items-center">
-                                        <span class="bg-primary bg-opacity-10 p-2 rounded-3 me-3"><i class="bi bi-gear-fill"></i></span>
-                                        <span>Configuración del Rol</span>
-                                    </h5>
-                                    <div class="row g-3">
-                                        <div class="col-12">
-                                            <label class="form-label small fw-bold text-secondary">Nombre del Rol</label>
-                                            <input type="text" th:field="*{nombre}" class="form-control rounded-3 bg-light"
-                                                th:classappend="${#fields.hasErrors('nombre')} ? 'is-invalid'"
-                                                placeholder="Ej: ROLE_ADMIN">
-                                            <div class="invalid-feedback" th:errors="*{nombre}"></div>
-                                        </div>
-                                        <div class="col-12">
-                                            <label class="form-label small fw-bold text-secondary">Descripción</label>
-                                            <textarea th:field="*{descripcion}" class="form-control rounded-3 bg-light"
-                                                rows="4" placeholder="Describa las responsabilidades de este rol..."></textarea>
-                                        </div>
-                                    </div>
+                    <div class="col-lg-7">
+                        <div class="glass-card p-4 p-md-5">
+                            
+                            <div class="mb-4">
+                                <h5 class="fw-bold text-dark d-flex align-items-center">
+                                    <span class="bg-primary bg-opacity-10 p-2 rounded-3 me-3 text-primary">
+                                        <i class="bi bi-gear-fill"></i>
+                                    </span>
+                                    <span th:text="${trad.getTraduccion('roles.detalle.config.titulo')}">Configuración del Rol</span>
+                                </h5>
+                            </div>
+
+                            <div class="row g-4">
+                                <div class="col-12">
+                                    <label class="form-label-custom" th:text="${trad.getTraduccion('roles.form.label.nombre')}">Nombre del Rol</label>
+                                    <input type="text" th:field="*{nombre}" class="form-control form-control-custom"
+                                           th:classappend="${#fields.hasErrors('nombre')} ? 'is-invalid'"
+                                           placeholder="Ej: ROLE_ADMIN">
+                                    <div class="invalid-feedback" th:errors="*{nombre}"></div>
                                 </div>
 
-                                <div class="card-footer bg-white border-0 p-0 d-flex justify-content-between">
-                                    <a th:href="@{/roles/listar}" class="btn btn-outline-secondary rounded-pill px-4 shadow-sm">
-                                        <i class="bi bi-arrow-left me-2"></i>
-                                        <span th:text="${trad.getTraduccion('btn.volver')}">Volver</span>
-                                    </a>
-                                    <button type="submit" class="btn btn-primary rounded-pill px-5 shadow-lg">
-                                        <i class="bi bi-save me-2"></i>
-                                        <span th:text="${trad.getTraduccion('btn.guardarCambios')}">Guardar Cambios</span>
-                                    </button>
+                                <div class="col-12">
+                                    <label class="form-label-custom" th:text="${trad.getTraduccion('roles.form.label.desc')}">Descripción</label>
+                                    <textarea th:field="*{descripcion}" class="form-control form-control-custom" rows="4"
+                                              th:placeholder="${trad.getTraduccion('roles.form.placeholder.desc')}"></textarea>
                                 </div>
                             </div>
+
+                            <div class="d-flex justify-content-between align-items-center mt-5">
+                                <a th:href="@{/roles/listar}" class="btn btn-light btn-pill text-secondary">
+                                    <i class="bi bi-arrow-left me-2"></i>
+                                    <span th:text="${trad.getTraduccion('btn.volver')}">Volver</span>
+                                </a>
+                                <button type="submit" class="btn btn-primary btn-pill shadow-sm">
+                                    <i class="bi bi-save me-2"></i>
+                                    <span th:text="${trad.getTraduccion('btn.guardarCambios')}">Guardar Cambios</span>
+                                </button>
+                            </div>
+
                         </div>
                     </div>
+
                 </div>
             </form>
         </div>
     </main>
+
     <div th:replace="~{Reutilizable/layout :: scripts}"></div>
 </body>
 </html>

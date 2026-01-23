@@ -2,7 +2,7 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <div th:replace="~{Reutilizable/layoutRecepcion :: head_recepcion}"></div>
-    <title>Recepción - Panel Principal</title>
+    <title th:text="${trad.getTraduccion('recepcion.dashboard.titulo')}">Recepción - Panel Principal</title>
 </head>
 <body class="bg-light">
 
@@ -13,8 +13,8 @@
             
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
-                    <h1 class="h3 fw-bold text-primary mb-0">Panel de Recepción</h1>
-                    <p class="text-muted small mb-0">Vista general de la clínica</p>
+                    <h1 class="h3 fw-bold text-primary mb-0" th:text="${trad.getTraduccion('recepcion.panel.titulo')}">Panel de Recepción</h1>
+                    <p class="text-muted small mb-0" th:text="${trad.getTraduccion('recepcion.panel.subtitulo')}">Vista general de la clínica</p>
                 </div>
                 <span class="badge bg-white text-secondary border p-2 shadow-sm">
                     <i class="bi bi-calendar-day me-1 text-primary"></i>
@@ -28,7 +28,7 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-start">
                                 <div>
-                                    <h6 class="card-title text-muted text-uppercase small fw-bold">Citas para Hoy</h6>
+                                    <h6 class="card-title text-muted text-uppercase small fw-bold" th:text="${trad.getTraduccion('recepcion.kpi.citas')}">Citas para Hoy</h6>
                                     <h2 class="mt-2 mb-0 fw-bold text-dark" th:text="${totalCitasHoy}">0</h2>
                                 </div>
                                 <div class="stat text-primary bg-primary-subtle rounded p-3">
@@ -37,7 +37,7 @@
                             </div>
                             <div class="mt-3">
                                 <a th:href="@{/citas}" class="text-primary text-decoration-none small fw-bold">
-                                    Ver agenda completa <i class="bi bi-arrow-right ms-1"></i>
+                                    <span th:text="${trad.getTraduccion('recepcion.link.agenda')}">Ver agenda completa</span> <i class="bi bi-arrow-right ms-1"></i>
                                 </a>
                             </div>
                         </div>
@@ -49,7 +49,7 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-start">
                                 <div>
-                                    <h6 class="card-title text-muted text-uppercase small fw-bold">Base de Pacientes</h6>
+                                    <h6 class="card-title text-muted text-uppercase small fw-bold" th:text="${trad.getTraduccion('recepcion.kpi.pacientes')}">Base de Pacientes</h6>
                                     <h2 class="mt-2 mb-0 fw-bold text-dark" th:text="${totalPacientes}">0</h2>
                                 </div>
                                 <div class="stat text-success bg-success-subtle rounded p-3">
@@ -58,7 +58,7 @@
                             </div>
                             <div class="mt-3">
                                 <a th:href="@{/pacientes/anadir}" class="text-success text-decoration-none small fw-bold">
-                                    <i class="bi bi-plus-circle me-1"></i> Registrar Nuevo
+                                    <i class="bi bi-plus-circle me-1"></i> <span th:text="${trad.getTraduccion('recepcion.link.registrar')}">Registrar Nuevo</span>
                                 </a>
                             </div>
                         </div>
@@ -68,9 +68,9 @@
                 <div class="col-md-6 col-xl-4">
                      <div class="card shadow-sm border-0 h-100 bg-primary text-white">
                         <div class="card-body d-flex flex-column justify-content-center align-items-center text-center">
-                            <h5 class="card-title text-white mb-3 fw-bold">Gestión Rápida</h5>
+                            <h5 class="card-title text-white mb-3 fw-bold" th:text="${trad.getTraduccion('recepcion.card.gestion')}">Gestión Rápida</h5>
                             <a th:href="@{/citas/nueva}" class="btn btn-light text-primary rounded-pill px-4 fw-bold w-100 shadow-sm">
-                                <i class="bi bi-plus-lg me-2"></i> Agendar Cita
+                                <i class="bi bi-plus-lg me-2"></i> <span th:text="${trad.getTraduccion('recepcion.btn.agendar')}">Agendar Cita</span>
                             </a>
                         </div>
                     </div>
@@ -79,25 +79,25 @@
 
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-white pt-4 px-4 border-0">
-                    <h5 class="card-title mb-0 fw-bold text-dark">Agenda Global del Día</h5>
+                    <h5 class="card-title mb-0 fw-bold text-dark" th:text="${trad.getTraduccion('recepcion.tabla.titulo')}">Agenda Global del Día</h5>
                 </div>
                 <div class="card-body px-0">
                     <div class="table-responsive">
                         <table class="table table-hover align-middle my-0">
                             <thead class="bg-light">
                                 <tr>
-                                    <th class="ps-4 text-muted small text-uppercase fw-bold">Hora</th>
-                                    <th class="text-muted small text-uppercase fw-bold">Paciente</th>
-                                    <th class="text-muted small text-uppercase fw-bold">Especialidad / Médico</th>
-                                    <th class="text-center text-muted small text-uppercase fw-bold">Estado</th>
-                                    <th class="text-end pe-4 text-muted small text-uppercase fw-bold">Acciones</th>
+                                    <th class="ps-4 text-muted small text-uppercase fw-bold" th:text="${trad.getTraduccion('recepcion.th.hora')}">Hora</th>
+                                    <th class="text-muted small text-uppercase fw-bold" th:text="${trad.getTraduccion('recepcion.th.paciente')}">Paciente</th>
+                                    <th class="text-muted small text-uppercase fw-bold" th:text="${trad.getTraduccion('recepcion.th.medico')}">Especialidad / Médico</th>
+                                    <th class="text-center text-muted small text-uppercase fw-bold" th:text="${trad.getTraduccion('recepcion.th.estado')}">Estado</th>
+                                    <th class="text-end pe-4 text-muted small text-uppercase fw-bold" th:text="${trad.getTraduccion('recepcion.th.acciones')}">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr th:if="${#lists.isEmpty(citasHoy)}">
                                     <td colspan="5" class="text-center py-5 text-muted">
                                         <i class="bi bi-calendar-x display-4 d-block mb-3 opacity-25"></i>
-                                        <span class="d-block">No hay citas programadas para hoy.</span>
+                                        <span class="d-block" th:text="${trad.getTraduccion('recepcion.tabla.vacia')}">No hay citas programadas para hoy.</span>
                                     </td>
                                 </tr>
 
@@ -124,7 +124,7 @@
                                     <td>
                                         <div class="d-flex flex-column">
                                             <div th:if="${cita.profesional != null}">
-                                                <small class="text-muted text-uppercase" style="font-size: 0.7rem;">Dr/a.</small>
+                                                <small class="text-muted text-uppercase" style="font-size: 0.7rem;" th:text="${trad.getTraduccion('recepcion.label.dr')}">Dr/a.</small>
                                                 <span class="fw-bold text-dark" 
                                                       th:text="${cita.profesional.nombre} + ' ' + ${cita.profesional.apellidos}">Dr. House</span>
                                              </div>
@@ -132,15 +132,15 @@
                                     </td>
                                     
                                     <td class="text-center">
-                                        <span th:if="${cita.estado.name() == 'PROGRAMADA'}" class="badge bg-warning-subtle text-warning-emphasis rounded-pill px-3">Pendiente</span>
-                                        <span th:if="${cita.estado.name() == 'REALIZADA'}" class="badge bg-success-subtle text-success-emphasis rounded-pill px-3">Completada</span>
-                                        <span th:if="${cita.estado.name() == 'ANULADA'}" class="badge bg-danger-subtle text-danger-emphasis rounded-pill px-3">Anulada</span>
+                                        <span th:if="${cita.estado.name() == 'PROGRAMADA'}" class="badge bg-warning-subtle text-warning-emphasis rounded-pill px-3" th:text="${trad.getTraduccion('recepcion.status.pendiente')}">Pendiente</span>
+                                        <span th:if="${cita.estado.name() == 'REALIZADA'}" class="badge bg-success-subtle text-success-emphasis rounded-pill px-3" th:text="${trad.getTraduccion('recepcion.status.completada')}">Completada</span>
+                                        <span th:if="${cita.estado.name() == 'ANULADA'}" class="badge bg-danger-subtle text-danger-emphasis rounded-pill px-3" th:text="${trad.getTraduccion('recepcion.status.anulada')}">Anulada</span>
                                     </td>
                                     
                                     <td class="text-end pe-4">
                                         <a th:href="@{/citas/confirmarEliminar/} + ${cita.id}" 
                                            class="btn btn-sm btn-light text-danger border-0" 
-                                           title="Anular cita">
+                                           th:title="${trad.getTraduccion('recepcion.btn.anular')}">
                                             <i class="bi bi-x-lg"></i>
                                         </a>
                                     </td>

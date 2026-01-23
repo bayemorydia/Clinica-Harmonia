@@ -1,269 +1,168 @@
 <!DOCTYPE html>
-<html lang="es"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
-    <!-- Head del layout -->
     <th:block th:replace="~{Reutilizable/layoutRRHH :: head_RRHH}"></th:block>
+    <title th:text="${trad.getTraduccion('rrhh.dashboard.titulo')}">Panel de Control - RRHH</title>
 
-    <title>Dashboard RRHH</title>
-
-    <!-- Estilos del dashboard -->
     <style>
-        body { font-family: 'Poppins', sans-serif; }
-
-        /* KPI cards */
-        .kpi-card {
-            border-radius: 18px;
-            padding: 1.5rem;
-            background: #ffffff;
-            box-shadow: 0 .75rem 1.5rem rgba(0,0,0,.08);
-            transition: transform .25s ease, box-shadow .25s ease;
-            height: 100%;
+        .card-stat {
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            border-radius: 15px;
         }
 
-        .kpi-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 1.2rem 2.5rem rgba(0,0,0,.12);
+        .card-stat:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
         }
 
-        .kpi-icon {
-            width: 52px;
-            height: 52px;
-            border-radius: 14px;
+        .icon-box {
+            width: 60px;
+            height: 60px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.6rem;
         }
 
-        .trend-up {
-            color: #198754;
-            font-weight: 600;
-        }
-
-        .trend-down {
-            color: #dc3545;
-            font-weight: 600;
-        }
-
-        /* Sections */
-        .section-card {
-            background: #ffffff;
-            border-radius: 18px;
-            padding: 1.5rem;
-            box-shadow: 0 .5rem 1.5rem rgba(0,0,0,.08);
-            height: 100%;
-        }
-
-        /* Quick actions */
         .quick-action {
-            border-radius: 16px;
-            padding: 1.25rem;
-            transition: transform .2s ease, box-shadow .2s ease;
-            border: 1px solid #f1f1f1;
-            background: #ffffff;
+            border-radius: 12px;
+            transition: all 0.3s;
             height: 100%;
         }
 
         .quick-action:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 .75rem 1.5rem rgba(0,0,0,.12);
+            background-color: #f8f9fa;
+            border-color: #0d6efd !important;
         }
 
-        /* Activity */
-        .activity-item {
-            display: flex;
-            align-items: center;
-            padding: .75rem 0;
-            border-bottom: 1px solid #f1f1f1;
-        }
-
-        .activity-item:last-child {
-            border-bottom: none;
-        }
-
-        .activity-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 12px;
-            font-size: 1rem;
+        .uppercase {
+            text-transform: uppercase;
         }
     </style>
 </head>
 
 <body th:with="activePage='dashboard'">
 
-<!-- SIDEBAR -->
-<div sec:authorize="hasRole('RRHH')"
-     th:replace="~{Reutilizable/layoutRRHH :: menu_RRHH}"></div>
+    <div sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layoutRRHH :: menu_RRHH}"></div>
 
-<!-- CONTENIDO -->
-<main class="content">
-    <div class="container-fluid">
-
-        <!-- HEADER -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
+    <main class="content">
+        <header class="mb-4 d-flex justify-content-between align-items-center">
             <div>
-                <h2 class="fw-bold mb-1">Dashboard RRHH</h2>
-                <p class="text-muted mb-0">Visión general del estado de la empresa</p>
+                <h2 class="fw-bold mb-0">
+                    <span th:text="${trad.getTraduccion('rrhh.dashboard.welcome')}">Dashboard</span>
+                    <span th:text="' - ' + ${trad.getTraduccion('vacaciones.panel.rrhh')}">RRHH</span>
+                </h2>
+                <p class="text-muted" th:text="${trad.getTraduccion('rrhh.dashboard.intro')}">Gestión del capital humano y estados operativos</p>
+            </div>
+            <div class="d-flex align-items-center">
+                <span class="badge bg-primary-subtle text-primary p-2 px-3 rounded-pill me-3">
+                    <i class="bi bi-calendar-event me-2"></i>
+                    <span th:text="${#temporals.format(#temporals.createNow(), 'dd MMMM yyyy')}"></span>
+                </span>
+            </div>
+        </header>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3 mb-5">
+            <div class="col">
+                <a th:href="@{/RRHH/empleados}" class="text-decoration-none">
+                    <div class="card border-0 shadow-sm p-3 card-stat h-100">
+                        <div class="d-flex align-items-center">
+                            <div class="icon-box bg-primary bg-opacity-10 rounded-3 me-3">
+                                <i class="bi bi-people text-primary fs-3"></i>
+                            </div>
+                            <div>
+                                <h6 class="text-muted mb-0 small uppercase fw-bold" th:text="${trad.getTraduccion('rrhh.kpi.total')}">EMPLEADOS</h6>
+                                <h3 class="fw-bold mb-0" th:text="${totalEmpleados ?: 0}">0</h3>
+                            </div>
+                        </div>
+                    </div>
+                </a>
             </div>
 
-            <span class="badge bg-white border shadow-sm rounded-pill px-3 py-2">
-                <i class="bi bi-calendar-event text-primary me-2"></i>
-                <span th:text="${#temporals.format(#temporals.createNow(), 'dd MMM yyyy')}"></span>
-            </span>
+            <div class="col">
+                <div class="card border-0 shadow-sm p-3 card-stat h-100">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box bg-success bg-opacity-10 rounded-3 me-3">
+                            <i class="bi bi-person-check text-success fs-3"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-muted mb-0 small uppercase fw-bold" th:text="${trad.getTraduccion('rrhh.kpi.active')}">ACTIVOS</h6>
+                            <h3 class="fw-bold mb-0" th:text="${empleadosActivos ?: 0}">0</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card border-0 shadow-sm p-3 card-stat h-100">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box bg-danger bg-opacity-10 rounded-3 me-3">
+                            <i class="bi bi-person-x text-danger fs-3"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-muted mb-0 small uppercase fw-bold" th:text="${trad.getTraduccion('rrhh.kpi.inactive')}">BAJAS</h6>
+                            <h3 class="fw-bold mb-0" th:text="${empleadosInactivos ?: 0}">0</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- KPIs -->
-        <div class="row g-4 mb-5">
+        <div class="card border-0 shadow-sm p-4">
+            <h5 class="fw-bold mb-4 d-flex align-items-center">
+                <i class="bi bi-gear-fill me-2 text-secondary"></i>
+                <span th:text="${trad.getTraduccion('rrhh.actions.title')}">Gestión de Recursos Humanos</span>
+            </h5>
 
-            <div class="col-md-6 col-xl-4">
-                <div class="kpi-card">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <small class="text-muted">Total Empleados</small>
-                            <h3 class="fw-bold mb-1" th:text="${totalEmpleados ?: 0}">0</h3>
-                            <small class="trend-up">
-                                <i class="bi bi-arrow-up"></i> Estable
-                            </small>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="border p-3 quick-action d-flex flex-column">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-success bg-opacity-10 p-2 rounded me-3">
+                                <i class="bi bi-file-earmark-text text-success fs-4"></i>
+                            </div>
+                            <h6 class="mb-0 fw-bold" th:text="${trad.getTraduccion('rrhh.actions.pay')}">Nóminas</h6>
                         </div>
-                        <div class="kpi-icon bg-primary bg-opacity-10 text-primary">
-                            <i class="bi bi-people"></i>
+                        <p class="small text-muted flex-grow-1" th:text="${trad.getTraduccion('rrhh.activity.payroll')}">Generación y revisión mensual</p>
+                        <a th:href="@{/RRHH/nominas}" class="btn btn-sm btn-outline-dark w-100" th:text="${trad.getTraduccion('btn.entrar')}">Entrar</a>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="border p-3 quick-action d-flex flex-column">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-warning bg-opacity-10 p-2 rounded me-3">
+                                <i class="bi bi-calendar-check text-warning fs-4"></i>
+                            </div>
+                            <h6 class="mb-0 fw-bold" th:text="${trad.getTraduccion('rrhh.actions.vac')}">Vacaciones</h6>
                         </div>
+                        <p class="small text-muted flex-grow-1" th:text="${trad.getTraduccion('vacaciones.subtituloRRHH')}">Solicitudes y ausencias</p>
+                        <a th:href="@{/RRHH/vacaciones}" class="btn btn-sm btn-outline-dark w-100" th:text="${trad.getTraduccion('btn.entrar')}">Entrar</a>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="border p-3 quick-action d-flex flex-column">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-info bg-opacity-10 p-2 rounded me-3">
+                                <i class="bi bi-clock-history text-info fs-4"></i>
+                            </div>
+                            <h6 class="mb-0 fw-bold" th:text="${trad.getTraduccion('rrhh.actions.shift')}">Turnos</h6>
+                        </div>
+                        <p class="small text-muted flex-grow-1" th:text="${trad.getTraduccion('mod.empleados.desc')}">Horarios operativos</p>
+                        <a th:href="@{/RRHH/turnos}" class="btn btn-sm btn-outline-dark w-100" th:text="${trad.getTraduccion('btn.entrar')}">Entrar</a>
                     </div>
                 </div>
             </div>
-
-            <div class="col-md-6 col-xl-4">
-                <div class="kpi-card">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <small class="text-muted">Empleados Activos</small>
-                            <h3 class="fw-bold mb-1" th:text="${empleadosActivos ?: 0}">0</h3>
-                            <small class="trend-up">
-                                <i class="bi bi-arrow-up"></i> Operativos
-                            </small>
-                        </div>
-                        <div class="kpi-icon bg-success bg-opacity-10 text-success">
-                            <i class="bi bi-person-check"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-xl-4">
-                <div class="kpi-card">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <small class="text-muted">Empleados Inactivos</small>
-                            <h3 class="fw-bold mb-1" th:text="${empleadosInactivos ?: 0}">0</h3>
-                            <small class="trend-down">
-                                <i class="bi bi-arrow-down"></i> Atención
-                            </small>
-                        </div>
-                        <div class="kpi-icon bg-danger bg-opacity-10 text-danger">
-                            <i class="bi bi-person-x"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
         </div>
 
-        <!-- BLOQUES -->
-        <div class="row g-4">
+        <footer class="mt-5 text-center text-muted">
+            <small th:text="${trad.getTraduccion('footer.copy')}">&copy; 2026 Clínica Harmonia</small>
+        </footer>
+    </main>
 
-            <!-- ACTIVIDAD RECIENTE -->
-            <div class="col-lg-6">
-                <div class="section-card">
-                    <h5 class="fw-bold mb-3">Actividad Reciente</h5>
-
-                    <div class="activity-item">
-                        <div class="activity-icon bg-success bg-opacity-10 text-success">
-                            <i class="bi bi-person-plus"></i>
-                        </div>
-                        <div>
-                            <small class="fw-semibold">Nuevo empleado registrado</small>
-                            <div class="text-muted small">Hace 2 horas</div>
-                        </div>
-                    </div>
-
-                    <div class="activity-item">
-                        <div class="activity-icon bg-primary bg-opacity-10 text-primary">
-                            <i class="bi bi-file-earmark"></i>
-                        </div>
-                        <div>
-                            <small class="fw-semibold">Nómina generada</small>
-                            <div class="text-muted small">Hoy</div>
-                        </div>
-                    </div>
-
-                    <div class="activity-item">
-                        <div class="activity-icon bg-warning bg-opacity-10 text-warning">
-                            <i class="bi bi-calendar-check"></i>
-                        </div>
-                        <div>
-                            <small class="fw-semibold">Vacaciones aprobadas</small>
-                            <div class="text-muted small">Ayer</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ACCIONES RÁPIDAS -->
-            <div class="col-lg-6">
-                <div class="section-card">
-                    <h5 class="fw-bold mb-3">Acciones Rápidas</h5>
-
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <a th:href="@{/RRHH/empleados}" class="text-decoration-none">
-                                <div class="quick-action text-center">
-                                    <i class="bi bi-people fs-2 text-primary mb-2"></i>
-                                    <h6 class="fw-bold mb-1">Empleados</h6>
-                                    <small class="text-muted">Gestionar personal</small>
-                                </div>
-                            </a>
-                        </div>
-
-                        <div class="col-md-4">
-                            <a th:href="@{/RRHH/nominas}" class="text-decoration-none">
-                                <div class="quick-action text-center">
-                                    <i class="bi bi-file-earmark-text fs-2 text-success mb-2"></i>
-                                    <h6 class="fw-bold mb-1">Nóminas</h6>
-                                    <small class="text-muted">Generar y revisar</small>
-                                </div>
-                            </a>
-                        </div>
-
-                        <div class="col-md-4">
-                            <a th:href="@{/RRHH/vacaciones}" class="text-decoration-none">
-                                <div class="quick-action text-center">
-                                    <i class="bi bi-calendar-event fs-2 text-warning mb-2"></i>
-                                    <h6 class="fw-bold mb-1">Vacaciones</h6>
-                                    <small class="text-muted">Solicitudes</small>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-        </div>
-
-    </div>
-</main>
-
-<!-- SCRIPTS -->
-<div sec:authorize="hasRole('RRHH')"
-     th:replace="~{Reutilizable/layoutRRHH :: scripts_RRHH}"></div>
-
+    <div th:replace="~{Reutilizable/layoutRRHH :: scripts_RRHH}"></div>
 </body>
+
 </html>

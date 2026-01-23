@@ -3,106 +3,132 @@
 
 <head>
     <div th:replace="~{Reutilizable/layout :: head_general}"></div>
-    <title th:text="${trad.getTraduccion('usuario.desactivar.titulo')}">Confirmar Desactivación de Cuenta</title>
+    <title th:text="${trad.getTraduccion('usuario.desactivar.titulo')}">Confirmar Desactivación</title>
+    <style>
+        :root {
+            --surface-color: #ffffff;
+            --background-color: #f8f9fa;
+            --primary-color: #0d6efd;
+            --text-main: #212529;
+            --text-muted: #6c757d;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-main);
+            font-family: 'Inter', -apple-system, sans-serif;
+        }
+
+        .glass-card {
+            background: var(--surface-color);
+            border-radius: 20px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .user-profile-preview {
+            background-color: #f8f9fa;
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid #eee;
+        }
+
+        .user-avatar-large {
+            width: 80px;
+            height: 80px;
+            background: #e9ecef;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 2rem;
+            margin: 0 auto 1.5rem;
+            border: 3px solid #fff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+
+        .alert-soft-warning {
+            background-color: #fff8eb;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            border-radius: 12px;
+        }
+
+        .btn-pill {
+            border-radius: 50px;
+            padding: 10px 25px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-pill:hover {
+            transform: translateY(-2px);
+        }
+    </style>
 </head>
 
 <body>
     <div th:replace="~{Reutilizable/layout :: menu}"></div>
 
-    <main class="content">
-        <div class="container-fluid">
-
-            <div class="mb-4">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item">
-                            <a th:href="@{/admin/usuarios}"
-                                th:text="${trad.getTraduccion('mod.admin.usuarios.titulo')}">Usuarios</a>
-                        </li>
-                        <li class="breadcrumb-item active" aria-current="page"
-                            th:text="${trad.getTraduccion('usuario.desactivar.titulo')}">Desactivar</li>
-                    </ol>
-                </nav>
-            </div>
-
+    <main class="content py-5">
+        <div class="container">
             <div class="row justify-content-center">
-                <div class="col-xl-6 col-lg-8">
-                    <div class="card shadow-sm border-0" style="border-radius: 15px; overflow: hidden;">
+                <div class="col-xl-6 col-lg-7">
+                    
+                    <div class="glass-card p-4 p-md-5">
+                        
+                        <div class="text-center mb-5">
+                            <div class="d-inline-flex align-items-center justify-content-center bg-warning bg-opacity-10 text-warning rounded-circle mb-3" style="width: 60px; height: 60px;">
+                                <i class="bi bi-exclamation-triangle-fill fs-3"></i>
+                            </div>
+                            <h2 class="fw-bold text-dark" th:text="${trad.getTraduccion('usuario.desactivar.titulo')}">Confirmar Acción</h2>
+                            <p class="text-muted" th:text="${trad.getTraduccion('usuario.desactivar.subtitulo')}">Vas a modificar el estado de acceso de este usuario</p>
+                        </div>
 
-                        <div class="card-header bg-white border-0 py-4 px-4">
-                            <div class="d-flex align-items-center">
-                                <div class="bg-warning bg-opacity-10 p-3 rounded-3 me-3">
-                                    <i class="bi bi-exclamation-triangle-fill text-warning fs-4"></i>
-                                </div>
-                                <div>
-                                    <h3 class="mb-0 fw-bold text-dark"
-                                        th:text="${trad.getTraduccion('usuario.desactivar.titulo')}">Confirmar Acción
-                                    </h3>
-                                    <p class="mb-0 text-muted small">Esta acción modificará el estado de acceso del usuario</p>
-                                </div>
+                        <div class="user-profile-preview text-center mb-4">
+                            <div class="user-avatar-large">
+                                <span th:text="${#strings.substring(usuario.username,0,1).toUpperCase()}">U</span>
+                            </div>
+                            <h4 class="fw-bold mb-1 text-dark" th:text="${usuario.username}">Username</h4>
+                            <p class="text-muted mb-0 small">
+                                <i class="bi bi-person-badge me-1"></i>
+                                <span th:text="${usuario.empleado != null ? usuario.empleado.nombre + ' ' + usuario.empleado.apellidos : (usuario.paciente != null ? usuario.paciente.nombre + ' ' + usuario.paciente.apellidos : trad.getTraduccion('usuarios.sistema'))}">Nombre Real</span>
+                            </p>
+                        </div>
+
+                        <div class="alert alert-soft-warning d-flex align-items-start mb-5" role="alert">
+                            <i class="bi bi-info-circle-fill me-3 mt-1 fs-5"></i>
+                            <div class="small" th:text="${trad.getTraduccion('usuario.desactivar.aviso')}">
+                                El usuario no podrá iniciar sesión, pero sus registros históricos se mantendrán para auditoría médica y administrativa.
                             </div>
                         </div>
 
-                        <div class="card-body p-4 p-md-5 text-center">
-                            <p class="lead fw-semibold text-dark mb-4">¿Estás seguro de que deseas desactivar esta cuenta de usuario?</p>
+                        <form th:action="@{/admin/usuarios/desactivar}" method="post">
+                            <input type="hidden" name="id" th:value="${usuario.id}" />
 
-                            <div class="bg-light p-4 rounded-4 border border-light-subtle mb-4">
-                                <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
-                                    style="width: 60px; height: 60px;">
-                                    <h4 class="mb-0 fw-bold" th:text="${#strings.substring(usuario.username,0,1).toUpperCase()}">U</h4>
-                                </div>
-                                <h5 class="fw-bold mb-1 text-dark" th:text="${usuario.username}">Username</h5>
-                                <p class="mb-0 text-muted small">
-                                    <span th:text="${usuario.empleado != null ? usuario.empleado.nombre + ' ' + usuario.empleado.apellidos : (usuario.paciente != null ? usuario.paciente.nombre + ' ' + usuario.paciente.apellidos : 'Usuario del Sistema')}"></span>
-                                </p>
+                            <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
+                                <a th:href="@{/admin/usuarios}" class="btn btn-light btn-pill text-secondary">
+                                    <span th:text="${trad.getTraduccion('btn.cancelar')}">Descartar</span>
+                                </a>
+                                <button type="submit" class="btn btn-warning btn-pill shadow-sm">
+                                    <i class="bi bi-lock-fill me-2"></i>
+                                    <span th:text="${trad.getTraduccion('btn.confirmar.desactivar')}">Confirmar Baja</span>
+                                </button>
                             </div>
+                        </form>
 
-                            <div class="alert alert-warning border-0 small mb-0 shadow-sm">
-                                <i class="bi bi-info-circle me-2"></i>
-                                <span th:text="${trad.getTraduccion('usuario.desactivar.aviso')}">
-                                    El usuario no podrá iniciar sesión, pero sus datos y registros históricos se mantendrán en el sistema.
-                                </span>
-                            </div>
-
-                            <form th:action="@{/admin/usuarios/desactivar}" method="post" class="mt-5">
-                                <input type="hidden" name="id" th:value="${usuario.id}" />
-
-                                <div class="d-flex justify-content-center gap-3">
-                                    <a th:href="@{/admin/usuarios}"
-                                        class="btn btn-light px-4 py-2 fw-bold text-secondary rounded-pill">
-                                        <span th:text="${trad.getTraduccion('btn.cancelar')}">Cancelar</span>
-                                    </a>
-                                    <button type="submit"
-                                        class="btn btn-warning px-4 py-2 fw-bold shadow-sm rounded-pill transition-all hover-lift">
-                                        <i class="bi bi-person-x-fill me-2"></i>
-                                        <span th:text="${trad.getTraduccion('btn.confirmar.desactivar')}">Sí, Desactivar Cuenta</span>
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-
-                        <div class="card-footer bg-light bg-opacity-50 border-0 py-3 text-center">
-                            <small class="text-muted italic" th:text="${trad.getTraduccion('usuario.footer.seguridad')}">Módulo de Seguridad de Acceso</small>
-                        </div>
                     </div>
+
+                    <div class="text-center mt-4">
+                        <p class="text-muted small italic" th:text="${trad.getTraduccion('usuario.footer.seguridad')}">Sistema de Control de Accesos - Clínica Harmonia</p>
+                    </div>
+
                 </div>
             </div>
         </div>
     </main>
 
     <div th:replace="~{Reutilizable/layout :: scripts}"></div>
-
-    <style>
-        .hover-lift:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .1) !important;
-        }
-        .transition-all {
-            transition: all 0.2s ease-in-out;
-        }
-        body {
-            background-color: #f8f9fa;
-        }
-    </style>
 </body>
 </html>
