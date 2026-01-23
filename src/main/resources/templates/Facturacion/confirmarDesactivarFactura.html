@@ -2,45 +2,72 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <div th:replace="~{Reutilizable/layout :: head_general}"></div>
-    <title th:text="${trad.getTraduccion('factura.desactivar.titulo')}">Confirmar Desactivación</title>
+    <title th:text="${trad.getTraduccion('facturacion.desactivar.titulo')}">Confirmar Desactivación</title>
 </head>
-<body>
+<body class="bg-light">
     <div th:replace="~{Reutilizable/layout :: menu}"></div>
+    
     <main class="content">
-        <div class="container-fluid">
-            <div class="row justify-content-center mt-5">
+        <div class="container py-5">
+            <div class="row justify-content-center">
                 <div class="col-xl-6 col-lg-8">
-                    <div class="card shadow-sm border-0" style="border-radius: 15px;">
+                    <div class="card shadow-sm border-0" style="border-radius: 15px; overflow: hidden;">
+                        
                         <div class="card-header bg-white border-0 py-4 px-4 text-center">
                             <div class="bg-danger bg-opacity-10 p-3 rounded-circle d-inline-flex mb-3">
                                 <i class="bi bi-exclamation-octagon text-danger fs-2"></i>
                             </div>
-                            <h3 class="fw-bold text-dark">¿Desactivar Factura?</h3>
+                            <h3 class="fw-bold text-dark" th:text="${trad.getTraduccion('facturacion.desactivar.header')}">¿Anular Factura?</h3>
+                            <p class="mb-0 text-muted small" th:text="${trad.getTraduccion('paciente.eliminar.subtitulo')}">Esta acción modificará el estado del registro</p>
                         </div>
-                        <div class="card-body p-4 text-center">
-                            <div class="bg-light p-4 rounded-4 mb-4">
-                                <h5 class="fw-bold mb-1" th:text="'Factura #' + ${factura.id}"></h5>
-                                <p class="text-muted mb-0" th:text="${factura.tipo == 'VENTA' ? factura.paciente.nombre : factura.proveedor.nombre}"></p>
+
+                        <div class="card-body p-4 p-md-5 text-center">
+                            <p class="lead fw-semibold text-dark mb-4" th:text="${trad.getTraduccion('facturacion.desactivar.pregunta')}">¿Está seguro de que desea anular este documento contable?</p>
+
+                            <div class="bg-light p-4 rounded-4 border border-light-subtle mb-4">
+                                <h5 class="fw-bold mb-1 text-dark">
+                                    <span th:text="${trad.getTraduccion('facturacion.detalle.titulo')}">Factura</span> #[[${factura.id}]]
+                                </h5>
+                                <p class="text-muted mb-0" th:text="${factura.paciente != null ? factura.paciente.nombre + ' ' + factura.paciente.apellidos : factura.proveedor.nombre}"></p>
                                 <h4 class="text-primary fw-bold mt-2" th:text="${factura.total} + ' €'"></h4>
                             </div>
-                            <div class="alert alert-warning border-0 small">
+
+                            <div class="alert alert-warning border-0 small mb-0 shadow-sm text-start">
                                 <i class="bi bi-info-circle me-2"></i>
-                                Esta factura quedará oculta en los listados generales pero se mantendrá en los registros históricos.
+                                <span th:text="${trad.getTraduccion('facturacion.desactivar.aviso')}">
+                                    La factura pasará a estado ANULADA. Este proceso es irreversible y quedará registrado para auditoría.
+                                </span>
                             </div>
-                            <form th:action="@{/admin/facturas/desactivar}" method="post" class="mt-4">
+
+                            <form th:action="@{/admin/facturas/desactivar}" method="post" class="mt-5">
                                 <input type="hidden" name="id" th:value="${factura.id}" />
+
                                 <div class="d-flex justify-content-center gap-3">
-                                    <a th:href="@{/admin/facturas}" class="btn btn-light px-4 rounded-pill fw-bold">Cancelar</a>
-                                    <button type="submit" class="btn btn-danger px-4 rounded-pill fw-bold shadow-sm">
-                                        <i class="bi bi-trash-fill me-2"></i>Confirmar Desactivación
+                                    <a th:href="@{/admin/facturas}" class="btn btn-light px-4 py-2 fw-bold text-secondary rounded-pill">
+                                        <span th:text="${trad.getTraduccion('btn.cancelar')}">Cancelar</span>
+                                    </a>
+                                    <button type="submit" class="btn btn-danger px-4 py-2 fw-bold shadow-sm rounded-pill transition-all hover-lift">
+                                        <i class="bi bi-x-circle-fill me-2"></i>
+                                        <span th:text="${trad.getTraduccion('facturacion.btn.anular')}">Confirmar Anulación</span>
                                     </button>
                                 </div>
                             </form>
+                        </div>
+
+                        <div class="card-footer bg-light bg-opacity-50 border-0 py-3 text-center">
+                            <small class="text-muted italic" th:text="${trad.getTraduccion('footer.modulo.seguridad')}">Módulo de Seguridad</small>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </main>
+
+    <div th:replace="~{Reutilizable/layout :: scripts}"></div>
+    
+    <style>
+        .hover-lift:hover { transform: translateY(-2px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.1)!important; }
+        .transition-all { transition: all 0.2s ease-in-out; }
+    </style>
 </body>
 </html>

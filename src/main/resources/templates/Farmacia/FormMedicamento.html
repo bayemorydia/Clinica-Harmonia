@@ -3,79 +3,83 @@
 
 <head>
     <div th:replace="~{Reutilizable/layout :: head_general}"></div>
-    <title th:text="${medicamento.id == null ? 'Nuevo Medicamento' : 'Detalle Medicamento'}"></title>
+    <title th:text="${medicamento.id == null ? trad.getTraduccion('medicamento.form.titulo.nuevo') : trad.getTraduccion('medicamento.form.titulo.editar')}">Formulario Medicamento</title>
 </head>
 
 <body class="bg-light">
     <div th:replace="~{Reutilizable/layout :: menu}"></div>
+
     <main class="content">
-        <div class="container py-4">
+        <div class="container-fluid py-4">
+            <div th:if="${error}" class="alert alert-danger border-0 shadow-sm mb-4" th:text="${error}"></div>
+
             <form th:action="@{/medicamentos/guardar}" th:object="${medicamento}" method="post">
                 <input type="hidden" th:field="*{id}" />
                 <input type="hidden" th:field="*{activo}" />
 
                 <div class="row g-4 justify-content-center">
-                    <div class="col-lg-8">
+                    <div class="col-lg-12">
                         <div class="card shadow-sm border-0" style="border-radius: 15px;">
+                            
                             <div class="card-header bg-white border-0 py-4 px-4 d-flex align-items-center">
-                                <div class="bg-success bg-opacity-10 p-3 rounded-3 me-3"><i
-                                        class="bi bi-capsule text-success fs-3"></i></div>
+                                <div class="bg-success bg-opacity-10 p-3 rounded-3 me-3">
+                                    <i class="bi bi-capsule text-success fs-3"></i>
+                                </div>
                                 <div>
-                                    <h3 class="mb-0 fw-bold text-dark"
-                                        th:text="${medicamento.id == null ? 'Nuevo Medicamento' : 'Edición de Producto'}">
-                                    </h3>
-                                    <p class="mb-0 text-muted small">Catálogo maestro de productos sanitarios.</p>
+                                    <h4 class="fw-bold mb-0 text-dark"
+                                        th:text="${medicamento.id == null ? trad.getTraduccion('medicamento.form.titulo.nuevo') : trad.getTraduccion('medicamento.form.titulo.editar')}">
+                                    </h4>
+                                    <p class="text-muted small mb-0" th:text="${trad.getTraduccion('medicamento.form.subtitulo')}">Gestión del catálogo maestro de productos farmacéuticos.</p>
                                 </div>
                             </div>
 
-                            <div class="card-body p-4 p-md-5">
-                                <div th:if="${error}" class="alert alert-danger rounded-pill px-4 border-0 mb-4"
-                                    th:text="${error}"></div>
-
-                                <div class="row g-4">
-                                    <div class="col-12">
-                                        <label class="form-label small fw-bold text-secondary text-uppercase">Nombre
-                                            Comercial</label>
-                                        <input type="text" th:field="*{nombre}"
-                                            class="form-control bg-light border-0 py-2"
-                                            th:classappend="${#fields.hasErrors('nombre')} ? 'is-invalid'">
-                                        <div class="invalid-feedback" th:errors="*{nombre}"></div>
+                            <div class="card-body p-4">
+                                <div class="row mb-4">
+                                    <div class="col-xl-3 col-lg-4">
+                                        <h6 class="fw-bold text-success text-uppercase small" th:text="${trad.getTraduccion('medicamento.form.sec.datos')}">Datos del Producto</h6>
+                                        <p class="text-muted small" th:text="${trad.getTraduccion('medicamento.form.sec.datos.desc')}">Información técnica y comercial del medicamento.</p>
                                     </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label small fw-bold text-secondary text-uppercase">Código
-                                            Referencia</label>
-                                        <input type="text" th:field="*{codigo}"
-                                            class="form-control bg-light border-0 py-2"
-                                            th:classappend="${#fields.hasErrors('codigo')} ? 'is-invalid'">
-                                        <div class="invalid-feedback" th:errors="*{codigo}"></div>
+                                    <div class="col-xl-9 col-lg-8">
+                                        <div class="row g-3">
+                                            <div class="col-12">
+                                                <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('medicamento.label.nombre')}">Nombre Comercial</label>
+                                                <input type="text" th:field="*{nombre}" class="form-control bg-light border-0 py-2" 
+                                                       th:errorclass="is-invalid" required>
+                                                <div class="invalid-feedback small" th:errors="*{nombre}"></div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('lbl.codigo')}">Código Referencia</label>
+                                                <input type="text" th:field="*{codigo}" class="form-control bg-light border-0 py-2 font-monospace" 
+                                                       th:errorclass="is-invalid" placeholder="MED-000" required>
+                                                <div class="invalid-feedback small" th:errors="*{codigo}"></div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('medicamento.label.tipo')}">Categoría / Tipo</label>
+                                                <input type="text" th:field="*{tipo}" class="form-control bg-light border-0 py-2" 
+                                                       th:errorclass="is-invalid" th:placeholder="${trad.getTraduccion('medicamento.placeholder.tipo')}" required>
+                                                <div class="invalid-feedback small" th:errors="*{tipo}"></div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label small fw-bold text-secondary text-uppercase">Categoría
-                                            / Tipo</label>
-                                        <input type="text" th:field="*{tipo}"
-                                            class="form-control bg-light border-0 py-2"
-                                            th:classappend="${#fields.hasErrors('tipo')} ? 'is-invalid'">
-                                        <div class="invalid-feedback" th:errors="*{tipo}"></div>
-                                    </div>
-                                </div>
-
-                                <div class="card-footer bg-white border-0 p-0 mt-5 d-flex justify-content-between">
-                                    <a th:href="@{/medicamentos}"
-                                        class="btn btn-outline-secondary rounded-pill px-4 shadow-sm">
-                                        <i class="bi bi-arrow-left me-2"></i> Volver
-                                    </a>
-                                    <button type="submit" class="btn btn-success rounded-pill px-5 shadow-lg fw-bold">
-                                        <i class="bi bi-save me-2"></i> Guardar Cambios
-                                    </button>
                                 </div>
                             </div>
+
+                            <div class="card-footer bg-white border-0 p-4 d-flex justify-content-end gap-2">
+                                <a th:href="@{/medicamentos}" class="btn btn-light rounded-pill px-4"
+                                    th:text="${trad.getTraduccion('btn.cancelar')}"></a>
+                                <button type="submit" class="btn btn-success rounded-pill px-5 fw-bold shadow-sm">
+                                    <i class="bi bi-save me-2"></i>
+                                    <span th:text="${trad.getTraduccion('btn.guardar')}"></span>
+                                </button>
+                            </div>
+
                         </div>
                     </div>
                 </div>
             </form>
         </div>
     </main>
+
     <div th:replace="~{Reutilizable/layout :: scripts}"></div>
 </body>
-
 </html>
