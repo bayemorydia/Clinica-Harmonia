@@ -45,19 +45,14 @@ public class NominaServiceImpl implements NominaService {
 
     @Override
     public void saveNomina(Nomina nomina) {
+        if (nomina.getSalarioBase() == null) nomina.setSalarioBase(BigDecimal.ZERO);
+        if (nomina.getDeducciones() == null) nomina.setDeducciones(BigDecimal.ZERO);
+        if (nomina.getTotalPagar() == null) nomina.setTotalPagar(nomina.getSalarioBase().subtract(nomina.getDeducciones()));
+
         nominaRepository.save(nomina);
     }
 
-    @Override
-    public void updateNomina(Long id, Nomina nomina) {
-        Nomina existente = nominaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Nómina no encontrada"));
-        existente.setPeriodo(nomina.getPeriodo());
-        existente.setSalarioBase(nomina.getSalarioBase());
-        existente.setDeducciones(nomina.getDeducciones());
-        existente.setEmpleado(nomina.getEmpleado());
-        nominaRepository.save(existente);
-    }
+
 
     @Override
     public boolean existeNominaMes(Long empleadoId, String periodo) {
@@ -238,4 +233,12 @@ public class NominaServiceImpl implements NominaService {
         }
     }
 
+    public Nomina inicializarNomina(Empleado empleado) {
+        Nomina nomina = new Nomina();
+        nomina.setEmpleado(empleado);
+        nomina.setSalarioBase(empleado.getSalarioBase() != null ? empleado.getSalarioBase() : BigDecimal.ZERO);
+        nomina.setDeducciones(BigDecimal.ZERO);
+        nomina.setTotalPagar(nomina.getSalarioBase());
+        return  nomina;
+    }
 }

@@ -69,11 +69,7 @@ public class PacienteController {
 
     @GetMapping("/activar/{id}")
     public String activarPaciente(@PathVariable("id") Long id) {
-        Paciente paciente = pacienteService.findPacienteById(id);
-        if (paciente != null) {
-            paciente.setActivo(true); // Cambiamos a true
-            pacienteService.savePaciente(paciente, null); // Ahora el Service sí guardará este true
-        }
+        pacienteService.activarPaciente(id);
         // Redirigimos a la lista de activos para ver el resultado
         return "redirect:/pacientes";
     }

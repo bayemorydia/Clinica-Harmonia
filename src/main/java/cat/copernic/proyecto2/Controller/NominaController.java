@@ -47,11 +47,7 @@ public class NominaController {
             model.addAttribute("error", "Empleado no encontrado");
             return "redirect:/nominas";
         }
-        Nomina nomina = new Nomina();
-        nomina.setEmpleado(empleado);
-        nomina.setSalarioBase(empleado.getSalarioBase() != null ? empleado.getSalarioBase() : BigDecimal.ZERO);
-        nomina.setDeducciones(BigDecimal.ZERO);
-        nomina.setTotalPagar(nomina.getSalarioBase());
+        Nomina nomina=nominaService.inicializarNomina(empleado);
         model.addAttribute("empleado", empleado);
         model.addAttribute("nomina", nomina);
         model.addAttribute("trad", traduccionService);
@@ -93,26 +89,6 @@ public class NominaController {
         return "redirect:/empleados/nominas/" + nomina.getEmpleado().getId();
     }
 
-
-    @PostMapping("/actualizar")
-    public String actualizarNomina(@RequestParam Long id,
-            @Valid @ModelAttribute("nomina") Nomina nomina,
-            BindingResult result,
-            Model model) {
-        model.addAttribute("trad", traduccionService);
-        if (result.hasErrors()) {
-            return "Nomina/detalle";
-        }
-        if (nomina.getSalarioBase() == null)
-            nomina.setSalarioBase(BigDecimal.ZERO);
-        if (nomina.getDeducciones() == null)
-            nomina.setDeducciones(BigDecimal.ZERO);
-        nomina.setTotalPagar(nomina.getSalarioBase()
-                .subtract(nomina.getDeducciones()));
-        nominaService.updateNomina(id, nomina);
-        return "redirect:/listarNominas";
-    }
-//hola me llamo baye
     @GetMapping("/imprimir/{id}")
     public ResponseEntity<byte[]> imprimirNomina(@PathVariable Long id) {
         Nomina nomina = nominaService.findById(id);

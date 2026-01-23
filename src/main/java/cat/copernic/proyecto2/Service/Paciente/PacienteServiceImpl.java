@@ -3,6 +3,8 @@ package cat.copernic.proyecto2.Service.Paciente;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -145,5 +147,11 @@ public class PacienteServiceImpl implements PacienteService {
     @Override
     public Paciente buscarPorUsername(String username) {
         return pacienteDAO.findByUsuarioUsername(username).orElse(null);
+    }
+    @Override
+    public void activarPaciente(Long id) {
+      Paciente  paciente=findPacienteById(id);
+        paciente.setActivo(true);
+        pacienteDAO.save(paciente);
     }
 }
