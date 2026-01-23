@@ -26,4 +26,6 @@ public interface PacienteService {
     Paciente buscarPorUsername(String username);
 
     boolean existeDni(String dni, Long idActual);
+
+    void activarPaciente(Long id);
 }
