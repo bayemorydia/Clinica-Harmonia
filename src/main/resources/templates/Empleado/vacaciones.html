@@ -5,7 +5,6 @@
     <div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: head_medico}"></div>
     <div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: head_recepcion}"></div>
     <div sec:authorize="!hasAnyRole('MEDICO', 'RECEPCIONISTA')" th:replace="~{Reutilizable/layout :: head_general}"></div>
-    
     <title th:text="${trad.getTraduccion('vacaciones.titulo')}">Vacaciones</title>
 </head>
 
@@ -17,31 +16,29 @@
     <main th:class="${#authorization.expression('hasAnyRole(''ROLE_MEDICO'', ''ROLE_RECEPCIONISTA'')')} ? (${#authorization.expression('hasRole(''ROLE_MEDICO'')')} ? 'content-medico' : 'content-recepcion') : 'content'">
         <div class="container-fluid py-4">
 
-            <div class="mb-4">
-                <h2 class="fw-bold text-dark mb-1" th:text="${trad.getTraduccion('vacaciones.titulo')}">Vacaciones</h2>
-                <p class="text-muted" th:text="${trad.getTraduccion('vacaciones.subtitulo')}"></p>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="d-flex align-items-center">
+                    <div>
+                        <h2 class="fw-bold text-dark mb-1" th:text="${trad.getTraduccion('vacaciones.titulo')}">Vacaciones</h2>
+                        <p class="text-muted mb-0 small" th:text="${trad.getTraduccion('vacaciones.subtitulo')}">Solicitud y seguimiento de días de descanso.</p>
+                    </div>
+                </div>
             </div>
 
             <div th:if="${param.error != null}" class="mb-4">
-                <div th:if="${param.error[0] == 'solapamiento'}"
-                    class="alert alert-danger alert-dismissible fade show border-0 shadow-sm" role="alert">
+                <div th:if="${param.error[0] == 'solapamiento'}" class="alert alert-danger border-0 shadow-sm">
                     <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                    <span th:text="${trad.getTraduccion('vacaciones.error.solapamiento')}">Error de solapamiento</span>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <span th:text="${trad.getTraduccion('vacaciones.error.solapamiento')}"></span>
                 </div>
-                <div th:if="${param.error[0] == 'fecha'}"
-                    class="alert alert-danger alert-dismissible fade show border-0 shadow-sm" role="alert">
+                <div th:if="${param.error[0] == 'fecha'}" class="alert alert-danger border-0 shadow-sm">
                     <i class="bi bi-calendar-x me-2"></i>
-                    <span th:text="${trad.getTraduccion('vacaciones.error.fechas')}">Error en fechas</span>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <span th:text="${trad.getTraduccion('vacaciones.error.fechas')}"></span>
                 </div>
             </div>
 
-            <div th:if="${param.success}"
-                class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
+            <div th:if="${param.success}" class="alert alert-success border-0 shadow-sm mb-4">
                 <i class="bi bi-check-circle-fill me-2"></i>
-                <span th:text="${trad.getTraduccion('vacaciones.exito.solicitud')}">Éxito</span>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <span th:text="${trad.getTraduccion('vacaciones.exito.solicitud')}"></span>
             </div>
 
             <div class="row g-4">
@@ -49,11 +46,9 @@
                     <div class="card shadow-sm border-0 bg-primary text-white mb-4" style="border-radius: 15px;">
                         <div class="card-body p-4 text-center">
                             <i class="bi bi-sun fs-1 mb-2"></i>
-                            <h6 class="text-white-50 text-uppercase small fw-bold"
-                                th:text="${trad.getTraduccion('vacaciones.disponibles')}">Días Disponibles</h6>
+                            <h6 class="text-white-50 text-uppercase small fw-bold" th:text="${trad.getTraduccion('vacaciones.disponibles')}">Días Disponibles</h6>
                             <h1 class="display-4 fw-bold mb-0" th:text="${diasDisponibles ?: 22}">22</h1>
-                            <small class="text-white-50"
-                                th:text="${trad.getTraduccion('vacaciones.periodo.actual')}">2026</small>
+                            <small class="text-white-50" th:text="${trad.getTraduccion('vacaciones.periodo.actual')} + ' 2026'"></small>
                         </div>
                     </div>
 
@@ -61,26 +56,20 @@
                         <div class="card-body p-4">
                             <h5 class="fw-bold mb-4 text-primary">
                                 <i class="bi bi-plus-circle me-2"></i>
-                                <span th:text="${trad.getTraduccion('vacaciones.nueva.solicitud')}">Nueva
-                                    Solicitud</span>
+                                <span th:text="${trad.getTraduccion('vacaciones.nueva.solicitud')}">Nueva Solicitud</span>
                             </h5>
                             <form th:action="@{/vacaciones/solicitar}" method="post">
                                 <div class="mb-3">
-                                    <label class="form-label small fw-bold text-muted"
-                                        th:text="${trad.getTraduccion('vacaciones.label.inicio')}">FECHA INICIO</label>
-                                    <input type="date" name="fechaInicio" class="form-control form-control-lg"
-                                        th:min="${hoy}" required style="border-radius: 10px;">
+                                    <label class="form-label small fw-bold text-muted text-uppercase" th:text="${trad.getTraduccion('vacaciones.label.inicio')}">Fecha Inicio</label>
+                                    <input type="date" name="fechaInicio" class="form-control bg-light border-0 py-2" th:min="${hoy}" required style="border-radius: 10px;">
                                 </div>
                                 <div class="mb-4">
-                                    <label class="form-label small fw-bold text-muted"
-                                        th:text="${trad.getTraduccion('vacaciones.label.fin')}">FECHA FIN</label>
-                                    <input type="date" name="fechaFin" class="form-control form-control-lg"
-                                        th:min="${hoy}" required style="border-radius: 10px;">
+                                    <label class="form-label small fw-bold text-muted text-uppercase" th:text="${trad.getTraduccion('vacaciones.label.fin')}">Fecha Fin</label>
+                                    <input type="date" name="fechaFin" class="form-control bg-light border-0 py-2" th:min="${hoy}" required style="border-radius: 10px;">
                                 </div>
-                                <button type="submit" class="btn btn-primary w-100 py-2 fw-bold"
-                                    style="border-radius: 10px;">
+                                <button type="submit" class="btn btn-primary w-100 py-2 fw-bold rounded-pill shadow-sm">
                                     <i class="bi bi-send me-2"></i>
-                                    <span th:text="${trad.getTraduccion('vacaciones.btn.enviar')}">Enviar</span>
+                                    <span th:text="${trad.getTraduccion('vacaciones.btn.enviar')}">Enviar Solicitud</span>
                                 </button>
                             </form>
                         </div>
@@ -92,67 +81,51 @@
                         <div class="card-header bg-white py-4 border-bottom-0">
                             <h5 class="card-title fw-bold mb-0 text-primary">
                                 <i class="bi bi-clock-history me-2"></i>
-                                <span th:text="${trad.getTraduccion('vacaciones.historial')}">Historial de
-                                    Solicitudes</span>
+                                <span th:text="${trad.getTraduccion('vacaciones.historial')}">Historial de Solicitudes</span>
                             </h5>
                         </div>
                         <div class="table-responsive">
                             <table class="table table-hover align-middle mb-0">
                                 <thead class="table-light">
                                     <tr>
-                                        <th class="ps-4">Periodo</th>
-                                        <th>Días</th>
-                                        <th>Estado</th>
-                                        <th class="text-end pe-4">Acciones</th>
+                                        <th class="ps-4" th:text="${trad.getTraduccion('vacaciones.tabla.periodo')}">Periodo</th>
+                                        <th th:text="${trad.getTraduccion('vacaciones.tabla.dias')}">Días</th>
+                                        <th th:text="${trad.getTraduccion('agenda.tabla.estado')}">Estado</th>
+                                        <th class="text-end pe-4" th:text="${trad.getTraduccion('agenda.tabla.acciones')}">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr th:each="vaca : ${solicitudes}">
                                         <td class="ps-4">
-                                            <div class="d-flex flex-column">
-                                                <span class="fw-bold text-dark"
-                                                    th:if="${vaca.fechaInicio != null and vaca.fechaFin != null}"
-                                                    th:text="${#temporals.format(vaca.fechaInicio, 'dd/MM/yyyy')} + ' - ' + ${#temporals.format(vaca.fechaFin, 'dd/MM/yyyy')}">
-                                                </span>
-                                            </div>
+                                            <span class="fw-bold text-dark" th:if="${vaca.fechaInicio != null and vaca.fechaFin != null}"
+                                                  th:text="${#temporals.format(vaca.fechaInicio, 'dd/MM/yyyy')} + ' - ' + ${#temporals.format(vaca.fechaFin, 'dd/MM/yyyy')}">
+                                            </span>
                                         </td>
-
                                         <td th:text="${vaca.totalDias}">0</td>
-
                                         <td>
-                                            <span th:if="${vaca.estado.name() == 'PENDIENTE'}"
-                                                class="badge rounded-pill px-3 shadow-sm"
-                                                style="background-color: #ffc107; color: #000;">
+                                            <span th:if="${vaca.estado.name() == 'PENDIENTE'}" class="badge rounded-pill px-3 py-2 bg-warning-subtle text-warning-emphasis border border-warning-subtle">
                                                 <i class="bi bi-hourglass-split me-1"></i>
-                                                <span
-                                                    th:text="${trad.getTraduccion('vacaciones.estado.pendiente')}">Pendiente</span>
+                                                <span th:text="${trad.getTraduccion('vacaciones.estado.pendiente')}">Pendiente</span>
                                             </span>
-
-                                            <span th:if="${vaca.estado.name() == 'ACEPTADA'}"
-                                                class="badge bg-success rounded-pill px-3 shadow-sm">
+                                            <span th:if="${vaca.estado.name() == 'ACEPTADA'}" class="badge rounded-pill px-3 py-2 bg-success-subtle text-success-emphasis border border-success-subtle">
                                                 <i class="bi bi-check-circle me-1"></i>
-                                                <span
-                                                    th:text="${trad.getTraduccion('vacaciones.estado.confirmada')}">Confirmada</span>
+                                                <span th:text="${trad.getTraduccion('vacaciones.estado.confirmada')}">Aceptada</span>
                                             </span>
-
-                                            <span th:if="${vaca.estado.name() == 'RECHAZADA'}"
-                                                class="badge bg-danger rounded-pill px-3 shadow-sm">
+                                            <span th:if="${vaca.estado.name() == 'RECHAZADA'}" class="badge rounded-pill px-3 py-2 bg-danger-subtle text-danger-emphasis border border-danger-subtle">
                                                 <i class="bi bi-x-circle me-1"></i>
-                                                <span
-                                                    th:text="${trad.getTraduccion('vacaciones.estado.rechazada')}">Rechazada</span>
+                                                <span th:text="${trad.getTraduccion('vacaciones.estado.rechazada')}">Rechazada</span>
                                             </span>
                                         </td>
-
                                         <td class="text-end pe-4">
                                             <div class="d-flex justify-content-end align-items-center">
-                                                <form th:if="${vaca.estado.toString() == 'PENDIENTE' or vaca.estado.toString() == 'RECHAZADA'}" 
+                                                <form th:if="${vaca.estado.name() == 'PENDIENTE' or vaca.estado.name() == 'RECHAZADA'}" 
                                                       th:action="@{/vacaciones/cancelar/{id}(id=${vaca.id})}" method="post">
-                                                    <button type="submit" class="btn btn-link text-danger p-0 border-0" onclick="return confirm('¿Deseas eliminar esta solicitud?')">
-                                                        <i class="bi bi-trash fs-5"></i>
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger border-0" 
+                                                            th:onclick="'return confirm(\'' + ${trad.getTraduccion('vacaciones.confirm.eliminar')} + '\')'">
+                                                        <i class="bi bi-trash"></i>
                                                     </button>
                                                 </form>
-
-                                                <span th:if="${vaca.estado.name() == 'ACEPTADA'}" class="text-muted">
+                                                <span th:if="${vaca.estado.name() == 'ACEPTADA'}" class="text-muted small">
                                                     <i class="bi bi-lock-fill"></i>
                                                 </span>
                                             </div>
@@ -160,9 +133,8 @@
                                     </tr>
                                     <tr th:if="${#lists.isEmpty(solicitudes)}">
                                         <td colspan="4" class="text-center py-5 text-muted">
-                                            <i class="bi bi-calendar2-range fs-1 d-block mb-3"></i>
-                                            <span th:text="${trad.getTraduccion('vacaciones.vacia')}">No hay
-                                                solicitudes</span>
+                                            <i class="bi bi-calendar2-range fs-1 d-block mb-3 opacity-25"></i>
+                                            <span th:text="${trad.getTraduccion('vacaciones.vacia')}">No hay solicitudes</span>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -177,6 +149,6 @@
     <div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: scripts_medico}"></div>
     <div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: scripts_recepcion}"></div>
     <div sec:authorize="!hasAnyRole('MEDICO', 'RECEPCIONISTA')" th:replace="~{Reutilizable/layout :: scripts}"></div>
+    <style>.btn-white { background-color: white; color: #6c757d; }</style>
 </body>
-
 </html>

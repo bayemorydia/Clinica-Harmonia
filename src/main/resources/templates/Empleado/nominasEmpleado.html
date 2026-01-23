@@ -7,31 +7,30 @@
     <th:block sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layoutRRHH :: head_RRHH}"></th:block>
     <th:block sec:authorize="hasRole('ADMINISTRADOR')" th:replace="~{Reutilizable/layout :: head_general}"></th:block>
 
-    <title th:text="${trad != null ? trad.getTraduccion('mod.nominas.titulo') : 'Listado de Nóminas'}">Listado de Nóminas</title>
+    <title th:text="${trad.getTraduccion('nominas.lista.titulo')}">Listado de Nóminas</title>
 
     <style>
-        .clickable-row { cursor: pointer; transition: background-color 0.2s ease; }
-        .clickable-row:hover { background-color: rgba(0, 123, 255, 0.05) !important; }
-
-        .page-link {
-            color: #6c757d; border: none; background: #f1f3f5; margin: 0 3px;
-            border-radius: 8px !important; width: 32px; height: 32px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 0.85rem; transition: all 0.2s ease;
+        :root {
+            --surface-color: #ffffff;
+            --background-color: #f8f9fa;
+            --primary-color: #0d6efd;
+            --text-main: #212529;
+            --text-muted: #6c757d;
         }
 
-        .page-item.active .page-link {
-            background-color: #0d6efd !important; color: white !important;
-            box-shadow: 0 4px 10px rgba(13, 110, 253, 0.2);
-        }
-
-        .select-paginacion-clean {
-            display: inline-block; width: 75px; padding: 0.375rem 1.75rem 0.375rem 0.75rem;
-            font-size: 0.85rem; border: 1px solid #dee2e6; border-radius: 8px;
-            appearance: none; cursor: pointer;
-        }
-
-        .table-footer { padding: 1.25rem 1.5rem; background-color: #ffffff; border-top: 1px solid #edf2f7; }
+        body { background-color: var(--background-color); color: var(--text-main); font-family: 'Inter', -apple-system, sans-serif; }
+        .glass-card { background: var(--surface-color); border-radius: 16px; border: 1px solid rgba(0, 0, 0, 0.05); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04); }
+        .search-container { background: #fff; border: 1px solid #e0e0e0; border-radius: 12px; padding: 2px 15px; transition: all 0.2s ease; }
+        .search-container:focus-within { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1); }
+        .search-container input { border: none; box-shadow: none !important; }
+        .table thead th { background-color: #fcfcfc; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.03em; color: var(--text-muted); padding: 16px; border-top: none; }
+        .table tbody td { padding: 16px; vertical-align: middle; border-color: #f1f1f1; }
+        .clickable-row { cursor: pointer; transition: background 0.2s; }
+        .clickable-row:hover { background-color: rgba(13, 110, 253, 0.02) !important; }
+        .select-paginacion-clean { width: 75px; padding: 0.375rem; font-size: 0.85rem; border: 1px solid #dee2e6; border-radius: 8px; }
+        .pagination .page-link { color: #6c757d; border: none; background: #f1f3f5; margin: 0 3px; border-radius: 8px !important; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; }
+        .pagination .page-item.active .page-link { background-color: var(--primary-color) !important; color: white !important; }
+        .btn-white { background-color: white; color: #6c757d; }
     </style>
 </head>
 
@@ -47,73 +46,74 @@
 
     <div class="container-fluid py-4">
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h2 class="fw-bold text-dark mb-1"
-                    th:text="${empleado != null} ? |Nóminas de ${empleado.nombre} ${empleado.apellidos}| : 'Mis Nóminas'"></h2>
-                <p class="text-muted small mb-0">Gestión y visualización de documentos salariales.</p>
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div class="d-flex align-items-center">
+                <div>
+                    <h2 class="fw-bold text-dark mb-1"
+                        th:text="${empleado != null} ? (${trad.getTraduccion('nomina.lista.empleado_prefijo')} + ' ' + ${empleado.nombre} + ' ' + ${empleado.apellidos}) : ${trad.getTraduccion('nomina.lista.mis_nominas')}"></h2>
+                    <p class="text-muted small mb-0" th:text="${trad.getTraduccion('nominas.lista.subtitulo')}">Gestión de documentos salariales.</p>
+                </div>
             </div>
 
             <div class="d-flex gap-2">
-
                 <a th:if="${empleado != null}" sec:authorize="hasAnyRole('ADMINISTRADOR', 'RRHH')"
-                   th:href="@{'/nominas/nuevo/' + ${empleado.id}}" class="btn btn-primary rounded-pill px-4">
-                    <i class="bi bi-plus-lg me-1"></i> Nueva Nómina
+                   th:href="@{'/nominas/nuevo/' + ${empleado.id}}" class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold">
+                    <i class="bi bi-plus-lg me-2"></i> <span th:text="${trad.getTraduccion('nomina.btn.nueva')}">Nueva</span>
                 </a>
             </div>
         </div>
 
         <div class="card shadow-sm border-0 mb-4" style="border-radius: 15px;">
             <div class="card-body">
-                <div class="input-group">
-                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
-                    <input type="text" id="searchInput" class="form-control border-start-0 ps-0 shadow-none"
-                           placeholder="Buscar nómina por periodo o empleado..." th:value="${query}">
+                <div class="search-container d-flex align-items-center">
+                    <i class="bi bi-search text-muted me-2"></i>
+                    <input type="text" id="searchInput" class="form-control"
+                           th:placeholder="${trad.getTraduccion('nominas.placeholder.buscar')}" th:value="${query}">
                 </div>
             </div>
         </div>
 
-        <div class="card shadow-sm border-0" style="border-radius: 15px; overflow: hidden;">
-            <div class="card-body p-0" id="tablaContainer">
+        <div class="glass-card overflow-hidden">
+            <div id="tablaContainer">
                 <div th:fragment="tablaNominas">
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0">
-                            <thead class="bg-light">
-                            <tr>
-                                <th class="ps-4 py-3 border-0 text-secondary small fw-bold">Periodo</th>
-                                <th th:if="${empleado == null}" class="py-3 border-0 text-secondary small fw-bold">Empleado</th>
-                                <th class="py-3 border-0 text-secondary small fw-bold">Devengado</th>
-                                <th class="py-3 border-0 text-secondary small fw-bold">Deducciones</th>
-                                <th class="py-3 border-0 text-secondary small fw-bold text-end pe-4">Neto Mensual</th>
-                                <th class="py-3 border-0 text-secondary small fw-bold text-center">Acciones</th>
-                            </tr>
+                            <thead>
+                                <tr>
+                                    <th class="ps-4" th:text="${trad.getTraduccion('nominas.tabla.periodo')}">Periodo</th>
+                                    <th th:if="${empleado == null}" th:text="${trad.getTraduccion('nominas.tabla.empleado')}">Empleado</th>
+                                    <th th:text="${trad.getTraduccion('nominas.tabla.devengado')}">Devengado</th>
+                                    <th th:text="${trad.getTraduccion('nominas.tabla.deducciones')}">Deducciones</th>
+                                    <th class="text-end" th:text="${trad.getTraduccion('nominas.tabla.neto')}">Neto Mensual</th>
+                                    <th class="text-center" th:text="${trad.getTraduccion('pacientes.tabla.acciones')}">Acciones</th>
+                                </tr>
                             </thead>
                             <tbody>
-                            <tr th:if="${nominas == null or nominas.empty}">
-                                <td colspan="6" class="text-center py-5 text-muted">No se han encontrado nóminas.</td>
-                            </tr>
-                            <tr th:each="nomina : ${nominas}" class="border-bottom clickable-row"
-                                th:data-href="@{'/nominas/DetalleNomina/' + ${nomina.id}}">
-                                <td class="ps-4 py-3" th:text="${nomina.periodo}"></td>
-                                <td th:if="${empleado == null}" th:text="${nomina.empleado.nombre} + ' ' + ${nomina.empleado.apellidos}"></td>
-                                <td class="text-success" th:text="${nomina.salarioBase} + ' €'"></td>
-                                <td class="text-danger" th:text="${nomina.deducciones} + ' %'"></td>
-                                <td class="text-end pe-4 fw-bold text-primary" th:text="${nomina.netoMensual} + ' €'"></td>
-                                <td class="text-center">
-                                    <a th:href="@{'/nominas/imprimir/' + ${nomina.id}}"
-                                       class="btn btn-sm btn-outline-danger rounded-pill px-3" target="_blank"
-                                       onclick="event.stopPropagation();">
-                                        <i class="bi bi-file-earmark-pdf me-1"></i> PDF
-                                    </a>
-                                </td>
-                            </tr>
+                                <tr th:if="${nominas == null or nominas.empty}">
+                                    <td colspan="6" class="text-center py-5 text-muted" th:text="${trad.getTraduccion('nominas.tabla.vacia')}">No se han encontrado nóminas.</td>
+                                </tr>
+                                <tr th:each="nomina : ${nominas}" class="border-bottom clickable-row"
+                                    th:data-href="@{'/nominas/DetalleNomina/' + ${nomina.id}}">
+                                    <td class="ps-4 py-3 fw-bold text-dark" th:text="${nomina.periodo}"></td>
+                                    <td th:if="${empleado == null}" th:text="${nomina.empleado.nombre} + ' ' + ${nomina.empleado.apellidos}"></td>
+                                    <td class="text-success" th:text="${nomina.salarioBase} + ' €'"></td>
+                                    <td class="text-danger" th:text="${nomina.deducciones} + ' %'"></td>
+                                    <td class="text-end fw-bold text-primary" th:text="${nomina.netoMensual} + ' €'"></td>
+                                    <td class="text-center" onclick="event.stopPropagation();">
+                                        <a th:href="@{'/nominas/imprimir/' + ${nomina.id}}" class="btn btn-sm btn-outline-danger rounded-pill px-3" target="_blank">
+                                            <i class="bi bi-file-earmark-pdf me-1"></i> <span th:text="${trad.getTraduccion('nominas.btn.pdf')}">PDF</span>
+                                        </a>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
 
-                    <div class="table-footer d-flex justify-content-between align-items-center">
+                    <div class="p-4 bg-white border-top d-flex justify-content-between align-items-center">
                         <div class="text-muted small">
-                            Mostrando <span class="fw-bold" th:text="${nominas.size()}">0</span> nóminas
+                            <span th:text="${trad.getTraduccion('pacientes.tabla.mostrar')}">Mostrando</span>
+                            <span class="fw-bold text-dark" th:text="${nominas.size()}"></span>
+                            <span th:text="${trad.getTraduccion('nominas.tabla.registros')}">nóminas registradas.</span>
                         </div>
                         <div class="d-flex align-items-center gap-3">
                             <select id="pageSize" class="select-paginacion-clean shadow-none" onchange="updateTable(0)">
@@ -140,10 +140,7 @@
     </div>
 </main>
 
-<div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: scripts_recepcion}"></div>
-<div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: scripts_medico}"></div>
-<div sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layoutRRHH :: scripts_RRHH}"></div>
-<div sec:authorize="hasRole('ADMINISTRADOR')" th:replace="~{Reutilizable/layout :: scripts}"></div>
+<th:block th:replace="~{Reutilizable/layout :: scripts}"></th:block>
 
 <script th:inline="javascript">
     function initTableEvents() {
@@ -157,8 +154,12 @@
     function updateTable(page = 0) {
         const query = document.getElementById('searchInput').value;
         const size = document.getElementById('pageSize').value;
-        // Ajusta esta URL según tu controlador (ej. si es por empleado o general)
-        fetch(`/nominas/search?query=${encodeURIComponent(query)}&page=${page}&size=${size}`)
+        const empId = /*[[${empleado != null ? empleado.id : null}]]*/ null;
+        
+        let url = empId ? `/nominas/empleado/${empId}/search?` : `/nominas/mis-nominas/search?`;
+        url += `query=${encodeURIComponent(query)}&page=${page}&size=${size}`;
+
+        fetch(url)
             .then(res => res.text())
             .then(html => {
                 document.getElementById('tablaContainer').innerHTML = html;
@@ -173,22 +174,10 @@
 
     document.addEventListener("DOMContentLoaded", function() {
         initTableEvents();
-
-        // Lógica del botón de pagar todas
-        const pagarBtn = document.getElementById("pagarTodasBtn");
-        if(pagarBtn) {
-            pagarBtn.addEventListener("click", function () {
-                if (!confirm("¿Desea generar el lote de nóminas del mes actual?")) return;
-                const periodo = `${String(new Date().getMonth() + 1).padStart(2, '0')}/${new Date().getFullYear()}`;
-                window.location.href = `/nominas/descargarTodos?periodo=${encodeURIComponent(periodo)}`;
-            });
-        }
-
-        // Buscador con delay para no saturar
         let timeout = null;
         document.getElementById('searchInput').addEventListener('keyup', function() {
             clearTimeout(timeout);
-            timeout = setTimeout(() => updateTable(0), 500);
+            timeout = setTimeout(() => updateTable(0), 400);
         });
     });
 </script>

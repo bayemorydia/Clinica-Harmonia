@@ -12,52 +12,64 @@
     <div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: menu_recepcion}"></div>
 
     <main th:class="${#authorization.expression('hasRole(''RECEPCIONISTA'')')} ? 'content-recepcion' : 'content'">
-        <div class="container mt-5">
+        <div class="container py-5">
             <div class="row justify-content-center">
-                <div class="col-md-6">
+                <div class="col-xl-6 col-lg-8">
                     <div class="card shadow-sm border-0" style="border-radius: 15px; overflow: hidden;">
-                        <div class="card-header bg-warning text-dark py-3 text-center border-0">
-                            <h4 class="mb-0 fw-bold">
-                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                                <span th:text="${trad.getTraduccion('citas.anular.confirmacion')}">¿Anular Cita Médica?</span>
-                            </h4>
+
+                        <div class="card-header bg-white border-0 py-4 px-4 text-center">
+                            <div class="bg-warning bg-opacity-10 p-3 rounded-circle d-inline-flex mb-3">
+                                <i class="bi bi-calendar-x-fill text-warning fs-2"></i>
+                            </div>
+                            <h3 class="fw-bold text-dark" th:text="${trad.getTraduccion('citas.anular.confirmacion')}">¿Anular Cita Médica?</h3>
+                            <p class="mb-0 text-muted small" th:text="${trad.getTraduccion('paciente.eliminar.subtitulo')}">Esta acción modificará el estado del registro</p>
                         </div>
 
-                        <div class="card-body p-4 text-center">
-                            <p class="text-muted" th:text="${trad.getTraduccion('citas.anular.subtitulo')}">
-                                La cita se marcará como anulada y el horario quedará disponible.
-                            </p>
+                        <div class="card-body p-4 p-md-5 text-center">
+                            <p class="lead fw-semibold text-dark mb-4" th:text="${trad.getTraduccion('citas.anular.pregunta')}">¿Está seguro de que desea cancelar esta programación?</p>
 
-                            <div class="bg-light p-4 rounded-4 border border-warning-subtle mb-4">
-                                <div class="mb-3">
-                                    <span class="text-muted small text-uppercase fw-bold d-block mb-1" th:text="${trad.getTraduccion('citas.tabla.paciente')}">Paciente</span>
-                                    <h5 th:text="${cita.paciente.nombre} + ' ' + ${cita.paciente.apellidos}" class="text-dark fw-bold"></h5>
+                            <div class="bg-light p-4 rounded-4 border border-light-subtle mb-4 text-start">
+                                <div class="row">
+                                    <div class="col-sm-6 mb-3 mb-sm-0">
+                                        <label class="text-muted small text-uppercase fw-bold d-block mb-1" th:text="${trad.getTraduccion('citas.tabla.paciente')}">Paciente</label>
+                                        <h6 th:text="${cita.paciente.nombre} + ' ' + ${cita.paciente.apellidos}" class="text-dark fw-bold mb-0"></h6>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label class="text-muted small text-uppercase fw-bold d-block mb-1" th:text="${trad.getTraduccion('citas.tabla.fechahora')}">Fecha y Hora</label>
+                                        <h6 th:text="${#temporals.format(cita.fechaHora, 'dd/MM/yyyy HH:mm')} + ' h'" class="text-primary fw-bold mb-0"></h6>
+                                    </div>
                                 </div>
-                                <div class="mb-3">
-                                    <span class="text-muted small text-uppercase fw-bold d-block mb-1" th:text="${trad.getTraduccion('citas.tabla.medico')}">Profesional</span>
-                                    <h5 class="text-dark">
-                                        <span th:text="${cita.profesional != null ? cita.profesional.nombre + ' ' + cita.profesional.apellidos : cita.nombreMedico}"></span>
-                                    </h5>
-                                </div>
-                                <div class="mb-0">
-                                    <span class="text-muted small text-uppercase fw-bold d-block mb-1" th:text="${trad.getTraduccion('citas.tabla.fecha')}">Fecha y Hora</span>
-                                    <h5 th:text="${#temporals.format(cita.fechaHora, 'dd/MM/yyyy HH:mm')} + ' h'" class="text-warning-emphasis fw-bold"></h5>
+                                <hr class="my-3 opacity-25">
+                                <div>
+                                    <label class="text-muted small text-uppercase fw-bold d-block mb-1" th:text="${trad.getTraduccion('citas.tabla.medico')}">Profesional</label>
+                                    <h6 class="text-dark mb-0" th:text="${cita.profesional != null ? cita.profesional.nombre + ' ' + cita.profesional.apellidos : trad.getTraduccion('citas.msg.no_asignado')}"></h6>
                                 </div>
                             </div>
 
-                            <form th:action="@{/citas/anular}" method="post">
+                            <div class="alert alert-warning border-0 small mb-0 shadow-sm text-start">
+                                <i class="bi bi-info-circle me-2"></i>
+                                <span th:text="${trad.getTraduccion('citas.anular.aviso')}">
+                                    El horario quedará disponible para otros pacientes y se notificará al profesional asignado.
+                                </span>
+                            </div>
+
+                            <form th:action="@{/citas/anular}" method="post" class="mt-5">
                                 <input type="hidden" name="id" th:value="${cita.id}" />
 
-                                <div class="d-flex gap-3 justify-content-center mt-4">
-                                    <a th:href="@{/citas}" class="btn btn-light rounded-pill px-4 fw-bold">
-                                        <span th:text="${trad.getTraduccion('btn.cancelar')}">Volver</span>
+                                <div class="d-flex justify-content-center gap-3">
+                                    <a th:href="@{/citas}" class="btn btn-light px-4 py-2 fw-bold text-secondary rounded-pill">
+                                        <span th:text="${trad.getTraduccion('btn.cancelar')}">Cancelar</span>
                                     </a>
-                                    <button type="submit" class="btn btn-warning rounded-pill px-4 fw-bold shadow-sm">
-                                        <i class="bi bi-check-circle-fill me-2"></i>
-                                        <span th:text="${trad.getTraduccion('btn.confirmar.anular')}">Confirmar Anulación</span>
+                                    <button type="submit" class="btn btn-warning px-4 py-2 fw-bold shadow-sm rounded-pill transition-all hover-lift">
+                                        <i class="bi bi-x-circle-fill me-2"></i>
+                                        <span th:text="${trad.getTraduccion('btn.confirmar.anular')}">Anular Cita</span>
                                     </button>
                                 </div>
                             </form>
+                        </div>
+
+                        <div class="card-footer bg-light bg-opacity-50 border-0 py-3 text-center">
+                            <small class="text-muted italic" th:text="${trad.getTraduccion('footer.modulo.seguridad')}">Módulo de Seguridad</small>
                         </div>
                     </div>
                 </div>
@@ -67,5 +79,11 @@
 
     <div sec:authorize="hasAnyRole('ADMINISTRADOR', 'MEDICO')" th:replace="~{Reutilizable/layout :: scripts}"></div>
     <div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: scripts_recepcion}"></div>
+    
+    <style>
+        .hover-lift:hover { transform: translateY(-2px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.1)!important; }
+        .transition-all { transition: all 0.2s ease-in-out; }
+    </style>
 </body>
+
 </html>

@@ -10,64 +10,69 @@
     <div th:replace="~{Reutilizable/layout :: menu}"></div>
 
     <main class="content">
-        <div class="container py-4">
+        <div class="container py-5">
             
-            <div class="card shadow-sm border-0 mx-auto" style="border-radius: 15px; max-width: 800px;">
+            <div class="card shadow-sm border-0 mx-auto" style="border-radius: 15px; max-width: 900px;">
                 <div class="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
                     <div class="d-flex align-items-center">
-
+                        <div class="bg-primary bg-opacity-10 p-3 rounded-3 me-3">
+                            <i class="bi bi-journal-text text-primary fs-3"></i>
+                        </div>
                         <div>
-                            <h4 class="fw-bold text-dark mb-0" th:text="${trad.getTraduccion('titulo.detalle_diagnostico')}">Detalle del Diagnóstico</h4>
+                            <h4 class="fw-bold text-dark mb-0" th:text="${trad.getTraduccion('titulo.detalle_diagnostico')}">Ficha del Diagnóstico</h4>
+                            <p class="text-muted small mb-0" th:text="${trad.getTraduccion('diagnostico.detalle.subtitulo')}">Información técnica y disponibilidad en el sistema.</p>
                         </div>
                     </div>
                     
-                    <span th:class="${diagnostico.activo} ? 'badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-2' : 'badge rounded-pill bg-secondary-subtle text-secondary border border-secondary-subtle px-3 py-2'">
+                    <span th:class="${diagnostico.activo} ? 'badge rounded-pill bg-success-soft text-success px-3 py-2' : 'badge rounded-pill bg-danger-soft text-danger px-3 py-2'">
                         <i th:class="${diagnostico.activo} ? 'bi bi-check-circle-fill me-1' : 'bi bi-x-circle-fill me-1'"></i>
                         <span th:text="${diagnostico.activo} ? ${trad.getTraduccion('estado.activo')} : ${trad.getTraduccion('estado.inactivo')}">ACTIVO</span>
                     </span>
                 </div>
 
-                <div class="card-body px-4 pb-4">
-                    <div class="row g-3">
+                <div class="card-body p-4 p-md-5">
+                    <div class="row g-4">
                         <div class="col-md-4">
-                            <div class="p-3 bg-light rounded-3 border h-100">
-                                <label class="small text-muted fw-bold text-uppercase d-block mb-1"
+                            <div class="p-4 bg-light rounded-4 border-0 h-100 shadow-sm">
+                                <label class="small text-muted fw-bold text-uppercase d-block mb-2"
                                     th:text="${trad.getTraduccion('lbl.codigo')}">CÓDIGO</label>
-                                <span class="fs-5 fw-bold text-primary" th:text="${diagnostico.codigo}">A000</span>
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-hash text-primary me-2 fs-4"></i>
+                                    <span class="fs-4 fw-bold text-dark font-monospace" th:text="${diagnostico.codigo}">A000</span>
+                                </div>
                             </div>
                         </div>
                         
                         <div class="col-md-8">
-                            <div class="p-3 bg-light rounded-3 border h-100">
-                                <label class="small text-muted fw-bold text-uppercase d-block mb-1"
-                                    th:text="${trad.getTraduccion('lbl.nombre_completo')}">NOMBRE COMPLETO</label>
-                                <span class="fs-5 text-dark fw-semibold" th:text="${diagnostico.nombre}">Nombre del Diagnóstico</span>
+                            <div class="p-4 bg-light rounded-4 border-0 h-100 shadow-sm">
+                                <label class="small text-muted fw-bold text-uppercase d-block mb-2"
+                                    th:text="${trad.getTraduccion('lbl.nombre')}">NOMBRE DEL DIAGNÓSTICO</label>
+                                <span class="fs-5 text-dark fw-bold" th:text="${diagnostico.nombre}">Nombre del Diagnóstico</span>
                             </div>
                         </div>
 
                         <div class="col-12 mt-4">
-                            <div class="p-3 rounded-3 border-start border-4 border-primary" style="background-color: rgba(13, 110, 253, 0.05);">
-                                <div class="d-flex">
-                                    <i class="bi bi-info-circle-fill text-primary me-3 fs-5"></i>
-                                    <div>
-                                        <h6 class="fw-bold text-primary mb-1" th:text="${trad.getTraduccion('info.uso_sistema')}">Información del Sistema</h6>
-                                        <p class="small text-muted mb-0" th:text="${trad.getTraduccion('msg.diagnostico_info_extra')}">
-                                            Este diagnóstico está disponible para ser asignado en los episodios clínicos de los pacientes.
-                                        </p>
-                                    </div>
+                            <div class="p-4 rounded-4 d-flex align-items-start shadow-sm" style="background-color: rgba(13, 110, 253, 0.05); border-left: 5px solid #0d6efd;">
+                                <i class="bi bi-info-circle-fill text-primary me-3 fs-3"></i>
+                                <div>
+                                    <h6 class="fw-bold text-primary mb-1" th:text="${trad.getTraduccion('info.uso_sistema')}">Uso en el Sistema</h6>
+                                    <p class="text-muted mb-0" th:text="${trad.getTraduccion('msg.diagnostico_info_extra')}">
+                                        Este registro forma parte del catálogo maestro de la clínica y es utilizado por el personal médico para la codificación de patologías en la historia clínica electrónica.
+                                    </p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="card-footer bg-light border-0 d-flex justify-content-end gap-2 px-4 py-3" style="border-bottom-left-radius: 15px; border-bottom-right-radius: 15px;">
-                    <a th:href="@{/diagnosticos}" class="btn btn-sm btn-light border px-4 fw-bold text-secondary" th:text="${trad.getTraduccion('btn.volver')}">
-                        Volver
+                <div class="card-footer bg-white border-top-0 d-flex justify-content-between gap-2 px-4 py-4">
+                    <a th:href="@{/diagnosticos}" class="btn btn-light rounded-pill px-4 fw-bold text-secondary border">
+                        <i class="bi bi-arrow-left me-2"></i>
+                        <span th:text="${trad.getTraduccion('btn.volver')}">Volver</span>
                     </a>
-                    <a th:href="@{/diagnosticos/editar/{id}(id=${diagnostico.id})}" class="btn btn-sm btn-primary px-4 fw-bold shadow-sm">
+                    <a th:href="@{/diagnosticos/editar/{id}(id=${diagnostico.id})}" class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm transition-all hover-lift">
                         <i class="bi bi-pencil-square me-2"></i>
-                        <span th:text="${trad.getTraduccion('btn.editar')}">Editar</span>
+                        <span th:text="${trad.getTraduccion('btn.editar')}">Editar Registro</span>
                     </a>
                 </div>
             </div>
@@ -75,6 +80,12 @@
     </main>
 
     <div th:replace="~{Reutilizable/layout :: scripts}"></div>
+    <style>
+        .bg-success-soft { background-color: #e6f6ec; color: #0f5132; }
+        .bg-danger-soft { background-color: #fbe9eb; color: #842029; }
+        .hover-lift:hover { transform: translateY(-2px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important; }
+        .transition-all { transition: all 0.2s ease; }
+    </style>
 </body>
 
 </html>

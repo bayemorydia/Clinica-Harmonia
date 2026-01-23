@@ -1797,4 +1797,1894 @@
   "es": "Diagnósticos",
   "en": "Diagnostics",
   "ca": "Diagnòstics"
+},
+{
+  "_id": "usuarios.subtitulo",
+  "es": "Control de accesos y estados de cuenta.",
+  "en": "Access control and account status.",
+  "ca": "Control d'accessos i estats de compte."
+},
+{
+  "_id": "usuarios.tabla.usuario",
+  "es": "USUARIO",
+  "en": "USER",
+  "ca": "USUARI"
+},
+{
+  "_id": "usuarios.tabla.roles",
+  "es": "ROLES",
+  "en": "ROLES",
+  "ca": "ROLS"
+},
+{
+  "_id": "usuarios.vacio",
+  "es": "No se han encontrado usuarios.",
+  "en": "No users found.",
+  "ca": "No s'han trobat usuaris."
+},
+{
+  "_id": "usuarios.sistema",
+  "es": "Sistema",
+  "en": "System",
+  "ca": "Sistema"
+},
+{
+  "_id": "usuario.desactivar.subtitulo",
+  "es": "Esta acción modificará el estado de acceso del usuario",
+  "ca": "Aquesta acció modificarà l'estat d'accés de l'usuari",
+  "en": "This action will modify the user's access status"
+},
+{
+  "_id": "usuario.desactivar.pregunta",
+  "es": "¿Estás seguro de que deseas desactivar esta cuenta de usuario?",
+  "ca": "Estàs segur que vols desactivar aquest compte d'usuari?",
+  "en": "Are you sure you want to deactivate this user account?"
+},
+{
+  "_id": "vacaciones.subtituloRRHH",
+  "es": "Gestiona las solicitudes de tus empleados",
+  "ca": "Gestiona les sol·licituds dels teus empleats",
+  "en": "Manage employee requests"
+},
+{
+  "_id": "vacaciones.pendientes.label",
+  "es": "Solicitudes pendientes",
+  "ca": "Sol·licituds pendents",
+  "en": "Pending requests"
+},
+{
+  "_id": "vacaciones.panel.rrhh",
+  "es": "RRHH",
+  "ca": "RRHH",
+  "en": "HR"
+},
+{
+  "_id": "vacaciones.gestion.titulo",
+  "es": "Gestión de Vacaciones",
+  "ca": "Gestió de Vacances",
+  "en": "Vacation Management"
+},
+{
+  "_id": "vacaciones.gestion.desc",
+  "es": "Desde este panel centralizado puedes revisar, aprobar o denegar las peticiones de ausencia garantizando el flujo de trabajo de la clínica.",
+  "ca": "Des d'aquest panell centralitzat pots revisar, aprovar o denegar les peticions d'absència garantint el flux de treball de la clínica.",
+  "en": "From this centralized panel you can review, approve or deny absence requests ensuring the clinic's workflow."
+},
+{
+  "_id": "vacaciones.solicitudes",
+  "es": "Solicitudes",
+  "ca": "Sol·licituds",
+  "en": "Requests"
+},
+{
+  "_id": "vacaciones.tabla.empleado",
+  "es": "Empleado",
+  "ca": "Empleat",
+  "en": "Employee"
+},
+{
+  "_id": "vacaciones.estado.aceptada",
+  "es": "Aceptada",
+  "ca": "Acceptada",
+  "en": "Approved"
+},
+{
+  "_id": "vacaciones.btn.aceptar",
+  "es": "Aprobar",
+  "ca": "Aprovar",
+  "en": "Approve"
+},
+{
+  "_id": "vacaciones.btn.rechazar",
+  "es": "Denegar",
+  "ca": "Denegar",
+  "en": "Deny"
+},
+{
+  "_id": "vacaciones.accion.bloqueada",
+  "es": "Cerrada",
+  "ca": "Tancada",
+  "en": "Closed"
+},
+{
+  "_id": "rrhh.dashboard.titulo",
+  "es": "Dashboard RRHH - Clínica Harmonia",
+  "en": "HR Dashboard - Harmonia Clinic",
+  "ca": "Dashboard RRHH - Clínica Harmonia"
+},
+{
+  "_id": "rrhh.dashboard.welcome",
+  "es": "Panel de Recursos Humanos",
+  "en": "Human Resources Panel",
+  "ca": "Panell de Recursos Humans"
+},
+{
+  "_id": "rrhh.dashboard.intro",
+  "es": "Visión general del capital humano y estados operativos",
+  "en": "Overview of human capital and operational status",
+  "ca": "Visió general del capital humà i estats operatius"
+},
+{
+  "_id": "rrhh.kpi.total",
+  "es": "Total Empleados",
+  "en": "Total Employees",
+  "ca": "Total Empleats"
+},
+{
+  "_id": "rrhh.kpi.active",
+  "es": "Empleados Activos",
+  "en": "Active Employees",
+  "ca": "Empleats Actius"
+},
+{
+  "_id": "rrhh.kpi.inactive",
+  "es": "Inactivos / Bajas",
+  "en": "Inactive / Off-duty",
+  "ca": "Inactius / Baixes"
+},
+{
+  "_id": "rrhh.status.online",
+  "es": "Operativos",
+  "en": "Operational",
+  "ca": "Operatius"
+},
+{
+  "_id": "rrhh.activity.title",
+  "es": "Actividad Reciente",
+  "en": "Recent Activity",
+  "ca": "Activitat Recent"
+},
+{
+  "_id": "rrhh.btn.viewall",
+  "es": "Ver todo",
+  "en": "View all",
+  "ca": "Veure-ho tot"
+},
+{
+  "_id": "rrhh.activity.new_emp",
+  "es": "Nuevo empleado registrado",
+  "en": "New employee registered",
+  "ca": "Nou empleat registrat"
+},
+{
+  "_id": "rrhh.activity.payroll",
+  "es": "Nóminas mensuales generadas",
+  "en": "Monthly payrolls generated",
+  "ca": "Nòmines mensuals generades"
+},
+{
+  "_id": "rrhh.activity.vacations",
+  "es": "Solicitud de vacaciones aceptada",
+  "en": "Vacation request approved",
+  "ca": "Sol·licitud de vacances acceptada"
+},
+{
+  "_id": "rrhh.time.2h",
+  "es": "Hace 2 horas",
+  "en": "2 hours ago",
+  "ca": "Fa 2 hores"
+},
+{
+  "_id": "rrhh.time.today",
+  "es": "Hoy",
+  "en": "Today",
+  "ca": "Avui"
+},
+{
+  "_id": "rrhh.time.yesterday",
+  "es": "Ayer",
+  "en": "Yesterday",
+  "ca": "Ahir"
+},
+{
+  "_id": "rrhh.actions.title",
+  "es": "Acciones Rápidas",
+  "en": "Quick Actions",
+  "ca": "Accions Ràpides"
+},
+{
+  "_id": "rrhh.actions.emp",
+  "es": "Empleados",
+  "en": "Employees",
+  "ca": "Empleats"
+},
+{
+  "_id": "rrhh.actions.pay",
+  "es": "Nóminas",
+  "en": "Payroll",
+  "ca": "Nòmines"
+},
+{
+  "_id": "rrhh.actions.vac",
+  "es": "Vacaciones",
+  "en": "Vacations",
+  "ca": "Vacances"
+},
+{
+  "_id": "rrhh.actions.shift",
+  "es": "Turnos",
+  "en": "Shifts",
+  "ca": "Torns"
+},
+{
+  "_id": "vacaciones.panel.estado",
+  "es": "Sistema Activo",
+  "ca": "Sistema Actiu",
+  "en": "System Active"
+},
+{
+  "_id": "roles.lista.titulo",
+  "es": "Gestión de Roles",
+  "ca": "Gestió de Rols",
+  "en": "Role Management"
+},
+{
+  "_id": "roles.tabla.nombre",
+  "es": "NOMBRE ROL",
+  "ca": "NOM ROL",
+  "en": "ROLE NAME"
+},
+{
+  "_id": "btn.crear",
+  "es": "Nuevo",
+  "ca": "Nou",
+  "en": "New"
+},
+{
+  "_id": "roles.form.titulo.nuevo",
+  "es": "Crear Nuevo Rol",
+  "ca": "Crear Nou Rol",
+  "en": "Create New Role"
+},
+{
+  "_id": "roles.form.titulo.editar",
+  "es": "Editar Perfil de Rol",
+  "ca": "Editar Perfil de Rol",
+  "en": "Edit Role Profile"
+},
+{
+  "_id": "roles.form.subtitulo",
+  "es": "Configuración de Perfil de Acceso",
+  "ca": "Configuració de Perfil d'Accés",
+  "en": "Access Profile Configuration"
+},
+{
+  "_id": "roles.form.estado",
+  "es": "Estado del Sistema:",
+  "ca": "Estat del Sistema:",
+  "en": "System Status:"
+},
+{
+  "_id": "roles.form.info.titulo",
+  "es": "Detalles del Perfil",
+  "ca": "Detalls del Perfil",
+  "en": "Profile Details"
+},
+{
+  "_id": "roles.form.label.nombre",
+  "es": "Identificador del Rol",
+  "ca": "Identificador del Rol",
+  "en": "Role Identifier"
+},
+{
+  "_id": "roles.form.placeholder.nombre",
+  "es": "Nombre del Rol",
+  "ca": "Nom del Rol",
+  "en": "Role Name"
+},
+{
+  "_id": "roles.form.label.desc",
+  "es": "Descripción de Funciones",
+  "ca": "Descripció de Funcions",
+  "en": "Functions Description"
+},
+{
+  "_id": "roles.form.placeholder.desc",
+  "es": "Describa las responsabilidades y permisos asociados a este rol...",
+  "ca": "Descriviu les responsabilitats i permisos associats a aquest rol...",
+  "en": "Describe the responsibilities and permissions associated with this role..."
+},
+{
+  "_id": "roles.detalle.titulo",
+  "es": "Detalle del Rol",
+  "ca": "Detall del Rol",
+  "en": "Role Details"
+},
+{
+  "_id": "roles.detalle.feedback.exito",
+  "es": "¡Datos del rol actualizados correctamente!",
+  "ca": "¡Dades del rol actualitzades correctament!",
+  "en": "Role data updated successfully!"
+},
+{
+  "_id": "roles.detalle.id_seguridad",
+  "es": "Identificador de Seguridad",
+  "ca": "Identificador de Seguretat",
+  "en": "Security Identifier"
+},
+{
+  "_id": "roles.detalle.config.titulo",
+  "es": "Configuración del Rol",
+  "ca": "Configuració del Rol",
+  "en": "Role Configuration"
+},
+{
+  "_id": "roles.confirmar.desactivar.titulo",
+  "es": "Confirmar Acción de Seguridad",
+  "ca": "Confirmar Acció de Seguretat",
+  "en": "Confirm Security Action"
+},
+{
+  "_id": "roles.confirmar.desactivar.subtitulo",
+  "es": "Esta acción modificará el estado del registro de acceso",
+  "ca": "Aquesta acció modificarà l'estat del registre d'accés",
+  "en": "This action will modify the access record status"
+},
+{
+  "_id": "roles.confirmar.desactivar.pregunta",
+  "es": "¿Estás seguro de que deseas desactivar este rol del sistema?",
+  "ca": "Estàs segur que vols desactivar aquest rol del sistema?",
+  "en": "Are you sure you want to deactivate this system role?"
+},
+{
+  "_id": "roles.confirmar.desactivar.aviso",
+  "es": "El rol dejará de estar activo inmediatamente, y los usuarios con este perfil podrían perder el acceso a funciones críticas.",
+  "ca": "El rol deixarà d'estar actiu immediatament, i els usuaris amb aquest perfil podrien perdre l'accés a funcions crítiques.",
+  "en": "The role will become inactive immediately, and users with this profile may lose access to critical functions."
+},
+{
+  "_id": "roles.footer.seguridad",
+  "es": "Módulo de Seguridad de Acceso - Harmonia",
+  "ca": "Mòdul de Seguretat d'Accés - Harmonia",
+  "en": "Access Security Module - Harmonia"
+},
+{
+  "_id": "nav.perfil",
+  "es": "Perfil",
+  "ca": "Perfil",
+  "en": "Profile"
+},
+{
+  "_id": "nav.empleados",
+  "es": "Empleados",
+  "ca": "Empleats",
+  "en": "Employees"
+},
+{
+  "_id": "nav.prefijo.dr",
+  "es": "Dr.",
+  "ca": "Dr.",
+  "en": "Dr."
+},
+{
+  "_id": "recepcion.dashboard.titulo",
+  "es": "Recepción - Panel Principal",
+  "ca": "Recepció - Panell Principal",
+  "en": "Reception - Main Panel"
+},
+{
+  "_id": "recepcion.panel.titulo",
+  "es": "Panel de Recepción",
+  "ca": "Panell de Recepció",
+  "en": "Reception Panel"
+},
+{
+  "_id": "recepcion.panel.subtitulo",
+  "es": "Vista general de la clínica",
+  "ca": "Vista general de la clínica",
+  "en": "Clinic overview"
+},
+{
+  "_id": "recepcion.kpi.citas",
+  "es": "Citas para Hoy",
+  "ca": "Cites per a Avui",
+  "en": "Today's Appointments"
+},
+{
+  "_id": "recepcion.link.agenda",
+  "es": "Ver agenda completa",
+  "ca": "Veure agenda completa",
+  "en": "View full schedule"
+},
+{
+  "_id": "recepcion.kpi.pacientes",
+  "es": "Base de Pacientes",
+  "ca": "Base de Pacients",
+  "en": "Patient Base"
+},
+{
+  "_id": "recepcion.link.registrar",
+  "es": "Registrar Nuevo",
+  "ca": "Registrar Nou",
+  "en": "Register New"
+},
+{
+  "_id": "recepcion.card.gestion",
+  "es": "Gestión Rápida",
+  "ca": "Gestió Ràpida",
+  "en": "Quick Management"
+},
+{
+  "_id": "recepcion.btn.agendar",
+  "es": "Agendar Cita",
+  "ca": "Agendar Cita",
+  "en": "Schedule Appointment"
+},
+{
+  "_id": "recepcion.tabla.titulo",
+  "es": "Agenda Global del Día",
+  "ca": "Agenda Global del Dia",
+  "en": "Global Daily Schedule"
+},
+{
+  "_id": "recepcion.th.hora",
+  "es": "Hora",
+  "ca": "Hora",
+  "en": "Time"
+},
+{
+  "_id": "recepcion.th.paciente",
+  "es": "Paciente",
+  "ca": "Pacient",
+  "en": "Patient"
+},
+{
+  "_id": "recepcion.th.medico",
+  "es": "Especialidad / Médico",
+  "ca": "Especialitat / Metge",
+  "en": "Specialty / Doctor"
+},
+{
+  "_id": "recepcion.th.estado",
+  "es": "Estado",
+  "ca": "Estat",
+  "en": "Status"
+},
+{
+  "_id": "recepcion.th.acciones",
+  "es": "Acciones",
+  "ca": "Accions",
+  "en": "Actions"
+},
+{
+  "_id": "recepcion.tabla.vacia",
+  "es": "No hay citas programadas para hoy.",
+  "ca": "No hi ha cites programades per avui.",
+  "en": "No appointments scheduled for today."
+},
+{
+  "_id": "recepcion.label.dr",
+  "es": "Dr/a.",
+  "ca": "Dr/a.",
+  "en": "Dr."
+},
+{
+  "_id": "recepcion.status.pendiente",
+  "es": "Pendiente",
+  "ca": "Pendent",
+  "en": "Pending"
+},
+{
+  "_id": "recepcion.status.completada",
+  "es": "Completada",
+  "ca": "Completada",
+  "en": "Completed"
+},
+{
+  "_id": "recepcion.status.anulada",
+  "es": "Anulada",
+  "ca": "Anul·lada",
+  "en": "Cancelled"
+},
+{
+  "_id": "recepcion.btn.anular",
+  "es": "Anular cita",
+  "ca": "Anul·lar cita",
+  "en": "Cancel appointment"
+},
+{
+  "_id": "pruebas.lista.titulo",
+  "es": "Catálogo de Pruebas Médicas",
+  "ca": "Catàleg de Proves Mèdiques",
+  "en": "Medical Tests Catalog"
+},
+{
+  "_id": "pruebas.lista.subtitulo",
+  "es": "Gestión del catálogo de servicios clínicos.",
+  "ca": "Gestió del catàleg de serveis clínics.",
+  "en": "Clinical services catalog management."
+},
+{
+  "_id": "pruebas.tabla.codigo",
+  "es": "CÓDIGO",
+  "ca": "CODI",
+  "en": "CODE"
+},
+{
+  "_id": "pruebas.tabla.nombre",
+  "es": "PRUEBA",
+  "ca": "PROVA",
+  "en": "TEST"
+},
+{
+  "_id": "pruebas.form.titulo.nuevo",
+  "es": "Nueva Prueba Médica",
+  "ca": "Nova Prova Mèdica",
+  "en": "New Medical Test"
+},
+{
+  "_id": "pruebas.form.titulo.editar",
+  "es": "Editar Prueba Médica",
+  "ca": "Editar Prova Mèdica",
+  "en": "Edit Medical Test"
+},
+{
+  "_id": "pruebas.form.header.nuevo",
+  "es": "Definir Nueva Prueba",
+  "ca": "Definir Nova Prova",
+  "en": "Define New Test"
+},
+{
+  "_id": "pruebas.form.header.editar",
+  "es": "Modificar Catálogo",
+  "ca": "Modificar Catàleg",
+  "en": "Update Catalog"
+},
+{
+  "_id": "pruebas.form.subtitulo",
+  "es": "Gestión de parámetros técnicos y económicos del catálogo médico.",
+  "ca": "Gestió de paràmetres tècnics i econòmics del catàleg mèdic.",
+  "en": "Management of technical and economic parameters of the medical catalog."
+},
+{
+  "_id": "pruebas.form.sec1.titulo",
+  "es": "Información Técnica",
+  "ca": "Informació Tècnica",
+  "en": "Technical Information"
+},
+{
+  "_id": "pruebas.form.sec1.desc",
+  "es": "Identificadores únicos de la prueba en el sistema.",
+  "ca": "Identificadors únics de la prova al sistema.",
+  "en": "Unique identifiers for the test in the system."
+},
+{
+  "_id": "pruebas.form.sec2.titulo",
+  "es": "Tarifas y Precios",
+  "ca": "Tarifes i Preus",
+  "en": "Fees and Pricing"
+},
+{
+  "_id": "pruebas.form.sec2.desc",
+  "es": "Configuración para el módulo de facturación y pagos.",
+  "ca": "Configuració per al mòdul de facturació i pagaments.",
+  "en": "Settings for the billing and payments module."
+},
+{
+  "_id": "pruebas.form.placeholder.nombre",
+  "es": "Ej: Analítica de Sangre completa",
+  "ca": "Ex: Analítica de Sang completa",
+  "en": "e.g., Complete Blood Count"
+},
+{
+  "_id": "lbl.precio",
+  "es": "Precio Base",
+  "ca": "Preu Base",
+  "en": "Base Price"
+},
+{
+  "_id": "pruebas.confirmar.titulo",
+  "es": "Confirmar Desactivación de Prueba",
+  "ca": "Confirmar Desactivació de Prova",
+  "en": "Confirm Test Deactivation"
+},
+{
+  "_id": "pruebas.confirmar.subtitulo",
+  "es": "Esta acción modificará el catálogo de servicios médicos",
+  "ca": "Aquesta acció modificarà el catàleg de serveis mèdics",
+  "en": "This action will modify the medical services catalog"
+},
+{
+  "_id": "pruebas.confirmar.pregunta",
+  "es": "¿Estás seguro de que deseas retirar esta prueba del catálogo activo?",
+  "ca": "Estàs segur que vols retirar aquesta prova del catàleg actiu?",
+  "en": "Are you sure you want to remove this test from the active catalog?"
+},
+{
+  "_id": "pruebas.confirmar.aviso",
+  "es": "La prueba dejará de estar disponible para nuevas citas y diagnósticos, pero se mantendrá en los registros históricos para integridad de datos.",
+  "ca": "La prova deixarà d'estar disponible per a noves cites i diagnòstics, però es mantindrà en els registres històrics per a la integritat de dades.",
+  "en": "The test will no longer be available for new appointments and diagnostics, but will remain in historical records for data integrity."
+},
+{
+  "_id": "pruebas.footer.seguridad",
+  "es": "Módulo de Gestión de Catálogo Médico - Harmonia",
+  "ca": "Mòdul de Gestió de Catàleg Mèdic - Harmonia",
+  "en": "Medical Catalog Management Module - Harmonia"
+},
+{
+  "_id": "paciente.form.sec.foto",
+  "es": "Imagen de Perfil",
+  "ca": "Imatge de Perfil",
+  "en": "Profile Image"
+},
+{
+  "_id": "paciente.form.sec.foto.desc",
+  "es": "Suba una fotografía reciente del paciente para su ficha clínica.",
+  "ca": "Puja una fotografia recent del pacient per a la seva fitxa clínica.",
+  "en": "Upload a recent photograph of the patient for their clinical file."
+},
+{
+  "_id": "paciente.form.foto.ayuda",
+  "es": "Formatos soportados: JPG, PNG.",
+  "ca": "Formats suportats: JPG, PNG.",
+  "en": "Supported formats: JPG, PNG."
+},
+{
+  "_id": "paciente.form.sec.info",
+  "es": "Información Personal",
+  "ca": "Informació Personal",
+  "en": "Personal Information"
+},
+{
+  "_id": "paciente.form.sec.info.desc",
+  "es": "Datos de identificación y contacto legal.",
+  "ca": "Dades d'identificació i contacte legal.",
+  "en": "Identification data and legal contact."
+},
+{
+  "_id": "paciente.detalle.subtitulo",
+  "es": "Gestión y consulta de información clínica del paciente.",
+  "ca": "Gestió i consulta d'informació clínica del pacient.",
+  "en": "Management and consultation of the patient's clinical information."
+},
+{
+  "_id": "paciente.label.anios",
+  "es": "años",
+  "ca": "anys",
+  "en": "years old"
+},
+{
+  "_id": "paciente.label.id",
+  "es": "ID de Registro",
+  "ca": "ID de Registre",
+  "en": "Record ID"
+},
+{
+  "_id": "paciente.label.usuario_asignado",
+  "es": "Usuario asignado:",
+  "ca": "Usuari assignat:",
+  "en": "Assigned user:"
+},
+{
+  "_id": "paciente.eliminar.subtitulo",
+  "es": "Esta acción modificará el estado del registro",
+  "ca": "Aquesta acció modificarà l'estat del registre",
+  "en": "This action will modify the record status"
+},
+{
+  "_id": "paciente.eliminar.pregunta",
+  "es": "¿Estás seguro de que deseas desactivar al paciente?",
+  "ca": "Estàs segur que vols desactivar el pacient?",
+  "en": "Are you sure you want to deactivate the patient?"
+},
+{
+  "_id": "footer.modulo.seguridad",
+  "es": "Módulo de Seguridad Médica - Harmonia",
+  "ca": "Mòdul de Seguretat Mèdica - Harmonia",
+  "en": "Medical Security Module - Harmonia"
+},
+{
+  "_id": "nominas.lista.titulo",
+  "es": "Gestión de Nóminas",
+  "ca": "Gestió de Nòmines",
+  "en": "Payroll Management"
+},
+{
+  "_id": "nominas.lista.subtitulo",
+  "es": "Gestión y visualización de registros salariales del personal.",
+  "ca": "Gestió i visualització de registres salarials del personal.",
+  "en": "Management and visualization of staff salary records."
+},
+{
+  "_id": "nominas.btn.pagar_todas",
+  "es": "Liquidar Mes Actual",
+  "ca": "Liquidar Mes Actual",
+  "en": "Settle Current Month"
+},
+{
+  "_id": "nominas.tabla.empleado",
+  "es": "EMPLEADO",
+  "ca": "EMPLEAT",
+  "en": "EMPLOYEE"
+},
+{
+  "_id": "nominas.tabla.periodo",
+  "es": "PERIODO",
+  "ca": "PERÍODE",
+  "en": "PERIOD"
+},
+{
+  "_id": "nominas.tabla.neto",
+  "es": "NETO A PERCIBIR",
+  "ca": "NET A PERCEBRE",
+  "en": "NET PAY"
+},
+{
+  "_id": "nominas.tabla.vacia",
+  "es": "No hay nóminas registradas para este criterio.",
+  "ca": "No hi ha nòmines registrades per a aquest criteri.",
+  "en": "No payrolls registered for this criteria."
+},
+{
+  "_id": "nominas.btn.imprimir",
+  "es": "PDF",
+  "ca": "PDF",
+  "en": "PDF"
+},
+{
+  "_id": "nominas.confirm.pagar_todas",
+  "es": "¿Desea generar y descargar un archivo comprimido con todas las nóminas del periodo actual?",
+  "ca": "Voleu generar i descarregar un arxiu comprimit amb totes les nòmines del període actual?",
+  "en": "Do you want to generate and download a compressed file with all payrolls for the current period?"
+},
+{
+  "_id": "nomina.detalle.titulo",
+  "es": "Detalle de Nómina",
+  "ca": "Detall de Nòmina",
+  "en": "Payroll Details"
+},
+{
+  "_id": "nomina.detalle.subtitulo",
+  "es": "Resumen de devengos y deducciones salariales del empleado.",
+  "ca": "Resum de meriaments i deduccions salarials de l'empleat.",
+  "en": "Summary of employee's earnings and salary deductions."
+},
+{
+  "_id": "nomina.seccion.empleado",
+  "es": "Información del Empleado",
+  "ca": "Informació de l'Empleat",
+  "en": "Employee Information"
+},
+{
+  "_id": "nomina.seccion.empleado.desc",
+  "es": "Datos personales y estado del profesional beneficiario.",
+  "ca": "Dades personals i estat del professional beneficiari.",
+  "en": "Personal data and status of the professional beneficiary."
+},
+{
+  "_id": "nomina.seccion.economica",
+  "es": "Desglose de Conceptos",
+  "ca": "Desglossament de Conceptes",
+  "en": "Concepts Breakdown"
+},
+{
+  "_id": "nomina.seccion.economica.desc",
+  "es": "Cálculo de importes brutos, retenciones y neto mensual.",
+  "ca": "Càlcul d'imports bruts, retencions i net mensual.",
+  "en": "Calculation of gross amounts, withholdings, and monthly net."
+},
+{
+  "_id": "nomina.label.salario_base",
+  "es": "Salario Base",
+  "ca": "Salari Base",
+  "en": "Base Salary"
+},
+{
+  "_id": "nomina.label.deducciones",
+  "es": "Deducciones y Retenciones",
+  "ca": "Deduccions i Retencions",
+  "en": "Deductions and Withholdings"
+},
+{
+  "_id": "nomina.label.total_pagar",
+  "es": "Total Neto a Percibir",
+  "ca": "Total Net a Percebre",
+  "en": "Total Net Pay"
+},
+{
+  "_id": "btn.imprimir",
+  "es": "Generar PDF",
+  "ca": "Generar PDF",
+  "en": "Generate PDF"
+},
+{
+  "_id": "nomina.crear.titulo",
+  "es": "Emitir Nueva Nómina",
+  "ca": "Emetre Nova Nòmina",
+  "en": "Issue New Payroll"
+},
+{
+  "_id": "nomina.crear.subtitulo",
+  "es": "Generación de liquidación salarial mensual para el empleado.",
+  "ca": "Generació de liquidació salarial mensual per a l'empleat.",
+  "en": "Generation of monthly salary settlement for the employee."
+},
+{
+  "_id": "nomina.crear.empleado.desc",
+  "es": "Personal profesional al que se le asigna el pago en el sistema.",
+  "ca": "Personal professional al qual se li assigna el pagament al sistema.",
+  "en": "Professional staff assigned for payment in the system."
+},
+{
+  "_id": "nomina.seccion.periodo",
+  "es": "Periodo y Cálculo Fiscal",
+  "ca": "Període i Càlcul Fiscal",
+  "en": "Period and Fiscal Calculation"
+},
+{
+  "_id": "nomina.crear.periodo.desc",
+  "es": "Seleccione el mes correspondiente. Las retenciones se calculan según tramos de IRPF vigentes.",
+  "ca": "Seleccioneu el mes corresponent. Les retencions es calculen segons trams d'IRPF vigents.",
+  "en": "Select the corresponding month. Retentions are calculated according to current IRPF brackets."
+},
+{
+  "_id": "nomina.label.irpf_porcentaje",
+  "es": "Retención IRPF Calculada",
+  "ca": "Retenció IRPF Calculada",
+  "en": "Calculated IRPF Retention"
+},
+{
+  "_id": "nomina.label.total_mensual",
+  "es": "Neto Mensual a Percibir",
+  "ca": "Net Mensual a Recebre",
+  "en": "Monthly Net Pay"
+},
+{
+  "_id": "medico.dashboard.titulo",
+  "es": "Panel Médico - Inicio",
+  "ca": "Panell Mèdic - Inici",
+  "en": "Doctor Dashboard - Home"
+},
+{
+  "_id": "historial.titulo",
+  "es": "Historial Clínico",
+  "ca": "Historial Clínic",
+  "en": "Medical History"
+},
+{
+  "_id": "historial.header.principal",
+  "es": "Historial Clínico Completo",
+  "ca": "Historial Clínic Complet",
+  "en": "Complete Medical History"
+},
+{
+  "_id": "lbl.filtrar",
+  "es": "Filtrar por Fechas:",
+  "ca": "Filtrar per Dates:",
+  "en": "Filter by Dates:"
+},
+{
+  "_id": "historial.lbl.actualizacion",
+  "es": "Última actualización:",
+  "ca": "Última actualització:",
+  "en": "Last update:"
+},
+{
+  "_id": "historial.vacio",
+  "es": "No se encontraron registros clínicos para este paciente.",
+  "ca": "No s'han trobat registres clínics per a aquest pacient.",
+  "en": "No clinical records found for this patient."
+},
+{
+  "_id": "historial.lbl.medico",
+  "es": "Médico Responsable",
+  "ca": "Metge Responsable",
+  "en": "Attending Physician"
+},
+{
+  "_id": "historial.lbl.motivo",
+  "es": "Motivo de la Consulta",
+  "ca": "Motiu de la Consulta",
+  "en": "Reason for Visit"
+},
+{
+  "_id": "historial.lbl.tratamiento",
+  "es": "Plan de Tratamiento",
+  "ca": "Pla de Tractament",
+  "en": "Treatment Plan"
+},
+{
+  "_id": "historial.lbl.finaliza",
+  "es": "Fecha de finalización:",
+  "ca": "Data de finalització:",
+  "en": "End date:"
+},
+{
+  "_id": "historial.lbl.medicacion",
+  "es": "Medicación Prescrita",
+  "ca": "Medicació Prescrita",
+  "en": "Prescribed Medication"
+},
+{
+  "_id": "historial.lbl.dosis",
+  "es": "Dosis",
+  "ca": "Dosi",
+  "en": "Dosage"
+},
+{
+  "_id": "resumen.cita.titulo",
+  "es": "Resumen de Cita",
+  "ca": "Resum de Cita",
+  "en": "Appointment Summary"
+},
+{
+  "_id": "resumen.header.principal",
+  "es": "Resumen de la Consulta",
+  "ca": "Resum de la Consulta",
+  "en": "Consultation Summary"
+},
+{
+  "_id": "resumen.header.atencion",
+  "es": "Atención del día",
+  "ca": "Atenció del dia",
+  "en": "Attended on"
+},
+{
+  "_id": "resumen.status.finalizada",
+  "es": "Cita Finalizada",
+  "ca": "Cita Finalitzada",
+  "en": "Appointment Completed"
+},
+{
+  "_id": "resumen.label.instrucciones",
+  "es": "Tratamiento e Instrucciones",
+  "ca": "Tractament i Instruccions",
+  "en": "Treatment & Instructions"
+},
+{
+  "_id": "resumen.label.receta",
+  "es": "Receta / Medicamentos",
+  "ca": "Recepta / Medicaments",
+  "en": "Prescription / Medication"
+},
+{
+  "_id": "resumen.msg.sin_medicacion",
+  "es": "No se prescribieron medicamentos en esta consulta.",
+  "ca": "No es van prescriure medicaments en aquesta consulta.",
+  "en": "No medications were prescribed during this visit."
+},
+{
+  "_id": "resumen.label.pruebas_solicitadas",
+  "es": "Pruebas Médicas Solicitadas",
+  "ca": "Proves Mèdiques Sol·licitades",
+  "en": "Requested Medical Tests"
+},
+{
+  "_id": "resumen.footer.atendido",
+  "es": "Atendido por el",
+  "ca": "Atès pel",
+  "en": "Attended by"
+},
+{
+  "_id": "resumen.msg.error_detalle",
+  "es": "No se encontró información detallada para esta cita. Es posible que el estado sea incorrecto o la información no se guardara.",
+  "ca": "No s'ha trobat informació detallada per a aquesta cita. És possible que l'estat sigui incorrecte o la informació no s'hagi desat.",
+  "en": "No detailed information found for this appointment. The status might be incorrect or the data was not saved."
+},
+{
+  "_id": "atencion.btn.no_asistio",
+  "es": "No asistió",
+  "ca": "No ha assistit",
+  "en": "Did not attend"
+},
+{
+  "_id": "atencion.confirm.no_asistio",
+  "es": "¿Está seguro de marcar al paciente como NO PRESENTADO? Se cancelará la atención actual.",
+  "ca": "Esteu segur de marcar el pacient com a NO PRESENTAT? Es cancel·larà l'atenció actual.",
+  "en": "Are you sure you want to mark the patient as NO-SHOW? Current care will be cancelled."
+},
+{
+  "_id": "atencion.sec.evaluacion",
+  "es": "Evaluación Médica",
+  "ca": "Avaluació Mèdica",
+  "en": "Medical Evaluation"
+},
+{
+  "_id": "atencion.label.diagnostico",
+  "es": "Diagnóstico Principal (CIE-10) *",
+  "ca": "Diagnòstic Principal (CIE-10) *",
+  "en": "Main Diagnosis (ICD-10) *"
+},
+{
+  "_id": "atencion.placeholder.diag",
+  "es": "Buscar diagnóstico...",
+  "ca": "Cercar diagnòstic...",
+  "en": "Search diagnosis..."
+},
+{
+  "_id": "atencion.label.instrucciones",
+  "es": "Instrucciones y Recomendaciones *",
+  "ca": "Instruccions i Recomanacions *",
+  "en": "Instructions & Recommendations *"
+},
+{
+  "_id": "atencion.placeholder.instrucciones",
+  "es": "Escriba las pautas del tratamiento...",
+  "ca": "Escriviu les pautes del tractament...",
+  "en": "Write the treatment guidelines..."
+},
+{
+  "_id": "atencion.label.fin_tratamiento",
+  "es": "Fin del Tratamiento *",
+  "ca": "Final del Tractament *",
+  "en": "End of Treatment *"
+},
+{
+  "_id": "atencion.aviso.factura",
+  "es": "Se generará factura automáticamente al solicitar pruebas.",
+  "ca": "Es generarà factura automàticament en sol·licitar proves.",
+  "en": "Invoices will be automatically generated when requesting tests."
+},
+{
+  "_id": "btn.anadir",
+  "es": "Añadir",
+  "ca": "Afegir",
+  "en": "Add"
+},
+{
+  "_id": "atencion.placeholder.med",
+  "es": "Seleccionar medicamento...",
+  "ca": "Seleccionar medicament...",
+  "en": "Select medication..."
+},
+{
+  "_id": "atencion.btn.finalizar",
+  "es": "Finalizar Consulta",
+  "ca": "Finalitzar Consulta",
+  "en": "Finish Consultation"
+},
+{
+  "_id": "atencion.footer.msg",
+  "es": "Guarda el historial y cierra la cita definitivamente.",
+  "ca": "Desa l'historial i tanca la cita definitivament.",
+  "en": "Saves the history and closes the appointment permanently."
+},
+{
+  "_id": "atencion.placeholder.pruebas",
+  "es": "Seleccionar pruebas complementarias...",
+  "ca": "Seleccionar proves complementàries...",
+  "en": "Select complementary tests..."
+},
+{
+  "_id": "agenda.status.programada",
+  "es": "Programada",
+  "ca": "Programada",
+  "en": "Scheduled"
+},
+{
+  "_id": "agenda.status.realizada",
+  "es": "Realizada",
+  "ca": "Realitzada",
+  "en": "Completed"
+},
+{
+  "_id": "agenda.status.ausente",
+  "es": "No presentado",
+  "ca": "No presentat",
+  "en": "No-show"
+},
+{
+  "_id": "agenda.status.anulada",
+  "es": "Anulada",
+  "ca": "Anul·lada",
+  "en": "Cancelled"
+},
+{
+  "_id": "agenda.btn.resumen",
+  "es": "Ver Resumen",
+  "ca": "Veure Resum",
+  "en": "View Summary"
+},
+{
+  "_id": "agenda.msg.vacia",
+  "es": "No se encontraron citas para el periodo seleccionado",
+  "ca": "No s'han trobat cites per al període seleccionat",
+  "en": "No appointments found for the selected period"
+},
+{
+  "_id": "agenda.panel.resumen",
+  "es": "Resumen del Día",
+  "ca": "Resum del Dia",
+  "en": "Daily Summary"
+},
+{
+  "_id": "agenda.panel.total",
+  "es": "Citas totales para este día",
+  "ca": "Cites totals per a aquest dia",
+  "en": "Total appointments for this day"
+},
+{
+  "_id": "agenda.panel.acceso",
+  "es": "Acceso Rápido",
+  "ca": "Accés Ràpid",
+  "en": "Quick Access"
+},
+{
+  "_id": "agenda.btn.volver_hoy",
+  "es": "Volver a Hoy",
+  "ca": "Tornar a Avui",
+  "en": "Back to Today"
+},
+{
+  "_id": "lbl.codigo",
+  "es": "Código",
+  "ca": "Codi",
+  "en": "Code"
+},
+{
+  "_id": "lbl.nombre",
+  "es": "Nombre",
+  "ca": "Nom",
+  "en": "Name"
+},
+{
+  "_id": "pass.reset.titulo",
+  "es": "Nueva contraseña | Clínica Harmonia",
+  "ca": "Nova contrasenya | Clínica Harmonia",
+  "en": "New Password | Harmonia Clinic"
+},
+{
+  "_id": "pass.reset.header",
+  "es": "Nueva contraseña",
+  "ca": "Nova contrasenya",
+  "en": "New Password"
+},
+{
+  "_id": "pass.reset.subtitulo",
+  "es": "Introduce tu nueva contraseña de acceso",
+  "ca": "Introdueix la teva nova contrasenya d'accés",
+  "en": "Enter your new access password"
+},
+{
+  "_id": "pass.reset.label.new",
+  "es": "Nueva contraseña",
+  "ca": "Nova contrasenya",
+  "en": "New password"
+},
+{
+  "_id": "pass.reset.label.confirm",
+  "es": "Repetir contraseña",
+  "ca": "Repetir contrasenya",
+  "en": "Confirm password"
+},
+{
+  "_id": "pass.reset.btn",
+  "es": "Cambiar contraseña",
+  "ca": "Canviar contrasenya",
+  "en": "Change password"
+},
+{
+  "_id": "pass.reset.volver",
+  "es": "Volver al inicio de sesión",
+  "ca": "Tornar a l'inici de sessió",
+  "en": "Back to login"
+},
+{
+  "_id": "login.titulo",
+  "es": "Iniciar Sesión | Clínica Harmonia",
+  "ca": "Iniciar Sessió | Clínica Harmonia",
+  "en": "Login | Harmonia Clinic"
+},
+{
+  "_id": "login.subtitulo",
+  "es": "Acceso al sistema de gestión",
+  "ca": "Accés al sistema de gestió",
+  "en": "Access to management system"
+},
+{
+  "_id": "login.label.usuario",
+  "es": "Usuario",
+  "ca": "Usuari",
+  "en": "Username"
+},
+{
+  "_id": "login.placeholder.usuario",
+  "es": "Introduce tu usuario",
+  "ca": "Introdueix el teu usuari",
+  "en": "Enter your username"
+},
+{
+  "_id": "login.label.password",
+  "es": "Contraseña",
+  "ca": "Contrasenya",
+  "en": "Password"
+},
+{
+  "_id": "login.link.olvido",
+  "es": "¿Has olvidado tu contraseña?",
+  "ca": "Has oblidat la teva contrasenya?",
+  "en": "Forgot your password?"
+},
+{
+  "_id": "login.btn.entrar",
+  "es": "Acceder al portal",
+  "ca": "Accedir al portal",
+  "en": "Sign in"
+},
+{
+  "_id": "login.msg.error",
+  "es": "Credenciales incorrectas. Inténtelo de nuevo.",
+  "ca": "Credencials incorrectes. Torneu-ho a provar.",
+  "en": "Invalid credentials. Please try again."
+},
+{
+  "_id": "login.msg.logout",
+  "es": "Has cerrado sesión correctamente.",
+  "ca": "Has tancat la sessió correctament.",
+  "en": "You have logged out successfully."
+},
+{
+  "_id": "login.footer.slogan",
+  "es": "Clínica Harmonia · Salud y bienestar",
+  "ca": "Clínica Harmonia · Salut i benestar",
+  "en": "Harmonia Clinic · Health and wellness"
+},
+{
+  "_id": "medicamentos.lista.titulo",
+  "es": "Inventario de Medicamentos",
+  "ca": "Inventari de Medicaments",
+  "en": "Medicines Inventory"
+},
+{
+  "_id": "medicamentos.lista.subtitulo",
+  "es": "Gestión de registros del catálogo farmacéutico.",
+  "ca": "Gestió de registres del catàleg farmacèutic.",
+  "en": "Pharmaceutical catalog records management."
+},
+{
+  "_id": "medicamentos.tabla.producto",
+  "es": "PRODUCTO",
+  "ca": "PRODUCTE",
+  "en": "PRODUCT"
+},
+{
+  "_id": "medicamento.form.titulo.nuevo",
+  "es": "Registrar Nuevo Medicamento",
+  "ca": "Registrar Nou Medicament",
+  "en": "Register New Medicine"
+},
+{
+  "_id": "medicamento.form.titulo.editar",
+  "es": "Editar Producto Farmacéutico",
+  "ca": "Editar Producte Farmacèutic",
+  "en": "Edit Pharmaceutical Product"
+},
+{
+  "_id": "medicamento.form.subtitulo",
+  "es": "Gestión del catálogo maestro de productos farmacéuticos.",
+  "ca": "Gestió del catàleg mestre de productes farmacèutics.",
+  "en": "Management of the master pharmaceutical products catalog."
+},
+{
+  "_id": "medicamento.form.sec.datos",
+  "es": "Datos del Producto",
+  "ca": "Dades del Producte",
+  "en": "Product Data"
+},
+{
+  "_id": "medicamento.form.sec.datos.desc",
+  "es": "Información técnica y comercial del medicamento para recetas.",
+  "ca": "Informació tècnica i comercial del medicament per a receptes.",
+  "en": "Technical and commercial information of the medicine for prescriptions."
+},
+{
+  "_id": "medicamento.label.nombre",
+  "es": "Nombre Comercial",
+  "ca": "Nom Comercial",
+  "en": "Brand Name"
+},
+{
+  "_id": "medicamento.label.tipo",
+  "es": "Categoría / Formato",
+  "ca": "Categoria / Format",
+  "en": "Category / Format"
+},
+{
+  "_id": "medicamento.placeholder.tipo",
+  "es": "Ej: Comprimidos, Jarabe, Inyectable...",
+  "ca": "Ex: Comprimits, Jarabe, Injectable...",
+  "en": "e.g., Tablets, Syrup, Injectable..."
+},
+{
+  "_id": "medicamento.desactivar.titulo",
+  "es": "Confirmar Baja de Medicamento",
+  "ca": "Confirmar Baixa de Medicament",
+  "en": "Confirm Medicine Deactivation"
+},
+{
+  "_id": "medicamento.desactivar.pregunta",
+  "es": "¿Está seguro de que desea retirar este producto del catálogo activo?",
+  "ca": "Està segur que vol retirar aquest producte del catàleg actiu?",
+  "en": "Are you sure you want to remove this product from the active catalog?"
+},
+{
+  "_id": "medicamento.desactivar.aviso",
+  "es": "El medicamento dejará de estar disponible para nuevas recetas electrónicas, pero se mantendrá su integridad en el historial clínico de los pacientes.",
+  "ca": "El medicament deixarà d'estar disponible per a noves receptes electròniques, però es mantindrà la seva integritat a l'historial clínic dels pacients.",
+  "en": "The medicine will no longer be available for new electronic prescriptions, but its integrity will be maintained in patients' clinical histories."
+},
+{
+  "_id": "facturacion.lista.subtitulo",
+  "es": "Gestión unificada de cobros por servicios médicos y pruebas.",
+  "ca": "Gestió unificada de cobraments per serveis mèdics i proves.",
+  "en": "Unified billing management for medical services and tests."
+},
+{
+  "_id": "facturacion.tabla.fecha",
+  "es": "FECHA DE EMISIÓN",
+  "ca": "DATA D'EMISSIÓ",
+  "en": "ISSUE DATE"
+},
+{
+  "_id": "facturacion.tabla.cliente",
+  "es": "PACIENTE / CLIENTE",
+  "ca": "PACIENT / CLIENT",
+  "en": "PATIENT / CUSTOMER"
+},
+{
+  "_id": "facturacion.tabla.servicio",
+  "es": "TIPO DE SERVICIO",
+  "ca": "TIPUS DE SERVEI",
+  "en": "SERVICE TYPE"
+},
+{
+  "_id": "facturacion.tabla.total",
+  "es": "TOTAL FACTURADO",
+  "ca": "TOTAL FACTURAT",
+  "en": "TOTAL BILLED"
+},
+{
+  "_id": "facturacion.tabla.detalles",
+  "es": "DETALLES",
+  "ca": "DETALLS",
+  "en": "DETAILS"
+},
+{
+  "_id": "facturacion.tabla.vacia",
+  "es": "No se han encontrado facturas emitidas en el sistema.",
+  "ca": "No s'han trobat factures emeses al sistema.",
+  "en": "No issued invoices found in the system."
+},
+{
+  "_id": "facturacion.tipo.cita",
+  "es": "Cita Médica",
+  "ca": "Cita Mèdica",
+  "en": "Medical Appointment"
+},
+{
+  "_id": "facturacion.tipo.prueba",
+  "es": "Prueba Clínica",
+  "ca": "Prova Clínica",
+  "en": "Clinical Test"
+},
+{
+  "_id": "facturacion.tipo.general",
+  "es": "Servicio General",
+  "ca": "Servei General",
+  "en": "General Service"
+},
+{
+  "_id": "facturacion.estado.vigente",
+  "es": "VIGENTE",
+  "ca": "VIGENT",
+  "en": "VALID"
+},
+{
+  "_id": "facturacion.estado.anulada",
+  "es": "ANULADA",
+  "ca": "ANUL·LADA",
+  "en": "CANCELLED"
+},
+{
+  "_id": "facturacion.detalle.titulo",
+  "es": "Detalle de Factura",
+  "ca": "Detall de Factura",
+  "en": "Invoice Details"
+},
+{
+  "_id": "facturacion.label.emisor",
+  "es": "Emisor (Nuestra Clínica)",
+  "ca": "Emissor (La nostra Clínica)",
+  "en": "Issuer (Our Clinic)"
+},
+{
+  "_id": "facturacion.label.receptor",
+  "es": "Receptor (Paciente/Cliente)",
+  "ca": "Receptor (Pacient/Client)",
+  "en": "Recipient (Patient/Customer)"
+},
+{
+  "_id": "facturacion.tabla.concepto",
+  "es": "Concepto / Descripción",
+  "ca": "Concepte / Descripció",
+  "en": "Concept / Description"
+},
+{
+  "_id": "facturacion.tabla.cantidad",
+  "es": "Cantidad",
+  "ca": "Quantitat",
+  "en": "Quantity"
+},
+{
+  "_id": "facturacion.tabla.subtotal",
+  "es": "Subtotal",
+  "ca": "Subtotal",
+  "en": "Subtotal"
+},
+{
+  "_id": "facturacion.label.iva",
+  "es": "Impuestos (IVA 21%)",
+  "ca": "Impostos (IVA 21%)",
+  "en": "Taxes (VAT 21%)"
+},
+{
+  "_id": "facturacion.msg.informativo",
+  "es": "Este documento es una copia informativa generada por el sistema. No se permiten modificaciones manuales una vez emitida la factura.",
+  "ca": "Aquest document és una còpia informativa generada pel sistema. No es permeten modificacions manuals un cop emesa la factura.",
+  "en": "This document is an information copy generated by the system. Manual modifications are not allowed once the invoice has been issued."
+},
+{
+  "_id": "btn.imprimir_fisico",
+  "es": "Imprimir",
+  "ca": "Imprimir",
+  "en": "Print"
+},
+{
+  "_id": "clinica.direccion",
+  "es": "Calle Salud, 123 - Terrassa",
+  "ca": "Carrer Salut, 123 - Terrassa",
+  "en": "123 Health Street - Terrassa"
+},
+{
+  "_id": "facturacion.desactivar.titulo",
+  "es": "Confirmar Anulación de Factura",
+  "ca": "Confirmar Anul·lació de Factura",
+  "en": "Confirm Invoice Cancellation"
+},
+{
+  "_id": "facturacion.desactivar.header",
+  "es": "¿Anular Factura?",
+  "ca": "Anul·lar Factura?",
+  "en": "Cancel Invoice?"
+},
+{
+  "_id": "facturacion.desactivar.pregunta",
+  "es": "¿Está seguro de que desea anular este documento contable? Los cambios serán permanentes.",
+  "ca": "Està segur que vol anul·lar aquest document comptable? Els canvis seran permanents.",
+  "en": "Are you sure you want to cancel this accounting document? Changes will be permanent."
+},
+{
+  "_id": "facturacion.desactivar.aviso",
+  "es": "El documento quedará marcado como ANULADO en el sistema. Se mantendrá el registro por motivos legales y de auditoría, pero no se contabilizará en los informes de ingresos.",
+  "ca": "El document quedarà marcat com ANUL·LAT al sistema. Es mantindrà el registre per motius legals i d'auditoria, però no es comptabilitzarà als informes d'ingressos.",
+  "en": "The document will be marked as CANCELLED in the system. The record will be kept for legal and audit reasons, but it will not be counted in income reports."
+},
+{
+  "_id": "facturacion.btn.anular",
+  "es": "Confirmar Anulación",
+  "ca": "Confirmar Anul·lació",
+  "en": "Confirm Cancellation"
+},
+{
+  "_id": "vacaciones.confirm.eliminar",
+  "es": "¿Está seguro de que desea cancelar esta solicitud?",
+  "ca": "Està segur que vol cancel·lar aquesta sol·licitud?",
+  "en": "Are you sure you want to cancel this request?"
+},
+{
+  "_id": "nomina.lista.mis_nominas",
+  "es": "Mis Nóminas",
+  "ca": "Les meves Nòmines",
+  "en": "My Payrolls"
+},
+{
+  "_id": "nomina.lista.empleado_prefijo",
+  "es": "Nóminas de",
+  "ca": "Nòmines de",
+  "en": "Payroll of"
+},
+{
+  "_id": "nomina.btn.nueva",
+  "es": "Emitir Nueva Nómina",
+  "ca": "Emetre Nova Nòmina",
+  "en": "Issue New Payroll"
+},
+{
+  "_id": "nominas.placeholder.buscar",
+  "es": "Buscar por periodo (MM/YYYY)...",
+  "ca": "Cercar per període (MM/YYYY)...",
+  "en": "Search by period (MM/YYYY)..."
+},
+{
+  "_id": "nominas.tabla.devengado",
+  "es": "DEVENGADO",
+  "ca": "MERITAT",
+  "en": "EARNINGS"
+},
+{
+  "_id": "nominas.tabla.deducciones",
+  "es": "DEDUCCIONES",
+  "ca": "DEDUCCIONS",
+  "en": "DEDUCTIONS"
+},
+{
+  "_id": "nominas.btn.pdf",
+  "es": "Descargar PDF",
+  "ca": "Descarregar PDF",
+  "en": "Download PDF"
+},
+{
+  "_id": "nominas.tabla.registros",
+  "es": "nóminas registradas en el historial.",
+  "ca": "nòmines registrades a l'historial.",
+  "en": "payrolls found in history."
+},
+{
+  "_id": "empleados.lista.subtitulo",
+  "es": "Gestión centralizada del personal clínico y administrativo.",
+  "ca": "Gestió centralitzada del personal clínic i administratiu.",
+  "en": "Centralized management of clinical and administrative staff."
+},
+{
+  "_id": "empleados.btn.nuevo",
+  "es": "Registrar Empleado",
+  "ca": "Registrar Empleat",
+  "en": "Register Employee"
+},
+{
+  "_id": "placeholder.buscar.diagnostico",
+  "es": "Escriba el diagnóstico o código CIE-10...",
+  "ca": "Escriviu el diagnòstic o codi CIE-10...",
+  "en": "Type the diagnosis or ICD-10 code..."
+},
+{
+  "_id": "empleado.detalle.titulo",
+  "es": "Gestión de Profesional",
+  "ca": "Gestió de Professional",
+  "en": "Employee Management"
+},
+{
+  "_id": "empleado.perfil.titulo",
+  "es": "Mi Perfil Profesional",
+  "ca": "El meu Perfil Professional",
+  "en": "My Professional Profile"
+},
+{
+  "_id": "empleado.detalle.subtitulo",
+  "es": "Información detallada del contrato y datos personales.",
+  "ca": "Informació detallada del contracte i dades personals.",
+  "en": "Detailed contract information and personal data."
+},
+{
+  "_id": "empleado.form.sec.avatar",
+  "es": "Identidad y Estado",
+  "ca": "Identitat i Estat",
+  "en": "Identity and Status"
+},
+{
+  "_id": "empleado.form.sec.avatar.desc",
+  "es": "Visualización del estado laboral y usuario del sistema.",
+  "ca": "Visualització de l'estat laboral i usuari del sistema.",
+  "en": "View employment status and system user."
+},
+{
+  "_id": "empleado.form.sec.personales.desc",
+  "es": "Datos de contacto e identificación legal.",
+  "ca": "Dades de contacte i identificació legal.",
+  "en": "Contact details and legal identification."
+},
+{
+  "_id": "empleado.form.sec.laboral",
+  "es": "Condiciones Laborales",
+  "ca": "Condicions Laborals",
+  "en": "Employment Conditions"
+},
+{
+  "_id": "empleado.form.sec.laboral.desc",
+  "es": "Configuración de jornada, rol y retribución.",
+  "ca": "Configuració de jornada, rol i retribució.",
+  "en": "Workday, role, and compensation settings."
+},
+{
+  "_id": "empleado.label.rol",
+  "es": "Cargo / Rol",
+  "ca": "Càrrec / Rol",
+  "en": "Position / Role"
+},
+{
+  "_id": "empleado.label.hora_inicio",
+  "es": "Entrada Jornada",
+  "ca": "Entrada Jornada",
+  "en": "Shift Start"
+},
+{
+  "_id": "empleado.label.hora_fin",
+  "es": "Salida Jornada",
+  "ca": "Sortida Jornada",
+  "en": "Shift End"
+},
+{
+  "_id": "empleado.label.turno",
+  "es": "Tipo de Turno",
+  "ca": "Tipus de Torn",
+  "en": "Shift Type"
+},
+{
+  "_id": "empleado.msg.lectura",
+  "es": "Modo lectura: Sus datos laborales solo pueden ser modificados por Administración o RRHH.",
+  "ca": "Mode lectura: Les seves dades laborals només poden ser modificades per Administració o RRHH.",
+  "en": "Read-only mode: Your employment data can only be modified by Administration or HR."
+},
+{
+  "_id": "empleado.baja.titulo",
+  "es": "Confirmar Baja de Empleado",
+  "ca": "Confirmar Baixa d'Empleat",
+  "en": "Confirm Employee Deactivation"
+},
+{
+  "_id": "empleado.baja.subtitulo",
+  "es": "Procedimiento de cese de actividad en el sistema.",
+  "ca": "Procediment de cessament d'activitat al sistema.",
+  "en": "System activity termination procedure."
+},
+{
+  "_id": "empleado.baja.pregunta",
+  "es": "¿Está seguro de que desea retirar a este profesional de la plantilla activa?",
+  "ca": "Està segur que vol retirar aquest professional de la plantilla activa?",
+  "en": "Are you sure you want to remove this professional from the active staff?"
+},
+{
+  "_id": "empleado.baja.aviso",
+  "es": "El empleado perderá el acceso a la plataforma de forma inmediata. Sus registros de nóminas y actividad clínica se conservarán por motivos legales.",
+  "ca": "L'empleat perdrà l'accés a la plataforma de forma immediata. Els seus registres de nòmines i activitat clínica es conservaran per motius legals.",
+  "en": "The employee will lose access to the platform immediately. Their payroll records and clinical activity will be preserved for legal reasons."
+},
+{
+  "_id": "modulo.rrhh",
+  "es": "Módulo de Gestión de Recursos Humanos",
+  "ca": "Mòdul de Gestió de Recursos Humans",
+  "en": "Human Resources Management Module"
+},
+{
+  "_id": "empleado.titulo.nuevo",
+  "es": "Registrar Nuevo Empleado",
+  "ca": "Registrar Nou Empleat",
+  "en": "Register New Employee"
+},
+{
+  "_id": "empleado.titulo.editar",
+  "es": "Editar Ficha de Empleado",
+  "ca": "Editar Fitxa d'Empleat",
+  "en": "Edit Employee File"
+},
+{
+  "_id": "empleado.aviso.password",
+  "es": "Nota: La contraseña inicial de acceso será el DNI del empleado.",
+  "ca": "Nota: La contrasenya inicial d'accés serà el DNI de l'empleat.",
+  "en": "Note: The initial access password will be the employee's ID number."
+},
+{
+  "_id": "empleado.select.rol",
+  "es": "-- Seleccione una categoría --",
+  "ca": "-- Seleccioni una categoria --",
+  "en": "-- Select a category --"
+},
+{
+  "_id": "empleado.select.turno",
+  "es": "-- Seleccione jornada --",
+  "ca": "-- Seleccioni jornada --",
+  "en": "-- Select shift --"
+},
+{
+  "_id": "titulo.crear_diagnostico",
+  "es": "Registrar Nuevo Diagnóstico",
+  "ca": "Registrar Nou Diagnòstic",
+  "en": "Register New Diagnosis"
+},
+{
+  "_id": "titulo.editar_diagnostico",
+  "es": "Editar Diagnóstico Clínico",
+  "ca": "Editar Diagnòstic Clínic",
+  "en": "Edit Clinical Diagnosis"
+},
+{
+  "_id": "diagnostico.form.subtitulo",
+  "es": "Mantenimiento del catálogo maestro de diagnósticos y codificación CIE-10.",
+  "ca": "Manteniment del catàleg mestre de diagnòstics i codificació CIE-10.",
+  "en": "Maintenance of the master diagnosis catalog and ICD-10 coding."
+},
+{
+  "_id": "diagnostico.form.sec.datos",
+  "es": "Datos del Diagnóstico",
+  "ca": "Dades del Diagnòstic",
+  "en": "Diagnosis Data"
+},
+{
+  "_id": "diagnostico.form.sec.datos.desc",
+  "es": "Defina el código identificador y el nombre descriptivo del proceso patológico.",
+  "ca": "Definiu el codi identificador i el nom descriptiu del procés patològic.",
+  "en": "Define the identifier code and descriptive name of the pathological process."
+},
+{
+  "_id": "diagnostico.form.sec.estado.desc",
+  "es": "Determine si este diagnóstico debe estar disponible para ser asignado en nuevas consultas.",
+  "ca": "Determineu si aquest diagnòstic ha d'estar disponible per ser assignat en noves consultes.",
+  "en": "Determine if this diagnosis should be available to be assigned in new consultations."
+},
+{
+  "_id": "diagnostico.placeholder.codigo",
+  "es": "Ej: E11.9, J45...",
+  "ca": "Ex: E11.9, J45...",
+  "en": "e.g., E11.9, J45..."
+},
+{
+  "_id": "diagnostico.placeholder.nombre",
+  "es": "Nombre completo del diagnóstico...",
+  "ca": "Nom complet del diagnòstic...",
+  "en": "Full diagnosis name..."
+},
+{
+  "_id": "diagnostico.info.creacion",
+  "es": "Por defecto, los nuevos diagnósticos se crean en estado activo para su uso inmediato en la agenda clínica.",
+  "ca": "Per defecte, els nous diagnòstics es creen en estat actiu per al seu ús immediat a l'agenda clínica.",
+  "en": "By default, new diagnoses are created in an active state for immediate use in the clinical schedule."
+},
+{
+  "_id": "diagnostico.tabla.estado",
+  "es": "Disponibilidad",
+  "ca": "Disponibilitat",
+  "en": "Availability"
+},
+{
+  "_id": "titulo.detalle_diagnostico",
+  "es": "Detalle del Diagnóstico",
+  "ca": "Detall del Diagnòstic",
+  "en": "Diagnosis Details"
+},
+{
+  "_id": "diagnostico.detalle.subtitulo",
+  "es": "Ficha técnica y estado del registro médico.",
+  "ca": "Fitxa tècnica i estat del registre mèdic.",
+  "en": "Technical file and medical record status."
+},
+{
+  "_id": "info.uso_sistema",
+  "es": "Uso en el Ecosistema Clínico",
+  "ca": "Ús en l'Ecosistema Clínic",
+  "en": "Clinical Ecosystem Usage"
+},
+{
+  "_id": "msg.diagnostico_info_extra",
+  "es": "Este diagnóstico está sincronizado con el catálogo maestro y permite la codificación estandarizada en los episodios clínicos de los pacientes.",
+  "ca": "Aquest diagnòstic està sincronitzat amb el catàleg mestre i permet la codificació estandarditzada en els episodis clínics dels pacients.",
+  "en": "This diagnosis is synchronized with the master catalog and allows standardized coding in clinical patient episodes."
+},
+{
+  "_id": "diagnostico.desactivar.titulo",
+  "es": "Confirmar Desactivación de Diagnóstico",
+  "ca": "Confirmar Desactivació de Diagnòstic",
+  "en": "Confirm Diagnosis Deactivation"
+},
+{
+  "_id": "diagnostico.desactivar.pregunta",
+  "es": "¿Está seguro de que desea retirar este diagnóstico del catálogo activo?",
+  "ca": "Està segur que vol retirar aquest diagnòstic del catàleg actiu?",
+  "en": "Are you sure you want to remove this diagnosis from the active catalog?"
+},
+{
+  "_id": "msg.confirmar_desactivar_diag",
+  "es": "Estás a punto de desactivar el siguiente diagnóstico médico:",
+  "ca": "Estàs a punt de desactivar el següent diagnòstic mèdic:",
+  "en": "You are about to deactivate the following medical diagnosis:"
+},
+{
+  "_id": "msg.desactivar_info",
+  "es": "Esta acción no eliminará el diagnóstico de los historiales clínicos ya existentes, pero evitará que el personal médico pueda seleccionarlo en nuevas consultas.",
+  "ca": "Aquesta acció no eliminarà el diagnòstic dels historials clínics ja existents, però evitarà que el personal mèdic pugui seleccionar-lo en noves consultes.",
+  "en": "This action will not remove the diagnosis from existing clinical histories, but will prevent medical staff from selecting it in new consultations."
+},
+{
+  "_id": "btn.confirmar_desactivar",
+  "es": "Desactivar Registro",
+  "ca": "Desactivar Registre",
+  "en": "Deactivate Record"
+},
+{
+  "_id": "citas.msg.no_asignado",
+  "es": "Sin asignar",
+  "ca": "Sense assignar",
+  "en": "Unassigned"
+},
+{
+  "_id": "citas.placeholder.paciente",
+  "es": "-- Seleccione un paciente del registro --",
+  "ca": "-- Seleccioni un pacient del registre --",
+  "en": "-- Select a patient from records --"
+},
+{
+  "_id": "citas.form.horario_ayuda",
+  "es": "Horario disponible: 08:00 - 12:00 y 14:00 - 16:00 (Citas en horas en punto)",
+  "ca": "Horari disponible: 08:00 - 12:00 i 14:00 - 16:00 (Cites en hores en punt)",
+  "en": "Available hours: 08:00 - 12:00 and 14:00 - 16:00 (Hourly appointments only)"
+},
+{
+  "_id": "citas.js.error_hora_exacta",
+  "es": "Por favor, seleccione una hora exacta (ej: 10:00). Las citas tienen duración de 60 min.",
+  "ca": "Per favor, seleccioni una hora exacta (ex: 10:00). Les cites tenen una durada de 60 min.",
+  "en": "Please select an exact hour (e.g., 10:00). Appointments have a 60 min duration."
+},
+{
+  "_id": "citas.js.error_horario",
+  "es": "El centro está cerrado en el tramo seleccionado. Use los horarios de mañana o tarde.",
+  "ca": "El centre està tancat en el tram seleccionat. Useu els horaris de matí o tarda.",
+  "en": "The center is closed at the selected time. Use morning or afternoon shifts."
+},
+{
+  "_id": "cita.detalle.subtitulo",
+  "es": "Información confirmada sobre el servicio y participantes.",
+  "ca": "Informació confirmada sobre el servei i participants.",
+  "en": "Confirmed information about the service and participants."
+},
+{
+  "_id": "cita.detalle.sec.agenda",
+  "es": "Planificación",
+  "ca": "Planificació",
+  "en": "Planning"
+},
+{
+  "_id": "cita.detalle.sec.agenda.desc",
+  "es": "Fecha, hora y especialidad del servicio.",
+  "ca": "Data, hora i especialitat del servei.",
+  "en": "Date, time, and service specialty."
+},
+{
+  "_id": "cita.detalle.sec.participantes",
+  "es": "Asignación",
+  "ca": "Assignació",
+  "en": "Assignment"
+},
+{
+  "_id": "cita.detalle.sec.participantes.desc",
+  "es": "Personal médico y paciente vinculado.",
+  "ca": "Personal mèdic i pacient vinculat.",
+  "en": "Medical staff and linked patient."
+},
+{
+  "_id": "citas.detalle.no_modificable",
+  "es": "Esta cita ya no admite cambios.",
+  "ca": "Aquesta cita ja no admet canvis.",
+  "en": "This appointment no longer accepts changes."
+},
+{
+  "_id": "citas.anular.pregunta",
+  "es": "¿Está seguro de que desea cancelar esta cita? Esta acción liberará el hueco en la agenda.",
+  "ca": "Està segur que vol cancel·lar aquesta cita? Aquesta acció alliberarà el buit a l'agenda.",
+  "en": "Are you sure you want to cancel this appointment? This action will free up the slot in the schedule."
+},
+{
+  "_id": "citas.anular.aviso",
+  "es": "La cita pasará a estado ANULADA. El horario quedará disponible inmediatamente para nuevas solicitudes y se mantendrá el registro en el historial para fines estadísticos.",
+  "ca": "La cita passarà a l'estat ANUL·LADA. L'horari quedarà disponible immediatament per a noves sol·licituds i es mantindrà el registre a l'historial per a fins estadístics.",
+  "en": "The appointment will be set to CANCELLED. The time slot will be immediately available for new requests, and the record will be kept in history for statistical purposes."
 }]
