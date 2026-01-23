@@ -130,7 +130,7 @@ public class PacienteController {
     }
 
     @GetMapping("/confirmarEliminar/{id}")
-    public String confirmarEliminar(@PathVariable("id") Long id, Model model) {
+    public String confirmarDesactivar(@PathVariable("id") Long id, Model model) {
         Paciente paciente = pacienteService.findPacienteById(id);
         if (paciente == null)
             return "redirect:/pacientes";
@@ -140,8 +140,8 @@ public class PacienteController {
     }
 
     @PostMapping("/eliminar")
-    public String desactivarPaciente(@RequestParam("id") Long id) {
-        pacienteService.deletePaciente(id);
+    public String desactivarPaciente1(@RequestParam("id") Long id) {
+        pacienteService.desactivarPaciente(id);
         return "redirect:/pacientes";
     }
 }
