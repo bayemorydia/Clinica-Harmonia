@@ -294,7 +294,7 @@ public String verHistorialClinico(
         model.addAttribute("activePage", "nominas");
         model.addAttribute("trad", traduccionService);
         model.addAttribute("query", "");
-        return "Nomina/listarNominas";
+        return "Empleado/nominasEmpleado";
     }
 
     @GetMapping("/nominas/search")

@@ -4,65 +4,81 @@
     <div th:replace="~{Reutilizable/layout :: head_general}"></div>
     <title th:text="${trad.getTraduccion('mod.facturacion.titulo')}">Facturación</title>
     <style>
-        .clickable-row { cursor: pointer; transition: background-color 0.2s ease; }
-        .clickable-row:hover { background-color: rgba(0, 123, 255, 0.05) !important; }
-        .page-link { color: #6c757d; border: none; background: #f1f3f5; margin: 0 3px; border-radius: 8px !important; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; transition: all 0.2s ease; }
-        .page-item.active .page-link { background-color: #0d6efd !important; color: white !important; box-shadow: 0 4px 10px rgba(13, 110, 253, 0.2); }
-        .select-paginacion-clean { display: inline-block; width: 75px; padding: 0.375rem 1.75rem 0.375rem 0.75rem; font-size: 0.85rem; border: 1px solid #dee2e6; border-radius: 8px; appearance: none; cursor: pointer; }
-        .table-footer { padding: 1.25rem 1.5rem; background-color: #ffffff; border-top: 1px solid #edf2f7; }
-        .export-panel { background: #e9ecef; padding: 5px 15px; border-radius: 50px; display: flex; align-items: center; gap: 10px; }
+        :root {
+            --surface-color: #ffffff;
+            --background-color: #f8f9fa;
+            --primary-color: #0d6efd;
+            --text-main: #212529;
+            --text-muted: #6c757d;
+        }
+
+        body { background-color: var(--background-color); color: var(--text-main); font-family: 'Inter', -apple-system, sans-serif; }
+
+        .glass-card { background: var(--surface-color); border-radius: 16px; border: 1px solid rgba(0, 0, 0, 0.05); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04); }
+
+        .search-container { background: #fff; border: 1px solid #e0e0e0; border-radius: 12px; padding: 2px 15px; transition: all 0.2s ease; }
+        .search-container:focus-within { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1); }
+        .search-container input { border: none; box-shadow: none !important; }
+
+        .table thead th { background-color: #fcfcfc; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.03em; color: var(--text-muted); padding: 16px; border-top: none; }
+        .table tbody td { padding: 16px; vertical-align: middle; border-color: #f1f1f1; }
+
+        .clickable-row { cursor: pointer; transition: background 0.2s; }
+        .clickable-row:hover { background-color: rgba(13, 110, 253, 0.02) !important; }
+
         .bg-purple-subtle { background-color: #f3e5f5; color: #7b1fa2; border: 1px solid #e1bee7; }
+        .select-paginacion-clean { width: 75px; padding: 0.375rem; font-size: 0.85rem; border: 1px solid #dee2e6; border-radius: 8px; }
     </style>
 </head>
 <body>
     <div th:replace="~{Reutilizable/layout :: menu}"></div>
 
-    <main class="content">
+    <main class="content py-5">
         <div class="container-fluid">
 
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-5">
                 <div>
                     <h2 class="fw-bold text-dark mb-1" th:text="${trad.getTraduccion('mod.facturacion.titulo')}">Facturación</h2>
-                    <p class="text-muted small mb-0">Gestión unificada de cobros por servicios médicos y pruebas.</p>
+                    <p class="text-muted small mb-0" th:text="${trad.getTraduccion('facturacion.lista.subtitulo')}">Gestión unificada de cobros por servicios médicos y pruebas.</p>
                 </div>
             </div>
 
             <div class="card shadow-sm border-0 mb-4" style="border-radius: 15px;">
                 <div class="card-body">
-                    <div class="input-group">
-                        <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
-                        <input type="text" id="searchInput" class="form-control border-start-0 ps-0 shadow-none"
+                    <div class="search-container d-flex align-items-center">
+                        <i class="bi bi-search text-muted me-2"></i>
+                        <input type="text" id="searchInput" class="form-control"
                                th:placeholder="${trad.getTraduccion('citas.placeholder.buscar')}" th:value="${query}">
                     </div>
                 </div>
             </div>
 
-            <div class="card shadow-sm border-0" style="border-radius: 15px; overflow: hidden;">
-                <div class="card-body p-0" id="tablaContainer">
+            <div class="glass-card overflow-hidden">
+                <div id="tablaContainer">
                     <div th:fragment="tablaFacturas">
                         <div class="table-responsive">
                             <table class="table table-hover align-middle mb-0">
-                                <thead class="bg-light">
+                                <thead>
                                     <tr>
-                                        <th class="ps-4 py-3 border-0 text-secondary small fw-bold">FECHA</th>
-                                        <th class="py-3 border-0 text-secondary small fw-bold">PACIENTE / CLIENTE</th>
-                                        <th class="py-3 border-0 text-secondary small fw-bold">TIPO DE SERVICIO</th>
-                                        <th class="py-3 border-0 text-secondary small fw-bold">TOTAL</th>
-                                        <th class="py-3 border-0 text-secondary small fw-bold text-center">ESTADO</th>
-                                        <th class="py-3 border-0 text-secondary small fw-bold text-center">DETALLES</th>
+                                        <th class="ps-4" th:text="${trad.getTraduccion('facturacion.tabla.fecha')}">FECHA</th>
+                                        <th th:text="${trad.getTraduccion('facturacion.tabla.cliente')}">PACIENTE / CLIENTE</th>
+                                        <th th:text="${trad.getTraduccion('facturacion.tabla.servicio')}">TIPO DE SERVICIO</th>
+                                        <th th:text="${trad.getTraduccion('facturacion.tabla.total')}">TOTAL</th>
+                                        <th class="text-center" th:text="${trad.getTraduccion('agenda.tabla.estado')}">ESTADO</th>
+                                        <th class="text-center" th:text="${trad.getTraduccion('facturacion.tabla.detalles')}">DETALLES</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr th:if="${#lists.isEmpty(facturas)}">
                                         <td colspan="6" class="text-center py-5 text-muted">
                                             <i class="bi bi-receipt-cutoff fs-2 d-block mb-2 opacity-25"></i>
-                                            No se han encontrado facturas en el sistema.
+                                            <span th:text="${trad.getTraduccion('facturacion.tabla.vacia')}">No se han encontrado facturas.</span>
                                         </td>
                                     </tr>
                                     <tr th:each="f : ${facturas}" class="border-bottom clickable-row"
                                         th:data-href="@{'/admin/facturas/detalle/' + ${f.id}}">
-                                        <td class="ps-4 py-3 text-secondary" th:text="${#temporals.format(f.fechaEmision, 'dd/MM/yyyy')}"></td>
-                                        <td class="py-3">
+                                        <td class="ps-4 text-secondary" th:text="${#temporals.format(f.fechaEmision, 'dd/MM/yyyy')}"></td>
+                                        <td>
                                             <div class="d-flex align-items-center">
                                                 <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 35px; height: 35px;">
                                                     <i class="bi bi-person"></i>
@@ -70,27 +86,27 @@
                                                 <div class="fw-bold text-dark" th:text="${f.paciente != null ? f.paciente.nombre + ' ' + f.paciente.apellidos : 'N/A'}"></div>
                                             </div>
                                         </td>
-                                        <td class="py-3">
+                                        <td>
                                             <div th:if="${not #lists.isEmpty(f.lineas)}">
                                                 <span th:if="${#strings.contains(#strings.toLowerCase(f.lineas[0].concepto), 'servicios') or #strings.contains(#strings.toLowerCase(f.lineas[0].concepto), 'consulta')}" 
                                                       class="badge rounded-pill px-3 py-2 bg-info-subtle text-info">
-                                                    <i class="bi bi-calendar-check me-1"></i> Cita Médica
+                                                    <i class="bi bi-calendar-check me-1"></i> <span th:text="${trad.getTraduccion('facturacion.tipo.cita')}">Cita Médica</span>
                                                 </span>
                                                 <span th:if="${#strings.contains(#strings.toLowerCase(f.lineas[0].concepto), 'prueba')}" 
                                                       class="badge rounded-pill px-3 py-2 bg-purple-subtle">
-                                                    <i class="bi bi-clipboard-pulse me-1"></i> Prueba Clínica
+                                                    <i class="bi bi-clipboard-pulse me-1"></i> <span th:text="${trad.getTraduccion('facturacion.tipo.prueba')}">Prueba Clínica</span>
                                                 </span>
                                             </div>
                                             <div th:if="${#lists.isEmpty(f.lineas)}">
-                                                <span class="badge rounded-pill px-3 py-2 bg-light text-muted">Venta General</span>
+                                                <span class="badge rounded-pill px-3 py-2 bg-light text-muted" th:text="${trad.getTraduccion('facturacion.tipo.general')}">Venta General</span>
                                             </div>
                                         </td>
-                                        <td class="py-3 fw-bold text-dark" th:text="${f.total + ' €'}"></td>
-                                        <td class="py-3 text-center">
-                                            <span th:if="${f.activo}" class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3">VIGENTE</span>
-                                            <span th:if="${!f.activo}" class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-3 text-uppercase">ANULADA</span>
+                                        <td class="fw-bold text-dark" th:text="${f.total + ' €'}"></td>
+                                        <td class="text-center">
+                                            <span th:if="${f.activo}" class="badge bg-success-soft text-success rounded-pill px-3" th:text="${trad.getTraduccion('facturacion.estado.vigente')}">VIGENTE</span>
+                                            <span th:if="${!f.activo}" class="badge bg-danger-soft text-danger rounded-pill px-3" th:text="${trad.getTraduccion('facturacion.estado.anulada')}">ANULADA</span>
                                         </td>
-                                        <td class="py-3 text-center">
+                                        <td class="text-center" onclick="event.stopPropagation();">
                                             <a th:href="@{'/admin/facturas/detalle/' + ${f.id}}" class="btn btn-sm btn-light rounded-pill border shadow-sm">
                                                 <i class="bi bi-eye"></i>
                                             </a>
@@ -100,12 +116,15 @@
                             </table>
                         </div>
 
-                        <div class="table-footer d-flex justify-content-between align-items-center">
+                        <div class="p-4 bg-white border-top d-flex justify-content-between align-items-center">
                             <div class="text-muted small">
-                                Mostrando <span class="fw-bold" th:text="${facturas.size()}">0</span> de <span class="fw-bold" th:text="${totalElements}">0</span> facturas.
+                                <span th:text="${trad.getTraduccion('pacientes.tabla.mostrar')}">Mostrando</span>
+                                <span class="fw-bold text-dark" th:text="${facturas.size()}"></span>
+                                <span th:text="${trad.getTraduccion('pacientes.paginacion.de')}">de</span>
+                                <span class="fw-bold text-dark" th:text="${totalElements}"></span>
                             </div>
                             <div class="d-flex align-items-center gap-4">
-                                <select id="pageSize" class="select-paginacion-clean" onchange="updateTable(0)">
+                                <select id="pageSize" class="select-paginacion-clean shadow-none" onchange="updateTable(0)">
                                     <option value="10" th:selected="${size == 10}">10</option>
                                     <option value="20" th:selected="${size == 20}">20</option>
                                 </select>
@@ -125,16 +144,14 @@
                             </div>
                         </div>
                         <input type="hidden" id="hiddenTotalPages" th:value="${totalPages}">
-                    </div> 
+                    </div>
                 </div>
             </div>
         </div>
     </main>
 
     <div th:replace="~{Reutilizable/layout :: scripts}"></div>
-
     <script th:inline="javascript">
-        // Inicializar eventos de la tabla
         function initTableEvents() {
             document.querySelectorAll(".clickable-row").forEach(row => {
                 row.addEventListener("click", function (e) {
@@ -143,10 +160,8 @@
                 });
             });
         }
-
         document.addEventListener("DOMContentLoaded", initTableEvents);
 
-        // Actualizar tabla vía AJAX
         function updateTable(page = 0) {
             const query = document.getElementById('searchInput').value;
             const size = document.getElementById('pageSize').value;
@@ -163,36 +178,11 @@
             if (page >= 0 && page < total) updateTable(page);
         }
 
-        // Buscador con Delay
         let searchTimeout;
         document.getElementById('searchInput').addEventListener('input', () => {
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => updateTable(0), 400);
         });
-
-        // Descarga de informe
-        function descargarInformeAsincrono() {
-            const periodo = document.getElementById('periodoExport').value;
-            const btn = document.getElementById('btnDownload');
-            btn.disabled = true;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
-
-            fetch(`/admin/facturas/exportar?periodo=${periodo}`)
-                .then(res => res.blob())
-                .then(blob => {
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `Facturas_${periodo}.csv`;
-                    document.body.appendChild(a);
-                    a.click();
-                    a.remove();
-                })
-                .finally(() => {
-                    btn.disabled = false;
-                    btn.innerHTML = '<i class="bi bi-file-earmark-arrow-down"></i>';
-                });
-        }
     </script>
 </body>
 </html>
