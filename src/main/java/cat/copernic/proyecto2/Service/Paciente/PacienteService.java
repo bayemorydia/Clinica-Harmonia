@@ -15,7 +15,7 @@ public interface PacienteService {
     
     Paciente encontrarPorDni(String dni);
     
-    void deletePaciente(Long id);
+    void desactivarPaciente(Long id);
     
     String getEdadPaciente(Paciente paciente);
     

@@ -108,7 +108,7 @@ public class PacienteServiceImpl implements PacienteService {
 
     @Override
     @Transactional
-    public void deletePaciente(Long id) {
+    public void desactivarPaciente(Long id) {
         Paciente p = findPacienteById(id);
         if (p != null) {
             p.setActivo(false);
