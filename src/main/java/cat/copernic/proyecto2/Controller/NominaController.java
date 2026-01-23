@@ -4,13 +4,9 @@ import cat.copernic.proyecto2.Domain.Administración.Empleado;
 import cat.copernic.proyecto2.Domain.Administración.Nomina;
 import cat.copernic.proyecto2.Service.Empleado.EmpleadoService;
 import cat.copernic.proyecto2.Service.Empleado.Nomina.NominaService;
-import cat.copernic.proyecto2.Service.Rol.RolService;
 import cat.copernic.proyecto2.Service.Traduccion.TraduccionService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -32,15 +28,7 @@ public class NominaController {
     private NominaService nominaService;
 
     @Autowired
-    private RolService rolService;
-
-    @Autowired
     private TraduccionService traduccionService;
-
-    private void cargarRoles(Model model) {
-        Pageable pageable = PageRequest.of(0, 200);
-        model.addAttribute("roles", rolService.listarRoles(pageable).getContent());
-    }
 
     @GetMapping("")
     public String listarNominas(Model model) {

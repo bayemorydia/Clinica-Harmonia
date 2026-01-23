@@ -70,7 +70,7 @@
     <div class="sidebar-medico d-flex flex-column p-3" th:fragment="menu_medico">
         <div class="d-flex align-items-center mb-1 px-2">
             <i class="bi bi-hospital-fill text-primary fs-3 me-2"></i>
-            <span class="fs-5 fw-bold text-primary">Clínica Harmonia</span>
+            <span class="fs-5 fw-bold text-primary" th:text="${trad.getTraduccion('nav.clinica.nombre')}">Clínica Harmonia</span>
         </div>
 
         <div class="lang-container">
@@ -82,9 +82,10 @@
         </div>
 
         <div class="mb-4 px-2">
-            <small class="text-muted d-block" th:text="${trad.getTraduccion('nav.identificado')}">Identificado
-                como:</small>
-            <span class="fw-bold text-dark">Dr. [[${#authentication.name}]]</span>
+            <small class="text-muted d-block" th:text="${trad.getTraduccion('nav.identificado')}">Identificado como:</small>
+            <span class="fw-bold text-dark">
+                <span th:text="${trad.getTraduccion('nav.prefijo.dr')}">Dr.</span> [[${#authentication.name}]]
+            </span>
         </div>
 
         <ul class="nav flex-column mb-auto">
@@ -100,7 +101,7 @@
                 <a th:href="@{/medico/agenda}" class="nav-link-med"
                     th:classappend="${#ctx.containsVariable('activePage') and activePage == 'agenda' ? 'active' : ''}">
                     <i class="bi bi-calendar3"></i>
-                    <span th:text="${trad.getTraduccion('nav.agenda') ?: 'Mi Agenda'}">Mi Agenda</span>
+                    <span th:text="${trad.getTraduccion('nav.agenda')}">Mi Agenda</span>
                 </a>
             </li>
 
@@ -108,8 +109,8 @@
                 <a th:href="@{/medico/perfil/{id}(id=${medicoLogueado?.id})}" class="nav-link-med"
                     th:classappend="${activePage == 'perfil' ? 'active' : ''}">
                     <i class="bi bi-person-circle"></i>
-                    <span th:text="${#authorization.expression('hasRole(''ADMINISTRADOR'')')}
-                                ? ${trad.getTraduccion('nav.perfil.admin')}
+                    <span th:text="${#authorization.expression('hasRole(''ADMINISTRADOR'')')} 
+                                ? ${trad.getTraduccion('nav.perfil.admin')} 
                                 : ${trad.getTraduccion('nav.perfil.user')}">Perfil</span>
                 </a>
             </li>
@@ -118,7 +119,7 @@
                 <a th:href="@{/medico/nominas}" class="nav-link-med"
                     th:classappend="${#ctx.containsVariable('activePage') and activePage == 'nominas' ? 'active' : ''}">
                     <i class="bi bi-file-earmark-medical"></i>
-                    <span th:text="${trad.getTraduccion('nav.nominas') ?: 'Mis Nóminas'}">Mis Nóminas</span>
+                    <span th:text="${trad.getTraduccion('nav.nominas')}">Mis Nóminas</span>
                 </a>
             </li>
 
@@ -126,7 +127,7 @@
                 <a th:href="@{/vacaciones}" class="nav-link-med"
                     th:classappend="${#ctx.containsVariable('activePage') and activePage == 'vacaciones' ? 'active' : ''}">
                     <i class="bi bi-sun"></i>
-                    <span th:text="${trad.getTraduccion('nav.vacaciones') ?: 'Vacaciones'}">Vacaciones</span>
+                    <span th:text="${trad.getTraduccion('nav.vacaciones')}">Vacaciones</span>
                 </a>
             </li>
         </ul>
@@ -136,7 +137,7 @@
         <form th:action="@{/logout}" method="post">
             <button type="submit" class="nav-link-med text-danger border-0 bg-transparent w-100 text-start">
                 <i class="bi bi-box-arrow-left"></i>
-                <span th:text="${trad.getTraduccion('btn.logout') ?: 'Cerrar Sesión'}">Salir</span>
+                <span th:text="${trad.getTraduccion('btn.logout')}">Cerrar Sesión</span>
             </button>
         </form>
     </div>
@@ -148,7 +149,6 @@
                 const url = new URL(window.location.href);
                 url.searchParams.set('lang', lang);
                 window.location.href = url.toString();
-
             }
         </script>
     </div>

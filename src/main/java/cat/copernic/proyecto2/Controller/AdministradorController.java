@@ -40,6 +40,7 @@ public class AdministradorController {
 
     @GetMapping("")
     public String index(Model model) {
+        model.addAttribute("activePage", "dashboard");
         model.addAttribute("trad", traduccionService);
         model.addAttribute("totalPacientesActivos", pacienteService.countPacientesActivos());
         model.addAttribute("totalCitasActivas", citaService.countCitasActivas());

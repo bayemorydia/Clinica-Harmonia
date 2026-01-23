@@ -12,7 +12,7 @@
     <div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: menu_recepcion}"></div>
 
     <main th:class="${#authorization.expression('hasRole(''RECEPCIONISTA'')')} ? 'content-recepcion' : 'content'">
-        <div class="container-fluid">
+        <div class="container-fluid py-5">
 
             <div class="row justify-content-center">
                 <div class="col-xl-6 col-lg-8">
@@ -27,14 +27,13 @@
                                     <h3 class="mb-0 fw-bold text-dark"
                                         th:text="${trad.getTraduccion('paciente.eliminar.titulo')}">Confirmar Acción
                                     </h3>
-                                    <p class="mb-0 text-muted small">Esta acción modificará el estado del registro</p>
+                                    <p class="mb-0 text-muted small" th:text="${trad.getTraduccion('paciente.eliminar.subtitulo')}">Esta acción modificará el estado del registro</p>
                                 </div>
                             </div>
                         </div>
 
                         <div class="card-body p-4 p-md-5 text-center">
-                            <p class="lead fw-semibold text-dark mb-4">¿Estás seguro de que deseas desactivar al
-                                paciente?</p>
+                            <p class="lead fw-semibold text-dark mb-4" th:text="${trad.getTraduccion('paciente.eliminar.pregunta')}">¿Estás seguro de que deseas desactivar al paciente?</p>
 
                             <div class="bg-light p-4 rounded-4 border border-light-subtle mb-4">
                                 <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
@@ -43,14 +42,13 @@
                                 </div>
                                 <h5 class="fw-bold mb-1 text-dark"
                                     th:text="${paciente.nombre} + ' ' + ${paciente.apellidos}"></h5>
-                                <p class="mb-0 text-muted font-monospace small" th:text="'ID: ' + ${paciente.dni}"></p>
+                                <p class="mb-0 text-muted font-monospace small" th:text="${trad.getTraduccion('paciente.label.dni')} + ': ' + ${paciente.dni}"></p>
                             </div>
 
-                            <div class="alert alert-warning border-0 small mb-0 shadow-sm">
+                            <div class="alert alert-warning border-0 small mb-0 shadow-sm text-start">
                                 <i class="bi bi-info-circle me-2"></i>
                                 <span th:text="${trad.getTraduccion('paciente.eliminar.aviso')}">
-                                    El paciente dejará de estar activo en el sistema, pero sus datos no serán borrados
-                                    permanentemente.
+                                    El paciente dejará de estar activo en el sistema, pero sus datos no serán borrados permanentemente.
                                 </span>
                             </div>
 
@@ -65,15 +63,14 @@
                                     <button type="submit"
                                         class="btn btn-warning px-4 py-2 fw-bold shadow-sm rounded-pill transition-all hover-lift">
                                         <i class="bi bi-person-x-fill me-2"></i>
-                                        <span th:text="${trad.getTraduccion('btn.confirmar.desactivar')}">Sí, Desactivar
-                                            Paciente</span>
+                                        <span th:text="${trad.getTraduccion('btn.confirmar.desactivar')}">Sí, Desactivar Paciente</span>
                                     </button>
                                 </div>
                             </form>
                         </div>
 
                         <div class="card-footer bg-light bg-opacity-50 border-0 py-3 text-center">
-                            <small class="text-muted italic">Módulo de Seguridad Médica</small>
+                            <small class="text-muted italic" th:text="${trad.getTraduccion('footer.modulo.seguridad')}">Módulo de Seguridad Médica</small>
                         </div>
                     </div>
                 </div>
@@ -89,15 +86,8 @@
             transform: translateY(-2px);
             box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .1) !important;
         }
-
-        .transition-all {
-            transition: all 0.2s ease-in-out;
-        }
-
-        body {
-            background-color: #f8f9fa;
-        }
+        .transition-all { transition: all 0.2s ease-in-out; }
+        body { background-color: #f8f9fa; }
     </style>
 </body>
-
 </html>
