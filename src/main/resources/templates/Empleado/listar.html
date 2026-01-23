@@ -7,52 +7,26 @@
     <th:block sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layoutRRHH :: head_RRHH}"></th:block>
 
     <style>
-        .clickable-row {
-            cursor: pointer;
-            transition: background-color 0.2s ease;
+        :root {
+            --surface-color: #ffffff;
+            --background-color: #f8f9fa;
+            --primary-color: #0d6efd;
+            --text-main: #212529;
+            --text-muted: #6c757d;
         }
 
-        .clickable-row:hover {
-            background-color: rgba(0, 123, 255, 0.05) !important;
-        }
-
-        .page-link {
-            color: #6c757d;
-            border: none;
-            background: #f1f3f5;
-            margin: 0 3px;
-            border-radius: 8px !important;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.85rem;
-            transition: all 0.2s ease;
-        }
-
-        .page-item.active .page-link {
-            background-color: #0d6efd !important;
-            color: white !important;
-            box-shadow: 0 4px 10px rgba(13, 110, 253, 0.2);
-        }
-
-        .select-paginacion-clean {
-            display: inline-block;
-            width: 75px;
-            padding: 0.375rem 1.75rem 0.375rem 0.75rem;
-            font-size: 0.85rem;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            appearance: none;
-            cursor: pointer;
-        }
-
-        .table-footer {
-            padding: 1.25rem 1.5rem;
-            background-color: #ffffff;
-            border-top: 1px solid #edf2f7;
-        }
+        body { background-color: var(--background-color); color: var(--text-main); font-family: 'Inter', -apple-system, sans-serif; }
+        .glass-card { background: var(--surface-color); border-radius: 16px; border: 1px solid rgba(0, 0, 0, 0.05); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04); }
+        .search-container { background: #fff; border: 1px solid #e0e0e0; border-radius: 12px; padding: 2px 15px; transition: all 0.2s ease; }
+        .search-container:focus-within { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1); }
+        .search-container input { border: none; box-shadow: none !important; }
+        .table thead th { background-color: #fcfcfc; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.03em; color: var(--text-muted); padding: 16px; border-top: none; }
+        .table tbody td { padding: 16px; vertical-align: middle; border-color: #f1f1f1; }
+        .clickable-row { cursor: pointer; transition: background 0.2s; }
+        .clickable-row:hover { background-color: rgba(13, 110, 253, 0.02) !important; }
+        .select-paginacion-clean { width: 75px; padding: 0.375rem; font-size: 0.85rem; border: 1px solid #dee2e6; border-radius: 8px; }
+        .pagination .page-link { color: #6c757d; border: none; background: #f1f3f5; margin: 0 3px; border-radius: 8px !important; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; }
+        .pagination .page-item.active .page-link { background-color: var(--primary-color) !important; color: white !important; }
     </style>
 </head>
 
@@ -60,25 +34,21 @@
     <div sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layoutRRHH :: menu_RRHH}"></div>
     <div sec:authorize="!hasRole('RRHH')" th:replace="~{Reutilizable/layout :: menu}"></div>
 
-    <main class="content">
+    <main class="content py-4">
         <div class="container-fluid">
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-5">
                 <div>
                     <h2 class="fw-bold text-dark mb-1" th:text="${trad.getTraduccion('mod.empleados')}">Empleados</h2>
-                    <p class="text-muted small mb-0" th:text="${trad.getTraduccion('pacientes.lista.subtitulo')}">
-                        Gestión de personal activo e inactivo.</p>
+                    <p class="text-muted small mb-0" th:text="${trad.getTraduccion('empleados.lista.subtitulo')}">Gestión de personal activo e inactivo.</p>
                 </div>
                 <div class="d-flex gap-2">
-                    <a th:href="@{/nominas}" class="btn btn-success rounded-pill px-4 fw-bold shadow-sm"
-                       sec:authorize="hasRole('RRHH')"
-                    >
+                    <a th:href="@{/nominas}" class="btn btn-success rounded-pill px-4 fw-bold shadow-sm" sec:authorize="hasRole('RRHH')">
                         <i class="bi bi-receipt me-2"></i>
                         <span th:text="${trad.getTraduccion('mod.facturacion.titulo')}">Nóminas</span>
                     </a>
-
                     <a th:href="@{/empleados/nuevo}" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">
                         <i class="bi bi-person-plus-fill me-2"></i>
-                        <span th:text="${trad.getTraduccion('btn.crear')}">Nuevo Empleado</span>
+                        <span th:text="${trad.getTraduccion('empleados.btn.nuevo')}">Nuevo Empleado</span>
                     </a>
                 </div>
             </div>
@@ -87,109 +57,82 @@
                 <div class="card-body">
                     <div class="row g-3">
                         <div class="col-md-8">
-                            <div class="input-group">
-                                <span class="input-group-text bg-white border-end-0 text-muted">
-                                    <i class="bi bi-search"></i>
-                                </span>
-                                <input type="text" id="searchInput" class="form-control border-start-0 ps-0 shadow-none"
-                                    th:placeholder="${trad.getTraduccion('citas.placeholder.buscar')}"
-                                    th:value="${query}">
+                            <div class="search-container d-flex align-items-center">
+                                <i class="bi bi-search text-muted me-2"></i>
+                                <input type="text" id="searchInput" class="form-control shadow-none" 
+                                       th:placeholder="${trad.getTraduccion('citas.placeholder.buscar')}" th:value="${query}">
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <select id="statusFilter" class="form-select shadow-none" style="border-radius: 8px;"
-                                onchange="updateTable(0)">
-                                <option value="" th:selected="${activo == null}"
-                                    th:text="${trad.getTraduccion('pacientes.filtro.todos')}">Todos</option>
-                                <option value="true" th:selected="${activo == true}"
-                                    th:text="${trad.getTraduccion('pacientes.estado.activo')}">Activos</option>
-                                <option value="false" th:selected="${activo == false}"
-                                    th:text="${trad.getTraduccion('pacientes.estado.inactivo')}">Inactivos</option>
+                            <select id="statusFilter" class="form-select border-0 shadow-sm" style="border-radius: 10px; height: 45px;" onchange="updateTable(0)">
+                                <option value="" th:selected="${activo == null}" th:text="${trad.getTraduccion('pacientes.filtro.todos')}">Todos</option>
+                                <option value="true" th:selected="${activo == true}" th:text="${trad.getTraduccion('pacientes.estado.activo')}">Activos</option>
+                                <option value="false" th:selected="${activo == false}" th:text="${trad.getTraduccion('pacientes.estado.inactivo')}">Inactivos</option>
                             </select>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="card shadow-sm border-0" style="border-radius: 15px; overflow: hidden;">
-                <div class="card-body p-0" id="tablaContainer">
+            <div class="glass-card overflow-hidden">
+                <div id="tablaContainer">
                     <div th:fragment="tablaEmpleados">
                         <div class="table-responsive">
                             <table class="table table-hover align-middle mb-0">
-                                <thead class="bg-light">
+                                <thead>
                                     <tr>
-                                        <th class="ps-4 py-3 border-0 text-secondary small fw-bold"
-                                            th:text="${trad.getTraduccion('pacientes.tabla.nombre')}">NOMBRE</th>
-                                        <th class="py-3 border-0 text-secondary small fw-bold"
-                                            th:text="${trad.getTraduccion('pacientes.tabla.dni')}">DNI</th>
-                                        <th class="py-3 border-0 text-secondary small fw-bold"
-                                            th:text="${trad.getTraduccion('pacientes.tabla.estado')}">ESTADO</th>
-                                        <th class="py-3 border-0 text-secondary small fw-bold text-center"
-                                            th:text="${trad.getTraduccion('pacientes.tabla.acciones')}">ACCIONES</th>
+                                        <th class="ps-4" th:text="${trad.getTraduccion('pacientes.tabla.nombre')}">NOMBRE</th>
+                                        <th th:text="${trad.getTraduccion('pacientes.tabla.dni')}">DNI</th>
+                                        <th th:text="${trad.getTraduccion('pacientes.tabla.estado')}">ESTADO</th>
+                                        <th class="text-center" th:text="${trad.getTraduccion('pacientes.tabla.acciones')}">ACCIONES</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr th:if="${#lists.isEmpty(empleados)}">
-                                        <td colspan="4" class="text-center py-5 text-muted"
-                                            th:text="${trad.getTraduccion('pacientes.tabla.vacia')}">Vacío</td>
+                                        <td colspan="4" class="text-center py-5 text-muted" th:text="${trad.getTraduccion('pacientes.tabla.vacia')}">Vacío</td>
                                     </tr>
-                                    <tr th:each="e : ${empleados}" class="border-bottom clickable-row"
+                                    <tr th:each="e : ${empleados}" class="border-bottom clickable-row" 
                                         th:onclick="|window.location.href='/empleados/detalle?id=' + ${e.id}|">
-                                        <td class="ps-4 py-3">
+                                        <td class="ps-4">
                                             <div class="d-flex align-items-center">
-                                                <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3"
-                                                    style="width: 40px; height: 40px;">
-                                                    <span class="fw-bold"
-                                                        th:text="${#strings.substring(e.nombre,0,1)}">E</span>
+                                                <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                                    <span class="fw-bold" th:text="${#strings.substring(e.nombre,0,1)}"></span>
                                                 </div>
                                                 <div>
-                                                    <div class="fw-bold text-dark mb-0"
-                                                        th:text="${e.nombre} + ' ' + ${e.apellidos}">Nombre</div>
-                                                    <div class="text-muted small" th:text="${e.email}">Email</div>
+                                                    <div class="fw-bold text-dark mb-0" th:text="${e.nombre} + ' ' + ${e.apellidos}"></div>
+                                                    <div class="text-muted small" th:text="${e.email}"></div>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="py-3 text-secondary font-monospace" th:text="${e.dni}">DNI</td>
-                                        <td class="py-3">
-                                            <span th:if="${e.activa}"
-                                                class="badge rounded-pill bg-success-subtle text-success px-3 py-2"
-                                                style="font-size: 0.75rem;"
-                                                th:text="${trad.getTraduccion('pacientes.estado.activo')}">Activo</span>
-                                            <span th:unless="${e.activa}"
-                                                class="badge rounded-pill bg-light text-secondary px-3 py-2"
-                                                style="font-size: 0.75rem;"
-                                                th:text="${trad.getTraduccion('pacientes.estado.inactivo')}">Inactivo</span>
+                                        <td class="text-secondary font-monospace" th:text="${e.dni}"></td>
+                                        <td>
+                                            <span th:if="${e.activa}" class="badge rounded-pill bg-success-subtle text-success px-3 py-2" th:text="${trad.getTraduccion('pacientes.estado.activo')}"></span>
+                                            <span th:unless="${e.activa}" class="badge rounded-pill bg-light text-secondary px-3 py-2" th:text="${trad.getTraduccion('pacientes.estado.inactivo')}"></span>
                                         </td>
-                                        <td class="py-3 text-center" onclick="event.stopPropagation();">
-                                            <a th:if="${e.activa}" th:href="@{'/empleados/confirmarBaja/' + ${e.id}}"
-                                                class="btn btn-sm btn-outline-danger rounded-pill px-3 shadow-sm">
-                                                <i class="bi bi-person-x me-1"></i>
-                                                <span
-                                                    th:text="${trad.getTraduccion('pacientes.btn.desactivar')}"></span>
+                                        <td class="text-center" onclick="event.stopPropagation();">
+                                            <a th:if="${e.activa}" th:href="@{'/empleados/confirmarBaja/' + ${e.id}}" class="btn btn-sm btn-outline-danger rounded-pill px-3">
+                                                <i class="bi bi-person-x me-1"></i> <span th:text="${trad.getTraduccion('pacientes.btn.desactivar')}"></span>
                                             </a>
-
-                                            <a th:unless="${e.activa}" th:href="@{'/empleados/activar/' + ${e.id}}"
-                                                onclick="event.stopPropagation();"
-                                                class="btn btn-sm btn-outline-success rounded-pill px-3 shadow-sm">
-                                                <i class="bi bi-person-check me-1"></i>
-                                                <span th:text="${trad.getTraduccion('pacientes.btn.activar')}"></span>
+                                            <a th:unless="${e.activa}" th:href="@{'/empleados/activar/' + ${e.id}}" class="btn btn-sm btn-outline-success rounded-pill px-3">
+                                                <i class="bi bi-person-check me-1"></i> <span th:text="${trad.getTraduccion('pacientes.btn.activar')}"></span>
                                             </a>
                                         </td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
-                        <div class="table-footer d-flex justify-content-between align-items-center">
+
+                        <div class="p-4 bg-white border-top d-flex justify-content-between align-items-center">
                             <div class="text-muted small">
-                                <span class="fw-bold" th:text="${(currentPage * size) + 1}">1</span>
+                                <span th:text="${trad.getTraduccion('pacientes.tabla.mostrar')}">Mostrando</span>
+                                <span class="fw-bold text-dark" th:text="${(currentPage * size) + 1}"></span>
                                 <span th:text="${trad.getTraduccion('pacientes.paginacion.a')}">a</span>
-                                <span class="fw-bold" th:text="${(currentPage * size) + empleados.size()}">10</span>
+                                <span class="fw-bold text-dark" th:text="${(currentPage * size) + empleados.size()}"></span>
                                 <span th:text="${trad.getTraduccion('pacientes.paginacion.de')}">de</span>
-                                <span class="fw-bold" th:text="${totalElements}">100</span>
+                                <span class="fw-bold text-dark" th:text="${totalElements}"></span>
                             </div>
                             <div class="d-flex align-items-center gap-4">
-                                <select id="pageSize" class="select-paginacion-clean shadow-none"
-                                    onchange="updateTable(0)">
+                                <select id="pageSize" class="select-paginacion-clean shadow-none" onchange="updateTable(0)">
                                     <option value="10" th:selected="${size == 10}">10</option>
                                     <option value="20" th:selected="${size == 20}">20</option>
                                     <option value="50" th:selected="${size == 50}">50</option>
@@ -197,23 +140,15 @@
                                 <nav th:if="${totalPages > 1}">
                                     <ul class="pagination pagination-sm mb-0">
                                         <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                                            <a class="page-link" href="javascript:void(0)"
-                                                th:onclick="'changePage(' + (${currentPage} - 1) + ')'">
-                                                <i class="bi bi-chevron-left"></i>
-                                            </a>
+                                            <a class="page-link" href="javascript:void(0)" th:onclick="'changePage(' + (${currentPage} - 1) + ')'"><i class="bi bi-chevron-left"></i></a>
                                         </li>
-                                        <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                                        <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" 
                                             th:if="${i >= currentPage - 1 and i <= currentPage + 1}"
                                             th:classappend="${i == currentPage} ? 'active'">
-                                            <a class="page-link" href="javascript:void(0)"
-                                                th:onclick="'changePage(' + ${i} + ')'" th:text="${i + 1}"></a>
+                                            <a class="page-link" href="javascript:void(0)" th:onclick="'changePage(' + ${i} + ')'" th:text="${i + 1}"></a>
                                         </li>
-                                        <li class="page-item"
-                                            th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
-                                            <a class="page-link" href="javascript:void(0)"
-                                                th:onclick="'changePage(' + (${currentPage} + 1) + ')'">
-                                                <i class="bi bi-chevron-right"></i>
-                                            </a>
+                                        <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
+                                            <a class="page-link" href="javascript:void(0)" th:onclick="'changePage(' + (${currentPage} + 1) + ')'"><i class="bi bi-chevron-right"></i></a>
                                         </li>
                                     </ul>
                                 </nav>
@@ -240,9 +175,7 @@
 
             fetch(`/empleados/search?${params.toString()}`)
                 .then(r => r.text())
-                .then(html => {
-                    container.innerHTML = html;
-                })
+                .then(html => { container.innerHTML = html; })
                 .catch(err => console.error("Error:", err));
         }
 
@@ -254,14 +187,10 @@
         }
 
         let timeout = null;
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) {
-            searchInput.addEventListener('keyup', () => {
-                clearTimeout(timeout);
-                timeout = setTimeout(() => updateTable(0), 400);
-            });
-        }
+        document.getElementById('searchInput').addEventListener('keyup', () => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => updateTable(0), 400);
+        });
     </script>
 </body>
-
 </html>
