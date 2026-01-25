@@ -116,6 +116,10 @@
                     <i class="bi bi-wallet2 me-2"></i>
                     <span th:text="${trad.getTraduccion('nominas.btn.pagar_todas')}">Pagar todas las nóminas</span>
                 </button>
+                <p id="estadoPago" class="text-success fw-bold mt-2 d-none">
+                    ✔️ Las nóminas de este mes ya han sido pagadas
+                </p>
+
             </div>
 
             <div class="card shadow-sm border-0 mb-4" style="border-radius: 15px;">
@@ -243,14 +247,25 @@
 
         document.addEventListener("DOMContentLoaded", initTableEvents);
 
-        document.getElementById("pagarTodasBtn").addEventListener("click", function () {
-            const confirmMsg = /*[[${trad.getTraduccion('nominas.confirm.pagar_todas')}]]*/ "¿Seguro que quieres generar todas las nóminas?";
-            if (!confirm(confirmMsg)) return;
-
+        function obtenerPeriodoActual() {
             const hoy = new Date();
             const mes = String(hoy.getMonth() + 1).padStart(2, '0');
             const anyo = hoy.getFullYear();
-            const periodo = `${mes}/${anyo}`;
+            return `${mes}/${anyo}`;
+        }
+
+        document.getElementById("pagarTodasBtn").addEventListener("click", function () {
+            const periodo = obtenerPeriodoActual();
+            const clavePago = `nominas_pagadas_${periodo}`;
+
+            // Si ya está pagado este mes
+            if (localStorage.getItem(clavePago)) {
+                alert("⚠️ Las nóminas de este mes ya han sido pagadas");
+                return;
+            }
+
+            const confirmMsg = /*[[${trad.getTraduccion('nominas.confirm.pagar_todas')}]]*/ "¿Seguro que quieres generar todas las nóminas?";
+            if (!confirm(confirmMsg)) return;
 
             fetch(`/nominas/descargarTodos?periodo=${encodeURIComponent(periodo)}`)
                 .then(response => {
@@ -265,9 +280,21 @@
                     document.body.appendChild(a);
                     a.click();
                     a.remove();
+
+                    // Guardamos que ya se pagó este mes
+                    localStorage.setItem(clavePago, "true");
+
+                    // Cambiamos texto y botón
+                    const btn = document.getElementById("pagarTodasBtn");
+                    btn.disabled = true;
+                    btn.innerText = "Nóminas ya pagadas";
+                    btn.classList.replace("btn-success", "btn-secondary");
+
+                    document.getElementById("estadoPago").classList.remove("d-none");
                 })
                 .catch(err => alert("❌ Error"));
         });
     </script>
+
 </body>
 </html>

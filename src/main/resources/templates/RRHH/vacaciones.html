@@ -188,7 +188,7 @@
                                                     <i class="bi bi-check-lg"></i>
                                                 </button>
                                             </form>
-                                            <form th:action="@{/RRHH/vacaciones/rechazar/{id}(id=${vaca.id})}" method="post">
+                                            <form th:action="@{/RRHH/vacaciones/gestion/rechazar/{id}(id=${vaca.id})}" method="post">
                                                 <button type="submit" class="btn btn-outline-danger btn-action-circle" th:title="${trad.getTraduccion('vacaciones.btn.rechazar')}">
                                                     <i class="bi bi-x-lg"></i>
                                                 </button>

@@ -41,7 +41,7 @@ public class RRHHController {
 
     private void cargarRoles(Model model) {
         Pageable pageable = PageRequest.of(0, 200);
-        model.addAttribute("roles", rolService.listarRoles(pageable).getContent());
+        model.addAttribute("roles", rolService.RolesConcretos());
     }
 
     private void cargarTurnos(Model model) {
@@ -103,7 +103,7 @@ public class RRHHController {
         return "empleado/detalle";
     }
 
-    @GetMapping("/vacaciones")
+    @GetMapping("/gestionvacaciones")
     public String listarVacaciones(Model model, Authentication auth) {
         List<Vacaciones> solicitudes = vacacionesService.listarTodasLasVacaciones();
         long pendientes = vacacionesService.contarPendientes();
@@ -114,5 +114,11 @@ public class RRHHController {
         Empleado empleado = empleadoService.obtenerPorUsername(auth.getName());
         model.addAttribute("empleadoLogueado", empleado);
         return "RRHH/vacaciones";
+    }
+    @GetMapping("/vacaciones")
+    public String verVacaciones(Model model) {
+        model.addAttribute("activePage", "vacaciones");
+        model.addAttribute("trad", traduccionService);
+        return "Empleado/vacaciones";
     }
 }

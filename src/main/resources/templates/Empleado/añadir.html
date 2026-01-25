@@ -15,7 +15,7 @@
 
     <main th:class="${#authorization.expression('hasRole(''ROLE_MEDICO'')')} ? 'content-medico' : 'content'">
         <div class="container-fluid py-4">
-            
+
             <div class="card shadow-sm border-0 mx-auto" style="border-radius: 15px; max-width: 1000px;">
                 <div class="card-header bg-white border-0 py-4 px-4 d-flex align-items-center">
                     <div class="bg-primary bg-opacity-10 p-3 rounded-3 me-3">
@@ -44,11 +44,17 @@
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('paciente.label.nombre')}"></label>
-                                        <input type="text" th:field="*{nombre}" class="form-control bg-light border-0 py-2 rounded-3" required>
+                                        <input type="text" th:field="*{nombre}"
+                                               class="form-control bg-light border-0 py-2 rounded-3"
+                                               required
+                                               oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')">
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('paciente.label.apellidos')}"></label>
-                                        <input type="text" th:field="*{apellidos}" class="form-control bg-light border-0 py-2 rounded-3" required>
+                                        <input type="text" th:field="*{apellidos}"
+                                               class="form-control bg-light border-0 py-2 rounded-3"
+                                               required
+                                               oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')">
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('paciente.label.dni')}"></label>
@@ -60,7 +66,11 @@
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('paciente.label.telefono')}"></label>
-                                        <input type="text" th:field="*{telefono}" class="form-control bg-light border-0 py-2 rounded-3" required>
+                                        <input type="tel" th:field="*{telefono}"
+                                               class="form-control bg-light border-0 py-2 rounded-3"
+                                               required
+                                               maxlength="9"
+                                               oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                                     </div>
                                     <div class="col-12">
                                         <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('paciente.form.email')}"></label>
@@ -82,7 +92,7 @@
                                     <div class="col-md-6">
                                         <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('nomina.label.salario_base')}"></label>
                                         <div class="input-group">
-                                            <input type="number" step="0.01" th:field="*{salarioBase}" class="form-control bg-light border-0 py-2 rounded-start-3" required>
+                                            <input type="number" step="0.01" min="0" th:field="*{salarioBase}" class="form-control bg-light border-0 py-2 rounded-start-3" required>
                                             <span class="input-group-text bg-light border-0 rounded-end-3">€</span>
                                         </div>
                                     </div>
@@ -145,6 +155,43 @@
         nombreInput.addEventListener('input', generarEmail);
         apellidosInput.addEventListener('input', generarEmail);
     </script>
+    <script>
+        const inicioInput = document.querySelector('input[name="inicio"]');
+        const finInput = document.querySelector('input[name="fin"]');
+
+        function validarHoras() {
+            const inicio = inicioInput.value;
+            const fin = finInput.value;
+
+            if (inicio && fin) {
+                if (inicio > fin) {
+                    finInput.setCustomValidity('La hora de fin no puede ser menor que la hora de inicio');
+                } else {
+                    finInput.setCustomValidity('');
+                }
+            }if (inicio && fin) {
+                if (inicio == fin) {
+                    finInput.setCustomValidity('La hora de fin no puede ser igual que la hora de inicio');
+                } else {
+                    finInput.setCustomValidity('');
+                }
+            }
+        }
+
+        inicioInput.addEventListener('change', validarHoras);
+        finInput.addEventListener('change', validarHoras);
+    </script>
+    <script>
+        const salarioInput = document.querySelector('input[name="salarioBase"]');
+
+        salarioInput.addEventListener('input', () => {
+            if (salarioInput.value < 0) {
+                salarioInput.value = '';
+                alert('El salario no puede ser negativo');
+            }
+        });
+    </script>
+
     <style>
         .hover-lift:hover { transform: translateY(-2px); }
         .transition-all { transition: all 0.2s ease; }

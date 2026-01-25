@@ -136,6 +136,13 @@
             </a>
         </li>
         <li>
+            <a th:href="@{/RRHH/gestionvacaciones}" class="nav-link"
+               th:classappend="${activePage == 'GestVacaciones'} ? 'active'">
+                <i class="bi bi-airplane-engines-fill"></i>
+                <span th:text="${trad.getTraduccion('nav.GestionVacaciones')}">Gestion de Vacaciones</span>
+            </a>
+        </li>
+        <li>
             <a th:href="@{/RRHH/vacaciones}" class="nav-link"
                th:classappend="${activePage == 'vacaciones'} ? 'active'">
                 <i class="bi bi-airplane-engines-fill"></i>
