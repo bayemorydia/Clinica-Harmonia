@@ -8,130 +8,139 @@
 </head>
 
 <body class="bg-light">
-    <div sec:authorize="hasAnyRole('ADMINISTRADOR', 'MEDICO')" th:replace="~{Reutilizable/layout :: menu}"></div>
-    <div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: menu_recepcion}"></div>
+<div sec:authorize="hasAnyRole('ADMINISTRADOR', 'MEDICO')" th:replace="~{Reutilizable/layout :: menu}"></div>
+<div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: menu_recepcion}"></div>
 
-    <main th:class="${#authorization.expression('hasRole(''RECEPCIONISTA'')')} ? 'content-recepcion' : 'content'">
-        <div class="container-fluid py-4">
-            <div th:if="${error}" class="alert alert-danger border-0 shadow-sm mb-4" th:text="${error}"></div>
+<main th:class="${#authorization.expression('hasRole(''RECEPCIONISTA'')')} ? 'content-recepcion' : 'content'">
+    <div class="container-fluid py-4">
+        <div th:if="${error}" class="alert alert-danger border-0 shadow-sm mb-4" th:text="${error}"></div>
 
-            <form th:action="@{/pacientes/guardar}" th:object="${paciente}" method="post" enctype="multipart/form-data">
-                <input type="hidden" th:field="*{id}" />
+        <form th:action="@{/pacientes/guardar}" th:object="${paciente}" method="post" enctype="multipart/form-data">
+            <input type="hidden" th:field="*{id}" />
 
-                <div class="row g-4 justify-content-center">
-                    <div class="col-lg-12">
-                        <div class="card shadow-sm border-0" style="border-radius: 15px;">
-                            
-                            <div class="card-header bg-white border-0 py-4 px-4 d-flex align-items-center">
-                                <div class="bg-primary bg-opacity-10 p-3 rounded-3 me-3">
-                                    <i class="bi bi-person-plus text-primary fs-3"></i>
-                                </div>
-                                <div>
-                                    <h4 class="fw-bold mb-0 text-dark"
-                                        th:text="${paciente.id == null ? trad.getTraduccion('paciente.form.titulo.nuevo') : trad.getTraduccion('paciente.form.titulo.editar')}">
-                                    </h4>
-                                    <p class="text-muted small mb-0" th:text="${trad.getTraduccion('pacientes.lista.subtitulo')}"></p>
-                                </div>
+            <div class="row g-4 justify-content-center">
+                <div class="col-lg-12">
+                    <div class="card shadow-sm border-0" style="border-radius: 15px;">
+
+                        <div class="card-header bg-white border-0 py-4 px-4 d-flex align-items-center">
+                            <div class="bg-primary bg-opacity-10 p-3 rounded-3 me-3">
+                                <i class="bi bi-person-plus text-primary fs-3"></i>
                             </div>
-
-                            <div class="card-body p-4">
-                                <div class="row mb-4">
-                                    <div class="col-xl-3 col-lg-4">
-                                        <h6 class="fw-bold text-primary text-uppercase small" th:text="${trad.getTraduccion('paciente.form.sec.foto')}">Imagen de Perfil</h6>
-                                        <p class="text-muted small" th:text="${trad.getTraduccion('paciente.form.sec.foto.desc')}">Suba una fotografía reciente del paciente para su ficha clínica.</p>
-                                    </div>
-                                    <div class="col-xl-9 col-lg-8">
-                                        <div class="d-flex align-items-center gap-4 p-3 bg-light rounded-3">
-                                            <img id="preview" th:src="${paciente.rutaFoto != null && paciente.rutaFoto != ''} ? @{'/images/' + ${paciente.rutaFoto}} : @{/images/default-user.png}" 
-                                                 class="rounded-circle border border-2 border-white shadow-sm"
-                                                 style="width: 80px; height: 80px; object-fit: cover;">
-                                            <div class="flex-grow-1">
-                                                <input type="file" name="file" class="form-control form-control-sm border-0" accept="image/*" onchange="previewImage(event)">
-                                                <small class="text-muted mt-1 d-block" th:text="${trad.getTraduccion('paciente.form.foto.ayuda')}"></small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <hr class="my-4 opacity-25">
-
-                                <div class="row">
-                                    <div class="col-xl-3 col-lg-4">
-                                        <h6 class="fw-bold text-primary text-uppercase small" th:text="${trad.getTraduccion('paciente.form.sec.info')}">Información Personal</h6>
-                                        <p class="text-muted small" th:text="${trad.getTraduccion('paciente.form.sec.info.desc')}">Datos de identificación y contacto legal.</p>
-                                    </div>
-                                    <div class="col-xl-9 col-lg-8">
-                                        <div class="row g-3">
-                                            <div class="col-md-6">
-                                                <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('paciente.form.nombre')}"></label>
-                                                <input type="text" th:field="*{nombre}" class="form-control bg-light border-0 py-2" th:errorclass="is-invalid" required>
-                                                <div class="invalid-feedback small" th:errors="*{nombre}"></div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('paciente.form.apellidos')}"></label>
-                                                <input type="text" th:field="*{apellidos}" class="form-control bg-light border-0 py-2" th:errorclass="is-invalid" required>
-                                                <div class="invalid-feedback small" th:errors="*{apellidos}"></div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('paciente.form.dni')}"></label>
-                                                <input type="text" th:field="*{dni}" class="form-control bg-light border-0 py-2 font-monospace" th:errorclass="is-invalid" placeholder="12345678Z" required>
-                                                <div class="invalid-feedback small" th:errors="*{dni}"></div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('paciente.form.nacimiento')}"></label>
-                                                <input type="date" th:field="*{fechaNacimiento}" id="fechaNacimientoInput" class="form-control bg-light border-0 py-2" th:errorclass="is-invalid" required>
-                                                <div class="invalid-feedback small" th:errors="*{fechaNacimiento}"></div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('paciente.form.telefono')}"></label>
-                                                <input type="tel" th:field="*{telefono}" class="form-control bg-light border-0 py-2" th:errorclass="is-invalid" placeholder="600000000">
-                                                <div class="invalid-feedback small" th:errors="*{telefono}"></div>
-                                            </div>
-                                            <div class="col-md-12">
-                                                <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('paciente.form.email')}"></label>
-                                                <input type="email" th:field="*{email}" class="form-control bg-light border-0 py-2" th:errorclass="is-invalid" placeholder="paciente@ejemplo.com">
-                                                <div class="invalid-feedback small" th:errors="*{email}"></div>
-                                            </div>
-                                            <div class="col-md-12">
-                                                <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('paciente.form.direccion')}"></label>
-                                                <input type="text" th:field="*{direccion}" class="form-control bg-light border-0 py-2" th:errorclass="is-invalid">
-                                                <div class="invalid-feedback small" th:errors="*{direccion}"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div>
+                                <h4 class="fw-bold mb-0 text-dark"
+                                    th:text="${paciente.id == null ? trad.getTraduccion('paciente.form.titulo.nuevo') : trad.getTraduccion('paciente.form.titulo.editar')}">
+                                </h4>
+                                <p class="text-muted small mb-0" th:text="${trad.getTraduccion('pacientes.lista.subtitulo')}"></p>
                             </div>
-
-                            <div class="card-footer bg-white border-0 p-4 d-flex justify-content-end gap-2">
-                                <a th:href="@{/pacientes}" class="btn btn-light rounded-pill px-4"
-                                    th:text="${trad.getTraduccion('btn.cancelar')}"></a>
-                                <button type="submit" class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm">
-                                    <i class="bi bi-save me-2"></i>
-                                    <span th:text="${trad.getTraduccion('btn.guardar')}"></span>
-                                </button>
-                            </div>
-
                         </div>
+
+                        <div class="card-body p-4">
+                            <div class="row mb-4">
+                                <div class="col-xl-3 col-lg-4">
+                                    <h6 class="fw-bold text-primary text-uppercase small" th:text="${trad.getTraduccion('paciente.form.sec.foto')}">Imagen de Perfil</h6>
+                                    <p class="text-muted small" th:text="${trad.getTraduccion('paciente.form.sec.foto.desc')}">Suba una fotografía reciente del paciente para su ficha clínica.</p>
+                                </div>
+                                <div class="col-xl-9 col-lg-8">
+                                    <div class="d-flex align-items-center gap-4 p-3 bg-light rounded-3">
+                                        <img id="preview" th:src="${paciente.rutaFoto != null && paciente.rutaFoto != ''} ? @{'/images/' + ${paciente.rutaFoto}} : @{/images/default-user.png}"
+                                             class="rounded-circle border border-2 border-white shadow-sm"
+                                             style="width: 80px; height: 80px; object-fit: cover;">
+                                        <div class="flex-grow-1">
+                                            <input type="file" name="file" class="form-control form-control-sm border-0" accept="image/*" onchange="previewImage(event)">
+                                            <small class="text-muted mt-1 d-block" th:text="${trad.getTraduccion('paciente.form.foto.ayuda')}"></small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr class="my-4 opacity-25">
+
+                            <div class="row">
+                                <div class="col-xl-3 col-lg-4">
+                                    <h6 class="fw-bold text-primary text-uppercase small" th:text="${trad.getTraduccion('paciente.form.sec.info')}">Información Personal</h6>
+                                    <p class="text-muted small" th:text="${trad.getTraduccion('paciente.form.sec.info.desc')}">Datos de identificación y contacto legal.</p>
+                                </div>
+                                <div class="col-xl-9 col-lg-8">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('paciente.form.nombre')}"></label>
+                                            <input type="text" th:field="*{nombre}" class="form-control bg-light border-0 py-2" th:errorclass="is-invalid" required
+                                                   oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')">
+                                            <div class="invalid-feedback small" th:errors="*{nombre}"></div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('paciente.form.apellidos')}"></label>
+                                            <input type="text" th:field="*{apellidos}" class="form-control bg-light border-0 py-2" th:errorclass="is-invalid" required
+                                                   oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')">
+                                            <div class="invalid-feedback small" th:errors="*{apellidos}"></div>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('paciente.form.dni')}"></label>
+                                            <input type="text" th:field="*{dni}" class="form-control bg-light border-0 py-2 font-monospace" th:errorclass="is-invalid" placeholder="12345678Z" required
+                                                   oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '')">
+                                            <div class="invalid-feedback small" th:errors="*{dni}"></div>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('paciente.form.nacimiento')}"></label>
+                                            <input type="date" th:field="*{fechaNacimiento}" id="fechaNacimientoInput" class="form-control bg-light border-0 py-2" th:errorclass="is-invalid" required>
+                                            <div class="invalid-feedback small" th:errors="*{fechaNacimiento}"></div>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('paciente.form.telefono')}"></label>
+                                            <input type="tel" th:field="*{telefono}" class="form-control bg-light border-0 py-2" th:errorclass="is-invalid" placeholder="600000000"
+                                                   oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                            <div class="invalid-feedback small" th:errors="*{telefono}"></div>
+                                        </div>
+
+                                        <div class="col-md-12">
+                                            <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('paciente.form.email')}"></label>
+                                            <input type="email" th:field="*{email}" class="form-control bg-light border-0 py-2" th:errorclass="is-invalid" placeholder="paciente@ejemplo.com">
+                                            <div class="invalid-feedback small" th:errors="*{email}"></div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('paciente.form.direccion')}"></label>
+                                            <input type="text" th:field="*{direccion}" class="form-control bg-light border-0 py-2" th:errorclass="is-invalid">
+                                            <div class="invalid-feedback small" th:errors="*{direccion}"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-footer bg-white border-0 p-4 d-flex justify-content-end gap-2">
+                            <a th:href="@{/pacientes}" class="btn btn-light rounded-pill px-4"
+                               th:text="${trad.getTraduccion('btn.cancelar')}"></a>
+                            <button type="submit" class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm">
+                                <i class="bi bi-save me-2"></i>
+                                <span th:text="${trad.getTraduccion('btn.guardar')}"></span>
+                            </button>
+                        </div>
+
                     </div>
                 </div>
-            </form>
-        </div>
-    </main>
+            </div>
+        </form>
+    </div>
+</main>
 
-    <div th:replace="~{Reutilizable/layout :: scripts}"></div>
+<div th:replace="~{Reutilizable/layout :: scripts}"></div>
 
-    <script>
-        function previewImage(event) {
-            const reader = new FileReader();
-            reader.onload = () => document.getElementById('preview').src = reader.result;
-            if (event.target.files[0]) reader.readAsDataURL(event.target.files[0]);
-        }
-        
-        document.addEventListener("DOMContentLoaded", function () {
-            const hoy = new Date().toISOString().split('T')[0];
-            const inputFecha = document.getElementById('fechaNacimientoInput');
-            if (inputFecha) inputFecha.setAttribute('max', hoy);
-        });
-    </script>
+<script>
+    function previewImage(event) {
+        const reader = new FileReader();
+        reader.onload = () => document.getElementById('preview').src = reader.result;
+        if (event.target.files[0]) reader.readAsDataURL(event.target.files[0]);
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const hoy = new Date().toISOString().split('T')[0];
+        const inputFecha = document.getElementById('fechaNacimientoInput');
+        if (inputFecha) inputFecha.setAttribute('max', hoy);
+    });
+</script>
 </body>
 </html>
