@@ -40,7 +40,7 @@ public class RRHHController {
 
     private void cargarRoles(Model model) {
         Pageable pageable = PageRequest.of(0, 200);
-        model.addAttribute("roles", rolService.listarRoles(pageable).getContent());
+        model.addAttribute("roles", rolService.RolesConcretos());
     }
 
     private void cargarTurnos(Model model) {
@@ -108,7 +108,7 @@ public class RRHHController {
         return "empleado/detalle";
     }
 
-    @GetMapping("/vacaciones")
+    @GetMapping("/gestionvacaciones")
     public String listarVacaciones(Model model, Authentication auth) {
         // La lógica ya estaba en el servicio, solo la invocamos
         model.addAttribute("pendientes", vacacionesService.contarPendientes());
