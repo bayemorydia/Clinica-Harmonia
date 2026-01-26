@@ -8,150 +8,160 @@
 </head>
 
 <body class="bg-light">
-    <div sec:authorize="hasAnyRole('ADMINISTRADOR', 'MEDICO')" th:replace="~{Reutilizable/layout :: menu}"></div>
-    <div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: menu_recepcion}"></div>
+<div sec:authorize="hasAnyRole('ADMINISTRADOR', 'MEDICO')" th:replace="~{Reutilizable/layout :: menu}"></div>
+<div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: menu_recepcion}"></div>
 
-    <main th:class="${#authorization.expression('hasRole(''RECEPCIONISTA'')')} ? 'content-recepcion' : 'content'">
-        <div class="container-fluid py-4">
-            
-            <div class="mx-auto" style="max-width: 1100px;">
-                <div th:if="${param.success}" class="alert alert-success border-0 shadow-sm small py-2 mb-3">
-                    <i class="bi bi-check-circle-fill me-2"></i> 
-                    <span th:text="${trad.getTraduccion('paciente.alerta.guardar')}">Guardado</span>
-                </div>
-                <div th:if="${error}" class="alert alert-danger border-0 shadow-sm small py-2 mb-3">
-                    <i class="bi bi-exclamation-triangle-fill me-2"></i> 
-                    <span th:text="${error}">Error</span>
-                </div>
+<main th:class="${#authorization.expression('hasRole(''RECEPCIONISTA'')')} ? 'content-recepcion' : 'content'">
+    <div class="container-fluid py-4">
+
+        <div class="mx-auto" style="max-width: 1100px;">
+            <div th:if="${param.success}" class="alert alert-success border-0 shadow-sm small py-2 mb-3">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <span th:text="${trad.getTraduccion('paciente.alerta.guardar')}">Guardado</span>
             </div>
+            <div th:if="${error}" class="alert alert-danger border-0 shadow-sm small py-2 mb-3">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <span th:text="${error}">Error</span>
+            </div>
+        </div>
 
-            <div class="card shadow-sm border-0 mx-auto" style="border-radius: 15px; max-width: 1100px;">
-                <div class="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
-                    <div class="d-flex align-items-center">
-                        <div class="bg-primary bg-opacity-10 p-3 rounded-3 me-3">
-                            <i class="bi bi-person-vcard text-primary fs-3"></i>
-                        </div>
-                        <div>
-                            <h4 class="fw-bold mb-0 text-dark" th:text="${trad.getTraduccion('paciente.seccion.personales')}">Ficha del Paciente</h4>
-                            <p class="text-muted small mb-0" th:text="${trad.getTraduccion('paciente.detalle.subtitulo')}">Gestión y consulta de información clínica.</p>
-                        </div>
+        <div class="card shadow-sm border-0 mx-auto" style="border-radius: 15px; max-width: 1100px;">
+            <div class="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <div class="bg-primary bg-opacity-10 p-3 rounded-3 me-3">
+                        <i class="bi bi-person-vcard text-primary fs-3"></i>
                     </div>
-                    
-                    <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary py-2 px-3 fw-bold">
+                    <div>
+                        <h4 class="fw-bold mb-0 text-dark" th:text="${trad.getTraduccion('paciente.seccion.personales')}">Ficha del Paciente</h4>
+                        <p class="text-muted small mb-0" th:text="${trad.getTraduccion('paciente.detalle.subtitulo')}">Gestión y consulta de información clínica.</p>
+                    </div>
+                </div>
+
+                <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary py-2 px-3 fw-bold">
                         <i class="bi bi-calendar-check me-1"></i>
                         <span th:text="${edad}"></span>
                     </span>
-                </div>
+            </div>
 
-                <div class="card-body p-4">
-                    <div class="row mb-4">
-                        <div class="col-xl-3 col-lg-4">
-                            <h6 class="fw-bold text-primary text-uppercase small" th:text="${trad.getTraduccion('paciente.form.sec.foto')}">Imagen de Perfil</h6>
-                            <p class="text-muted small" th:text="${trad.getTraduccion('paciente.form.sec.foto.desc')}">Haga clic en la cámara para actualizar la foto.</p>
-                        </div>
-                        <div class="col-xl-9 col-lg-8">
-                            <div class="d-flex align-items-center gap-4 p-3 bg-light rounded-3">
-                                <form th:action="@{/pacientes/actualizar-foto}" method="post" enctype="multipart/form-data" id="formFoto" class="position-relative">
-                                    <input type="hidden" name="id" th:value="${paciente.id}" />
-                                    <img id="preview" th:src="${paciente.rutaFoto != null && paciente.rutaFoto != ''} ? @{'/images/' + ${paciente.rutaFoto}} : @{'/images/default-user.png'}" 
-                                         class="rounded-circle border border-2 border-white shadow-sm" style="width: 100px; height: 100px; object-fit: cover;">
-                                    
-                                    <label for="fileInput" class="btn btn-sm btn-primary rounded-circle position-absolute bottom-0 end-0 shadow" 
-                                           style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid white;">
-                                        <i class="bi bi-camera-fill"></i>
-                                    </label>
-                                    <input type="file" name="file" id="fileInput" hidden accept="image/*" onchange="submitFoto(event)">
-                                </form>
-                                <div>
-                                    <div th:class="${paciente.activo} ? 'badge rounded-pill bg-success-soft text-success px-3' : 'badge rounded-pill bg-danger-soft text-danger px-3'" 
-                                         th:text="${paciente.activo} ? ${trad.getTraduccion('pacientes.estado.activo')} : ${trad.getTraduccion('pacientes.estado.inactivo')}">
-                                    </div>
-                                    <p class="text-dark small mt-2 mb-0 fw-bold">
-                                        <i class="bi bi-person-circle me-1 text-primary"></i>
-                                        <span th:text="${trad.getTraduccion('paciente.label.usuario_asignado')}">Usuario:</span>
-                                        <span class="text-muted fw-normal" th:text="${paciente.usuario != null ? paciente.usuario.username : 'N/A'}"></span>
-                                    </p>
+            <div class="card-body p-4">
+                <div class="row mb-4">
+                    <div class="col-xl-3 col-lg-4">
+                        <h6 class="fw-bold text-primary text-uppercase small" th:text="${trad.getTraduccion('paciente.form.sec.foto')}">Imagen de Perfil</h6>
+                        <p class="text-muted small" th:text="${trad.getTraduccion('paciente.form.sec.foto.desc')}">Haga clic en la cámara para actualizar la foto.</p>
+                    </div>
+                    <div class="col-xl-9 col-lg-8">
+                        <div class="d-flex align-items-center gap-4 p-3 bg-light rounded-3">
+                            <form th:action="@{/pacientes/actualizar-foto}" method="post" enctype="multipart/form-data" id="formFoto" class="position-relative">
+                                <input type="hidden" name="id" th:value="${paciente.id}" />
+                                <img id="preview" th:src="${paciente.rutaFoto != null && paciente.rutaFoto != ''} ? @{'/images/' + ${paciente.rutaFoto}} : @{'/images/default-user.png'}"
+                                     class="rounded-circle border border-2 border-white shadow-sm" style="width: 100px; height: 100px; object-fit: cover;">
+
+                                <label for="fileInput" class="btn btn-sm btn-primary rounded-circle position-absolute bottom-0 end-0 shadow"
+                                       style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid white;">
+                                    <i class="bi bi-camera-fill"></i>
+                                </label>
+                                <input type="file" name="file" id="fileInput" hidden accept="image/*" onchange="submitFoto(event)">
+                            </form>
+                            <div>
+                                <div th:class="${paciente.activo} ? 'badge rounded-pill bg-success-soft text-success px-3' : 'badge rounded-pill bg-danger-soft text-danger px-3'"
+                                     th:text="${paciente.activo} ? ${trad.getTraduccion('pacientes.estado.activo')} : ${trad.getTraduccion('pacientes.estado.inactivo')}">
                                 </div>
+                                <p class="text-dark small mt-2 mb-0 fw-bold">
+                                    <i class="bi bi-person-circle me-1 text-primary"></i>
+                                    <span th:text="${trad.getTraduccion('paciente.label.usuario_asignado')}">Usuario:</span>
+                                    <span class="text-muted fw-normal" th:text="${paciente.usuario != null ? paciente.usuario.username : 'N/A'}"></span>
+                                </p>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <hr class="my-4 opacity-25">
+                <hr class="my-4 opacity-25">
 
-                    <div class="row">
-                        <div class="col-xl-3 col-lg-4">
-                            <h6 class="fw-bold text-primary text-uppercase small" th:text="${trad.getTraduccion('paciente.form.sec.info')}">Datos Identificativos</h6>
-                            <p class="text-muted small" th:text="${trad.getTraduccion('paciente.form.sec.info.desc')}">Información de contacto y residencia.</p>
-                        </div>
-                        <div class="col-xl-9 col-lg-8">
-                            <form th:action="@{/pacientes/guardar}" th:object="${paciente}" method="post">
-                                <input type="hidden" th:field="*{id}" />
-                                <input type="hidden" th:field="*{fechaAlta}" />
-                                <input type="hidden" th:field="*{activo}" />
-                                <input type="hidden" th:field="*{rutaFoto}" />
-                                <input type="hidden" name="origen" value="detalle" />
+                <div class="row">
+                    <div class="col-xl-3 col-lg-4">
+                        <h6 class="fw-bold text-primary text-uppercase small" th:text="${trad.getTraduccion('paciente.form.sec.info')}">Datos Identificativos</h6>
+                        <p class="text-muted small" th:text="${trad.getTraduccion('paciente.form.sec.info.desc')}">Información de contacto y residencia.</p>
+                    </div>
+                    <div class="col-xl-9 col-lg-8">
+                        <form th:action="@{/pacientes/guardar}" th:object="${paciente}" method="post">
+                            <input type="hidden" th:field="*{id}" />
+                            <input type="hidden" th:field="*{fechaAlta}" />
+                            <input type="hidden" th:field="*{activo}" />
+                            <input type="hidden" th:field="*{rutaFoto}" />
+                            <input type="hidden" name="origen" value="detalle" />
 
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('paciente.label.nombre')}"></label>
-                                        <input type="text" th:field="*{nombre}" class="form-control bg-light border-0 py-2" required>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('paciente.label.apellidos')}"></label>
-                                        <input type="text" th:field="*{apellidos}" class="form-control bg-light border-0 py-2" required>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('paciente.label.dni')}"></label>
-                                        <input type="text" th:field="*{dni}" class="form-control bg-secondary bg-opacity-10 border-0 py-2 font-monospace" readonly title="DNI no editable">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('paciente.form.nacimiento')}"></label>
-                                        <input type="date" th:field="*{fechaNacimiento}" id="fechaNacimientoInput" class="form-control bg-light border-0 py-2" required>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('paciente.label.telefono')}"></label>
-                                        <input type="tel" th:field="*{telefono}" class="form-control bg-light border-0 py-2" required>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('paciente.form.email')}"></label>
-                                        <input type="email" th:field="*{email}" class="form-control bg-light border-0 py-2">
-                                    </div>
-                                    <div class="col-md-12">
-                                        <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('paciente.form.direccion')}"></label>
-                                        <input type="text" th:field="*{direccion}" class="form-control bg-light border-0 py-2" required>
-                                    </div>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('paciente.label.nombre')}"></label>
+                                    <input type="text" th:field="*{nombre}" class="form-control bg-light border-0 py-2" required
+                                           oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')">
                                 </div>
 
-                                <div class="mt-5 pt-3 border-top d-flex justify-content-between">
-                                    <a th:href="@{/pacientes}" class="btn btn-light rounded-pill px-4 fw-bold">
-                                        <i class="bi bi-arrow-left me-2"></i> <span th:text="${trad.getTraduccion('btn.volver')}"></span>
-                                    </a>
-                                    <button type="submit" class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm">
-                                        <i class="bi bi-save me-2"></i> <span th:text="${trad.getTraduccion('btn.guardarCambios')}"></span>
-                                    </button>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('paciente.label.apellidos')}"></label>
+                                    <input type="text" th:field="*{apellidos}" class="form-control bg-light border-0 py-2" required
+                                           oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')">
                                 </div>
-                            </form>
-                        </div>
+
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('paciente.label.dni')}"></label>
+                                    <input type="text" th:field="*{dni}" class="form-control bg-secondary bg-opacity-10 border-0 py-2 font-monospace"
+                                           readonly title="DNI no editable"
+                                           oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '')">
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('paciente.form.nacimiento')}"></label>
+                                    <input type="date" th:field="*{fechaNacimiento}" id="fechaNacimientoInput" class="form-control bg-light border-0 py-2" required>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('paciente.label.telefono')}"></label>
+                                    <input type="tel" th:field="*{telefono}" class="form-control bg-light border-0 py-2" required
+                                           oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                </div>
+
+                                <div class="col-md-12">
+                                    <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('paciente.form.email')}"></label>
+                                    <input type="email" th:field="*{email}" class="form-control bg-light border-0 py-2">
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('paciente.form.direccion')}"></label>
+                                    <input type="text" th:field="*{direccion}" class="form-control bg-light border-0 py-2" required>
+                                </div>
+                            </div>
+
+                            <div class="mt-5 pt-3 border-top d-flex justify-content-between">
+                                <a th:href="@{/pacientes}" class="btn btn-light rounded-pill px-4 fw-bold">
+                                    <i class="bi bi-arrow-left me-2"></i> <span th:text="${trad.getTraduccion('btn.volver')}"></span>
+                                </a>
+                                <button type="submit" class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm">
+                                    <i class="bi bi-save me-2"></i> <span th:text="${trad.getTraduccion('btn.guardarCambios')}"></span>
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
-    </main>
+    </div>
+</main>
 
-    <script th:inline="javascript">
-        function submitFoto(event) {
-            const file = event.target.files[0];
-            if (file) {
-                document.getElementById('formFoto').submit();
-            }
+<script th:inline="javascript">
+    function submitFoto(event) {
+        const file = event.target.files[0];
+        if (file) {
+            document.getElementById('formFoto').submit();
         }
+    }
 
-        document.addEventListener("DOMContentLoaded", function () {
-            const hoy = new Date().toISOString().split('T')[0];
-            const inputFecha = document.getElementById('fechaNacimientoInput');
-            if (inputFecha) inputFecha.setAttribute('max', hoy);
-        });
-    </script>
-    <div th:replace="~{Reutilizable/layout :: scripts}"></div>
+    document.addEventListener("DOMContentLoaded", function () {
+        const hoy = new Date().toISOString().split('T')[0];
+        const inputFecha = document.getElementById('fechaNacimientoInput');
+        if (inputFecha) inputFecha.setAttribute('max', hoy);
+    });
+</script>
+<div th:replace="~{Reutilizable/layout :: scripts}"></div>
 </body>
 </html>
