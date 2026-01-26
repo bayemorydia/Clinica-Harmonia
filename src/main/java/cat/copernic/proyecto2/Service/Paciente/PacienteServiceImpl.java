@@ -3,8 +3,6 @@ package cat.copernic.proyecto2.Service.Paciente;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,7 +16,8 @@ import cat.copernic.proyecto2.Domain.Recepción.Paciente;
 import cat.copernic.proyecto2.Service.Imagen.ImagenService;
 import cat.copernic.proyecto2.Service.Validaciones.ValidacionesService;
 import cat.copernic.proyecto2.Service.Usuario.UsuarioService;
-import jakarta.transaction.Transactional;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PacienteServiceImpl implements PacienteService {
@@ -47,12 +46,13 @@ public class PacienteServiceImpl implements PacienteService {
             pacienteForm.setDni(pacienteForm.getDni().toUpperCase().trim());
         }
 
-        // --- CASO 1: NUEVO PACIENTE ---
         if (pacienteForm.getId() == null || pacienteForm.getId() == 0) {
-            // Validar DNI duplicado
-            validacionesService.validarDocumentoIdentidad(pacienteForm.getDni());
+            // Lógica de Nuevo Paciente
+            if (validacionesService != null) {
+                validacionesService.validarDocumentoIdentidad(pacienteForm.getDni());
+            }
             if (pacienteDAO.existsByDni(pacienteForm.getDni())) {
-                throw new RuntimeException("DNI_DUPLICADO"); // El controller manejará este mensaje
+                throw new RuntimeException("DNI_DUPLICADO");
             }
 
             pacienteForm.setFechaAlta(LocalDate.now());
@@ -66,9 +66,8 @@ public class PacienteServiceImpl implements PacienteService {
             pacienteForm.setRutaFoto(nombreImagen);
 
             pacienteDAO.save(pacienteForm);
-
-            // --- CASO 2: EDICIÓN ---
         } else {
+            // Lógica de Edición
             Paciente pacienteBD = pacienteDAO.findById(pacienteForm.getId())
                     .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
 
@@ -81,21 +80,27 @@ public class PacienteServiceImpl implements PacienteService {
             pacienteBD.setActivo(pacienteForm.isActivo());
 
             if (file != null && !file.isEmpty()) {
-                if (pacienteBD.getRutaFoto() != null && !pacienteBD.getRutaFoto().equals("default-user.png")) {
-                    imagenService.eliminarImagen(pacienteBD.getRutaFoto(), "Paciente");
-                }
-                pacienteBD.setRutaFoto(imagenService.guardarImagen(file, "Paciente"));
+                gestionarCambioImagen(pacienteBD, file);
             }
             pacienteDAO.save(pacienteBD);
         }
     }
 
-    private void validarDuplicados(Paciente paciente) {
-        if (paciente.getId() == null || paciente.getId() == 0) {
-            if (pacienteDAO.existsByDni(paciente.getDni())) {
-                throw new RuntimeException("El DNI/NIE ya está registrado en el sistema");
-            }
+    @Override
+    @Transactional
+    public void actualizarFotoDetalle(Long id, MultipartFile file) {
+        Paciente paciente = findPacienteById(id);
+        if (paciente != null && file != null && !file.isEmpty()) {
+            gestionarCambioImagen(paciente, file);
+            pacienteDAO.save(paciente);
         }
+    }
+
+    private void gestionarCambioImagen(Paciente paciente, MultipartFile file) {
+        if (paciente.getRutaFoto() != null && !paciente.getRutaFoto().equals("default-user.png")) {
+            imagenService.eliminarImagen(paciente.getRutaFoto(), "Paciente");
+        }
+        paciente.setRutaFoto(imagenService.guardarImagen(file, "Paciente"));
     }
 
     @Override
@@ -105,7 +110,8 @@ public class PacienteServiceImpl implements PacienteService {
 
     @Override
     public Paciente encontrarPorDni(String dni) {
-        return pacienteDAO.findByDni(dni);
+        return pacienteDAO.findByDni(dni)
+                .orElseThrow(() -> new EntityNotFoundException("Paciente no encontrado con DNI: " + dni));
     }
 
     @Override
@@ -138,20 +144,29 @@ public class PacienteServiceImpl implements PacienteService {
 
     @Override
     public boolean existeDni(String dni, Long idActual) {
-        Paciente encontrado = pacienteDAO.findByDni(dni);
-        if (encontrado == null)
-            return false;
-        return idActual == null || !encontrado.getId().equals(idActual);
+        return pacienteDAO.findByDni(dni)
+                .map(encontrado -> idActual == null || !encontrado.getId().equals(idActual))
+                .orElse(false);
     }
 
     @Override
     public Paciente buscarPorUsername(String username) {
         return pacienteDAO.findByUsuarioUsername(username).orElse(null);
     }
+
     @Override
+    @Transactional
     public void activarPaciente(Long id) {
-      Paciente  paciente=findPacienteById(id);
-        paciente.setActivo(true);
-        pacienteDAO.save(paciente);
+        Paciente paciente = findPacienteById(id);
+        if (paciente != null) {
+            paciente.setActivo(true);
+            pacienteDAO.save(paciente);
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public long obtenerTotalPacientes() {
+        return pacienteDAO.count();
     }
 }

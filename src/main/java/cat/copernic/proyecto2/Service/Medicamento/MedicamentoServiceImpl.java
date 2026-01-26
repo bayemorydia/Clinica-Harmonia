@@ -21,6 +21,13 @@ public class MedicamentoServiceImpl implements MedicamentoService {
     }
 
     @Override
+    public Medicamento crearNuevo() {
+        Medicamento m = new Medicamento();
+        m.setActivo(true); // Valor por defecto de negocio
+        return m;
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public Page<Medicamento> getMedicamentosPaginados(String query, Boolean activo, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("nombre").ascending());
@@ -30,14 +37,12 @@ public class MedicamentoServiceImpl implements MedicamentoService {
     @Override
     @Transactional
     public void guardar(Medicamento medicamento) {
-        // Validamos duplicidad de código
+        // Lógica de negocio: Validación de duplicidad
         if (medicamento.getId() == null) {
-            // Caso nuevo: simplemente vemos si existe
             if (existePorCodigo(medicamento.getCodigo())) {
                 throw new RuntimeException("CODIGO_DUPLICADO");
             }
         } else {
-            // Caso edición: vemos si existe en OTRO registro que no sea este ID
             if (existePorCodigoYIdNo(medicamento.getCodigo(), medicamento.getId())) {
                 throw new RuntimeException("CODIGO_DUPLICADO");
             }
@@ -85,7 +90,6 @@ public class MedicamentoServiceImpl implements MedicamentoService {
     @Transactional(readOnly = true)
     public boolean existePorCodigoYIdNo(String codigo, Long id) {
         Medicamento m = medicamentoDAO.findByCodigo(codigo);
-        // Si existe un medicamento con ese código y NO es el que estamos editando
         return m != null && !m.getId().equals(id);
     }
 }

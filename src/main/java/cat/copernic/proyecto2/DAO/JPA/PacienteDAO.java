@@ -26,7 +26,7 @@ public interface PacienteDAO extends JpaRepository<Paciente, Long> {
 
        // --- NUEVO: ESTE ES EL QUE TE FALTABA PARA QUE FUNCIONE EL SERVICE ---
        // Devuelve el objeto Paciente entero buscando por DNI
-       Paciente findByDni(String dni);
+       Optional<Paciente> findByDni(String dni);
 
        // --- Consultas de Activos ---
        List<Paciente> findByActivoTrue();

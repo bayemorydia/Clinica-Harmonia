@@ -9,7 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/diagnosticos")
@@ -28,7 +27,9 @@ public class DiagnosticoController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             Model model) {
+        
         Page<Diagnostico> pagina = diagnosticoService.getDiagnosticosPaginados(keyword, activo, page, size);
+        
         model.addAttribute("listaDiagnosticos", pagina.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", pagina.getTotalPages());
@@ -47,7 +48,9 @@ public class DiagnosticoController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             Model model) {
+        
         Page<Diagnostico> paginaDiagnosticos = diagnosticoService.getDiagnosticosPaginados(keyword, activo, page, size);
+        
         model.addAttribute("listaDiagnosticos", paginaDiagnosticos.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", paginaDiagnosticos.getTotalPages());
@@ -61,7 +64,7 @@ public class DiagnosticoController {
 
     @GetMapping("/nuevo")
     public String mostrarFormulario(Model model) {
-        model.addAttribute("diagnostico", new Diagnostico());
+        model.addAttribute("diagnostico", diagnosticoService.crearNuevoDiagnostico());
         model.addAttribute("trad", trad);
         return "Diagnostico/formDiagnostico";
     }
@@ -82,38 +85,38 @@ public class DiagnosticoController {
 
     @GetMapping("/detalle/{id}")
     public String verDetalle(@PathVariable Long id, Model model, RedirectAttributes attribute) {
-        Optional<Diagnostico> diagnostico = diagnosticoService.buscarPorId(id);
-        if (diagnostico.isPresent()) {
-            model.addAttribute("diagnostico", diagnostico.get());
+        try {
+            model.addAttribute("diagnostico", diagnosticoService.obtenerPorIdOCrash(id));
             model.addAttribute("trad", trad);
             return "Diagnostico/detalleDiagnostico";
+        } catch (Exception e) {
+            attribute.addFlashAttribute("error", e.getMessage());
+            return "redirect:/diagnosticos";
         }
-        attribute.addFlashAttribute("error", "Diagnóstico no encontrado.");
-        return "redirect:/diagnosticos";
     }
 
     @GetMapping("/editar/{id}")
     public String editar(@PathVariable Long id, Model model, RedirectAttributes attribute) {
-        Optional<Diagnostico> diagnostico = diagnosticoService.buscarPorId(id);
-        if (diagnostico.isPresent()) {
-            model.addAttribute("diagnostico", diagnostico.get());
+        try {
+            model.addAttribute("diagnostico", diagnosticoService.obtenerPorIdOCrash(id));
             model.addAttribute("trad", trad);
             return "Diagnostico/formDiagnostico";
+        } catch (Exception e) {
+            attribute.addFlashAttribute("error", e.getMessage());
+            return "redirect:/diagnosticos";
         }
-        attribute.addFlashAttribute("error", "Diagnóstico no encontrado.");
-        return "redirect:/diagnosticos";
     }
 
     @GetMapping("/confirmarDesactivar/{id}")
     public String confirmarDesactivar(@PathVariable Long id, Model model, RedirectAttributes attribute) {
-        Optional<Diagnostico> diagnostico = diagnosticoService.buscarPorId(id);
-        if (diagnostico.isPresent()) {
-            model.addAttribute("diagnostico", diagnostico.get());
+        try {
+            model.addAttribute("diagnostico", diagnosticoService.obtenerPorIdOCrash(id));
             model.addAttribute("trad", trad);
             return "Diagnostico/confirmarDesactivar";
+        } catch (Exception e) {
+            attribute.addFlashAttribute("error", e.getMessage());
+            return "redirect:/diagnosticos";
         }
-        attribute.addFlashAttribute("error", "Diagnóstico no encontrado.");
-        return "redirect:/diagnosticos";
     }
 
     @GetMapping("/desactivar/{id}")

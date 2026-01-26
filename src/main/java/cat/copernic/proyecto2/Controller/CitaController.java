@@ -1,16 +1,12 @@
 package cat.copernic.proyecto2.Controller;
 
-import cat.copernic.proyecto2.Domain.Administración.Empleado;
-import cat.copernic.proyecto2.Domain.Recepción.Paciente;
 import cat.copernic.proyecto2.Domain.Recepción.Cita;
 import cat.copernic.proyecto2.Domain.Recepción.EstadoCita;
 import cat.copernic.proyecto2.Domain.Recepción.Especialidad;
 import cat.copernic.proyecto2.Service.Cita.CitaService;
 import cat.copernic.proyecto2.Service.Paciente.PacienteService;
-import cat.copernic.proyecto2.Service.Empleado.EmpleadoService;
 import cat.copernic.proyecto2.Service.Traduccion.TraduccionService;
 import cat.copernic.proyecto2.Service.Cita.FacturaPdfService;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,7 +19,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
@@ -35,8 +30,6 @@ public class CitaController {
     private CitaService citaService;
     @Autowired
     private PacienteService pacienteService;
-    @Autowired
-    private EmpleadoService empleadoService;
     @Autowired
     private TraduccionService traduccionService;
     @Autowired
@@ -164,44 +157,5 @@ public class CitaController {
         citaService.anularCita(id);
         flash.addFlashAttribute("success", "Cita anulada correctamente");
         return "redirect:/citas";
-    }
-
-    @GetMapping("/factura/{id}")
-    public void descargarFactura(@PathVariable("id") Long id, HttpServletResponse response) throws IOException {
-        try {
-            // Generamos los bytes buscando la factura asociada a la cita
-            byte[] pdfBytes = facturaPdfService.generarFacturaCitaPdf(id);
-
-            response.setContentType("application/pdf");
-            String headerValue = "attachment; filename=Factura_Cita_" + id + ".pdf";
-            response.setHeader("Content-Disposition", headerValue);
-            response.setContentLength(pdfBytes.length);
-
-            response.getOutputStream().write(pdfBytes);
-            response.getOutputStream().flush();
-
-        } catch (Exception e) {
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error: " + e.getMessage());
-        }
-    }
-
-    @InitBinder
-    public void initBinder(org.springframework.web.bind.WebDataBinder binder) {
-        binder.registerCustomEditor(Paciente.class, new java.beans.PropertyEditorSupport() {
-            @Override
-            public void setAsText(String text) {
-                if (text == null || text.trim().isEmpty())
-                    return;
-                setValue(pacienteService.findPacienteById(Long.parseLong(text)));
-            }
-        });
-        binder.registerCustomEditor(Empleado.class, new java.beans.PropertyEditorSupport() {
-            @Override
-            public void setAsText(String text) {
-                if (text == null || text.trim().isEmpty())
-                    return;
-                setValue(empleadoService.obtenerPorId(Long.parseLong(text)));
-            }
-        });
     }
 }

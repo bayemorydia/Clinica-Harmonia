@@ -4,11 +4,13 @@ import cat.copernic.proyecto2.Domain.Administración.Empleado;
 import cat.copernic.proyecto2.Domain.Administración.Nomina;
 import org.springframework.data.domain.Page;
 import java.util.List;
+import java.util.Map;
 
 public interface EmpleadoService {
-    Empleado crear(Empleado empleado);
+    Empleado crear(Empleado empleado) throws Exception;
 
-    Empleado actualizar(Long id, Empleado datos);
+    Empleado actualizar(Long id, Empleado datos) throws Exception;
+    Map<String, Long> obtenerEstadisticasDashboard();
 
     void desactivarEmpleado(Long id);
     void activarEmpleado(Long id);

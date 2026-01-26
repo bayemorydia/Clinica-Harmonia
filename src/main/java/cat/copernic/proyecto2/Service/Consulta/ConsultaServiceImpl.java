@@ -4,6 +4,9 @@ import cat.copernic.proyecto2.DAO.JPA.*;
 import cat.copernic.proyecto2.Domain.PersonalSanitario.*;
 import cat.copernic.proyecto2.Domain.Recepción.Cita;
 import cat.copernic.proyecto2.Domain.Recepción.EstadoCita;
+import cat.copernic.proyecto2.Service.Diagnostico.DiagnosticoService;
+import cat.copernic.proyecto2.Service.Medicamento.MedicamentoService;
+import cat.copernic.proyecto2.Service.Prueba.PruebaService;
 import cat.copernic.proyecto2.Domain.Facturacion.EstadoPago;
 import cat.copernic.proyecto2.Domain.Facturacion.Factura;
 import cat.copernic.proyecto2.Domain.Facturacion.LineaFactura;
@@ -14,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +38,96 @@ public class ConsultaServiceImpl implements ConsultaService {
     private RecetaMedicaDAO recetaDAO;
     @Autowired
     private FacturaDAO facturaDAO;
+    @Autowired
+    private DiagnosticoService diagnosticoService;
+    @Autowired
+    private MedicamentoService medicamentoService;
+    @Autowired
+    private PruebaService pruebaService;
+
+    @Override
+    @Transactional(readOnly = true)
+    public HistorialClinico obtenerHistorialFiltrado(Long pacienteId, LocalDate inicio, LocalDate fin) {
+        HistorialClinico historial = obtenerOSolucionarHistorial(pacienteId);
+        if (historial == null) {
+            historial = new HistorialClinico();
+            historial.setEpisodios(new ArrayList<>());
+        }
+
+        if (inicio != null || fin != null) {
+            List<EpisodioClinico> filtrados = historial.getEpisodios().stream()
+                    .filter(ep -> {
+                        LocalDate fechaEp = ep.getFecha().toLocalDate();
+                        boolean matches = true;
+                        if (inicio != null && fechaEp.isBefore(inicio))
+                            matches = false;
+                        if (fin != null && fechaEp.isAfter(fin))
+                            matches = false;
+                        return matches;
+                    }).collect(java.util.stream.Collectors.toList());
+            historial.setEpisodios(filtrados);
+        }
+        return historial;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public EpisodioClinico buscarEpisodioPorCita(Cita cita) {
+        HistorialClinico historial = obtenerOSolucionarHistorial(cita.getPaciente().getId());
+        return historial.getEpisodios().stream()
+                .filter(e -> e.getFecha().isEqual(cita.getFechaHora()))
+                .findFirst()
+                .orElseGet(() -> historial.getEpisodios().stream()
+                        .filter(e -> e.getFecha().isAfter(cita.getFechaHora().minusMinutes(1))
+                                && e.getFecha().isBefore(cita.getFechaHora().plusMinutes(1)))
+                        .findFirst().orElse(null));
+    }
+
+    @Override
+    @Transactional
+    public void procesarFinalizacionConsulta(Long citaId, Long diagnosticoId, Tratamiento tratamiento,
+            List<Long> medIds, List<String> medDosis, List<Long> pruebaIds) {
+        EpisodioClinico episodio = new EpisodioClinico();
+        episodio.setDiagnostico(diagnosticoService.buscarPorId(diagnosticoId).orElseThrow());
+        episodio.setFecha(LocalDateTime.now());
+
+        List<LineaReceta> lineas = new ArrayList<>();
+        if (medIds != null) {
+            for (int i = 0; i < medIds.size(); i++) {
+                LineaReceta lr = new LineaReceta();
+                lr.setMedicamento(medicamentoService.encontrarMedicamento(medIds.get(i)));
+                lr.setDosis(medDosis.get(i));
+                lineas.add(lr);
+            }
+        }
+
+        List<PruebaMedica> pruebas = new ArrayList<>();
+        if (pruebaIds != null) {
+            pruebaIds.forEach(pId -> pruebas.add(pruebaService.encontrarPrueba(pId)));
+        }
+
+        tratamiento.setFechaInicio(LocalDate.now());
+        this.finalizarConsulta(citaId, episodio, tratamiento, pruebas, lineas);
+    }
+
+    @Override
+    @Transactional
+    public void procesarConsultaLegacy(Long citaId, EpisodioClinico episodio, Tratamiento tratamiento,
+            List<Long> pruebasIds, List<String> medNombre, List<String> medDosis) {
+        List<PruebaMedica> pruebas = new ArrayList<>();
+        if (pruebasIds != null) {
+            pruebasIds.forEach(id -> pruebas.add(pruebaService.encontrarPrueba(id)));
+        }
+        List<LineaReceta> lineas = new ArrayList<>();
+        if (medNombre != null) {
+            for (int i = 0; i < medNombre.size(); i++) {
+                LineaReceta lr = new LineaReceta();
+                lr.setDosis(medDosis.get(i));
+                lineas.add(lr);
+            }
+        }
+        this.finalizarConsulta(citaId, episodio, tratamiento, pruebas, lineas);
+    }
 
     @Override
     @Transactional

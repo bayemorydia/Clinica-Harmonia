@@ -11,10 +11,12 @@ public interface FacturaService {
     void saveFactura(Factura factura);
     void deleteFactura(Long id);
     Factura findFacturaById(Long id);
+    
+    // Nuevo método para manejar la lógica de obtención con validación
+    Factura obtenerFacturaDetalle(Long id) throws Exception;
+    
     Page<Factura> getFacturasPaginadas(String query, int page, int size);
     long countTotalFacturas();
     CompletableFuture<byte[]> generarReporteAsync(String periodo);
-    
-    // Método para Telegram
     List<Factura> findByPaciente(Paciente paciente);
 }

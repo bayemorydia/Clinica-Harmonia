@@ -12,6 +12,9 @@ public interface MedicamentoService {
     void guardar(Medicamento medicamento);
 
     Medicamento encontrarMedicamento(Long id);
+    
+    // Método para inicializar objetos nuevos
+    Medicamento crearNuevo();
 
     void eliminarLogica(Long id);
 

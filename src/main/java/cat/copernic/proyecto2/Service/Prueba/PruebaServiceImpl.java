@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,6 +15,15 @@ import java.util.Optional;
 public class PruebaServiceImpl implements PruebaService {
 
     private final PruebaDAO pruebaDAO;
+
+    @Override
+    public PruebaMedica crearNuevaPrueba() {
+        PruebaMedica prueba = new PruebaMedica();
+        // Lógica de negocio: Inicialización por defecto
+        prueba.setPrecio(new BigDecimal("0"));
+        prueba.setActivo(true);
+        return prueba;
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -31,6 +41,7 @@ public class PruebaServiceImpl implements PruebaService {
     @Override
     @Transactional
     public void guardar(PruebaMedica prueba) throws Exception {
+        // Validaciones de negocio: Duplicidad de código y nombre
         Optional<PruebaMedica> existenteCod = pruebaDAO.findByCodigo(prueba.getCodigo());
         if (existenteCod.isPresent()
                 && (prueba.getId() == null || !existenteCod.get().getId().equals(prueba.getId()))) {

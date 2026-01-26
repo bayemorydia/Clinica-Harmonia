@@ -10,11 +10,19 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class RolServiceImpl implements RolService {
 
     private final RolDAO rolDAO;
+
+    @Override
+    public Rol prepararNuevoRol() {
+        Rol rol = new Rol();
+        rol.setActivo(true); // Regla de negocio: Los roles nuevos nacen activos
+        return rol;
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -25,7 +33,7 @@ public class RolServiceImpl implements RolService {
     @Override
     @Transactional
     public void guardar(Rol rol) {
-        // Validación Case Sensitive y Duplicados
+        // Validación de Duplicados (Lógica de negocio movida aquí)
         rolDAO.findByNombre(rol.getNombre()).ifPresent(existente -> {
             if (rol.getId() == null || !existente.getId().equals(rol.getId())) {
                 throw new RuntimeException("Ya existe un rol con el nombre exacto: " + rol.getNombre());
@@ -67,7 +75,7 @@ public class RolServiceImpl implements RolService {
 
     @Override
     @Transactional(readOnly = true)
-    public List RolesConcretos() {
+    public List<Rol> RolesConcretos() {
         return rolDAO.findRolesEspecificos();
     }
 }

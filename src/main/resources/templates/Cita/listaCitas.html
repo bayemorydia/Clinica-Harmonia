@@ -128,7 +128,7 @@
                                         </td>
                                         <td class="text-center" onclick="event.stopPropagation();">
                                             <div class="d-inline-flex gap-2">
-                                                <a th:if="${c.estado.name() != 'ANULADA'}" th:href="@{/citas/factura/{id}(id=${c.id})}" class="btn btn-sm btn-light border rounded-pill shadow-sm">
+                                                <a th:if="${c.estado.name() != 'ANULADA'}" th:href="@{/citas/pdf/{id}(id=${c.id})}" class="btn btn-sm btn-light border rounded-pill shadow-sm">
                                                     <i class="bi bi-file-earmark-pdf-fill text-danger"></i>
                                                 </a>
                                                 <a th:if="${c.estado.name() == 'PROGRAMADA'}" th:href="@{'/citas/confirmarEliminar/' + ${c.id}}" class="btn btn-sm btn-outline-danger rounded-pill px-3 shadow-sm">

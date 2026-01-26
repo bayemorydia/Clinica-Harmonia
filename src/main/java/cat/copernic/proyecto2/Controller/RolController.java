@@ -62,7 +62,8 @@ public class RolController {
 
     @GetMapping("/nuevo")
     public String nuevo(Model model) {
-        model.addAttribute("rol", new Rol());
+        // Lógica de inicialización movida al service
+        model.addAttribute("rol", rolService.prepararNuevoRol());
         model.addAttribute("trad", traduccionService);
         return "Rol/formularioRol";
     }

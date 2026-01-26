@@ -56,7 +56,8 @@ public class MedicamentoController {
 
     @GetMapping("/nuevo")
     public String nuevo(Model model) {
-        model.addAttribute("medicamento", new Medicamento());
+        // Lógica de creación delegada
+        model.addAttribute("medicamento", medicamentoService.crearNuevo());
         model.addAttribute("trad", traduccionService);
         return "Farmacia/FormMedicamento";
     }
@@ -74,7 +75,6 @@ public class MedicamentoController {
             Model model,
             RedirectAttributes flash) {
 
-        // Validaciones de anotaciones (@NotBlank, @Size, etc)
         if (result.hasErrors()) {
             model.addAttribute("trad", traduccionService);
             return "Farmacia/FormMedicamento";
@@ -85,14 +85,14 @@ public class MedicamentoController {
             flash.addFlashAttribute("success", "Operación realizada con éxito.");
             return "redirect:/medicamentos";
         } catch (RuntimeException e) {
+            // El servicio lanza excepciones con mensajes específicos que el controller traduce a la UI
             if ("CODIGO_DUPLICADO".equals(e.getMessage())) {
-                // Añadimos el error manualmente al BindingResult para que aparezca en el HTML
                 result.rejectValue("codigo", "error.medicamento",
                         "Este código ya está registrado en el sistema.");
                 model.addAttribute("trad", traduccionService);
                 return "Farmacia/FormMedicamento";
             }
-            throw e; // Otros errores
+            throw e; 
         }
     }
 

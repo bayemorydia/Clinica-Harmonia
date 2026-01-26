@@ -59,11 +59,11 @@ public class UsuarioController {
 
     @PostMapping("/activar/{id}")
     public String activar(@PathVariable Long id, RedirectAttributes flash) {
-        Usuario u = usuarioService.buscarUsuario(id);
-        if (u != null) {
-            u.setActivo(true);
-            usuarioService.guardar(u);
+        try {
+            usuarioService.activarUsuario(id);
             flash.addFlashAttribute("success", "Usuario reactivado.");
+        } catch (Exception e) {
+            flash.addFlashAttribute("error", "Error al activar el usuario.");
         }
         return "redirect:/admin/usuarios";
     }
@@ -80,11 +80,11 @@ public class UsuarioController {
 
     @PostMapping("/desactivar")
     public String desactivarUsuario(@RequestParam("id") Long id, RedirectAttributes flash) {
-        Usuario u = usuarioService.buscarUsuario(id);
-        if (u != null) {
-            u.setActivo(false);
-            usuarioService.guardar(u);
+        try {
+            usuarioService.desactivarUsuario(id);
             flash.addFlashAttribute("warning", "Usuario desactivado.");
+        } catch (Exception e) {
+            flash.addFlashAttribute("error", "Error al desactivar el usuario.");
         }
         return "redirect:/admin/usuarios";
     }

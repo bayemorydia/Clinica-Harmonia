@@ -1,13 +1,10 @@
 package cat.copernic.proyecto2.Controller;
 
 import cat.copernic.proyecto2.Domain.Administración.Empleado;
-import cat.copernic.proyecto2.Domain.Persona.Usuario;
-import cat.copernic.proyecto2.Domain.Persona.Rol;
 import cat.copernic.proyecto2.Service.Empleado.EmpleadoService;
 import cat.copernic.proyecto2.Service.Empleado.Turno.TurnoService;
 import cat.copernic.proyecto2.Service.Rol.RolService;
 import cat.copernic.proyecto2.Service.Traduccion.TraduccionService;
-import cat.copernic.proyecto2.Service.Usuario.UsuarioService; // Inyectado el unificado
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -35,9 +32,6 @@ public class EmpleadoController {
 
     @Autowired
     private TurnoService turnoService;
-
-    @Autowired
-    private UsuarioService usuarioService; // Usando el servicio unificado
 
     @Autowired
     private NominaService nominaService;
@@ -102,19 +96,8 @@ public class EmpleadoController {
             return "Empleado/añadir";
         }
         try {
-            Rol rol = rolService.encontrarRol(empleado.getRol().getId());
-            empleado.setRol(rol);
-
-            // USANDO EL SERVICIO UNIFICADO (Contraseña automática por DNI/NIE)
-            Usuario usuarioCreado = usuarioService.crearUsuarioEmpleado(
-                    empleado.getNombre(),
-                    empleado.getApellidos(),
-                    empleado.getDni(),
-                    rol.getNombre());
-
-            empleado.setUsuario(usuarioCreado);
+            // Toda la lógica de roles y creación de usuario se movió al service
             empleadoService.crear(empleado);
-
             return "redirect:/empleados";
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
@@ -138,15 +121,7 @@ public class EmpleadoController {
             return "Empleado/detalle";
         }
         try {
-            Empleado empleadoExistente = empleadoService.obtenerPorId(id);
-            Rol rolNuevo = rolService.encontrarRol(empleado.getRol().getId());
-
-            // USANDO EL SERVICIO UNIFICADO PARA ACTUALIZAR ROL DE SEGURIDAD
-            if (empleadoExistente.getUsuario() != null) {
-                usuarioService.actualizarRolUsuario(empleadoExistente.getUsuario().getId(),
-                        rolNuevo.getNombre());
-            }
-
+            // Lógica delegada al service
             empleadoService.actualizar(id, empleado);
             return "redirect:/empleados";
         } catch (Exception e) {

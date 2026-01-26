@@ -1,7 +1,6 @@
 package cat.copernic.proyecto2.Service.Vacaciones.RRHH;
 
 import cat.copernic.proyecto2.Domain.Administración.Vacaciones;
-
 import java.util.List;
 
 public interface VacacionesServiceRRHH {
