@@ -26,22 +26,26 @@ public class VacacionesController {
     @Autowired
     private TraduccionService traduccionService;
 
-    @GetMapping("")
+    @GetMapping("") // Esto mapea a la URL: /vacaciones
     public String verMisVacaciones(Model model, Authentication auth) {
-        // El Service se encarga de todo: obtener empleado, sus vacaciones y días
-        Empleado medico = usuarioService.obtenerEmpleadoPorUsername(auth.getName());
-
-        if (medico == null)
+        if (auth == null)
             return "redirect:/login";
 
-        model.addAttribute("medicoLogueado", medico);
-        model.addAttribute("solicitudes", vacacionesService.listarVacacionesPorEmpleado(medico.getId()));
-        model.addAttribute("diasDisponibles", vacacionesService.calcularDiasDisponibles(medico));
+        Empleado empleado = usuarioService.obtenerEmpleadoPorUsername(auth.getName());
+        if (empleado == null)
+            return "redirect:/login";
 
-        // Atributos fijos de la vista
+        // Inyectamos ambos nombres para que sea compatible con TODOS los layouts
+        model.addAttribute("empleadoLogueado", empleado); // Para RRHH y Recepción
+        model.addAttribute("medicoLogueado", empleado); // Para Médico
+        model.addAttribute("recepLogueado", empleado); // Por si acaso para Recepción
+
+        model.addAttribute("solicitudes", vacacionesService.listarVacacionesPorEmpleado(empleado.getId()));
+        model.addAttribute("diasDisponibles", vacacionesService.calcularDiasDisponibles(empleado));
+
         model.addAttribute("hoy", LocalDate.now());
         model.addAttribute("trad", traduccionService);
-        model.addAttribute("activePage", "vacaciones");
+        model.addAttribute("activePage", "misVacaciones");
 
         return "empleado/vacaciones";
     }

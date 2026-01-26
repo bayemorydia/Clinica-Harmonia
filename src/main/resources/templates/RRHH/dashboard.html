@@ -53,7 +53,8 @@
                     <span th:text="${trad.getTraduccion('rrhh.dashboard.welcome')}">Dashboard</span>
                     <span th:text="' - ' + ${trad.getTraduccion('vacaciones.panel.rrhh')}">RRHH</span>
                 </h2>
-                <p class="text-muted" th:text="${trad.getTraduccion('rrhh.dashboard.intro')}">Gestión del capital humano y estados operativos</p>
+                <p class="text-muted" th:text="${trad.getTraduccion('rrhh.dashboard.intro')}">Gestión del capital humano
+                    y estados operativos</p>
             </div>
             <div class="d-flex align-items-center">
                 <span class="badge bg-primary-subtle text-primary p-2 px-3 rounded-pill me-3">
@@ -72,7 +73,8 @@
                                 <i class="bi bi-people text-primary fs-3"></i>
                             </div>
                             <div>
-                                <h6 class="text-muted mb-0 small uppercase fw-bold" th:text="${trad.getTraduccion('rrhh.kpi.total')}">EMPLEADOS</h6>
+                                <h6 class="text-muted mb-0 small uppercase fw-bold"
+                                    th:text="${trad.getTraduccion('rrhh.kpi.total')}">EMPLEADOS</h6>
                                 <h3 class="fw-bold mb-0" th:text="${totalEmpleados ?: 0}">0</h3>
                             </div>
                         </div>
@@ -87,7 +89,8 @@
                             <i class="bi bi-person-check text-success fs-3"></i>
                         </div>
                         <div>
-                            <h6 class="text-muted mb-0 small uppercase fw-bold" th:text="${trad.getTraduccion('rrhh.kpi.active')}">ACTIVOS</h6>
+                            <h6 class="text-muted mb-0 small uppercase fw-bold"
+                                th:text="${trad.getTraduccion('rrhh.kpi.active')}">ACTIVOS</h6>
                             <h3 class="fw-bold mb-0" th:text="${empleadosActivos ?: 0}">0</h3>
                         </div>
                     </div>
@@ -101,7 +104,8 @@
                             <i class="bi bi-person-x text-danger fs-3"></i>
                         </div>
                         <div>
-                            <h6 class="text-muted mb-0 small uppercase fw-bold" th:text="${trad.getTraduccion('rrhh.kpi.inactive')}">BAJAS</h6>
+                            <h6 class="text-muted mb-0 small uppercase fw-bold"
+                                th:text="${trad.getTraduccion('rrhh.kpi.inactive')}">BAJAS</h6>
                             <h3 class="fw-bold mb-0" th:text="${empleadosInactivos ?: 0}">0</h3>
                         </div>
                     </div>
@@ -115,45 +119,51 @@
                 <span th:text="${trad.getTraduccion('rrhh.actions.title')}">Gestión de Recursos Humanos</span>
             </h5>
 
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="border p-3 quick-action d-flex flex-column">
+            <div class="row g-4 justify-content-center">
+                <div class="col-md-6 col-lg-5">
+                    <div class="card h-100 border p-3 quick-action d-flex flex-column shadow-sm"
+                        style="border-radius: 15px;">
                         <div class="d-flex align-items-center mb-3">
-                            <div class="bg-success bg-opacity-10 p-2 rounded me-3">
-                                <i class="bi bi-file-earmark-text text-success fs-4"></i>
+                            <div class="bg-success bg-opacity-10 p-3 rounded me-3">
+                                <i class="bi bi-file-earmark-text text-success fs-3"></i>
                             </div>
-                            <h6 class="mb-0 fw-bold" th:text="${trad.getTraduccion('rrhh.actions.pay')}">Nóminas</h6>
+                            <div>
+                                <h5 class="mb-0 fw-bold" th:text="${trad.getTraduccion('rrhh.actions.pay')}">Nóminas
+                                </h5>
+                                <small class="text-muted"
+                                    th:text="${trad.getTraduccion('rrhh.activity.payroll')}">Generación y revisión
+                                    mensual</small>
+                            </div>
                         </div>
-                        <p class="small text-muted flex-grow-1" th:text="${trad.getTraduccion('rrhh.activity.payroll')}">Generación y revisión mensual</p>
-                        <a th:href="@{/RRHH/nominas}" class="btn btn-sm btn-outline-dark w-100" th:text="${trad.getTraduccion('btn.entrar')}">Entrar</a>
+                        <div class="mt-auto"> <a th:href="@{/RRHH/nominas}"
+                                class="btn btn-outline-success w-100 fw-bold rounded-pill"
+                                th:text="${trad.getTraduccion('btn.entrar')}">Entrar</a>
+                        </div>
                     </div>
                 </div>
 
-                <div class="col-md-4">
-                    <div class="border p-3 quick-action d-flex flex-column">
+                <div class="col-md-6 col-lg-5">
+                    <div class="card h-100 border p-3 quick-action d-flex flex-column shadow-sm"
+                        style="border-radius: 15px;">
                         <div class="d-flex align-items-center mb-3">
-                            <div class="bg-warning bg-opacity-10 p-2 rounded me-3">
-                                <i class="bi bi-calendar-check text-warning fs-4"></i>
+                            <div class="bg-warning bg-opacity-10 p-3 rounded me-3">
+                                <i class="bi bi-calendar-check text-warning fs-3"></i>
                             </div>
-                            <h6 class="mb-0 fw-bold" th:text="${trad.getTraduccion('rrhh.actions.vac')}">Vacaciones</h6>
+                            <div>
+                                <h5 class="mb-0 fw-bold" th:text="${trad.getTraduccion('rrhh.actions.vac')}">Vacaciones
+                                </h5>
+                                <small class="text-muted"
+                                    th:text="${trad.getTraduccion('vacaciones.subtituloRRHH')}">Solicitudes y
+                                    ausencias</small>
+                            </div>
                         </div>
-                        <p class="small text-muted flex-grow-1" th:text="${trad.getTraduccion('vacaciones.subtituloRRHH')}">Solicitudes y ausencias</p>
-                        <a th:href="@{/RRHH/vacaciones}" class="btn btn-sm btn-outline-dark w-100" th:text="${trad.getTraduccion('btn.entrar')}">Entrar</a>
+                        <div class="mt-auto">
+                            <a th:href="@{/vacaciones}" class="btn btn-outline-warning w-100 fw-bold rounded-pill"
+                                th:text="${trad.getTraduccion('btn.entrar')}">Entrar</a>
+                        </div>
                     </div>
                 </div>
 
-                <div class="col-md-4">
-                    <div class="border p-3 quick-action d-flex flex-column">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="bg-info bg-opacity-10 p-2 rounded me-3">
-                                <i class="bi bi-clock-history text-info fs-4"></i>
-                            </div>
-                            <h6 class="mb-0 fw-bold" th:text="${trad.getTraduccion('rrhh.actions.shift')}">Turnos</h6>
-                        </div>
-                        <p class="small text-muted flex-grow-1" th:text="${trad.getTraduccion('mod.empleados.desc')}">Horarios operativos</p>
-                        <a th:href="@{/RRHH/turnos}" class="btn btn-sm btn-outline-dark w-100" th:text="${trad.getTraduccion('btn.entrar')}">Entrar</a>
-                    </div>
-                </div>
             </div>
         </div>
 
