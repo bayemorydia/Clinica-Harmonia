@@ -140,7 +140,7 @@
                                             th:text="${trad.getTraduccion('empleado.label.hora_inicio')}"></label>
                                         <input type="time" th:value="${#temporals.format(empleado.inicio, 'HH:mm')}"
                                             id="inicio" name="inicio" class="form-control bg-light border-0 py-2"
-                                            th:readonly="${!#authorization.expression('hasAnyRole(''ROLE_ADMINISTRADOR'', ''ROLE_RRHH'')')}">
+                                            th:readonly="${!#authorization.expression('hasAnyRole(''ROLE_ADMINISTRADOR'', ''ROLE_RRHH'')')}" required>
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label small fw-bold text-secondary text-uppercase"
@@ -196,23 +196,36 @@
             const inicio = inicioInput.value;
             const fin = finInput.value;
 
+            finInput.setCustomValidity(''); // limpiar error previo
+
             if (inicio && fin) {
-                if (fin < inicio) {
-                    finInput.setCustomValidity(
-                        'La hora de fin no puede ser menor que la hora de inicio'
-                    );
-                } else if (fin === inicio) {
-                    finInput.setCustomValidity(
-                        'La hora de fin no puede ser igual que la hora de inicio'
-                    );
-                } else {
-                    finInput.setCustomValidity('');
+                const [hIni, mIni] = inicio.split(':').map(Number);
+                const [hFin, mFin] = fin.split(':').map(Number);
+
+                const inicioMin = hIni * 60 + mIni;
+                const finMin = hFin * 60 + mFin;
+
+                const minHorario = 8 * 60;  // 08:00 en minutos
+                const maxHorario = 22 * 60; // 22:00 en minutos
+
+                // Validar dentro del rango permitido
+                if (inicioMin < minHorario || inicioMin > maxHorario) {
+                    finInput.setCustomValidity('La hora de inicio debe estar entre 08:00 y 22:00');
+                } else if (finMin < minHorario || finMin > maxHorario) {
+                    finInput.setCustomValidity('La hora de fin debe estar entre 08:00 y 22:00');
+                }
+                // Validar que fin > inicio
+                else if (finMin <= inicioMin) {
+                    finInput.setCustomValidity('La hora de fin debe ser mayor que la hora de inicio');
                 }
             }
+
+            finInput.reportValidity(); // mostrar mensaje como required
         }
 
         inicioInput.addEventListener('change', validarHoras);
         finInput.addEventListener('change', validarHoras);
+
     </script>
     <script>
         const salarioInput = document.querySelector('input[name="salarioBase"]');

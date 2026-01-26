@@ -20,6 +20,9 @@
         th:class="${#authorization.expression('hasAnyRole(''ROLE_MEDICO'', ''ROLE_RECEPCIONISTA'')')} ? (${#authorization.expression('hasRole(''ROLE_MEDICO'')')} ? 'content-medico' : 'content-recepcion') : 'content'">
         <div class="container-fluid py-4">
 
+            <div class="card-body p-4 p-md-5">
+                <div th:if="${error}" class="alert alert-danger border-0 shadow-sm mb-4 rounded-3"
+                     th:text="${error}"></div>
             <div class="card shadow-sm border-0 mx-auto" style="border-radius: 15px; max-width: 1100px;">
                 <div class="card-header bg-white border-0 py-4 px-4 d-flex justify-content-between align-items-center">
                     <div class="d-flex align-items-center">
@@ -126,10 +129,10 @@
                                     </div>
                                     <div class="col-12">
                                         <label class="form-label small fw-bold text-secondary text-uppercase"
-                                            th:text="${trad.getTraduccion('paciente.form.email')}"></label>
+                                               th:text="${trad.getTraduccion('paciente.form.email')}"></label>
                                         <input type="email" th:field="*{email}"
-                                            class="form-control bg-light border-0 py-2"
-                                            th:readonly="${#authorization.expression('hasAnyRole(''ROLE_MEDICO'', ''ROLE_RECEPCIONISTA'')')}">
+                                               class="form-control bg-light border-0 py-2"
+                                               readonly>
                                     </div>
                                 </div>
                             </div>
@@ -267,23 +270,36 @@
             const inicio = inicioInput.value;
             const fin = finInput.value;
 
+            finInput.setCustomValidity(''); // limpiar error previo
+
             if (inicio && fin) {
-                if (fin < inicio) {
-                    finInput.setCustomValidity(
-                        'La hora de fin no puede ser menor que la hora de inicio'
-                    );
-                } else if (fin === inicio) {
-                    finInput.setCustomValidity(
-                        'La hora de fin no puede ser igual que la hora de inicio'
-                    );
-                } else {
-                    finInput.setCustomValidity('');
+                const [hIni, mIni] = inicio.split(':').map(Number);
+                const [hFin, mFin] = fin.split(':').map(Number);
+
+                const inicioMin = hIni * 60 + mIni;
+                const finMin = hFin * 60 + mFin;
+
+                const minHorario = 8 * 60;  // 08:00 en minutos
+                const maxHorario = 22 * 60; // 22:00 en minutos
+
+                // Validar dentro del rango permitido
+                if (inicioMin < minHorario || inicioMin > maxHorario) {
+                    finInput.setCustomValidity('La hora de inicio debe estar entre 08:00 y 22:00');
+                } else if (finMin < minHorario || finMin > maxHorario) {
+                    finInput.setCustomValidity('La hora de fin debe estar entre 08:00 y 22:00');
+                }
+                // Validar que fin > inicio
+                else if (finMin <= inicioMin) {
+                    finInput.setCustomValidity('La hora de fin debe ser mayor que la hora de inicio');
                 }
             }
+
+            finInput.reportValidity(); // mostrar mensaje como required
         }
 
         inicioInput.addEventListener('change', validarHoras);
         finInput.addEventListener('change', validarHoras);
+
 
         const salarioInput = document.querySelector('input[name="salarioBase"]');
         salarioInput.addEventListener('input', () => {

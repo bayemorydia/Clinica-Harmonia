@@ -34,8 +34,6 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         // Validaciones existentes
         if (empleadoDAO.findByDni(empleado.getDni()).isPresent())
             throw new IllegalArgumentException("❌ Ya existe un Empleado con ese DNI");
-        if (empleadoDAO.findByEmail(empleado.getEmail()).isPresent())
-            throw new IllegalArgumentException("❌ Ya existe un Empleado con ese Email");
         if (empleadoDAO.findByTelefono(empleado.getTelefono()).isPresent())
             throw new IllegalArgumentException("❌ Ya existe un Empleado con ese Teléfono");
 
@@ -44,7 +42,20 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         if (empleado.getInicio() == null || empleado.getFin() == null)
             throw new IllegalArgumentException("❌ Debes asignar hora de inicio y fin");
 
-        // LÓGICA DE NEGOCIO MOVIDA DEL CONTROLLER
+        // Validación y ajuste de email si ya existe
+        String email = empleado.getEmail();
+        String[] partes = email.split("@");
+        String local = partes[0];
+        String dominio = partes[1];
+
+        int contador = 1;
+        while (empleadoDAO.findByEmail(email).isPresent()) {
+            email = local + contador + "@" + dominio;
+            contador++;
+        }
+        empleado.setEmail(email); // Asignamos el correo único generado
+
+        // LÓGICA DE NEGOCIO
         Rol rol = rolService.encontrarRol(empleado.getRol().getId());
         empleado.setRol(rol);
 
@@ -55,8 +66,8 @@ public class EmpleadoServiceImpl implements EmpleadoService {
                 rol.getNombre());
 
         empleado.setUsuario(usuarioCreado);
-        // FIN LÓGICA MOVIDA
 
+        // Configuración final del empleado
         empleado.setId(null);
         empleado.setFecha_alta(LocalDate.now());
         empleado.setActiva(true);
@@ -64,30 +75,50 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         return empleadoDAO.save(empleado);
     }
 
+
     @Override
     public Empleado actualizar(Long id, Empleado datos) throws Exception {
         Empleado existente = obtenerPorId(id);
 
+        // Validar DNI
         empleadoDAO.findByDni(datos.getDni()).ifPresent(e -> {
             if (!e.getId().equals(id))
                 throw new IllegalArgumentException("❌ El DNI ya está en uso");
         });
 
-        // LÓGICA DE NEGOCIO MOVIDA DEL CONTROLLER
+        // Validar teléfono
+        empleadoDAO.findByTelefono(datos.getTelefono()).ifPresent(e -> {
+            if (!e.getId().equals(id))
+                throw new IllegalArgumentException("❌ El Teléfono ya está en uso");
+        });
+
+        // Validar y ajustar email si ya existe
+        String email = datos.getEmail();
+        String[] partes = email.split("@");
+        String local = partes[0];
+        String dominio = partes[1];
+
+        int contador = 1;
+        while (empleadoDAO.findByEmail(email).isPresent() &&
+                !empleadoDAO.findByEmail(email).get().getId().equals(id)) {
+            email = local + contador + "@" + dominio;
+            contador++;
+        }
+        existente.setEmail(email);
+
+        // LÓGICA DE NEGOCIO
         Rol rolNuevo = rolService.encontrarRol(datos.getRol().getId());
 
         if (existente.getUsuario() != null) {
-            usuarioService.actualizarRolUsuario(existente.getUsuario().getId(),
-                    rolNuevo.getNombre());
+            usuarioService.actualizarRolUsuario(existente.getUsuario().getId(), rolNuevo.getNombre());
         }
-        // FIN LÓGICA MOVIDA
 
+        // Actualizar campos restantes
         existente.setNombre(datos.getNombre());
         existente.setApellidos(datos.getApellidos());
         existente.setDni(datos.getDni());
-        existente.setEmail(datos.getEmail());
         existente.setTelefono(datos.getTelefono());
-        existente.setRol(rolNuevo); // Usamos el rol gestionado arriba
+        existente.setRol(rolNuevo);
         existente.setSalarioBase(datos.getSalarioBase());
         existente.setInicio(datos.getInicio());
         existente.setFin(datos.getFin());
@@ -95,6 +126,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
 
         return empleadoDAO.save(existente);
     }
+
 
     @Override
     public void activarEmpleado(Long id) {
