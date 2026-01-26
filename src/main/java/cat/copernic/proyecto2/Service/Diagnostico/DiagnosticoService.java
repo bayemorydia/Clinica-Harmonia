@@ -6,16 +6,16 @@ import java.util.List;
 import java.util.Optional;
 
 public interface DiagnosticoService {
-
     List<Diagnostico> listarTodos();
-
-    void guardar(Diagnostico diagnostico) throws Exception; // Exception para validaciones
-
+    void guardar(Diagnostico diagnostico) throws Exception;
     Optional<Diagnostico> buscarPorId(Long id);
-    long countDiagnosticosActivos();
-    void desactivar(Long id); // Borrado lógico
-
+    
+    // Métodos añadidos para mover lógica del controller
+    Diagnostico obtenerPorIdOCrash(Long id) throws Exception;
+    Diagnostico crearNuevoDiagnostico();
+    
+    void desactivar(Long id);
     void reactivar(Long id);
-
     Page<Diagnostico> getDiagnosticosPaginados(String keyword, Boolean activo, int page, int size);
+    long countDiagnosticosActivos();
 }

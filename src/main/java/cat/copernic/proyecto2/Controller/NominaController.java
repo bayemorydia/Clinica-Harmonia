@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.http.*;
 import java.util.concurrent.CompletableFuture;
-import java.math.BigDecimal;
 
 @Controller
 @RequestMapping("/nominas")
@@ -44,10 +43,9 @@ public class NominaController {
     public String mostrarFormularioCrear(@PathVariable("id") Long id, Model model) {
         Empleado empleado = empleadoService.obtenerPorId(id);
         if (empleado == null) {
-            model.addAttribute("error", "Empleado no encontrado");
             return "redirect:/nominas";
         }
-        Nomina nomina=nominaService.inicializarNomina(empleado);
+        Nomina nomina = nominaService.inicializarNomina(empleado);
         model.addAttribute("empleado", empleado);
         model.addAttribute("nomina", nomina);
         model.addAttribute("trad", traduccionService);
@@ -67,26 +65,15 @@ public class NominaController {
             return "Nomina/crear";
         }
 
-        Empleado empleado = empleadoService.obtenerPorId(nomina.getEmpleado().getId());
-        if (empleado == null) {
-            model.addAttribute("error", "Empleado no encontrado");
+        try {
+            // Toda la lógica de validación de duplicados y cálculos se movió al service
+            nominaService.guardarNominaProcesada(nomina);
+            return "redirect:/empleados/nominas/" + nomina.getEmpleado().getId();
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("empleado", empleadoService.obtenerPorId(nomina.getEmpleado().getId()));
             return "Nomina/crear";
         }
-
-        if (nominaService.existeNominaMes(empleado.getId(), nomina.getPeriodo())) {
-            model.addAttribute("error", "Ya existe una nómina para este período");
-            model.addAttribute("empleado", empleado);
-            return "Nomina/crear";
-        }
-
-        // Asegurarnos que anual y mensual están correctos
-        if (nomina.getSalarioBase() == null) nomina.setSalarioBase(BigDecimal.ZERO);
-        if (nomina.getDeducciones() == null) nomina.setDeducciones(BigDecimal.ZERO);
-        if (nomina.getTotalPagar() == null) nomina.setTotalPagar(nomina.getSalarioBase().subtract(nomina.getDeducciones()));
-
-
-        nominaService.saveNomina(nomina);
-        return "redirect:/empleados/nominas/" + nomina.getEmpleado().getId();
     }
 
     @GetMapping("/imprimir/{id}")
@@ -95,7 +82,7 @@ public class NominaController {
         byte[] pdf = nominaService.generarPdfNomina(nomina);
         return ResponseEntity.ok()
                 .header("Content-Disposition", "inline; filename=nomina_" + id + ".pdf")
-                .contentType(org.springframework.http.MediaType.APPLICATION_PDF)
+                .contentType(MediaType.APPLICATION_PDF)
                 .body(pdf);
     }
 
@@ -103,16 +90,16 @@ public class NominaController {
     public String detalleNomina(@PathVariable("id") Long id, Model model, Authentication auth) {
         Nomina nomina = nominaService.findById(id);
         if (nomina == null) {
-            model.addAttribute("error", "La nómina no existe");
             return "redirect:/nominas";
         }
-        Empleado empleadoDueno = nomina.getEmpleado();
+        
+        // La lógica de obtener el usuario navegando también es delegada por consistencia
         if (auth != null) {
-            Empleado usuarioNavegando = empleadoService.obtenerPorUsername(auth.getName());
-            model.addAttribute("medicoLogueado", usuarioNavegando);
+            model.addAttribute("medicoLogueado", empleadoService.obtenerPorUsername(auth.getName()));
         }
+        
         model.addAttribute("nomina", nomina);
-        model.addAttribute("empleado", empleadoDueno);
+        model.addAttribute("empleado", nomina.getEmpleado());
         model.addAttribute("trad", traduccionService);
         model.addAttribute("activePage", "nominas");
         return "Nomina/detalleNomina";
@@ -124,8 +111,7 @@ public class NominaController {
         return nominaService.generarYDescargarNominasTodos(periodo)
                 .thenApply(zipBytes -> {
                     if (zipBytes == null) {
-                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                .body(null);
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
                     }
 
                     HttpHeaders headers = new HttpHeaders();
@@ -137,5 +123,4 @@ public class NominaController {
                     return new ResponseEntity<>(zipBytes, headers, HttpStatus.OK);
                 });
     }
-
 }

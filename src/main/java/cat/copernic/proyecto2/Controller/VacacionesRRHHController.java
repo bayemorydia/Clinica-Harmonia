@@ -1,6 +1,5 @@
 package cat.copernic.proyecto2.Controller;
 
-import cat.copernic.proyecto2.Domain.Administración.EstadoVacaciones;
 import cat.copernic.proyecto2.Domain.Administración.Vacaciones;
 import cat.copernic.proyecto2.Service.Vacaciones.RRHH.VacacionesServiceRRHH;
 import cat.copernic.proyecto2.Service.Traduccion.TraduccionService;
@@ -31,19 +30,15 @@ public class VacacionesRRHHController {
 
     @PostMapping("/aceptar/{id}")
     public String aceptarSolicitud(@PathVariable("id") Long id) {
-        Vacaciones solicitud = vacacionesService.obtenerPorId(id);
-        if (solicitud != null && solicitud.getEstado() == EstadoVacaciones.PENDIENTE) {
-            vacacionesService.aprobarVacaciones(id);
-        }
+        // La validación de estado PENDIENTE se ha movido al Service
+        vacacionesService.aprobarVacaciones(id);
         return "redirect:/RRHH/vacaciones/gestion";
     }
 
     @PostMapping("/rechazar/{id}")
-    public String rechazarSolicitud(@PathVariable("id") Long id) {
-        Vacaciones solicitud = vacacionesService.obtenerPorId(id);
-        if (solicitud != null && solicitud.getEstado() == EstadoVacaciones.PENDIENTE) {
-            vacacionesService.denegarVacaciones(id);
-        }
+    public String rechazarsolicitud(@PathVariable("id") Long id) {
+        // La validación de estado PENDIENTE se ha movido al Service
+        vacacionesService.denegarVacaciones(id);
         return "redirect:/RRHH/vacaciones/gestion";
     }
 }

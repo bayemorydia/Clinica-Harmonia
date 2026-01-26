@@ -4,6 +4,9 @@ import cat.copernic.proyecto2.Domain.Persona.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -12,7 +15,7 @@ public interface UsuarioDAO extends JpaRepository<Usuario, Long> {
 
         Page<Usuario> findByUsernameContainingIgnoreCase(String username, Pageable pageable);
 
-        Usuario findByTelegramChatId(Long telegramChatId);
+        Optional<Usuario> findByTelegramChatId(Long telegramChatId);
 
         @Query("SELECT u FROM Usuario u WHERE " +
                         "(:activo IS NULL OR u.activo = :activo) AND " +
@@ -20,4 +23,6 @@ public interface UsuarioDAO extends JpaRepository<Usuario, Long> {
         Page<Usuario> findByFilters(@Param("query") String query,
                         @Param("activo") Boolean activo,
                         Pageable pageable);
+
+        Page<Usuario> findByUsername(String username, Pageable pageable);
 }

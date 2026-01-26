@@ -12,4 +12,7 @@ public interface PruebaService {
     void activarLogica(Long id);
     PruebaMedica encontrarPrueba(Long id);
     long countPruebasActivas();
+    
+    // Nuevo método para inicialización
+    PruebaMedica crearNuevaPrueba();
 }

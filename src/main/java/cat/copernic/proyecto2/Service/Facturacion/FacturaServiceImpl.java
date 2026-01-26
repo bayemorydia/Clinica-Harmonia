@@ -31,6 +31,13 @@ public class FacturaServiceImpl implements FacturaService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Factura obtenerFacturaDetalle(Long id) throws Exception {
+        return facturaDAO.findById(id)
+                .orElseThrow(() -> new Exception("Factura no encontrada"));
+    }
+
+    @Override
     @Transactional
     public void saveFactura(Factura factura) {
         if (factura.getId() == null || factura.getId() == 0) {
@@ -77,8 +84,6 @@ public class FacturaServiceImpl implements FacturaService {
             resultado = facturaDAO.findByNombreOrConcepto(query, pageable);
         }
 
-        // Forzar carga de líneas (Hibernate Lazy Loading) para evitar lista vacía en la
-        // vista
         resultado.getContent().forEach(f -> {
             if (f.getLineas() != null)
                 f.getLineas().size();
@@ -137,29 +142,17 @@ public class FacturaServiceImpl implements FacturaService {
 
         if (factura.getLineas() != null) {
             for (LineaFactura linea : factura.getLineas()) {
-                // Aseguramos que el precio no sea nulo para evitar NullPointerException
                 BigDecimal precio = (linea.getPrecioUnitario() != null) ? linea.getPrecioUnitario() : BigDecimal.ZERO;
-
                 BigDecimal cantidad = BigDecimal.valueOf(linea.getCantidad());
-
-                // Cálculo del subtotal de la línea (BigDecimal * BigDecimal)
                 BigDecimal subtotalLinea = precio.multiply(cantidad);
-
-                // Seteamos el subtotal directamente como BigDecimal
                 linea.setSubtotal(subtotalLinea);
-
-                // Sumamos al total de la factura
                 subtotalAcumulado = subtotalAcumulado.add(subtotalLinea);
             }
         }
 
         factura.setSubtotal(subtotalAcumulado);
-
-        // Cálculo de IVA (21%)
         BigDecimal iva = subtotalAcumulado.multiply(new BigDecimal("0.21"));
         factura.setIva(iva);
-
-        // Total final
         factura.setTotal(subtotalAcumulado.add(iva));
     }
 }

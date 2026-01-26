@@ -4,13 +4,14 @@ import cat.copernic.proyecto2.Domain.Administración.Empleado;
 import cat.copernic.proyecto2.Domain.Administración.Nomina;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface NominaService {
     List<Nomina> getAllNominas();
     void saveNomina(Nomina nomina);
+    // Nuevo método para procesar lógica de negocio antes de guardar
+    void guardarNominaProcesada(Nomina nomina) throws Exception;
     boolean existeNominaMes(Long empleadoId, String periodo);
     byte[] generarPdfNomina(Nomina nomina);
     Nomina findById(Long id);

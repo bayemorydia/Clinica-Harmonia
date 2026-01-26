@@ -1,7 +1,6 @@
 package cat.copernic.proyecto2.Controller;
 
 import cat.copernic.proyecto2.Domain.Administración.Empleado;
-import cat.copernic.proyecto2.Domain.Administración.Vacaciones;
 import cat.copernic.proyecto2.Service.Empleado.EmpleadoService;
 import cat.copernic.proyecto2.Service.Empleado.Nomina.NominaService;
 import cat.copernic.proyecto2.Service.Traduccion.TraduccionService;
@@ -15,7 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/RRHH")
@@ -51,16 +50,17 @@ public class RRHHController {
 
     @GetMapping("/dashboard")
     public String dashboard(Model model, Authentication auth) {
-        long totalEmpleados = empleadoService.listarTodos().size();
-        long empleadosActivos = empleadoService.listarTodos().stream().filter(Empleado::getActiva).count();
-        long empleadosInactivos = totalEmpleados - empleadosActivos;
-        long nominasPendientes = 0;
+        // Toda la lógica de conteo se ha movido al EmpleadoService
+        Map<String, Long> estadisticas = empleadoService.obtenerEstadisticasDashboard();
+        
         Empleado empleado = empleadoService.obtenerPorUsername(auth.getName());
         model.addAttribute("empleadoLogueado", empleado);
-        model.addAttribute("totalEmpleados", totalEmpleados);
-        model.addAttribute("empleadosActivos", empleadosActivos);
-        model.addAttribute("empleadosInactivos", empleadosInactivos);
-        model.addAttribute("nominasPendientes", nominasPendientes);
+        
+        model.addAttribute("totalEmpleados", estadisticas.get("total"));
+        model.addAttribute("empleadosActivos", estadisticas.get("activos"));
+        model.addAttribute("empleadosInactivos", estadisticas.get("inactivos"));
+        model.addAttribute("nominasPendientes", 0); // Mantengo el 0 que tenías
+        
         model.addAttribute("trad", traduccionService);
         return "RRHH/dashboard";
     }
@@ -71,6 +71,7 @@ public class RRHHController {
         model.addAttribute("trad", traduccionService);
         model.addAttribute("currentPage", 0);
         model.addAttribute("size", 10);
+        
         Empleado empleado = empleadoService.obtenerPorUsername(auth.getName());
         model.addAttribute("empleadoLogueado", empleado);
         model.addAttribute("activePage", "empleados");
@@ -84,6 +85,7 @@ public class RRHHController {
         model.addAttribute("nominas", nominaService.getAllNominas());
         model.addAttribute("empleados", empleadoService.listarTodos());
         model.addAttribute("trad", traduccionService);
+        
         Empleado emplead2 = empleadoService.obtenerPorUsername(auth.getName());
         model.addAttribute("empleadoLogueado", emplead2);
         model.addAttribute("activePage", "nominas");
@@ -94,10 +96,13 @@ public class RRHHController {
     public String verPerfil(@PathVariable("id") Long id, Model model, Authentication auth) {
         model.addAttribute("trad", traduccionService);
         model.addAttribute("activePage", "perfil");
+        
         Empleado emplead2 = empleadoService.obtenerPorUsername(auth.getName());
         model.addAttribute("empleadoLogueado", emplead2);
+        
         cargarRoles(model);
         cargarTurnos(model);
+        
         Empleado empleado = empleadoService.obtenerPorId(id);
         model.addAttribute("empleado", empleado);
         return "empleado/detalle";
@@ -105,20 +110,14 @@ public class RRHHController {
 
     @GetMapping("/gestionvacaciones")
     public String listarVacaciones(Model model, Authentication auth) {
-        List<Vacaciones> solicitudes = vacacionesService.listarTodasLasVacaciones();
-        long pendientes = vacacionesService.contarPendientes();
-        model.addAttribute("pendientes", pendientes);
-        model.addAttribute("solicitudes", solicitudes);
+        // La lógica ya estaba en el servicio, solo la invocamos
+        model.addAttribute("pendientes", vacacionesService.contarPendientes());
+        model.addAttribute("solicitudes", vacacionesService.listarTodasLasVacaciones());
         model.addAttribute("trad", traduccionService);
         model.addAttribute("activePage", "vacaciones");
+        
         Empleado empleado = empleadoService.obtenerPorUsername(auth.getName());
         model.addAttribute("empleadoLogueado", empleado);
         return "RRHH/vacaciones";
-    }
-    @GetMapping("/vacaciones")
-    public String verVacaciones(Model model) {
-        model.addAttribute("activePage", "vacaciones");
-        model.addAttribute("trad", traduccionService);
-        return "Empleado/vacaciones";
     }
 }

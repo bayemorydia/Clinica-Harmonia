@@ -40,6 +40,31 @@ public class CitaServiceImpl implements CitaService {
     private FacturaDAO facturaDAO;
 
     @Override
+    public Cita prepararNuevaCita() {
+        Cita cita = new Cita();
+        // Lógica de "Próxima hora disponible" centralizada
+        cita.setFechaHora(LocalDateTime.now().truncatedTo(ChronoUnit.HOURS).plusHours(1));
+        return cita;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public long countCitasHoy(Long medicoId) {
+        LocalDateTime inicio = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
+        LocalDateTime fin = LocalDateTime.now().withHour(23).withMinute(59).withSecond(59).withNano(0);
+        return citaDAO.countByProfesionalIdAndFechaHoraBetweenAndEstadoNot(medicoId, inicio, fin, EstadoCita.ANULADA);
+    }
+
+    @Override
+    public LocalDate parsearFechaAgenda(String fechaStr) {
+        try {
+            return (fechaStr == null || fechaStr.isEmpty()) ? LocalDate.now() : LocalDate.parse(fechaStr);
+        } catch (Exception e) {
+            return LocalDate.now();
+        }
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<Empleado> listarMedicosActivos() {
         return empleadoService.listarTodos().stream()
@@ -69,6 +94,24 @@ public class CitaServiceImpl implements CitaService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveCita(Cita cita) throws Exception {
+        validarReglasNegocio(cita);
+
+        boolean esNueva = (cita.getId() == null);
+        if (esNueva) {
+            cita.setEstado(EstadoCita.PROGRAMADA);
+        }
+
+        Cita guardada = citaDAO.save(cita);
+
+        if (esNueva) {
+            generarFacturaAsociada(guardada);
+        }
+    }
+
+    /**
+     * Lógica de validación extraída para mayor claridad
+     */
+    private void validarReglasNegocio(Cita cita) throws Exception {
         if (cita.getFechaHora() == null)
             throw new Exception("La fecha y hora son obligatorias.");
 
@@ -99,43 +142,30 @@ public class CitaServiceImpl implements CitaService {
         if (confM.isPresent() && (cita.getId() == null || !confM.get().getId().equals(cita.getId()))) {
             throw new Exception("El médico ya tiene una cita asignada a esta hora.");
         }
+    }
 
-        boolean esNueva = (cita.getId() == null);
-        if (esNueva) {
-            cita.setEstado(EstadoCita.PROGRAMADA);
-        }
+    /**
+     * Lógica de facturación extraída
+     */
+    private void generarFacturaAsociada(Cita guardada) {
+        Factura f = new Factura();
+        f.setPaciente(guardada.getPaciente());
+        f.setFechaEmision(LocalDate.now());
+        f.setEstado(EstadoPago.PENDIENTE);
+        f.setActivo(true);
 
-        Cita guardada = citaDAO.save(cita);
+        BigDecimal precioBase = new BigDecimal("50.00");
 
-        if (esNueva) {
-            Factura f = new Factura();
-            f.setPaciente(guardada.getPaciente());
-            f.setFechaEmision(LocalDate.now());
-            f.setEstado(EstadoPago.PENDIENTE);
-            f.setActivo(true);
+        LineaFactura lf = new LineaFactura();
+        lf.setConcepto("Consulta Médica: " + guardada.getEspecialidad() + " (Cita #" + guardada.getId() + ")");
+        lf.setCantidad(1);
+        lf.setPrecioUnitario(precioBase);
+        lf.setSubtotal(precioBase);
+        lf.setFactura(f);
 
-            // 1. Definimos el precio base como BigDecimal
-            BigDecimal precioBase = new BigDecimal("50.00");
-
-            // 2. Creamos la línea de factura con BigDecimal
-            LineaFactura lf = new LineaFactura();
-            lf.setConcepto("Consulta Médica: " + guardada.getEspecialidad() + " (Cita #" + guardada.getId() + ")");
-            lf.setCantidad(1);
-            lf.setPrecioUnitario(precioBase); // CORREGIDO: Usar BigDecimal
-            lf.setSubtotal(precioBase); // CORREGIDO: Usar BigDecimal
-            lf.setFactura(f);
-
-            // 3. Asignamos la lista de líneas a la factura
-            f.setLineas(new ArrayList<>(List.of(lf)));
-
-            // 4. Recalculamos los totales de la factura (puedes usar el método que creamos
-            // antes)
-            recalcularTotales(f);
-
-            // 5. Guardamos la factura (esto guardará la línea en cascada si tienes
-            // CascadeType.ALL)
-            facturaDAO.save(f);
-        }
+        f.setLineas(new ArrayList<>(List.of(lf)));
+        recalcularTotales(f);
+        facturaDAO.save(f);
     }
 
     private void recalcularTotales(Factura factura) {
@@ -144,10 +174,8 @@ public class CitaServiceImpl implements CitaService {
             subtotal = subtotal.add(linea.getSubtotal());
         }
         factura.setSubtotal(subtotal);
-
         BigDecimal iva = subtotal.multiply(new BigDecimal("0.21"));
         factura.setIva(iva);
-
         factura.setTotal(subtotal.add(iva));
     }
 
@@ -159,7 +187,6 @@ public class CitaServiceImpl implements CitaService {
             cita.setEstado(EstadoCita.ANULADA);
             citaDAO.save(cita);
 
-            // Buscar factura de esta cita y anularla
             List<Factura> facturas = facturaDAO.findAll();
             for (Factura f : facturas) {
                 if (f.getLineas() != null && !f.getLineas().isEmpty()) {

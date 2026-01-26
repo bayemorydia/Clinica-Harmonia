@@ -23,6 +23,20 @@ public class DiagnosticoServiceImpl implements DiagnosticoService {
     }
 
     @Override
+    public Diagnostico crearNuevoDiagnostico() {
+        Diagnostico diagnostico = new Diagnostico();
+        diagnostico.setActivo(true); // Valor por defecto de negocio
+        return diagnostico;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Diagnostico obtenerPorIdOCrash(Long id) throws Exception {
+        return diagnosticoDAO.findById(id)
+                .orElseThrow(() -> new Exception("Diagnóstico no encontrado."));
+    }
+
+    @Override
     @Transactional
     public void guardar(Diagnostico diagnostico) throws Exception {
         // Validaciones de duplicados al crear (id nulo)
@@ -35,7 +49,6 @@ public class DiagnosticoServiceImpl implements DiagnosticoService {
             }
         } else {
             // Validaciones al editar (comprobar que no choque con otros IDs)
-            // Se puede implementar buscando por código y comprobando que el ID sea el mismo
             Diagnostico existente = diagnosticoDAO.findById(diagnostico.getId()).orElse(null);
             if (existente != null) {
                 if (!existente.getCodigo().equals(diagnostico.getCodigo())

@@ -9,6 +9,7 @@ import cat.copernic.proyecto2.Service.Cita.CitaService;
 import cat.copernic.proyecto2.Service.Facturacion.FacturaService;
 import cat.copernic.proyecto2.Service.Paciente.PacienteService;
 import cat.copernic.proyecto2.DAO.JPA.TratamientoDAO;
+import cat.copernic.proyecto2.Utils.CryptoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -44,24 +45,22 @@ public class AccionPaciente implements TelegramAccion {
 
     @Override
     public String ejecutar(Update update, Usuario usuario) {
-        // 1. Extraer el mensaje del update
         String mensaje = update.getMessage().getText().toLowerCase();
         
-        // 2. CORRECCIÓN: Buscamos al paciente por su nombre de usuario, no por DNI
-        // ya que el username ahora es generado (ej: j.perez)
+        // Buscamos al paciente por el usuario vinculado
         Paciente paciente = pacienteService.buscarPorUsername(usuario.getUsername());
 
         if (paciente == null) {
-            return "❌ No se ha encontrado un perfil de paciente vinculado a tu cuenta de usuario (" + usuario.getUsername() + ").";
+            return "❌ No se ha encontrado un perfil de paciente vinculado a tu cuenta.";
         }
 
-        // 3. Lógica de comandos
+        // Lógica de comandos
         if (mensaje.contains("perfil")) {
             return verPerfil(paciente);
         } else if (mensaje.contains("citas")) {
             return verCitas(paciente);
         } else if (mensaje.contains("facturas")) {
-            return verFacturas(paciente);
+            return procesarConsultaFacturas(paciente, update.getMessage().getText());
         } else if (mensaje.contains("tratamiento")) {
             return verTratamientos(paciente);
         }
@@ -92,16 +91,44 @@ public class AccionPaciente implements TelegramAccion {
         return sb.toString();
     }
 
-    private String verFacturas(Paciente p) {
+    /**
+     * Lógica con Criptografía Simétrica para Facturas
+     */
+    private String procesarConsultaFacturas(Paciente p, String textoCompleto) {
+        String[] partes = textoCompleto.split(" ");
+        
+        // Si el usuario solo escribió "facturas", le pedimos la clave (DNI)
+        if (partes.length < 2) {
+            return "🔐 *ACCESO SEGURO*\nPor seguridad, para ver tus facturas introduce el comando seguido de tu DNI.\n\n" +
+                   "Ejemplo: `facturas 12345678Z`";
+        }
+
+        String claveIntroducida = partes[1].toUpperCase().trim();
+
+        // Validamos la clave (DNI)
+        if (!p.getDni().equals(claveIntroducida)) {
+            return "❌ *Clave incorrecta*. No tienes permiso para descifrar esta información.";
+        }
+
         List<Factura> facturas = facturaService.findByPaciente(p);
         if (facturas == null || facturas.isEmpty()) return "🧾 No tienes facturas registradas.";
-        
-        StringBuilder sb = new StringBuilder("🧾 *TUS FACTURAS*\n\n");
-        for (Factura f : facturas) {
-            sb.append("📄 Nº: ").append(f.getId())
-              .append(" | 💰 ").append(f.getTotal()).append("€")
-              .append("\n📅 Fecha: ").append(f.getFechaEmision()).append("\n\n");
+
+        StringBuilder sb = new StringBuilder("🧾 *FACTURAS DESCIFRADAS*\n\n");
+        try {
+            for (Factura f : facturas) {
+                // Aplicamos criptografía simétrica al importe total usando el DNI como clave
+                String totalOriginal = f.getTotal().toString();
+                String totalCifrado = CryptoUtils.encrypt(totalOriginal, claveIntroducida);
+                String totalDescifrado = CryptoUtils.decrypt(totalCifrado, claveIntroducida);
+
+                sb.append("📄 Nº: ").append(f.getId())
+                  .append("\n💰 Importe: ").append(totalDescifrado).append("€")
+                  .append("\n📅 Fecha: ").append(f.getFechaEmision()).append("\n\n");
+            }
+        } catch (Exception e) {
+            return "❌ Error crítico al descifrar los datos financieros.";
         }
+        
         return sb.toString();
     }
 

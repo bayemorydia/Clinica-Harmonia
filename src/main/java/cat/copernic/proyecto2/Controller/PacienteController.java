@@ -70,7 +70,6 @@ public class PacienteController {
     @GetMapping("/activar/{id}")
     public String activarPaciente(@PathVariable("id") Long id) {
         pacienteService.activarPaciente(id);
-        // Redirigimos a la lista de activos para ver el resultado
         return "redirect:/pacientes";
     }
 
@@ -108,13 +107,10 @@ public class PacienteController {
         }
     }
 
-    // MÉTODO EXCLUSIVO PARA ACTUALIZAR LA FOTO DESDE DETALLE
     @PostMapping("/actualizar-foto")
     public String actualizarFoto(@RequestParam("id") Long id, @RequestParam("file") MultipartFile file) {
-        Paciente paciente = pacienteService.findPacienteById(id);
-        if (paciente != null && file != null && !file.isEmpty()) {
-            pacienteService.savePaciente(paciente, file);
-        }
+        // Toda la lógica de validación de archivo y guardado movida al service
+        pacienteService.actualizarFotoDetalle(id, file);
         return "redirect:/pacientes/detalle/" + id + "?success&t=" + System.currentTimeMillis();
     }
 
@@ -140,7 +136,7 @@ public class PacienteController {
     }
 
     @PostMapping("/eliminar")
-    public String desactivarPaciente1(@RequestParam("id") Long id) {
+    public String desactivarPaciente(@RequestParam("id") Long id) {
         pacienteService.desactivarPaciente(id);
         return "redirect:/pacientes";
     }

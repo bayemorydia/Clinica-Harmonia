@@ -12,19 +12,37 @@ import java.util.Map;
 
 public interface CitaService {
     Page<Cita> getCitasPaginadas(String query, EstadoCita estado, int page, int size);
+
     void saveCita(Cita cita) throws Exception;
+
     void anularCita(Long id);
+
     List<Empleado> listarMedicosActivos();
+
+    long countCitasHoy(Long medicoId);
+
+    LocalDate parsearFechaAgenda(String fechaStr);
+
     long countCitasActivas();
+
     Cita findCitaById(Long id);
+
     long countPacientesPendientesPorMedico(Long medicoId);
+
     long countCitasHoyPorMedico(Long medicoId, LocalDateTime inicio, LocalDateTime fin);
+
     List<Cita> obtenerCitasPendientesMedico(Long medicoId);
+
     Map<LocalDate, Long> obtenerResumenAgendaAnual(Long medicoId, int anio);
+
     List<Cita> obtenerCitasDia(Long medicoId, LocalDate fecha);
+
     List<Cita> listarCitasDeHoyGlobal();
+
     List<Cita> listarCitasPorDiaGlobal(LocalDate fecha);
-    
-    // Método para Telegram usando el nombre del DAO
+
     List<Cita> findByPaciente(Paciente paciente);
+
+    // Nuevo método para mover lógica de creación inicial fuera del controller
+    Cita prepararNuevaCita();
 }

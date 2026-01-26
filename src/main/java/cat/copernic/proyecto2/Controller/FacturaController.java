@@ -45,7 +45,8 @@ public class FacturaController {
     public ResponseEntity<byte[]> descargarPdf(@PathVariable("id") Long id) {
         try {
             byte[] pdfBytes = facturaPdfService.generarPdfPorFacturaId(id);
-
+            // La lógica de construcción de cabeceras se mantiene aquí por ser concerniente a HTTP,
+            // pero el contenido viene validado del servicio.
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
             headers.setContentDisposition(ContentDisposition.attachment()
@@ -65,13 +66,15 @@ public class FacturaController {
 
     @GetMapping("/detalle/{id}")
     public String verDetalleFactura(@PathVariable("id") Long id, Model model) {
-        Factura factura = facturaService.findFacturaById(id);
-        if (factura == null) {
+        try {
+            // El servicio ahora se encarga de lanzar excepción si no existe
+            Factura factura = facturaService.obtenerFacturaDetalle(id);
+            model.addAttribute("factura", factura);
+            model.addAttribute("trad", traduccionService);
+            return "Facturacion/detalleFactura";
+        } catch (Exception e) {
             return "redirect:/admin/facturas";
         }
-        model.addAttribute("factura", factura);
-        model.addAttribute("trad", traduccionService);
-        return "Facturacion/detalleFactura";
     }
 
     @GetMapping("/search")

@@ -6,9 +6,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+
 import cat.copernic.proyecto2.DAO.JPA.EmpleadoDAO;
 import cat.copernic.proyecto2.Domain.Administración.Empleado;
 import cat.copernic.proyecto2.Domain.Administración.Nomina;
+import cat.copernic.proyecto2.Domain.Persona.Rol;
+import cat.copernic.proyecto2.Domain.Persona.Usuario;
+import cat.copernic.proyecto2.Service.Rol.RolService;
+import cat.copernic.proyecto2.Service.Usuario.UsuarioService;
 
 @Service
 @Transactional
@@ -17,8 +23,15 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     @Autowired
     private EmpleadoDAO empleadoDAO;
 
+    @Autowired
+    private RolService rolService;
+
+    @Autowired
+    private UsuarioService usuarioService;
+
     @Override
-    public Empleado crear(Empleado empleado) {
+    public Empleado crear(Empleado empleado) throws Exception {
+        // Validaciones existentes
         if (empleadoDAO.findByDni(empleado.getDni()).isPresent())
             throw new IllegalArgumentException("❌ Ya existe un Empleado con ese DNI");
         if (empleadoDAO.findByEmail(empleado.getEmail()).isPresent())
@@ -31,6 +44,19 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         if (empleado.getInicio() == null || empleado.getFin() == null)
             throw new IllegalArgumentException("❌ Debes asignar hora de inicio y fin");
 
+        // LÓGICA DE NEGOCIO MOVIDA DEL CONTROLLER
+        Rol rol = rolService.encontrarRol(empleado.getRol().getId());
+        empleado.setRol(rol);
+
+        Usuario usuarioCreado = usuarioService.crearUsuarioEmpleado(
+                empleado.getNombre(),
+                empleado.getApellidos(),
+                empleado.getDni(),
+                rol.getNombre());
+
+        empleado.setUsuario(usuarioCreado);
+        // FIN LÓGICA MOVIDA
+
         empleado.setId(null);
         empleado.setFecha_alta(LocalDate.now());
         empleado.setActiva(true);
@@ -39,7 +65,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     }
 
     @Override
-    public Empleado actualizar(Long id, Empleado datos) {
+    public Empleado actualizar(Long id, Empleado datos) throws Exception {
         Empleado existente = obtenerPorId(id);
 
         empleadoDAO.findByDni(datos.getDni()).ifPresent(e -> {
@@ -47,18 +73,25 @@ public class EmpleadoServiceImpl implements EmpleadoService {
                 throw new IllegalArgumentException("❌ El DNI ya está en uso");
         });
 
+        // LÓGICA DE NEGOCIO MOVIDA DEL CONTROLLER
+        Rol rolNuevo = rolService.encontrarRol(datos.getRol().getId());
+
+        if (existente.getUsuario() != null) {
+            usuarioService.actualizarRolUsuario(existente.getUsuario().getId(),
+                    rolNuevo.getNombre());
+        }
+        // FIN LÓGICA MOVIDA
+
         existente.setNombre(datos.getNombre());
         existente.setApellidos(datos.getApellidos());
         existente.setDni(datos.getDni());
         existente.setEmail(datos.getEmail());
         existente.setTelefono(datos.getTelefono());
-        existente.setRol(datos.getRol());
+        existente.setRol(rolNuevo); // Usamos el rol gestionado arriba
         existente.setSalarioBase(datos.getSalarioBase());
         existente.setInicio(datos.getInicio());
         existente.setFin(datos.getFin());
         existente.setTurno(datos.getTurno());
-        // No tocamos 'activa' ni 'fecha_baja' aquí para evitar conflictos con los
-        // métodos de estado
 
         return empleadoDAO.save(existente);
     }
@@ -68,7 +101,7 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         Empleado emp = empleadoDAO.findById(id)
                 .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));
         emp.setActiva(true);
-        emp.setFecha_baja(null); // Limpiamos la fecha de baja al activar
+        emp.setFecha_baja(null);
         empleadoDAO.save(emp);
     }
 
@@ -121,5 +154,21 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     @Transactional(readOnly = true)
     public Empleado obtenerPorDni(String dni) {
         return empleadoDAO.obtenerPorDni(dni);
+    }
+
+    // ... dentro de EmpleadoServiceImpl ...
+
+    @Override
+    @Transactional(readOnly = true)
+    public Map<String, Long> obtenerEstadisticasDashboard() {
+        List<Empleado> todos = empleadoDAO.findAll();
+        long total = todos.size();
+        long activos = todos.stream().filter(Empleado::getActiva).count();
+        long inactivos = total - activos;
+
+        return Map.of(
+                "total", total,
+                "activos", activos,
+                "inactivos", inactivos);
     }
 }
