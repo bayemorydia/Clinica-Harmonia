@@ -1,22 +1,30 @@
 package cat.copernic.proyecto2.Controller;
 
 import cat.copernic.proyecto2.Domain.Administración.Empleado;
+import cat.copernic.proyecto2.Domain.Administración.Nomina;
 import cat.copernic.proyecto2.Domain.PersonalSanitario.*;
 import cat.copernic.proyecto2.Domain.Recepción.Cita;
 import cat.copernic.proyecto2.Domain.Recepción.EstadoCita;
 import cat.copernic.proyecto2.Domain.Recepción.Paciente;
 import cat.copernic.proyecto2.Service.Traduccion.TraduccionService;
+import cat.copernic.proyecto2.Service.Usuario.UsuarioService;
 import cat.copernic.proyecto2.Service.Medicamento.MedicamentoService;
 import cat.copernic.proyecto2.Service.Paciente.PacienteService;
 import cat.copernic.proyecto2.Service.Prueba.PruebaService;
+import cat.copernic.proyecto2.Service.Rol.RolService;
 import cat.copernic.proyecto2.Service.Cita.CitaService;
 import cat.copernic.proyecto2.Service.Consulta.ConsultaService;
 import cat.copernic.proyecto2.Service.Diagnostico.DiagnosticoService;
 import cat.copernic.proyecto2.Service.Empleado.EmpleadoService;
 import cat.copernic.proyecto2.Service.Empleado.Nomina.NominaService;
+import cat.copernic.proyecto2.Service.Empleado.Turno.TurnoService;
+
+import java.security.Principal;
 import java.time.LocalDate;
+import org.springframework.data.domain.Page;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,6 +37,8 @@ public class MedicoController {
 
     @Autowired
     private TraduccionService traduccionService;
+    @Autowired
+    private UsuarioService usuarioService;
     @Autowired
     private ConsultaService consultaService;
     @Autowired
@@ -45,18 +55,22 @@ public class MedicoController {
     private DiagnosticoService diagnosticoService;
     @Autowired
     private PacienteService pacienteService;
+    @Autowired
+    private RolService rolService;
+    @Autowired
+    private TurnoService turnoService;
 
     @GetMapping("/dashboard")
     public String dashboard(Model model, Authentication auth) {
         Empleado medico = empleadoService.obtenerPorUsername(auth.getName());
-        
+
         model.addAttribute("trad", traduccionService);
         model.addAttribute("activePage", "dashboard");
         model.addAttribute("medicoLogueado", medico);
         model.addAttribute("totalPacientes", citaService.countPacientesPendientesPorMedico(medico.getId()));
         model.addAttribute("citasHoy", citaService.countCitasHoy(medico.getId()));
         model.addAttribute("citasPendientes", citaService.obtenerCitasPendientesMedico(medico.getId()));
-        
+
         return "Medico/dashboard";
     }
 
@@ -66,12 +80,12 @@ public class MedicoController {
             @RequestParam(value = "citaId", required = false) Long citaId,
             @RequestParam(value = "fechaInicio", required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
             @RequestParam(value = "fechaFin", required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) LocalDate fechaFin,
-            Model model, 
+            Model model,
             Authentication auth) {
 
         Empleado medico = empleadoService.obtenerPorUsername(auth.getName());
         Paciente paciente = pacienteService.findPacienteById(pacienteId);
-        
+
         // Lógica de filtrado movida al servicio
         HistorialClinico historial = consultaService.obtenerHistorialFiltrado(pacienteId, fechaInicio, fechaFin);
 
@@ -85,14 +99,30 @@ public class MedicoController {
         return "Medico/historial";
     }
 
-    @GetMapping("/perfil/{id}")
-    public String verPerfil(@PathVariable("id") Long id, Model model) {
-        Empleado medico = empleadoService.obtenerPorId(id);
-        model.addAttribute("trad", traduccionService);
-        model.addAttribute("activePage", "perfil");
-        model.addAttribute("empleado", medico);
-        model.addAttribute("medicoLogueado", medico);
-        return "Empleado/detalle";
+    @GetMapping("/perfil")
+    public String verPerfil(Principal principal, Model model) {
+        if (principal != null) {
+            // El service encapsula la lógica de búsqueda y validación
+            Empleado empleado = usuarioService.obtenerEmpleadoPorUsername(principal.getName());
+
+            if (empleado != null) {
+                model.addAttribute("empleado", empleado);
+
+                // Lógica de soporte movida a métodos privados o inyectada
+                cargarListasSoportePerfil(model);
+
+                model.addAttribute("trad", traduccionService);
+                model.addAttribute("activePage", "perfil");
+                return "empleado/detalle";
+            }
+        }
+        return "redirect:/medico/dashboard";
+    }
+
+    // Método privado para limpiar el GetMapping
+    private void cargarListasSoportePerfil(Model model) {
+        model.addAttribute("roles", rolService.listarRoles(PageRequest.of(0, 200)).getContent());
+        model.addAttribute("turnos", turnoService.listarTodos());
     }
 
     @GetMapping("/agenda")
@@ -100,7 +130,7 @@ public class MedicoController {
             @RequestParam(name = "fecha", required = false) String fechaStr) {
 
         Empleado medico = empleadoService.obtenerPorUsername(auth.getName());
-        
+
         // Lógica de parseo de fecha movida al servicio
         LocalDate fechaBusqueda = citaService.parsearFechaAgenda(fechaStr);
         List<Cita> citas = citaService.obtenerCitasDia(medico.getId(), fechaBusqueda);
@@ -136,7 +166,7 @@ public class MedicoController {
     public String verResumenCita(@PathVariable Long citaId, Model model, Authentication auth) {
         Empleado medico = empleadoService.obtenerPorUsername(auth.getName());
         Cita cita = citaService.findCitaById(citaId);
-        
+
         // Lógica de búsqueda de episodio específico movida al servicio
         EpisodioClinico episodio = consultaService.buscarEpisodioPorCita(cita);
 
@@ -159,7 +189,7 @@ public class MedicoController {
 
         // Lógica de preparación de listas y guardado movida al servicio
         consultaService.procesarFinalizacionConsulta(citaId, diagnosticoId, tratamiento, medIds, medDosis, pruebaIds);
-        
+
         return "redirect:/medico/agenda?success=true";
     }
 
@@ -179,10 +209,9 @@ public class MedicoController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Empleado medico = empleadoService.obtenerPorUsername(auth.getName());
-        org.springframework.data.domain.Page<cat.copernic.proyecto2.Domain.Administración.Nomina> paginaNominas = 
-            nominaService.getNominasPorEmpleado(medico.getId(), org.springframework.data.domain.PageRequest.of(page, size));
-        
-        model.addAttribute("medicoLogueado", medico);
+        Page<Nomina> paginaNominas = nominaService.getNominasPorEmpleado(medico.getId(), PageRequest.of(page, size));
+
+        model.addAttribute("empleado", medico); // <--- IMPORTANTE: Usar "empleado" para que el HTML lo detecte
         model.addAttribute("nominas", paginaNominas.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", paginaNominas.getTotalPages());
@@ -191,24 +220,31 @@ public class MedicoController {
         model.addAttribute("activePage", "nominas");
         model.addAttribute("trad", traduccionService);
         model.addAttribute("query", "");
-        return "Empleado/nominasEmpleado";
+        return "Empleado/nominasEmpleado"; // Tu vista específica
     }
 
     @GetMapping("/nominas/search")
     public String searchNominas(Model model, Authentication auth,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "") String query) {
+
         Empleado medico = empleadoService.obtenerPorUsername(auth.getName());
-        org.springframework.data.domain.Page<cat.copernic.proyecto2.Domain.Administración.Nomina> paginaNominas = 
-            nominaService.getNominasPorEmpleado(medico.getId(), org.springframework.data.domain.PageRequest.of(page, size));
-        
+
+        // Usamos el nuevo método del service que filtra por empleado y periodo
+        // (mes/año)
+        Page<Nomina> paginaNominas = nominaService.listarNominasPorEmpleado(medico.getId(), query, page, size);
+
+        model.addAttribute("empleado", medico);
         model.addAttribute("nominas", paginaNominas.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", paginaNominas.getTotalPages());
         model.addAttribute("totalElements", paginaNominas.getTotalElements());
         model.addAttribute("size", size);
+        model.addAttribute("query", query); // Mantener el valor en el input
         model.addAttribute("trad", traduccionService);
-        return "Nomina/listarNominas :: tablaNominas";
+
+        return "Empleado/nominasEmpleado :: tablaNominas";
     }
 
     @PostMapping("/atender/finalizar")
@@ -219,10 +255,11 @@ public class MedicoController {
             @RequestParam(required = false) List<String> medNombre,
             @RequestParam(required = false) List<String> medDosis,
             @RequestParam(required = false) List<Double> medPrecio) {
-        
-        // Lógica delegada al servicio para mantener compatibilidad con el método duplicado
+
+        // Lógica delegada al servicio para mantener compatibilidad con el método
+        // duplicado
         consultaService.procesarConsultaLegacy(citaId, episodio, tratamiento, pruebasIds, medNombre, medDosis);
-        
+
         return "redirect:/medico/dashboard?success";
     }
 }

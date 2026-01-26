@@ -100,16 +100,30 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     public void activarEmpleado(Long id) {
         Empleado emp = empleadoDAO.findById(id)
                 .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));
+
         emp.setActiva(true);
         emp.setFecha_baja(null);
+
+        // Sincronización: Activar usuario vinculado
+        if (emp.getUsuario() != null) {
+            emp.getUsuario().setActivo(true);
+        }
+
         empleadoDAO.save(emp);
     }
 
     @Override
     public void desactivarEmpleado(Long id) {
         Empleado existente = obtenerPorId(id);
+
         existente.setActiva(false);
         existente.setFecha_baja(LocalDate.now());
+
+        // Sincronización: Desactivar usuario vinculado
+        if (existente.getUsuario() != null) {
+            existente.getUsuario().setActivo(false);
+        }
+
         empleadoDAO.save(existente);
     }
 
