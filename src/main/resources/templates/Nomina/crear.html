@@ -8,133 +8,155 @@
 </head>
 
 <body class="bg-light">
-    <div th:replace="~{Reutilizable/layout :: menu}"></div>
-    <div sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layoutRRHH :: menu_RRHH}"></div>
+<div th:replace="~{Reutilizable/layout :: menu}"></div>
+<div sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layoutRRHH :: menu_RRHH}"></div>
 
-    <main class="content">
-        <div class="container-fluid py-4">
+<main class="content">
+    <div class="container-fluid py-4">
 
-            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show rounded-3 mb-4 shadow-sm">
-                <i class="bi bi-exclamation-octagon-fill me-2"></i>
-                <span th:text="${error}"></span>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show rounded-3 mb-4 shadow-sm">
+            <i class="bi bi-exclamation-octagon-fill me-2"></i>
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
 
-            <form th:action="@{/nominas/guardar}" method="post" th:object="${nomina}">
-                <input type="hidden" th:field="*{empleado.id}"/>
-                <input type="hidden" th:field="*{salarioBase}" id="salarioBase"/>
-                <input type="hidden" th:field="*{netoMensual}" id="netoMensual"/>
-                <input type="hidden" th:field="*{totalPagar}" id="totalPagar"/>
+        <form th:action="@{/nominas/guardar}" method="post" th:object="${nomina}">
+            <input type="hidden" th:field="*{empleado.id}"/>
+            <input type="hidden" th:field="*{salarioBase}" id="salarioBase"/>
+            <input type="hidden" th:field="*{deducciones}" id="deducciones_hidden"/>
+            <input type="hidden" th:field="*{netoMensual}" id="netoMensual"/>
+            <input type="hidden" th:field="*{totalPagar}" id="totalPagar"/>
 
-                <div class="row g-4 justify-content-center">
-                    <div class="col-lg-12">
-                        <div class="card shadow-sm border-0" style="border-radius: 15px;">
-                            
-                            <div class="card-header bg-white border-0 py-4 px-4 d-flex align-items-center">
-                                <div class="bg-primary bg-opacity-10 p-3 rounded-3 me-3">
-                                    <i class="bi bi-cash-stack text-primary fs-3"></i>
-                                </div>
-                                <div>
-                                    <h4 class="fw-bold mb-0 text-dark" th:text="${trad.getTraduccion('nomina.crear.titulo')}">Emitir Nueva Nómina</h4>
-                                    <p class="text-muted small mb-0" th:text="${trad.getTraduccion('nomina.crear.subtitulo')}">Generación de liquidación salarial mensual.</p>
-                                </div>
+            <div class="row g-4 justify-content-center">
+                <div class="col-lg-12">
+                    <div class="card shadow-sm border-0" style="border-radius: 15px;">
+
+                        <div class="card-header bg-white border-0 py-4 px-4 d-flex align-items-center">
+                            <div class="bg-primary bg-opacity-10 p-3 rounded-3 me-3">
+                                <i class="bi bi-cash-stack text-primary fs-3"></i>
                             </div>
+                            <div>
+                                <h4 class="fw-bold mb-0 text-dark" th:text="${trad.getTraduccion('nomina.crear.titulo')}">Emitir Nueva Nómina</h4>
+                                <p class="text-muted small mb-0" th:text="${trad.getTraduccion('nomina.crear.subtitulo')}">Generación de liquidación salarial mensual.</p>
+                            </div>
+                        </div>
 
-                            <div class="card-body p-4">
-                                <div class="row mb-4">
-                                    <div class="col-xl-3 col-lg-4">
-                                        <h6 class="fw-bold text-primary text-uppercase small" th:text="${trad.getTraduccion('nomina.seccion.empleado')}">Beneficiario</h6>
-                                        <p class="text-muted small" th:text="${trad.getTraduccion('nomina.crear.empleado.desc')}">Personal al que se le asigna el pago.</p>
-                                    </div>
-                                    <div class="col-xl-9 col-lg-8">
-                                        <div class="d-flex align-items-center gap-4 p-3 bg-light rounded-3">
-                                            <div class="bg-white rounded-circle d-flex align-items-center justify-content-center shadow-sm border border-2 border-white" style="width: 60px; height: 60px;">
-                                                <i class="bi bi-person-badge text-primary fs-4"></i>
-                                            </div>
-                                            <div>
-                                                <h5 class="fw-bold text-dark mb-0" th:text="${empleado.nombre + ' ' + empleado.apellidos}"></h5>
-                                                <p class="text-muted small mb-0" th:text="${empleado.rol.nombre}"></p>
-                                            </div>
+                        <div class="card-body p-4">
+                            <div class="row mb-4">
+                                <div class="col-xl-3 col-lg-4">
+                                    <h6 class="fw-bold text-primary text-uppercase small" th:text="${trad.getTraduccion('nomina.seccion.empleado')}">Beneficiario</h6>
+                                    <p class="text-muted small" th:text="${trad.getTraduccion('nomina.crear.empleado.desc')}">Personal al que se le asigna el pago.</p>
+                                </div>
+                                <div class="col-xl-9 col-lg-8">
+                                    <div class="d-flex align-items-center gap-4 p-3 bg-light rounded-3">
+                                        <div class="bg-white rounded-circle d-flex align-items-center justify-content-center shadow-sm border border-2 border-white" style="width: 60px; height: 60px;">
+                                            <i class="bi bi-person-badge text-primary fs-4"></i>
+                                        </div>
+                                        <div>
+                                            <h5 class="fw-bold text-dark mb-0" th:text="${empleado.nombre + ' ' + empleado.apellidos}"></h5>
+                                            <p class="text-muted small mb-0" th:text="${empleado.rol.nombre}"></p>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
 
-                                <hr class="my-4 opacity-25">
+                            <hr class="my-4 opacity-25">
 
-                                <div class="row">
-                                    <div class="col-xl-3 col-lg-4">
-                                        <h6 class="fw-bold text-primary text-uppercase small" th:text="${trad.getTraduccion('nomina.seccion.periodo')}">Periodo y Cálculo</h6>
-                                        <p class="text-muted small" th:text="${trad.getTraduccion('nomina.crear.periodo.desc')}">Seleccione el mes de devengo. Los cálculos de IRPF son automáticos.</p>
-                                    </div>
-                                    <div class="col-xl-9 col-lg-8">
-                                        <div class="row g-3">
-                                            <div class="col-md-6">
-                                                <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('nomina.tabla.periodo')}">Mes de Liquidación</label>
-                                                <input type="month" th:field="*{periodo}" class="form-control bg-light border-0 py-2" required>
+                            <div class="row">
+                                <div class="col-xl-3 col-lg-4">
+                                    <h6 class="fw-bold text-primary text-uppercase small" th:text="${trad.getTraduccion('nomina.seccion.periodo')}">Periodo y Cálculo</h6>
+                                    <p class="text-muted small" th:text="${trad.getTraduccion('nomina.crear.periodo.desc')}">Seleccione el mes de devengo.</p>
+                                </div>
+                                <div class="col-xl-9 col-lg-8">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('nomina.tabla.periodo')}">Mes de Liquidación</label>
+                                            <input type="month" th:field="*{periodo}" class="form-control bg-light border-0 py-2" required>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold text-secondary text-uppercase">Retención IRPF Aplicada</label>
+                                            <div class="input-group">
+                                                <input type="text" id="deducciones_display" class="form-control bg-light border-0 py-2 fw-bold" readonly>
+                                                <span class="input-group-text bg-light border-0">%</span>
                                             </div>
-                                            <div class="col-md-12 mt-4">
-                                                <div class="p-4 rounded-4 border-0 shadow-none bg-primary bg-opacity-10">
-                                                    <label class="form-label small fw-bold text-primary text-uppercase" th:text="${trad.getTraduccion('nomina.label.total_mensual')}">Neto Mensual Estimado</label>
-                                                    <div class="d-flex align-items-center">
-                                                        <h2 class="mb-0 fw-bold text-primary" id="totalPagarMensual_display">0.00</h2>
-                                                        <h2 class="mb-0 fw-bold text-primary ms-2">€</h2>
-                                                    </div>
+                                        </div>
+
+                                        <div class="col-md-12 mt-4">
+                                            <div class="p-4 rounded-4 border-0 shadow-none bg-primary bg-opacity-10">
+                                                <label class="form-label small fw-bold text-primary text-uppercase" th:text="${trad.getTraduccion('nomina.label.total_mensual')}">Neto Mensual Estimado</label>
+                                                <div class="d-flex align-items-center">
+                                                    <h2 class="mb-0 fw-bold text-primary" id="totalPagarMensual_display">0.00</h2>
+                                                    <h2 class="mb-0 fw-bold text-primary ms-2">€</h2>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-                            <div class="card-footer bg-white border-0 p-4 d-flex justify-content-end gap-2">
-                                <a th:href="@{/nominas}" class="btn btn-light rounded-pill px-4" th:text="${trad.getTraduccion('btn.cancelar')}"></a>
-                                <button type="submit" class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm">
-                                    <i class="bi bi-check-circle me-2"></i>
-                                    <span th:text="${trad.getTraduccion('btn.guardar')}">Confirmar y Emitir</span>
-                                </button>
-                            </div>
+                        <div class="card-footer bg-white border-0 p-4 d-flex justify-content-end gap-2">
+                            <a th:href="@{/nominas}" class="btn btn-light rounded-pill px-4" th:text="${trad.getTraduccion('btn.cancelar')}"></a>
+                            <button type="submit" class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm">
+                                <i class="bi bi-check-circle me-2"></i>
+                                <span th:text="${trad.getTraduccion('btn.guardar')}">Confirmar y Emitir</span>
+                            </button>
                         </div>
                     </div>
                 </div>
-            </form>
-        </div>
-    </main>
+            </div>
+        </form>
+    </div>
+</main>
 
-    <div th:replace="~{Reutilizable/layout :: scripts}"></div>
-    <div sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layoutRRHH :: scripts_RRHH}"></div>
+<div th:replace="~{Reutilizable/layout :: scripts}"></div>
+<div sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layoutRRHH :: scripts_RRHH}"></div>
 
-    <script th:inline="javascript">
-        const salarioBaseAnual = parseFloat(document.getElementById('salarioBase').value) || 0;
+<script th:inline="javascript">
+    function obtenerIRPF(salarioAnual) {
+        if (salarioAnual <= 12450) return 19;
+        if (salarioAnual <= 20200) return 24;
+        if (salarioAnual <= 35200) return 30;
+        if (salarioAnual <= 60000) return 37;
+        return 45;
+    }
+
+    function calcularNomina() {
+        // Referencias
+        const salarioBaseInput = document.getElementById('salarioBase');
         const deduccionesDisplay = document.getElementById('deducciones_display');
         const deduccionesHidden = document.getElementById('deducciones_hidden');
         const netoAnualHidden = document.getElementById('totalPagar');
         const netoMensualDisplay = document.getElementById('totalPagarMensual_display');
         const netoMensualHidden = document.getElementById('netoMensual');
 
-        function obtenerIRPF(salarioAnual) {
-            if (salarioAnual <= 12450) return 19;
-            if (salarioAnual <= 20200) return 24;
-            if (salarioAnual <= 35200) return 30;
-            if (salarioAnual <= 60000) return 37;
-            return 45;
-        }
+        const salarioBaseAnual = parseFloat(salarioBaseInput.value) || 0;
 
-        function calcularNomina() {
+        if (salarioBaseAnual > 0) {
             const irpfPorcentaje = obtenerIRPF(salarioBaseAnual);
             const irpfAnual = salarioBaseAnual * (irpfPorcentaje / 100);
-            const netoMensual = (salarioBaseAnual - irpfAnual) / 12;
+            const netoAnual = salarioBaseAnual - irpfAnual;
+            const netoMensual = netoAnual / 12;
 
-            // Actualizar Interfaz
-            deduccionesDisplay.value = irpfPorcentaje + " %";
-            netoMensualDisplay.innerText = netoMensual.toLocaleString('de-DE', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            // Actualizar Interfaz Visibles
+            if (deduccionesDisplay) deduccionesDisplay.value = irpfPorcentaje;
+            if (netoMensualDisplay) {
+                netoMensualDisplay.innerText = netoMensual.toLocaleString('de-DE', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            }
 
-            // Actualizar Inputs Hidden para envío
-            deduccionesHidden.value = irpfPorcentaje;
-            netoAnualHidden.value = (salarioBaseAnual - irpfAnual).toFixed(2);
-            netoMensualHidden.value = netoMensual.toFixed(2);
+            // Actualizar Inputs Hidden para Spring Boot
+            if (deduccionesHidden) deduccionesHidden.value = irpfPorcentaje;
+            if (netoAnualHidden) netoAnualHidden.value = netoAnual.toFixed(2);
+            if (netoMensualHidden) netoMensualHidden.value = netoMensual.toFixed(2);
         }
+    }
 
-        window.addEventListener('DOMContentLoaded', calcularNomina);
-    </script>
+    // Ejecutar al cargar la página
+    document.addEventListener('DOMContentLoaded', calcularNomina);
+</script>
 </body>
 </html>
