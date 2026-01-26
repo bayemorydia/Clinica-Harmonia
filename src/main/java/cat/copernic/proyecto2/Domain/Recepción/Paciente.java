@@ -27,8 +27,7 @@ public class Paciente {
     private String apellidos;
 
     @NotBlank(message = "{paciente.valid.dni_obligatorio}")
-    @Pattern(regexp = "^([0-9]{8}[TRWAGMYFPDXBNJZSQVHLCKE]|[XYZ][0-9]{7}[TRWAGMYFPDXBNJZSQVHLCKE])$", 
-             message = "{paciente.valid.dni_formato}")
+    @Pattern(regexp = "^([0-9]{8}[TRWAGMYFPDXBNJZSQVHLCKE]|[XYZ][0-9]{7}[TRWAGMYFPDXBNJZSQVHLCKE])$", message = "{paciente.valid.dni_formato}")
     @Column(unique = true, nullable = false)
     private String dni;
 
@@ -41,6 +40,7 @@ public class Paciente {
     @Pattern(regexp = "^[0-9]{9}$", message = "{paciente.valid.telefono_formato}")
     private String telefono;
 
+    @Column(unique = true)
     @NotBlank(message = "{paciente.valid.email_obligatorio}")
     @Email(message = "{paciente.valid.email_formato}")
     private String email;
@@ -49,7 +49,7 @@ public class Paciente {
     private String direccion;
 
     private LocalDate fechaAlta;
-    private String rutaFoto; 
+    private String rutaFoto;
 
     @Column(name = "activo")
     private boolean activo = true;
