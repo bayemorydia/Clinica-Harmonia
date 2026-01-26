@@ -83,6 +83,7 @@ public class PacienteController {
 
         model.addAttribute("trad", traduccionService);
 
+        // 1. Validaciones básicas de Hibernate (@NotBlank, @Email, etc.)
         if (result.hasErrors()) {
             if ("detalle".equals(origen)) {
                 model.addAttribute("edad", pacienteService.getEdadPaciente(paciente));
@@ -98,10 +99,20 @@ public class PacienteController {
             }
             return "redirect:/pacientes";
         } catch (RuntimeException e) {
+            // 2. Captura de errores de lógica de negocio (Unicidad)
             if ("DNI_DUPLICADO".equals(e.getMessage())) {
                 model.addAttribute("error", traduccionService.getTraduccion("paciente.valid.dni_existe"));
+            } else if ("EMAIL_DUPLICADO".equals(e.getMessage())) {
+                // Añadimos la traducción para el email duplicado
+                model.addAttribute("error", traduccionService.getTraduccion("paciente.valid.email_existe"));
             } else {
                 model.addAttribute("error", e.getMessage());
+            }
+
+            // Si falla la lógica de negocio, volvemos a la vista correspondiente
+            if ("detalle".equals(origen)) {
+                model.addAttribute("edad", pacienteService.getEdadPaciente(paciente));
+                return "Paciente/detallePaciente";
             }
             return "Paciente/formularioPaciente";
         }

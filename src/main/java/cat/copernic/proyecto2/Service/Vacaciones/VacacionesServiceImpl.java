@@ -26,8 +26,11 @@ public class VacacionesServiceImpl implements VacacionesService {
     public void procesarSolicitud(String username, LocalDate inicio, LocalDate fin) throws Exception {
         // 1. Identificar empleado
         Empleado empleado = usuarioService.obtenerEmpleadoPorUsername(username);
-        if (empleado == null) throw new Exception("login");
-
+        if (empleado == null)
+            throw new Exception("login");
+        if (inicio.isBefore(LocalDate.now())) {
+            throw new Exception("fecha_pasada"); // Asegúrate de añadir este mensaje a tu traductor
+        }
         // 2. Validaciones de Negocio
         if (inicio.isAfter(fin)) {
             throw new Exception("fecha");
@@ -42,7 +45,7 @@ public class VacacionesServiceImpl implements VacacionesService {
         vacacion.setFechaInicio(inicio);
         vacacion.setFechaFin(fin);
         vacacion.setEstado(EstadoVacaciones.PENDIENTE);
-        
+
         long dias = ChronoUnit.DAYS.between(inicio, fin) + 1;
         vacacion.setTotalDias((int) dias);
 

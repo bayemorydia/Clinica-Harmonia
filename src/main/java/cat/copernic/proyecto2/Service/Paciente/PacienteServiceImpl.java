@@ -55,6 +55,10 @@ public class PacienteServiceImpl implements PacienteService {
                 throw new RuntimeException("DNI_DUPLICADO");
             }
 
+            if (pacienteDAO.existsByEmail(pacienteForm.getEmail())) {
+                throw new RuntimeException("EMAIL_DUPLICADO");
+            }
+
             pacienteForm.setFechaAlta(LocalDate.now());
             pacienteForm.setActivo(true);
 
@@ -70,7 +74,11 @@ public class PacienteServiceImpl implements PacienteService {
             // Lógica de Edición
             Paciente pacienteBD = pacienteDAO.findById(pacienteForm.getId())
                     .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
-
+            if (!pacienteForm.getEmail().equalsIgnoreCase(pacienteBD.getEmail())) {
+                if (pacienteDAO.existsByEmail(pacienteForm.getEmail())) {
+                    throw new RuntimeException("EMAIL_DUPLICADO");
+                }
+            }
             pacienteBD.setNombre(pacienteForm.getNombre());
             pacienteBD.setApellidos(pacienteForm.getApellidos());
             pacienteBD.setFechaNacimiento(pacienteForm.getFechaNacimiento());

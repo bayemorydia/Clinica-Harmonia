@@ -254,8 +254,11 @@
             const query = document.getElementById('searchInput').value;
             const size = document.getElementById('pageSize').value;
 
-            // Como esta es la vista privada del médico, llamamos a su ruta de búsqueda
-            let url = `/medico/nominas/search?query=${encodeURIComponent(query)}&page=${page}&size=${size}`;
+            // DETECCIÓN DINÁMICA DE RUTA
+            // Si la URL actual contiene '/medico', usará esa base, si no, usará '/recepcion'
+            const baseRoute = window.location.pathname.includes('/medico') ? '/medico' : '/recepcion';
+
+            let url = `${baseRoute}/nominas/search?query=${encodeURIComponent(query)}&page=${page}&size=${size}`;
 
             fetch(url)
                 .then(res => {
@@ -264,9 +267,9 @@
                 })
                 .then(html => {
                     document.getElementById('tablaContainer').innerHTML = html;
-                    initTableEvents();
+                    initTableEvents(); // Volver a bindear eventos de clic en filas
                 })
-                .catch(err => console.error(err));
+                .catch(err => console.error("Error al actualizar tabla:", err));
         }
 
         function changePage(page) {

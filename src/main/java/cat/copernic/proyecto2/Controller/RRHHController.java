@@ -8,8 +8,6 @@ import cat.copernic.proyecto2.Service.Vacaciones.RRHH.VacacionesServiceRRHH;
 import cat.copernic.proyecto2.Service.Rol.RolService;
 import cat.copernic.proyecto2.Service.Empleado.Turno.TurnoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -39,7 +37,6 @@ public class RRHHController {
     private VacacionesServiceRRHH vacacionesService;
 
     private void cargarRoles(Model model) {
-        Pageable pageable = PageRequest.of(0, 200);
         model.addAttribute("roles", rolService.RolesConcretos());
     }
 

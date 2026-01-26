@@ -70,10 +70,11 @@
 
 <body>
     <div class="sidebar-recepcion d-flex flex-column p-3" th:fragment="menu_recepcion">
-        
+
         <div class="d-flex align-items-center mb-1 px-2">
             <i class="bi bi-hospital-fill text-primary fs-3 me-2"></i>
-            <span class="fs-5 fw-bold text-primary" th:text="${trad.getTraduccion('nav.clinica.nombre')}">Clínica Harmonia</span>
+            <span class="fs-5 fw-bold text-primary" th:text="${trad.getTraduccion('nav.clinica.nombre')}">Clínica
+                Harmonia</span>
         </div>
 
         <div class="lang-container">
@@ -85,7 +86,8 @@
         </div>
 
         <div class="mb-4 px-2">
-            <small class="text-muted d-block" th:text="${trad.getTraduccion('nav.identificado')}">Identificado como:</small>
+            <small class="text-muted d-block" th:text="${trad.getTraduccion('nav.identificado')}">Identificado
+                como:</small>
             <span class="fw-bold text-dark">
                 <i class="bi bi-person-badge me-1"></i>
                 <span sec:authentication="name">Usuario</span>
@@ -93,10 +95,10 @@
         </div>
 
         <ul class="nav flex-column mb-auto">
-            
+
             <li>
                 <a th:href="@{/recepcion/dashboard}" class="nav-link-rec"
-                   th:classappend="${activePage == 'dashboard' ? 'active' : ''}">
+                    th:classappend="${activePage == 'dashboard' ? 'active' : ''}">
                     <i class="bi bi-speedometer2"></i>
                     <span th:text="${trad.getTraduccion('nav.inicio')}">Dashboard</span>
                 </a>
@@ -104,15 +106,14 @@
 
             <li>
                 <a th:href="@{/pacientes}" class="nav-link-rec"
-                   th:classappend="${activePage == 'pacientes' ? 'active' : ''}">
+                    th:classappend="${activePage == 'pacientes' ? 'active' : ''}">
                     <i class="bi bi-people"></i>
                     <span th:text="${trad.getTraduccion('mod.pacientes')}">Pacientes</span>
                 </a>
             </li>
 
             <li>
-                <a th:href="@{/citas}" class="nav-link-rec"
-                   th:classappend="${activePage == 'citas' ? 'active' : ''}">
+                <a th:href="@{/citas}" class="nav-link-rec" th:classappend="${activePage == 'citas' ? 'active' : ''}">
                     <i class="bi bi-calendar-check"></i>
                     <span th:text="${trad.getTraduccion('mod.citas')}">Citas</span>
                 </a>
@@ -122,7 +123,7 @@
 
             <li>
                 <a th:href="@{/recepcion/perfil}" class="nav-link-rec"
-                   th:classappend="${activePage == 'perfil' ? 'active' : ''}">
+                    th:classappend="${activePage == 'perfil' ? 'active' : ''}">
                     <i class="bi bi-person-circle"></i>
                     <span th:text="${trad.getTraduccion('nav.perfil')}">Perfil</span>
                 </a>
@@ -130,15 +131,15 @@
 
             <li>
                 <a th:href="@{/recepcion/nominas}" class="nav-link-rec"
-                   th:classappend="${activePage == 'nominas' ? 'active' : ''}">
+                    th:classappend="${activePage == 'nominas' ? 'active' : ''}">
                     <i class="bi bi-file-earmark-medical"></i>
-                    <span th:text="${trad.getTraduccion('nav.nominas')}">Nóminas</span>
+                    <span th:text="${trad.getTraduccion('nav.nominas')}">Mis Nóminas</span>
                 </a>
             </li>
 
             <li>
-                <a th:href="@{/recepcion/vacaciones}" class="nav-link-rec"
-                   th:classappend="${activePage == 'vacaciones' ? 'active' : ''}">
+                <a th:href="@{/vacaciones}" class="nav-link-rec"
+                    th:classappend="${#ctx.containsVariable('activePage') and activePage == 'vacaciones' ? 'active' : ''}">
                     <i class="bi bi-sun"></i>
                     <span th:text="${trad.getTraduccion('nav.vacaciones')}">Vacaciones</span>
                 </a>
@@ -167,4 +168,5 @@
         </script>
     </div>
 </body>
+
 </html>
