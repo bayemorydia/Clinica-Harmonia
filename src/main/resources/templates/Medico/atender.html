@@ -4,7 +4,8 @@
 <head>
     <div th:replace="~{Reutilizable/layoutMedico :: head_medico}"></div>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"
+        rel="stylesheet" />
     <title th:text="${trad.getTraduccion('atencion.titulo')} + ' - ' + ${paciente.nombre}">Atención Médica</title>
 </head>
 
@@ -14,7 +15,8 @@
     <main class="content-medico">
         <div class="container-fluid py-4">
 
-            <div class="card shadow-sm border-0 mb-4" style="border-radius: 15px; background: linear-gradient(to right, #ffffff, #f8f9fa);">
+            <div class="card shadow-sm border-0 mb-4"
+                style="border-radius: 15px; background: linear-gradient(to right, #ffffff, #f8f9fa);">
                 <div class="card-body p-4">
                     <div class="row align-items-center">
                         <div class="col-md-6 d-flex align-items-center">
@@ -22,10 +24,15 @@
                                 <i class="bi bi-arrow-left"></i>
                             </a>
                             <div class="me-4">
-                                <h2 class="fw-bold text-dark mb-0" th:text="${paciente.nombre} + ' ' + ${paciente.apellidos}"></h2>
+                                <h2 class="fw-bold text-dark mb-0"
+                                    th:text="${paciente.nombre} + ' ' + ${paciente.apellidos}"></h2>
                                 <div class="d-flex gap-3 mt-1">
-                                    <span class="text-muted small"><i class="bi bi-card-text me-1"></i> [[${trad.getTraduccion('paciente.form.dni')} + ': ' + ${paciente.dni}]]</span>
-                                    <span class="text-muted small"><i class="bi bi-calendar-event me-1"></i> [[${T(java.time.Period).between(paciente.fechaNacimiento, T(java.time.LocalDate).now()).getYears()}]] [[${trad.getTraduccion('paciente.label.anios')}]]</span>
+                                    <span class="text-muted small"><i class="bi bi-card-text me-1"></i>
+                                        [[${trad.getTraduccion('paciente.form.dni')} + ': ' + ${paciente.dni}]]</span>
+                                    <span class="text-muted small"><i class="bi bi-calendar-event me-1"></i>
+                                        [[${T(java.time.Period).between(paciente.fechaNacimiento,
+                                        T(java.time.LocalDate).now()).getYears()}]]
+                                        [[${trad.getTraduccion('paciente.label.anios')}]]</span>
                                 </div>
                             </div>
                         </div>
@@ -33,18 +40,22 @@
                         <div class="col-md-6 text-md-end mt-3 mt-md-0">
                             <a th:href="@{'/medico/cita/no-asistio/' + ${cita.id}}"
                                 class="btn btn-outline-danger rounded-pill px-4 fw-bold shadow-sm me-2"
-                                th:onclick="'return confirm(\'' + ${trad.getTraduccion('atencion.confirm.no_asistio')} + '\')'">
-                                <i class="bi bi-person-x me-2"></i><span th:text="${trad.getTraduccion('atencion.btn.no_asistio')}"></span>
+                                th:data-confirm-msg="${trad.getTraduccion('atencion.confirm.no_asistio')}"
+                                onclick="return confirm(this.getAttribute('data-confirm-msg'))">
+                                <i class="bi bi-person-x me-2"></i>
+                                <span th:text="${trad.getTraduccion('atencion.btn.no_asistio')}"></span>
                             </a>
                             <a th:href="@{/medico/paciente/historial/{id}(id=${paciente.id}, citaId=${cita.id})}"
                                 class="btn btn-outline-primary rounded-pill px-4 fw-bold shadow-sm">
-                                <i class="bi bi-clock-history me-2"></i><span th:text="${trad.getTraduccion('historial.titulo')}"></span>
+                                <i class="bi bi-clock-history me-2"></i><span
+                                    th:text="${trad.getTraduccion('historial.titulo')}"></span>
                             </a>
                         </div>
                     </div>
 
                     <div class="mt-4 p-3 bg-primary bg-opacity-10 border-start border-primary border-4 rounded-3">
-                        <label class="form-label fw-bold text-primary small text-uppercase mb-1" th:text="${trad.getTraduccion('historial.lbl.motivo')}"></label>
+                        <label class="form-label fw-bold text-primary small text-uppercase mb-1"
+                            th:text="${trad.getTraduccion('historial.lbl.motivo')}"></label>
                         <p class="mb-0 fs-5 text-dark italic" th:text="${cita.motivo}"></p>
                     </div>
                 </div>
@@ -58,35 +69,47 @@
                         <div class="card shadow-sm border-0 mb-4" style="border-radius: 15px;">
                             <div class="card-header bg-white py-3 border-bottom">
                                 <h5 class="card-title fw-bold mb-0 text-primary">
-                                    <i class="bi bi-clipboard2-pulse me-2"></i><span th:text="${trad.getTraduccion('atencion.sec.evaluacion')}"></span>
+                                    <i class="bi bi-clipboard2-pulse me-2"></i><span
+                                        th:text="${trad.getTraduccion('atencion.sec.evaluacion')}"></span>
                                 </h5>
                             </div>
                             <div class="card-body">
                                 <div class="mb-4">
-                                    <label class="form-label fw-bold text-muted small text-uppercase" th:text="${trad.getTraduccion('atencion.label.diagnostico')}"></label>
+                                    <label class="form-label fw-bold text-muted small text-uppercase"
+                                        th:text="${trad.getTraduccion('atencion.label.diagnostico')}"></label>
                                     <select name="diagnosticoId" class="form-select select2-single" required>
-                                        <option value="" th:text="${trad.getTraduccion('atencion.placeholder.diag')}"></option>
-                                        <option th:each="d : ${listaDiagnosticos}" th:value="${d.id}" th:text="${d.codigo} + ' - ' + ${d.nombre}"></option>
+                                        <option value="" th:text="${trad.getTraduccion('atencion.placeholder.diag')}">
+                                        </option>
+                                        <option th:each="d : ${listaDiagnosticos}" th:value="${d.id}"
+                                            th:text="${d.codigo} + ' - ' + ${d.nombre}"></option>
                                     </select>
                                 </div>
 
                                 <div class="mb-4">
-                                    <label class="form-label fw-bold text-muted small text-uppercase" th:text="${trad.getTraduccion('atencion.label.instrucciones')}"></label>
-                                    <textarea class="form-control border-0 bg-light" name="descripcion" rows="4" 
-                                              th:placeholder="${trad.getTraduccion('atencion.placeholder.instrucciones')}" required style="border-radius: 10px;"></textarea>
+                                    <label class="form-label fw-bold text-muted small text-uppercase"
+                                        th:text="${trad.getTraduccion('atencion.label.instrucciones')}"></label>
+                                    <textarea class="form-control border-0 bg-light" name="descripcion" rows="4"
+                                        th:placeholder="${trad.getTraduccion('atencion.placeholder.instrucciones')}"
+                                        required style="border-radius: 10px;"></textarea>
                                 </div>
 
                                 <div class="row g-3">
                                     <div class="col-md-6">
-                                        <label class="form-label fw-bold text-muted small text-uppercase" th:text="${trad.getTraduccion('atencion.label.fin_tratamiento')}"></label>
-                                        <input type="date" name="fechaFin" class="form-control border-0 bg-light" required style="border-radius: 10px;">
+                                        <label class="form-label fw-bold text-muted small text-uppercase"
+                                            th:text="${trad.getTraduccion('atencion.label.fin_tratamiento')}"></label>
+                                        <input type="date" name="fechaFin" class="form-control border-0 bg-light"
+                                            required style="border-radius: 10px;">
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label fw-bold text-muted small text-uppercase" th:text="${trad.getTraduccion('mod.tratamientos')}"></label>
-                                        <select name="pruebaIds[]" class="form-select select2-multiple" multiple="multiple">
-                                            <option th:each="p : ${listaPruebas}" th:value="${p.id}" th:text="${p.nombre} + ' (' + ${p.precio} + '€)'"></option>
+                                        <label class="form-label fw-bold text-muted small text-uppercase"
+                                            th:text="${trad.getTraduccion('mod.tratamientos')}"></label>
+                                        <select name="pruebaIds[]" class="form-select select2-multiple"
+                                            multiple="multiple">
+                                            <option th:each="p : ${listaPruebas}" th:value="${p.id}"
+                                                th:text="${p.nombre} + ' (' + ${p.precio} + '€)'"></option>
                                         </select>
-                                        <small class="text-info"><i class="bi bi-info-circle me-1"></i><span th:text="${trad.getTraduccion('atencion.aviso.factura')}"></span></small>
+                                        <small class="text-info"><i class="bi bi-info-circle me-1"></i><span
+                                                th:text="${trad.getTraduccion('atencion.aviso.factura')}"></span></small>
                                     </div>
                                 </div>
                             </div>
@@ -97,26 +120,33 @@
                         <div class="card shadow-sm border-0" style="border-radius: 15px;">
                             <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
                                 <h5 class="card-title fw-bold mb-0 text-success">
-                                    <i class="bi bi-capsule me-2"></i><span th:text="${trad.getTraduccion('resumen.label.receta')}"></span>
+                                    <i class="bi bi-capsule me-2"></i><span
+                                        th:text="${trad.getTraduccion('resumen.label.receta')}"></span>
                                 </h5>
-                                <button type="button" class="btn btn-sm btn-success rounded-pill px-3" onclick="agregarMedicamento()">
-                                    <i class="bi bi-plus-lg me-1"></i> <span th:text="${trad.getTraduccion('btn.anadir')}"></span>
+                                <button type="button" class="btn btn-sm btn-success rounded-pill px-3"
+                                    onclick="agregarMedicamento()">
+                                    <i class="bi bi-plus-lg me-1"></i> <span
+                                        th:text="${trad.getTraduccion('btn.anadir')}"></span>
                                 </button>
                             </div>
                             <div class="card-body">
                                 <div id="recetaContainer">
                                     <div class="text-center py-5 text-muted" id="sinMeds">
                                         <i class="bi bi-prescription2 fs-1 d-block mb-2 opacity-50"></i>
-                                        <p class="small mb-0" th:text="${trad.getTraduccion('resumen.msg.sin_medicacion')}"></p>
+                                        <p class="small mb-0"
+                                            th:text="${trad.getTraduccion('resumen.msg.sin_medicacion')}"></p>
                                     </div>
                                 </div>
 
                                 <hr class="my-4">
                                 <div class="d-grid">
-                                    <button type="submit" class="btn btn-primary btn-lg rounded-pill shadow-sm py-3 fw-bold">
-                                        <i class="bi bi-check2-circle me-2"></i><span th:text="${trad.getTraduccion('atencion.btn.finalizar')}"></span>
+                                    <button type="submit"
+                                        class="btn btn-primary btn-lg rounded-pill shadow-sm py-3 fw-bold">
+                                        <i class="bi bi-check2-circle me-2"></i><span
+                                            th:text="${trad.getTraduccion('atencion.btn.finalizar')}"></span>
                                     </button>
-                                    <p class="text-center text-muted small mt-2" th:text="${trad.getTraduccion('atencion.footer.msg')}"></p>
+                                    <p class="text-center text-muted small mt-2"
+                                        th:text="${trad.getTraduccion('atencion.footer.msg')}"></p>
                                 </div>
                             </div>
                         </div>
@@ -127,15 +157,19 @@
     </main>
 
     <template id="medTemplate">
-        <div class="medicamento-item bg-light p-3 rounded-3 mb-3 border-start border-success border-4 position-relative shadow-sm">
-            <button type="button" class="btn-close position-absolute top-0 end-0 m-2" onclick="this.parentElement.remove(); verificarMeds();"></button>
+        <div
+            class="medicamento-item bg-light p-3 rounded-3 mb-3 border-start border-success border-4 position-relative shadow-sm">
+            <button type="button" class="btn-close position-absolute top-0 end-0 m-2"
+                onclick="this.parentElement.remove(); verificarMeds();"></button>
             <div class="mb-2">
                 <select name="medIds[]" class="form-select select2-dynamic" required>
                     <option value="" th:text="${trad.getTraduccion('atencion.placeholder.med')}"></option>
-                    <option th:each="med : ${listaMedicamentos}" th:value="${med.id}" th:text="${med.nombre} + ' (' + ${med.tipo} + ')'"></option>
+                    <option th:each="med : ${listaMedicamentos}" th:value="${med.id}"
+                        th:text="${med.nombre} + ' (' + ${med.tipo} + ')'"></option>
                 </select>
             </div>
-            <input type="text" name="medDosis[]" class="form-control form-control-sm border-0" th:placeholder="${trad.getTraduccion('historial.lbl.dosis')}" required>
+            <input type="text" name="medDosis[]" class="form-control form-control-sm border-0"
+                th:placeholder="${trad.getTraduccion('historial.lbl.dosis')}" required>
         </div>
     </template>
 
@@ -147,7 +181,7 @@
         $(document).ready(function () {
             $('.select2-single').select2({ theme: 'bootstrap-5' });
             $('.select2-multiple').select2({ theme: 'bootstrap-5', placeholder: /*[[${trad.getTraduccion('atencion.placeholder.pruebas')}]]*/ '...' });
-            
+
             const today = new Date().toISOString().split('T')[0];
             document.getElementsByName('fechaFin')[0].setAttribute('min', today);
         });
@@ -164,12 +198,31 @@
             if ($('#recetaContainer .medicamento-item').length === 0) $('#sinMeds').show();
         }
     </script>
-    
+
     <style>
-        .select2-container--bootstrap-5 .select2-selection { border: none !important; background-color: #f8f9fa !important; border-radius: 10px !important; padding: 0.35rem !important; }
-        .medicamento-item { transition: all 0.2s ease; border: 1px solid transparent; }
-        .medicamento-item:hover { transform: translateX(5px); background-color: #fff !important; border-color: #e9ecef; }
-        .btn-white { background-color: white; color: #6c757d; }
+        .select2-container--bootstrap-5 .select2-selection {
+            border: none !important;
+            background-color: #f8f9fa !important;
+            border-radius: 10px !important;
+            padding: 0.35rem !important;
+        }
+
+        .medicamento-item {
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .medicamento-item:hover {
+            transform: translateX(5px);
+            background-color: #fff !important;
+            border-color: #e9ecef;
+        }
+
+        .btn-white {
+            background-color: white;
+            color: #6c757d;
+        }
     </style>
 </body>
+
 </html>

@@ -198,7 +198,26 @@
                                 </div>
 
                                 <div class="mt-5 pt-3 border-top d-flex justify-content-between">
-                                    <a th:href="@{/empleados}" class="btn btn-light rounded-pill px-4 fw-bold">
+                                    <a sec:authorize="hasRole('ADMINISTRADOR')" th:href="@{/empleados}"
+                                        class="btn btn-light rounded-pill px-4 fw-bold">
+                                        <i class="bi bi-arrow-left me-2"></i> <span
+                                            th:text="${trad.getTraduccion('btn.volver')}"></span>
+                                    </a>
+
+                                    <a sec:authorize="hasRole('MEDICO')" th:href="@{/medico/dashboard}"
+                                        class="btn btn-light rounded-pill px-4 fw-bold">
+                                        <i class="bi bi-arrow-left me-2"></i> <span
+                                            th:text="${trad.getTraduccion('btn.volver')}"></span>
+                                    </a>
+
+                                    <a sec:authorize="hasRole('RECEPCIONISTA')" th:href="@{/recepcion/dashboard}"
+                                        class="btn btn-light rounded-pill px-4 fw-bold">
+                                        <i class="bi bi-arrow-left me-2"></i> <span
+                                            th:text="${trad.getTraduccion('btn.volver')}"></span>
+                                    </a>
+
+                                    <a sec:authorize="hasRole('RRHH')" th:href="@{/RRHH/dashboard}"
+                                        class="btn btn-light rounded-pill px-4 fw-bold">
                                         <i class="bi bi-arrow-left me-2"></i> <span
                                             th:text="${trad.getTraduccion('btn.volver')}"></span>
                                     </a>

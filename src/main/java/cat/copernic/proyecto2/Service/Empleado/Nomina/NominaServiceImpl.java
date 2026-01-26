@@ -5,10 +5,12 @@ import cat.copernic.proyecto2.Domain.Administración.Empleado;
 import cat.copernic.proyecto2.Domain.Administración.Nomina;
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfPCell;
+import org.springframework.data.domain.Sort;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -59,7 +61,8 @@ public class NominaServiceImpl implements NominaService {
     @Transactional
     public void guardarNominaProcesada(Nomina nomina) throws Exception {
         Empleado empleado = empleadoService.obtenerPorId(nomina.getEmpleado().getId());
-        if (empleado == null) throw new Exception("Empleado no encontrado");
+        if (empleado == null)
+            throw new Exception("Empleado no encontrado");
 
         if (existeNominaMes(empleado.getId(), nomina.getPeriodo())) {
             throw new Exception("Ya existe una nómina para este período");
@@ -70,8 +73,10 @@ public class NominaServiceImpl implements NominaService {
     }
 
     private void asegurarValoresFinancieros(Nomina nomina) {
-        if (nomina.getSalarioBase() == null) nomina.setSalarioBase(BigDecimal.ZERO);
-        if (nomina.getDeducciones() == null) nomina.setDeducciones(BigDecimal.ZERO);
+        if (nomina.getSalarioBase() == null)
+            nomina.setSalarioBase(BigDecimal.ZERO);
+        if (nomina.getDeducciones() == null)
+            nomina.setDeducciones(BigDecimal.ZERO);
         if (nomina.getTotalPagar() == null) {
             nomina.setTotalPagar(nomina.getSalarioBase().subtract(nomina.getDeducciones()));
         }
@@ -101,9 +106,11 @@ public class NominaServiceImpl implements NominaService {
 
             PdfPTable datosEmpleado = new PdfPTable(2);
             datosEmpleado.setWidthPercentage(100);
-            datosEmpleado.setWidths(new float[]{1, 2});
+            datosEmpleado.setWidths(new float[] { 1, 2 });
 
-            addDatoEmpleado(datosEmpleado, "Empleado:", nomina.getEmpleado().getNombre() + " " + nomina.getEmpleado().getApellidos(), boldFont, regularFont);
+            addDatoEmpleado(datosEmpleado, "Empleado:",
+                    nomina.getEmpleado().getNombre() + " " + nomina.getEmpleado().getApellidos(), boldFont,
+                    regularFont);
             addDatoEmpleado(datosEmpleado, "DNI/NIE:", nomina.getEmpleado().getDni(), boldFont, regularFont);
             addDatoEmpleado(datosEmpleado, "Periodo:", nomina.getPeriodo(), boldFont, regularFont);
 
@@ -112,7 +119,7 @@ public class NominaServiceImpl implements NominaService {
 
             PdfPTable tabla = new PdfPTable(2);
             tabla.setWidthPercentage(100);
-            tabla.setWidths(new float[]{3, 2});
+            tabla.setWidths(new float[] { 3, 2 });
 
             PdfPCell header1 = new PdfPCell(new Phrase("Concepto", boldFont));
             header1.setBackgroundColor(Color.LIGHT_GRAY);
@@ -175,14 +182,21 @@ public class NominaServiceImpl implements NominaService {
         BigDecimal salarioBase = nomina.getSalarioBase() != null ? nomina.getSalarioBase() : BigDecimal.ZERO;
         BigDecimal irpfPorcentaje;
 
-        if (salarioBase.compareTo(BigDecimal.valueOf(12450)) <= 0) irpfPorcentaje = BigDecimal.valueOf(19);
-        else if (salarioBase.compareTo(BigDecimal.valueOf(20200)) <= 0) irpfPorcentaje = BigDecimal.valueOf(24);
-        else if (salarioBase.compareTo(BigDecimal.valueOf(35200)) <= 0) irpfPorcentaje = BigDecimal.valueOf(30);
-        else if (salarioBase.compareTo(BigDecimal.valueOf(60000)) <= 0) irpfPorcentaje = BigDecimal.valueOf(37);
-        else irpfPorcentaje = BigDecimal.valueOf(45);
+        if (salarioBase.compareTo(BigDecimal.valueOf(12450)) <= 0)
+            irpfPorcentaje = BigDecimal.valueOf(19);
+        else if (salarioBase.compareTo(BigDecimal.valueOf(20200)) <= 0)
+            irpfPorcentaje = BigDecimal.valueOf(24);
+        else if (salarioBase.compareTo(BigDecimal.valueOf(35200)) <= 0)
+            irpfPorcentaje = BigDecimal.valueOf(30);
+        else if (salarioBase.compareTo(BigDecimal.valueOf(60000)) <= 0)
+            irpfPorcentaje = BigDecimal.valueOf(37);
+        else
+            irpfPorcentaje = BigDecimal.valueOf(45);
 
-        BigDecimal deduccionesEuros = salarioBase.multiply(irpfPorcentaje).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
-        BigDecimal netoMensual = salarioBase.subtract(deduccionesEuros).divide(BigDecimal.valueOf(12), 2, RoundingMode.HALF_UP);
+        BigDecimal deduccionesEuros = salarioBase.multiply(irpfPorcentaje).divide(BigDecimal.valueOf(100), 2,
+                RoundingMode.HALF_UP);
+        BigDecimal netoMensual = salarioBase.subtract(deduccionesEuros).divide(BigDecimal.valueOf(12), 2,
+                RoundingMode.HALF_UP);
 
         nomina.setDeducciones(irpfPorcentaje);
         nomina.setNetoMensual(netoMensual);
@@ -194,7 +208,7 @@ public class NominaServiceImpl implements NominaService {
     @Transactional
     public CompletableFuture<byte[]> generarYDescargarNominasTodos(String periodo) {
         try (ByteArrayOutputStream baosZip = new ByteArrayOutputStream();
-             java.util.zip.ZipOutputStream zipOut = new java.util.zip.ZipOutputStream(baosZip)) {
+                java.util.zip.ZipOutputStream zipOut = new java.util.zip.ZipOutputStream(baosZip)) {
 
             List<Empleado> empleados = empleadoService.listarTodos();
 
@@ -232,5 +246,12 @@ public class NominaServiceImpl implements NominaService {
         nomina.setDeducciones(BigDecimal.ZERO);
         nomina.setTotalPagar(nomina.getSalarioBase());
         return nomina;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Nomina> listarNominasPorEmpleado(Long empleadoId, String search, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        return nominaRepository.findByEmpleadoIdAndPeriodoContaining(empleadoId, search, pageable);
     }
 }

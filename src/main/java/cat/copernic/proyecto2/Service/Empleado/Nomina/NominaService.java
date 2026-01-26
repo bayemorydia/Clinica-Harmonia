@@ -18,4 +18,5 @@ public interface NominaService {
     Page<Nomina> getNominasPorEmpleado(Long empleadoId, Pageable pageable);
     CompletableFuture<byte[]> generarYDescargarNominasTodos(String periodo);
     Nomina inicializarNomina(Empleado empleado);
+    Page<Nomina> listarNominasPorEmpleado(Long empleadoId, String search, int page, int size);
 }

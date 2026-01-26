@@ -2,7 +2,8 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
-    <th:block sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: head_recepcion}"></th:block>
+    <th:block sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: head_recepcion}">
+    </th:block>
     <th:block sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: head_medico}"></th:block>
     <th:block sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layoutRRHH :: head_RRHH}"></th:block>
     <th:block sec:authorize="hasRole('ADMINISTRADOR')" th:replace="~{Reutilizable/layout :: head_general}"></th:block>
@@ -18,168 +19,270 @@
             --text-muted: #6c757d;
         }
 
-        body { background-color: var(--background-color); color: var(--text-main); font-family: 'Inter', -apple-system, sans-serif; }
-        .glass-card { background: var(--surface-color); border-radius: 16px; border: 1px solid rgba(0, 0, 0, 0.05); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04); }
-        .search-container { background: #fff; border: 1px solid #e0e0e0; border-radius: 12px; padding: 2px 15px; transition: all 0.2s ease; }
-        .search-container:focus-within { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1); }
-        .search-container input { border: none; box-shadow: none !important; }
-        .table thead th { background-color: #fcfcfc; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.03em; color: var(--text-muted); padding: 16px; border-top: none; }
-        .table tbody td { padding: 16px; vertical-align: middle; border-color: #f1f1f1; }
-        .clickable-row { cursor: pointer; transition: background 0.2s; }
-        .clickable-row:hover { background-color: rgba(13, 110, 253, 0.02) !important; }
-        .select-paginacion-clean { width: 75px; padding: 0.375rem; font-size: 0.85rem; border: 1px solid #dee2e6; border-radius: 8px; }
-        .pagination .page-link { color: #6c757d; border: none; background: #f1f3f5; margin: 0 3px; border-radius: 8px !important; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; }
-        .pagination .page-item.active .page-link { background-color: var(--primary-color) !important; color: white !important; }
-        .btn-white { background-color: white; color: #6c757d; }
+        body {
+            background-color: var(--background-color);
+            color: var(--text-main);
+            font-family: 'Inter', -apple-system, sans-serif;
+        }
+
+        .glass-card {
+            background: var(--surface-color);
+            border-radius: 16px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        }
+
+        .search-container {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 2px 15px;
+            transition: all 0.2s ease;
+        }
+
+        .search-container:focus-within {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+        }
+
+        .search-container input {
+            border: none;
+            box-shadow: none !important;
+        }
+
+        .table thead th {
+            background-color: #fcfcfc;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.03em;
+            color: var(--text-muted);
+            padding: 16px;
+            border-top: none;
+        }
+
+        .table tbody td {
+            padding: 16px;
+            vertical-align: middle;
+            border-color: #f1f1f1;
+        }
+
+        .clickable-row {
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .clickable-row:hover {
+            background-color: rgba(13, 110, 253, 0.02) !important;
+        }
+
+        .select-paginacion-clean {
+            width: 75px;
+            padding: 0.375rem;
+            font-size: 0.85rem;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+        }
+
+        .pagination .page-link {
+            color: #6c757d;
+            border: none;
+            background: #f1f3f5;
+            margin: 0 3px;
+            border-radius: 8px !important;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: var(--primary-color) !important;
+            color: white !important;
+        }
+
+        .btn-white {
+            background-color: white;
+            color: #6c757d;
+        }
     </style>
 </head>
 
 <body class="bg-light">
 
-<div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: menu_recepcion}"></div>
-<div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: menu_medico}"></div>
-<div sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layoutRRHH :: menu_RRHH}"></div>
-<div sec:authorize="hasRole('ADMINISTRADOR')" th:replace="~{Reutilizable/layout :: menu}"></div>
+    <div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: menu_recepcion}"></div>
+    <div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: menu_medico}"></div>
+    <div sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layoutRRHH :: menu_RRHH}"></div>
+    <div sec:authorize="hasRole('ADMINISTRADOR')" th:replace="~{Reutilizable/layout :: menu}"></div>
 
-<main th:class="${#authorization.expression('hasRole(''RECEPCIONISTA'')')} ? 'content-recepcion' :
+    <main th:class="${#authorization.expression('hasRole(''RECEPCIONISTA'')')} ? 'content-recepcion' :
                      (${#authorization.expression('hasRole(''MEDICO'')')} ? 'content-medico' : 'content')">
 
-    <div class="container-fluid py-4">
+        <div class="container-fluid py-4">
 
-        <div class="d-flex justify-content-between align-items-center mb-5">
-            <div class="d-flex align-items-center">
-                <div>
-                    <h2 class="fw-bold text-dark mb-1"
-                        th:text="${empleado != null} ? (${trad.getTraduccion('nomina.lista.empleado_prefijo')} + ' ' + ${empleado.nombre} + ' ' + ${empleado.apellidos}) : ${trad.getTraduccion('nomina.lista.mis_nominas')}"></h2>
-                    <p class="text-muted small mb-0" th:text="${trad.getTraduccion('nominas.lista.subtitulo')}">Gestión de documentos salariales.</p>
-                </div>
-            </div>
-
-            <div class="d-flex gap-2">
-                <a th:if="${empleado != null}" sec:authorize="hasAnyRole('ADMINISTRADOR', 'RRHH')"
-                   th:href="@{'/nominas/nuevo/' + ${empleado.id}}" class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold">
-                    <i class="bi bi-plus-lg me-2"></i> <span th:text="${trad.getTraduccion('nomina.btn.nueva')}">Nueva</span>
-                </a>
-            </div>
-        </div>
-
-        <div class="card shadow-sm border-0 mb-4" style="border-radius: 15px;">
-            <div class="card-body">
-                <div class="search-container d-flex align-items-center">
-                    <i class="bi bi-search text-muted me-2"></i>
-                    <input type="text" id="searchInput" class="form-control"
-                           th:placeholder="${trad.getTraduccion('nominas.placeholder.buscar')}" th:value="${query}">
-                </div>
-            </div>
-        </div>
-
-        <div class="glass-card overflow-hidden">
-            <div id="tablaContainer">
-                <div th:fragment="tablaNominas">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead>
-                                <tr>
-                                    <th class="ps-4" th:text="${trad.getTraduccion('nominas.tabla.periodo')}">Periodo</th>
-                                    <th th:if="${empleado == null}" th:text="${trad.getTraduccion('nominas.tabla.empleado')}">Empleado</th>
-                                    <th th:text="${trad.getTraduccion('nominas.tabla.devengado')}">Devengado</th>
-                                    <th th:text="${trad.getTraduccion('nominas.tabla.deducciones')}">Deducciones</th>
-                                    <th class="text-end" th:text="${trad.getTraduccion('nominas.tabla.neto')}">Neto Mensual</th>
-                                    <th class="text-center" th:text="${trad.getTraduccion('pacientes.tabla.acciones')}">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr th:if="${nominas == null or nominas.empty}">
-                                    <td colspan="6" class="text-center py-5 text-muted" th:text="${trad.getTraduccion('nominas.tabla.vacia')}">No se han encontrado nóminas.</td>
-                                </tr>
-                                <tr th:each="nomina : ${nominas}" class="border-bottom clickable-row"
-                                    th:data-href="@{'/nominas/DetalleNomina/' + ${nomina.id}}">
-                                    <td class="ps-4 py-3 fw-bold text-dark" th:text="${nomina.periodo}"></td>
-                                    <td th:if="${empleado == null}" th:text="${nomina.empleado.nombre} + ' ' + ${nomina.empleado.apellidos}"></td>
-                                    <td class="text-success" th:text="${nomina.salarioBase} + ' €'"></td>
-                                    <td class="text-danger" th:text="${nomina.deducciones} + ' %'"></td>
-                                    <td class="text-end fw-bold text-primary" th:text="${nomina.netoMensual} + ' €'"></td>
-                                    <td class="text-center" onclick="event.stopPropagation();">
-                                        <a th:href="@{'/nominas/imprimir/' + ${nomina.id}}" class="btn btn-sm btn-outline-danger rounded-pill px-3" target="_blank">
-                                            <i class="bi bi-file-earmark-pdf me-1"></i> <span th:text="${trad.getTraduccion('nominas.btn.pdf')}">PDF</span>
-                                        </a>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+            <div class="d-flex justify-content-between align-items-center mb-5">
+                <div class="d-flex align-items-center">
+                    <div>
+                        <h2 class="fw-bold text-dark mb-1"
+                            th:text="${empleado != null} ? (${trad.getTraduccion('nomina.lista.empleado_prefijo')} + ' ' + ${empleado.nombre} + ' ' + ${empleado.apellidos}) : ${trad.getTraduccion('nomina.lista.mis_nominas')}">
+                        </h2>
+                        <p class="text-muted small mb-0" th:text="${trad.getTraduccion('nominas.lista.subtitulo')}">
+                            Gestión de documentos salariales.</p>
                     </div>
+                </div>
 
-                    <div class="p-4 bg-white border-top d-flex justify-content-between align-items-center">
-                        <div class="text-muted small">
-                            <span th:text="${trad.getTraduccion('pacientes.tabla.mostrar')}">Mostrando</span>
-                            <span class="fw-bold text-dark" th:text="${nominas.size()}"></span>
-                            <span th:text="${trad.getTraduccion('nominas.tabla.registros')}">nóminas registradas.</span>
-                        </div>
-                        <div class="d-flex align-items-center gap-3">
-                            <select id="pageSize" class="select-paginacion-clean shadow-none" onchange="updateTable(0)">
-                                <option value="10" th:selected="${size == 10}">10</option>
-                                <option value="20" th:selected="${size == 20}">20</option>
-                            </select>
-                            <nav th:if="${totalPages > 1}">
-                                <ul class="pagination pagination-sm mb-0">
-                                    <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                                        <a class="page-link" href="javascript:void(0)" th:onclick="'changePage(' + (${currentPage} - 1) + ')'"><i class="bi bi-chevron-left"></i></a>
-                                    </li>
-                                    <li class="page-item active"><span class="page-link" th:text="${currentPage + 1}">1</span></li>
-                                    <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
-                                        <a class="page-link" href="javascript:void(0)" th:onclick="'changePage(' + (${currentPage} + 1) + ')'"><i class="bi bi-chevron-right"></i></a>
-                                    </li>
-                                </ul>
-                            </nav>
-                        </div>
+                <div class="d-flex gap-2">
+                    <a th:if="${empleado != null}" sec:authorize="hasAnyRole('ADMINISTRADOR', 'RRHH')"
+                        th:href="@{'/nominas/nuevo/' + ${empleado.id}}"
+                        class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold">
+                        <i class="bi bi-plus-lg me-2"></i> <span
+                            th:text="${trad.getTraduccion('nomina.btn.nueva')}">Nueva</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0 mb-4" style="border-radius: 15px;">
+                <div class="card-body">
+                    <div class="search-container d-flex align-items-center">
+                        <i class="bi bi-search text-muted me-2"></i>
+                        <input type="text" id="searchInput" class="form-control"
+                            th:placeholder="${trad.getTraduccion('nominas.placeholder.buscar')}" th:value="${query}">
                     </div>
-                    <input type="hidden" id="hiddenTotalPages" th:value="${totalPages}">
+                </div>
+            </div>
+
+            <div class="glass-card overflow-hidden">
+                <div id="tablaContainer">
+                    <div th:fragment="tablaNominas">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="ps-4" th:text="${trad.getTraduccion('nominas.tabla.periodo')}">
+                                            Periodo</th>
+                                        <th th:if="${empleado == null}"
+                                            th:text="${trad.getTraduccion('nominas.tabla.empleado')}">Empleado</th>
+                                        <th th:text="${trad.getTraduccion('nominas.tabla.devengado')}">Devengado</th>
+                                        <th th:text="${trad.getTraduccion('nominas.tabla.deducciones')}">Deducciones
+                                        </th>
+                                        <th class="text-end" th:text="${trad.getTraduccion('nominas.tabla.neto')}">Neto
+                                            Mensual</th>
+                                        <th class="text-center"
+                                            th:text="${trad.getTraduccion('pacientes.tabla.acciones')}">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:if="${nominas == null or nominas.empty}">
+                                        <td colspan="6" class="text-center py-5 text-muted"
+                                            th:text="${trad.getTraduccion('nominas.tabla.vacia')}">No se han encontrado
+                                            nóminas.</td>
+                                    </tr>
+                                    <tr th:each="nomina : ${nominas}" class="border-bottom clickable-row"
+                                        th:data-href="@{'/nominas/DetalleNomina/' + ${nomina.id}}">
+                                        <td class="ps-4 py-3 fw-bold text-dark" th:text="${nomina.periodo}"></td>
+                                        <td th:if="${empleado == null}"
+                                            th:text="${nomina.empleado.nombre} + ' ' + ${nomina.empleado.apellidos}">
+                                        </td>
+                                        <td class="text-success" th:text="${nomina.salarioBase} + ' €'"></td>
+                                        <td class="text-danger" th:text="${nomina.deducciones} + ' %'"></td>
+                                        <td class="text-end fw-bold text-primary"
+                                            th:text="${nomina.netoMensual} + ' €'"></td>
+                                        <td class="text-center" onclick="event.stopPropagation();">
+                                            <a th:href="@{'/nominas/imprimir/' + ${nomina.id}}"
+                                                class="btn btn-sm btn-outline-danger rounded-pill px-3" target="_blank">
+                                                <i class="bi bi-file-earmark-pdf me-1"></i> <span
+                                                    th:text="${trad.getTraduccion('nominas.btn.pdf')}">PDF</span>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="p-4 bg-white border-top d-flex justify-content-between align-items-center">
+                            <div class="text-muted small">
+                                <span th:text="${trad.getTraduccion('pacientes.tabla.mostrar')}">Mostrando</span>
+                                <span class="fw-bold text-dark" th:text="${nominas.size()}"></span>
+                                <span th:text="${trad.getTraduccion('nominas.tabla.registros')}">nóminas
+                                    registradas.</span>
+                            </div>
+                            <div class="d-flex align-items-center gap-3">
+                                <select id="pageSize" class="select-paginacion-clean shadow-none"
+                                    onchange="updateTable(0)">
+                                    <option value="10" th:selected="${size == 10}">10</option>
+                                    <option value="20" th:selected="${size == 20}">20</option>
+                                </select>
+                                <nav th:if="${totalPages > 1}">
+                                    <ul class="pagination pagination-sm mb-0">
+                                        <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                                            <a class="page-link" href="javascript:void(0)"
+                                                th:onclick="'changePage(' + (${currentPage} - 1) + ')'"><i
+                                                    class="bi bi-chevron-left"></i></a>
+                                        </li>
+                                        <li class="page-item active"><span class="page-link"
+                                                th:text="${currentPage + 1}">1</span></li>
+                                        <li class="page-item"
+                                            th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
+                                            <a class="page-link" href="javascript:void(0)"
+                                                th:onclick="'changePage(' + (${currentPage} + 1) + ')'"><i
+                                                    class="bi bi-chevron-right"></i></a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                        <input type="hidden" id="hiddenTotalPages" th:value="${totalPages}">
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</main>
+    </main>
 
-<th:block th:replace="~{Reutilizable/layout :: scripts}"></th:block>
+    <th:block th:replace="~{Reutilizable/layout :: scripts}"></th:block>
 
-<script th:inline="javascript">
-    function initTableEvents() {
-        document.querySelectorAll(".clickable-row").forEach(row => {
-            row.addEventListener("click", function () {
-                window.location.href = this.getAttribute("data-href");
+    <script th:inline="javascript">
+        function initTableEvents() {
+            document.querySelectorAll(".clickable-row").forEach(row => {
+                row.addEventListener("click", function () {
+                    window.location.href = this.getAttribute("data-href");
+                });
+            });
+        }
+
+        function updateTable(page = 0) {
+            const query = document.getElementById('searchInput').value;
+            const size = document.getElementById('pageSize').value;
+
+            // Como esta es la vista privada del médico, llamamos a su ruta de búsqueda
+            let url = `/medico/nominas/search?query=${encodeURIComponent(query)}&page=${page}&size=${size}`;
+
+            fetch(url)
+                .then(res => {
+                    if (!res.ok) throw new Error("Error en la búsqueda");
+                    return res.text();
+                })
+                .then(html => {
+                    document.getElementById('tablaContainer').innerHTML = html;
+                    initTableEvents();
+                })
+                .catch(err => console.error(err));
+        }
+
+        function changePage(page) {
+            const total = parseInt(document.getElementById('hiddenTotalPages').value);
+            if (page >= 0 && page < total) updateTable(page);
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            initTableEvents();
+            let timeout = null;
+            document.getElementById('searchInput').addEventListener('keyup', function () {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => updateTable(0), 400);
             });
         });
-    }
-
-    function updateTable(page = 0) {
-        const query = document.getElementById('searchInput').value;
-        const size = document.getElementById('pageSize').value;
-        const empId = /*[[${empleado != null ? empleado.id : null}]]*/ null;
-        
-        let url = empId ? `/nominas/empleado/${empId}/search?` : `/nominas/mis-nominas/search?`;
-        url += `query=${encodeURIComponent(query)}&page=${page}&size=${size}`;
-
-        fetch(url)
-            .then(res => res.text())
-            .then(html => {
-                document.getElementById('tablaContainer').innerHTML = html;
-                initTableEvents();
-            });
-    }
-
-    function changePage(page) {
-        const total = parseInt(document.getElementById('hiddenTotalPages').value);
-        if (page >= 0 && page < total) updateTable(page);
-    }
-
-    document.addEventListener("DOMContentLoaded", function() {
-        initTableEvents();
-        let timeout = null;
-        document.getElementById('searchInput').addEventListener('keyup', function() {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => updateTable(0), 400);
-        });
-    });
-</script>
+    </script>
 </body>
+
 </html>
