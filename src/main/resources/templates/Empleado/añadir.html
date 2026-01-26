@@ -5,7 +5,9 @@
     <div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: head_medico}"></div>
     <div sec:authorize="hasRole('ADMINISTRADOR')" th:replace="~{Reutilizable/layout :: head_general}"></div>
     <div sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layoutRRHH :: head_RRHH}"></div>
-    <title th:text="${empleado.id == null ? trad.getTraduccion('empleado.titulo.nuevo') : trad.getTraduccion('empleado.titulo.editar')}"></title>
+    <title
+        th:text="${empleado.id == null ? trad.getTraduccion('empleado.titulo.nuevo') : trad.getTraduccion('empleado.titulo.editar')}">
+    </title>
 </head>
 
 <body class="bg-light">
@@ -25,56 +27,65 @@
                         <h4 class="fw-bold mb-0 text-dark"
                             th:text="${empleado.id == null ? trad.getTraduccion('empleado.titulo.nuevo') : trad.getTraduccion('empleado.titulo.editar')}">
                         </h4>
-                        <p class="text-muted small mb-0" th:text="${trad.getTraduccion('empleado.detalle.subtitulo')}"></p>
+                        <p class="text-muted small mb-0" th:text="${trad.getTraduccion('empleado.detalle.subtitulo')}">
+                        </p>
                     </div>
                 </div>
 
                 <div class="card-body p-4 p-md-5">
-                    <div th:if="${error}" class="alert alert-danger border-0 shadow-sm mb-4 rounded-3" th:text="${error}"></div>
+                    <div th:if="${error}" class="alert alert-danger border-0 shadow-sm mb-4 rounded-3"
+                        th:text="${error}"></div>
 
                     <form th:action="@{/empleados/guardar}" th:object="${empleado}" method="post">
                         <input type="hidden" th:field="*{id}" />
 
                         <div class="row mb-5">
                             <div class="col-xl-3 col-lg-4">
-                                <h6 class="fw-bold text-primary text-uppercase small" th:text="${trad.getTraduccion('paciente.seccion.personales')}">Datos Personales</h6>
-                                <p class="text-muted small" th:text="${trad.getTraduccion('empleado.form.sec.personales.desc')}">Información básica de identidad.</p>
+                                <h6 class="fw-bold text-primary text-uppercase small"
+                                    th:text="${trad.getTraduccion('paciente.seccion.personales')}">Datos Personales</h6>
+                                <p class="text-muted small"
+                                    th:text="${trad.getTraduccion('empleado.form.sec.personales.desc')}">Información
+                                    básica de identidad.</p>
                             </div>
                             <div class="col-xl-9 col-lg-8">
                                 <div class="row g-3">
                                     <div class="col-md-6">
-                                        <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('paciente.label.nombre')}"></label>
+                                        <label class="form-label small fw-bold text-secondary text-uppercase"
+                                            th:text="${trad.getTraduccion('paciente.label.nombre')}"></label>
                                         <input type="text" th:field="*{nombre}"
-                                               class="form-control bg-light border-0 py-2 rounded-3"
-                                               required
-                                               oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')">
+                                            class="form-control bg-light border-0 py-2 rounded-3" required
+                                            oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')">
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('paciente.label.apellidos')}"></label>
+                                        <label class="form-label small fw-bold text-secondary text-uppercase"
+                                            th:text="${trad.getTraduccion('paciente.label.apellidos')}"></label>
                                         <input type="text" th:field="*{apellidos}"
-                                               class="form-control bg-light border-0 py-2 rounded-3"
-                                               required
-                                               oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')">
+                                            class="form-control bg-light border-0 py-2 rounded-3" required
+                                            oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')">
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('paciente.label.dni')}"></label>
-                                        <input type="text" th:field="*{dni}" class="form-control bg-light border-0 py-2 font-monospace rounded-3" required>
+                                        <label class="form-label small fw-bold text-secondary text-uppercase"
+                                            th:text="${trad.getTraduccion('paciente.label.dni')}"></label>
+                                        <input type="text" th:field="*{dni}"
+                                            class="form-control bg-light border-0 py-2 font-monospace rounded-3"
+                                            required>
                                         <div th:if="${empleado.id == null}" class="mt-2 small text-primary opacity-75">
                                             <i class="bi bi-info-circle me-1"></i>
                                             <span th:text="${trad.getTraduccion('empleado.aviso.password')}"></span>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('paciente.label.telefono')}"></label>
+                                        <label class="form-label small fw-bold text-secondary text-uppercase"
+                                            th:text="${trad.getTraduccion('paciente.label.telefono')}"></label>
                                         <input type="tel" th:field="*{telefono}"
-                                               class="form-control bg-light border-0 py-2 rounded-3"
-                                               required
-                                               maxlength="9"
-                                               oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                            class="form-control bg-light border-0 py-2 rounded-3" required maxlength="9"
+                                            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                                     </div>
                                     <div class="col-12">
-                                        <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('paciente.form.email')}"></label>
-                                        <input type="email" th:field="*{email}" class="form-control bg-light border-0 py-2 rounded-3" readonly>
+                                        <label class="form-label small fw-bold text-secondary text-uppercase"
+                                            th:text="${trad.getTraduccion('paciente.form.email')}"></label>
+                                        <input type="email" th:field="*{email}"
+                                            class="form-control bg-light border-0 py-2 rounded-3" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -84,39 +95,58 @@
 
                         <div class="row mb-4">
                             <div class="col-xl-3 col-lg-4">
-                                <h6 class="fw-bold text-primary text-uppercase small" th:text="${trad.getTraduccion('empleado.form.sec.laboral')}">Condiciones Laborales</h6>
-                                <p class="text-muted small" th:text="${trad.getTraduccion('empleado.form.sec.laboral.desc')}">Configuración de cargo y retribución.</p>
+                                <h6 class="fw-bold text-primary text-uppercase small"
+                                    th:text="${trad.getTraduccion('empleado.form.sec.laboral')}">Condiciones Laborales
+                                </h6>
+                                <p class="text-muted small"
+                                    th:text="${trad.getTraduccion('empleado.form.sec.laboral.desc')}">Configuración de
+                                    cargo y retribución.</p>
                             </div>
                             <div class="col-xl-9 col-lg-8">
                                 <div class="row g-3">
                                     <div class="col-md-6">
-                                        <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('nomina.label.salario_base')}"></label>
+                                        <label class="form-label small fw-bold text-secondary text-uppercase"
+                                            th:text="${trad.getTraduccion('nomina.label.salario_base')}"></label>
                                         <div class="input-group">
-                                            <input type="number" step="0.01" min="0" th:field="*{salarioBase}" class="form-control bg-light border-0 py-2 rounded-start-3" required>
+                                            <input type="number" step="0.01" min="0" th:field="*{salarioBase}"
+                                                class="form-control bg-light border-0 py-2 rounded-start-3" required>
                                             <span class="input-group-text bg-light border-0 rounded-end-3">€</span>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('empleado.label.rol')}"></label>
-                                        <select th:field="*{rol.id}" class="form-select bg-light border-0 py-2 rounded-3" required>
-                                            <option value="" th:text="${trad.getTraduccion('empleado.select.rol')}"></option>
-                                            <option th:each="r : ${roles}" th:value="${r.id}" th:text="${r.nombre}"></option>
+                                        <label class="form-label small fw-bold text-secondary text-uppercase"
+                                            th:text="${trad.getTraduccion('empleado.label.rol')}"></label>
+                                        <select th:field="*{rol.id}"
+                                            class="form-select bg-light border-0 py-2 rounded-3" required>
+                                            <option value="" th:text="${trad.getTraduccion('empleado.select.rol')}">
+                                            </option>
+                                            <option th:each="r : ${roles}" th:value="${r.id}" th:text="${r.nombre}">
+                                            </option>
                                         </select>
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('empleado.label.turno')}"></label>
-                                        <select th:field="*{turno.id}" class="form-select bg-light border-0 py-2 rounded-3" required>
-                                            <option value="" th:text="${trad.getTraduccion('empleado.select.turno')}"></option>
-                                            <option th:each="t : ${turnos}" th:value="${t.id}" th:text="${t.nombre}"></option>
+                                        <label class="form-label small fw-bold text-secondary text-uppercase"
+                                            th:text="${trad.getTraduccion('empleado.label.turno')}"></label>
+                                        <select th:field="*{turno.id}"
+                                            class="form-select bg-light border-0 py-2 rounded-3" required>
+                                            <option value="" th:text="${trad.getTraduccion('empleado.select.turno')}">
+                                            </option>
+                                            <option th:each="t : ${turnos}" th:value="${t.id}" th:text="${t.nombre}">
+                                            </option>
                                         </select>
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('empleado.label.hora_inicio')}"></label>
-                                        <input type="time" th:field="*{inicio}" class="form-control bg-light border-0 py-2 rounded-3" required>
+                                        <label class="form-label small fw-bold text-secondary text-uppercase"
+                                            th:text="${trad.getTraduccion('empleado.label.hora_inicio')}"></label>
+                                        <input type="time" th:value="${#temporals.format(empleado.inicio, 'HH:mm')}"
+                                            id="inicio" name="inicio" class="form-control bg-light border-0 py-2"
+                                            th:readonly="${!#authorization.expression('hasAnyRole(''ROLE_ADMINISTRADOR'', ''ROLE_RRHH'')')}">
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('empleado.label.hora_fin')}"></label>
-                                        <input type="time" th:field="*{fin}" class="form-control bg-light border-0 py-2 rounded-3" required>
+                                        <label class="form-label small fw-bold text-secondary text-uppercase"
+                                            th:text="${trad.getTraduccion('empleado.label.hora_fin')}"></label>
+                                        <input type="time" th:field="*{fin}"
+                                            class="form-control bg-light border-0 py-2 rounded-3" required>
                                     </div>
                                 </div>
                             </div>
@@ -124,10 +154,13 @@
 
                         <div class="card-footer bg-white border-0 p-0 mt-5 pt-4 d-flex justify-content-end gap-3">
                             <a th:href="@{/empleados}" class="btn btn-light rounded-pill px-4 fw-bold text-secondary">
-                                <i class="bi bi-arrow-left me-2"></i> <span th:text="${trad.getTraduccion('btn.volver')}"></span>
+                                <i class="bi bi-arrow-left me-2"></i> <span
+                                    th:text="${trad.getTraduccion('btn.volver')}"></span>
                             </a>
-                            <button type="submit" class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm transition-all hover-lift">
-                                <i class="bi bi-save me-2"></i> <span th:text="${trad.getTraduccion('btn.guardarCambios')}"></span>
+                            <button type="submit"
+                                class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm transition-all hover-lift">
+                                <i class="bi bi-save me-2"></i> <span
+                                    th:text="${trad.getTraduccion('btn.guardarCambios')}"></span>
                             </button>
                         </div>
                     </form>
@@ -145,7 +178,7 @@
         function generarEmail() {
             const nombre = nombreInput.value.trim().toLowerCase();
             const apellidos = apellidosInput.value.trim().toLowerCase().split(/\s+/)[0]; // Solo el primer apellido para el mail
-            if(nombre && apellidos){
+            if (nombre && apellidos) {
                 emailInput.value = `${nombre}.${apellidos}@harmonia.com`;
             } else {
                 emailInput.value = '';
@@ -164,14 +197,14 @@
             const fin = finInput.value;
 
             if (inicio && fin) {
-                if (inicio > fin) {
-                    finInput.setCustomValidity('La hora de fin no puede ser menor que la hora de inicio');
-                } else {
-                    finInput.setCustomValidity('');
-                }
-            }if (inicio && fin) {
-                if (inicio == fin) {
-                    finInput.setCustomValidity('La hora de fin no puede ser igual que la hora de inicio');
+                if (fin < inicio) {
+                    finInput.setCustomValidity(
+                        'La hora de fin no puede ser menor que la hora de inicio'
+                    );
+                } else if (fin === inicio) {
+                    finInput.setCustomValidity(
+                        'La hora de fin no puede ser igual que la hora de inicio'
+                    );
                 } else {
                     finInput.setCustomValidity('');
                 }
@@ -191,10 +224,22 @@
             }
         });
     </script>
+    <script>
+        const dniInput = document.querySelector('input[name="dni"]');
 
+        dniInput.addEventListener('input', () => {
+            dniInput.value = dniInput.value.toUpperCase();
+        });
+    </script>
     <style>
-        .hover-lift:hover { transform: translateY(-2px); }
-        .transition-all { transition: all 0.2s ease; }
+        .hover-lift:hover {
+            transform: translateY(-2px);
+        }
+
+        .transition-all {
+            transition: all 0.2s ease;
+        }
     </style>
 </body>
+
 </html>

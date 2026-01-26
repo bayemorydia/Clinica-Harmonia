@@ -44,12 +44,8 @@
                     </div>
                 </div>
 
-                <hr class="my-4 opacity-25">
-
-                <form th:action="@{/empleados/actualizar}" th:object="${empleado}" method="post">
-                    <input type="hidden" th:field="*{id}" />
-
-                    <div class="row mb-5">
+                <div class="card-body p-4">
+                    <div class="row mb-4">
                         <div class="col-xl-3 col-lg-4">
                             <h6 class="fw-bold text-info text-uppercase small"
                                 th:text="${trad.getTraduccion('empleado.form.sec.avatar')}">Identidad</h6>
@@ -100,7 +96,8 @@
                                         <input type="text" th:field="*{nombre}"
                                             class="form-control bg-light border-0 py-2"
                                             th:readonly="${#authorization.expression('hasAnyRole(''ROLE_MEDICO'', ''ROLE_RECEPCIONISTA'')')}"
-                                            required>
+                                            required
+                                            oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')">
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label small fw-bold text-secondary text-uppercase"
@@ -108,7 +105,8 @@
                                         <input type="text" th:field="*{apellidos}"
                                             class="form-control bg-light border-0 py-2"
                                             th:readonly="${#authorization.expression('hasAnyRole(''ROLE_MEDICO'', ''ROLE_RECEPCIONISTA'')')}"
-                                            required>
+                                            required
+                                            oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')">
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label small fw-bold text-secondary text-uppercase"
@@ -123,7 +121,8 @@
                                             th:text="${trad.getTraduccion('paciente.label.telefono')}"></label>
                                         <input type="text" th:field="*{telefono}"
                                             class="form-control bg-light border-0 py-2"
-                                            th:readonly="${#authorization.expression('hasAnyRole(''ROLE_MEDICO'', ''ROLE_RECEPCIONISTA'')')}">
+                                            th:readonly="${#authorization.expression('hasAnyRole(''ROLE_MEDICO'', ''ROLE_RECEPCIONISTA'')')}"
+                                            maxlength="9" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                                     </div>
                                     <div class="col-12">
                                         <label class="form-label small fw-bold text-secondary text-uppercase"
@@ -133,35 +132,10 @@
                                             th:readonly="${#authorization.expression('hasAnyRole(''ROLE_MEDICO'', ''ROLE_RECEPCIONISTA'')')}">
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('empleado.label.rol')}"></label>
-                                    <select th:field="*{rol.id}"
-                                            class="form-select bg-light border-0 py-2"
-                                            th:disabled="${!#authorization.expression('hasAnyRole(''ROLE_ADMINISTRADOR'', ''ROLE_RRHH'')')}">
-                                        <option th:each="r : ${roles}" th:value="${r.id}" th:text="${r.nombre}"></option>
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('empleado.label.hora_inicio')}"></label>
-                                    <input type="time" th:field="*{inicio}"
-                                           class="form-control bg-light border-0 py-2"
-                                           th:readonly="${!#authorization.expression('hasAnyRole(''ROLE_ADMINISTRADOR'', ''ROLE_RRHH'')')}">
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('empleado.label.hora_fin')}"></label>
-                                    <input type="time" th:field="*{fin}"
-                                           class="form-control bg-light border-0 py-2"
-                                           th:readonly="${!#authorization.expression('hasAnyRole(''ROLE_ADMINISTRADOR'', ''ROLE_RRHH'')')}">
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label small fw-bold text-secondary text-uppercase" th:text="${trad.getTraduccion('empleado.label.turno')}"></label>
-                                    <select th:field="*{turno.id}"
-                                            class="form-select bg-light border-0 py-2"
-                                            th:disabled="${!#authorization.expression('hasAnyRole(''ROLE_ADMINISTRADOR'', ''ROLE_RRHH'')')}">
-                                        <option th:each="t : ${turnos}" th:value="${t.id}" th:text="${t.nombre}"></option>
-                                    </select>
-                                </div>
                             </div>
+                        </div>
+
+                        <hr class="my-4 opacity-25">
 
                         <div class="row">
                             <div class="col-xl-3 col-lg-4">
@@ -236,74 +210,81 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
-</main>
+    </main>
 
-<!-- Scripts comunes -->
-<div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: scripts_medico}"></div>
-<div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: scripts_recepcion}"></div>
-<div sec:authorize="!hasAnyRole('MEDICO', 'RECEPCIONISTA')" th:replace="~{Reutilizable/layout :: scripts}"></div>
-<div sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layoutRRHH :: scripts_RRHH}"></div>
-<!-- Validaciones JS -->
-<script>
-    const nombreInput = document.querySelector('input[name="nombre"]');
-    const apellidosInput = document.querySelector('input[name="apellidos"]');
-    const emailInput = document.querySelector('input[name="email"]');
-
-    function generarEmail() {
-        const nombre = nombreInput.value.trim().toLowerCase();
-        const apellidos = apellidosInput.value.trim().toLowerCase().split(/\s+/)[0];
-        if(nombre && apellidos){
-            emailInput.value = `${nombre}.${apellidos}@harmonia.com`;
-        } else {
-            emailInput.value = '';
-        }
-    }
-
-    nombreInput.addEventListener('input', generarEmail);
-    apellidosInput.addEventListener('input', generarEmail);
-
-    const inicioInput = document.querySelector('input[name="inicio"]');
-    const finInput = document.querySelector('input[name="fin"]');
-
-    function validarHoras() {
-        const inicio = inicioInput.value;
-        const fin = finInput.value;
-
-        if (inicio && fin) {
-            if (inicio >= fin) {
-                finInput.setCustomValidity(inicio === fin ? 'La hora de fin no puede ser igual que la hora de inicio' : 'La hora de fin no puede ser menor que la hora de inicio');
-            } else {
-                finInput.setCustomValidity('');
-            }
-        }
-    }
-
-    inicioInput.addEventListener('change', validarHoras);
-    finInput.addEventListener('change', validarHoras);
-
-    const salarioInput = document.querySelector('input[name="salarioBase"]');
-    salarioInput.addEventListener('input', () => {
-        if (salarioInput.value < 0) {
-            salarioInput.value = '';
-            alert('El salario no puede ser negativo');
-        }
-    });
-</script>
-
-<style>
-    .hover-lift:hover { transform: translateY(-2px); }
-    .transition-all { transition: all 0.2s ease; }
-</style>
-
+    <!-- Scripts comunes -->
     <div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: scripts_medico}"></div>
     <div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: scripts_recepcion}">
     </div>
     <div sec:authorize="!hasAnyRole('MEDICO', 'RECEPCIONISTA')" th:replace="~{Reutilizable/layout :: scripts}"></div>
+    <div sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layoutRRHH :: scripts_RRHH}"></div>
+    <!-- Validaciones JS -->
+    <script>
+        const nombreInput = document.querySelector('input[name="nombre"]');
+        const apellidosInput = document.querySelector('input[name="apellidos"]');
+        const emailInput = document.querySelector('input[name="email"]');
+
+        function generarEmail() {
+            const nombre = nombreInput.value.trim().toLowerCase();
+            const apellidos = apellidosInput.value.trim().toLowerCase().split(/\s+/)[0];
+            if (nombre && apellidos) {
+                emailInput.value = `${nombre}.${apellidos}@harmonia.com`;
+            } else {
+                emailInput.value = '';
+            }
+        }
+
+        nombreInput.addEventListener('input', generarEmail);
+        apellidosInput.addEventListener('input', generarEmail);
+
+        const inicioInput = document.querySelector('input[name="inicio"]');
+        const finInput = document.querySelector('input[name="fin"]');
+
+        function validarHoras() {
+            const inicio = inicioInput.value;
+            const fin = finInput.value;
+
+            if (inicio && fin) {
+                if (fin < inicio) {
+                    finInput.setCustomValidity(
+                        'La hora de fin no puede ser menor que la hora de inicio'
+                    );
+                } else if (fin === inicio) {
+                    finInput.setCustomValidity(
+                        'La hora de fin no puede ser igual que la hora de inicio'
+                    );
+                } else {
+                    finInput.setCustomValidity('');
+                }
+            }
+        }
+
+        inicioInput.addEventListener('change', validarHoras);
+        finInput.addEventListener('change', validarHoras);
+
+        const salarioInput = document.querySelector('input[name="salarioBase"]');
+        salarioInput.addEventListener('input', () => {
+            if (salarioInput.value < 0) {
+                salarioInput.value = '';
+                alert('El salario no puede ser negativo');
+            }
+        });
+    </script>
+
+    <style>
+        .hover-lift:hover {
+            transform: translateY(-2px);
+        }
+
+        .transition-all {
+            transition: all 0.2s ease;
+        }
+    </style>
+
 </body>
 
 </html>
