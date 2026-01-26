@@ -49,15 +49,15 @@ public class RRHHController {
     public String dashboard(Model model, Authentication auth) {
         // Toda la lógica de conteo se ha movido al EmpleadoService
         Map<String, Long> estadisticas = empleadoService.obtenerEstadisticasDashboard();
-        
+
         Empleado empleado = empleadoService.obtenerPorUsername(auth.getName());
         model.addAttribute("empleadoLogueado", empleado);
-        
+
         model.addAttribute("totalEmpleados", estadisticas.get("total"));
         model.addAttribute("empleadosActivos", estadisticas.get("activos"));
         model.addAttribute("empleadosInactivos", estadisticas.get("inactivos"));
         model.addAttribute("nominasPendientes", 0); // Mantengo el 0 que tenías
-        
+
         model.addAttribute("trad", traduccionService);
         return "RRHH/dashboard";
     }
@@ -68,7 +68,7 @@ public class RRHHController {
         model.addAttribute("trad", traduccionService);
         model.addAttribute("currentPage", 0);
         model.addAttribute("size", 10);
-        
+
         Empleado empleado = empleadoService.obtenerPorUsername(auth.getName());
         model.addAttribute("empleadoLogueado", empleado);
         model.addAttribute("activePage", "empleados");
@@ -82,7 +82,7 @@ public class RRHHController {
         model.addAttribute("nominas", nominaService.getAllNominas());
         model.addAttribute("empleados", empleadoService.listarTodos());
         model.addAttribute("trad", traduccionService);
-        
+
         Empleado emplead2 = empleadoService.obtenerPorUsername(auth.getName());
         model.addAttribute("empleadoLogueado", emplead2);
         model.addAttribute("activePage", "nominas");
@@ -93,15 +93,23 @@ public class RRHHController {
     public String verPerfil(@PathVariable("id") Long id, Model model, Authentication auth) {
         model.addAttribute("trad", traduccionService);
         model.addAttribute("activePage", "perfil");
-        
+
+        // 1. Obtenemos al usuario que está navegando (Tú)
         Empleado emplead2 = empleadoService.obtenerPorUsername(auth.getName());
-        model.addAttribute("empleadoLogueado", emplead2);
-        
+
+        // 2. IMPORTANTE: Inyectamos ambos nombres para que cualquier layout lo
+        // reconozca
+        model.addAttribute("empleadoLogueado", emplead2); // Lo que espera layoutRRHH
+        model.addAttribute("medicoLogueado", emplead2); // Lo que espera layoutMedico
+
+        // 3. Cargamos los datos de soporte (roles, turnos)
         cargarRoles(model);
         cargarTurnos(model);
-        
+
+        // 4. Obtenemos al empleado que queremos visualizar (el del ID de la URL)
         Empleado empleado = empleadoService.obtenerPorId(id);
         model.addAttribute("empleado", empleado);
+
         return "empleado/detalle";
     }
 
@@ -112,7 +120,7 @@ public class RRHHController {
         model.addAttribute("solicitudes", vacacionesService.listarTodasLasVacaciones());
         model.addAttribute("trad", traduccionService);
         model.addAttribute("activePage", "vacaciones");
-        
+
         Empleado empleado = empleadoService.obtenerPorUsername(auth.getName());
         model.addAttribute("empleadoLogueado", empleado);
         return "RRHH/vacaciones";
