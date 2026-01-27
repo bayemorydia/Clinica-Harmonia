@@ -49,7 +49,9 @@ public class DiagnosticoServiceImpl implements DiagnosticoService {
             }
         } else {
             // Validaciones al editar (comprobar que no choque con otros IDs)
+            // Buscamos el diagnóstico existente en base al ID
             Diagnostico existente = diagnosticoDAO.findById(diagnostico.getId()).orElse(null);
+            // Si el código ha cambiado y ya existe en otro diagnóstico, lanza excepción
             if (existente != null) {
                 if (!existente.getCodigo().equals(diagnostico.getCodigo())
                         && diagnosticoDAO.existsByCodigo(diagnostico.getCodigo())) {

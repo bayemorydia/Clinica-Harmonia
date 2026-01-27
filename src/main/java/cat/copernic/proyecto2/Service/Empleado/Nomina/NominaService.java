@@ -9,7 +9,6 @@ import org.springframework.data.domain.Pageable;
 
 public interface NominaService {
     List<Nomina> getAllNominas();
-    void saveNomina(Nomina nomina);
     // Nuevo método para procesar lógica de negocio antes de guardar
     void guardarNominaProcesada(Nomina nomina) throws Exception;
     boolean existeNominaMes(Long empleadoId, String periodo);

@@ -43,13 +43,16 @@ public class EmpleadoServiceImpl implements EmpleadoService {
             throw new IllegalArgumentException("❌ Debes asignar hora de inicio y fin");
 
         // Validación y ajuste de email si ya existe
+        // Separamos el email en dos partes: local (antes de @) y dominio (después de @)
         String email = empleado.getEmail();
         String[] partes = email.split("@");
         String local = partes[0];
         String dominio = partes[1];
 
         int contador = 1;
+        // Mientras exista un empleado con ese email, generamos uno nuevo
         while (empleadoDAO.findByEmail(email).isPresent()) {
+            // Creamos un nuevo email añadiendo el contador al local
             email = local + contador + "@" + dominio;
             contador++;
         }
@@ -93,13 +96,16 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         });
 
         // Validar y ajustar email si ya existe
+        // Separamos el email en dos partes: local (antes de @) y dominio (después de @)
         String email = datos.getEmail();
         String[] partes = email.split("@");
         String local = partes[0];
         String dominio = partes[1];
 
         int contador = 1;
+        // Mientras exista un empleado con ese email, generamos uno nuevo
         while (empleadoDAO.findByEmail(email).isPresent() &&
+                // Creamos un nuevo email añadiendo el contador al local
                 !empleadoDAO.findByEmail(email).get().getId().equals(id)) {
             email = local + contador + "@" + dominio;
             contador++;
@@ -190,11 +196,8 @@ public class EmpleadoServiceImpl implements EmpleadoService {
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public Page<Nomina> listarNominasPorEmpleado(Long empleadoId, String search, int page, int size) {
-        return empleadoDAO.findByEmpleado(empleadoId, search, PageRequest.of(page, size));
-    }
+
+
 
     @Override
     @Transactional(readOnly = true)
@@ -207,14 +210,22 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     @Override
     @Transactional(readOnly = true)
     public Map<String, Long> obtenerEstadisticasDashboard() {
+
+        // Obtenemos todos los empleados de la base de datos
         List<Empleado> todos = empleadoDAO.findAll();
+
         long total = todos.size();
+
+        // Contamos cuántos empleados están activos
         long activos = todos.stream().filter(Empleado::getActiva).count();
+
         long inactivos = total - activos;
 
+        // Devolvemos un mapa con las estadísticas para el dashboard
         return Map.of(
                 "total", total,
                 "activos", activos,
                 "inactivos", inactivos);
     }
+
 }

@@ -18,8 +18,9 @@ public class ImagenServiceImpl implements ImagenService {
         }
 
         try {
-            // Carpeta base de tu proyecto
+            // Ruta base donde se guardarán las imágenes dentro del proyecto
             String folder = "src/main/resources/static/images/";
+            // Convertimos el archivo a bytes para poder guardarlo en disco
             byte[] bytes = file.getBytes();
             // Creamos un nombre único para evitar colisiones
             String nombreImagen = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
@@ -27,6 +28,7 @@ public class ImagenServiceImpl implements ImagenService {
             
             // Crea los directorios si no existen
             Files.createDirectories(path.getParent());
+            // Escribimos el archivo en la ruta especificada
             Files.write(path, bytes);
 
             return nombreImagen;
@@ -38,12 +40,15 @@ public class ImagenServiceImpl implements ImagenService {
 
     @Override
     public void eliminarImagen(String nombreImagen, String carpeta) {
+        // Si no hay nombre de imagen o es la imagen por defecto, no se elimina nada
         if (nombreImagen == null || nombreImagen.equals("default-user.png") || nombreImagen.isEmpty()) {
             return;
         }
         try {
             String folder = "src/main/resources/static/images/";
+            // Ruta completa del archivo a eliminar
             Path path = Paths.get(folder + nombreImagen);
+            // Elimina el archivo si existe
             Files.deleteIfExists(path);
         } catch (IOException e) {
             System.err.println("Error al eliminar imagen: " + e.getMessage());
