@@ -27,5 +27,4 @@ public interface EmpleadoService {
 
     Empleado obtenerPorDni(String dni);
 
-    Page<Nomina> listarNominasPorEmpleado(Long empleadoId, String search, int page, int size);
 }

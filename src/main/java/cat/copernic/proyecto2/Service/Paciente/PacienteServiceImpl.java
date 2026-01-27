@@ -42,9 +42,12 @@ public class PacienteServiceImpl implements PacienteService {
     @Override
     @Transactional
     public void savePaciente(Paciente pacienteForm, MultipartFile file) {
+        // Normalizamos el DNI antes de guardarlo (mayúsculas y sin espacios)
         if (pacienteForm.getDni() != null) {
             pacienteForm.setDni(pacienteForm.getDni().toUpperCase().trim());
         }
+
+        // Comprobamos si el paciente es nuevo (no tiene ID asignado)
 
         if (pacienteForm.getId() == null || pacienteForm.getId() == 0) {
             // Lógica de Nuevo Paciente
@@ -97,30 +100,41 @@ public class PacienteServiceImpl implements PacienteService {
     @Override
     @Transactional
     public void actualizarFotoDetalle(Long id, MultipartFile file) {
+
         Paciente paciente = findPacienteById(id);
+
+        // Comprobamos que el paciente exista,
+        // que el archivo no sea nulo y que no esté vacío
         if (paciente != null && file != null && !file.isEmpty()) {
+
             gestionarCambioImagen(paciente, file);
+
             pacienteDAO.save(paciente);
         }
     }
 
+
     private void gestionarCambioImagen(Paciente paciente, MultipartFile file) {
+
+        // Comprobamos si el paciente ya tiene una imagen asignada
+        // y que no sea la imagen por defecto
         if (paciente.getRutaFoto() != null && !paciente.getRutaFoto().equals("default-user.png")) {
+
+            // Si existe una imagen anterior, se elimina del sistema
             imagenService.eliminarImagen(paciente.getRutaFoto(), "Paciente");
         }
+
+        // Guardamos la nueva imagen y actualizamos la ruta en el paciente
         paciente.setRutaFoto(imagenService.guardarImagen(file, "Paciente"));
     }
+
 
     @Override
     public Paciente findPacienteById(Long id) {
         return pacienteDAO.findById(id).orElse(null);
     }
 
-    @Override
-    public Paciente encontrarPorDni(String dni) {
-        return pacienteDAO.findByDni(dni)
-                .orElseThrow(() -> new EntityNotFoundException("Paciente no encontrado con DNI: " + dni));
-    }
+
 
     @Override
     @Transactional
@@ -150,12 +164,6 @@ public class PacienteServiceImpl implements PacienteService {
         return pacienteDAO.findByFilters(query, activo, pageable);
     }
 
-    @Override
-    public boolean existeDni(String dni, Long idActual) {
-        return pacienteDAO.findByDni(dni)
-                .map(encontrado -> idActual == null || !encontrado.getId().equals(idActual))
-                .orElse(false);
-    }
 
     @Override
     public Paciente buscarPorUsername(String username) {

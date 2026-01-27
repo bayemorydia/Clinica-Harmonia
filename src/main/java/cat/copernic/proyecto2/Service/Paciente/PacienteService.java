@@ -16,7 +16,6 @@ public interface PacienteService {
 
     Paciente findPacienteById(Long id);
 
-    Paciente encontrarPorDni(String dni);
 
     void desactivarPaciente(Long id);
 
@@ -28,7 +27,6 @@ public interface PacienteService {
 
     Paciente buscarPorUsername(String username);
 
-    boolean existeDni(String dni, Long idActual);
 
     void activarPaciente(Long id);
 

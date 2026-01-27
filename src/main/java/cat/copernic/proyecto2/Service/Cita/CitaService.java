@@ -29,11 +29,9 @@ public interface CitaService {
 
     long countPacientesPendientesPorMedico(Long medicoId);
 
-    long countCitasHoyPorMedico(Long medicoId, LocalDateTime inicio, LocalDateTime fin);
 
     List<Cita> obtenerCitasPendientesMedico(Long medicoId);
 
-    Map<LocalDate, Long> obtenerResumenAgendaAnual(Long medicoId, int anio);
 
     List<Cita> obtenerCitasDia(Long medicoId, LocalDate fecha);
 
@@ -43,6 +41,4 @@ public interface CitaService {
 
     List<Cita> findByPaciente(Paciente paciente);
 
-    // Nuevo método para mover lógica de creación inicial fuera del controller
-    Cita prepararNuevaCita();
 }
