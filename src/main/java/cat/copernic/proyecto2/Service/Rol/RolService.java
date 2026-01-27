@@ -13,7 +13,5 @@ public interface RolService {
     void activar(Long id);
     Page<Rol> getRolesPaginados(String query, Boolean activo, int page, int size);
     List<Rol> RolesConcretos();
-    
-    // Nuevo método para inicialización de negocio
     Rol prepararNuevoRol();
 }

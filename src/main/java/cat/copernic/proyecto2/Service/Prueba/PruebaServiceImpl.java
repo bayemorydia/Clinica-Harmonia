@@ -19,7 +19,6 @@ public class PruebaServiceImpl implements PruebaService {
     @Override
     public PruebaMedica crearNuevaPrueba() {
         PruebaMedica prueba = new PruebaMedica();
-        // Lógica de negocio: Inicialización por defecto
         prueba.setPrecio(new BigDecimal("0"));
         prueba.setActivo(true);
         return prueba;
@@ -41,13 +40,11 @@ public class PruebaServiceImpl implements PruebaService {
     @Override
     @Transactional
     public void guardar(PruebaMedica prueba) throws Exception {
-        // Validaciones de negocio: Duplicidad de código y nombre
         Optional<PruebaMedica> existenteCod = pruebaDAO.findByCodigo(prueba.getCodigo());
         if (existenteCod.isPresent()
                 && (prueba.getId() == null || !existenteCod.get().getId().equals(prueba.getId()))) {
             throw new Exception("El código de prueba ya existe.");
         }
-
         Optional<PruebaMedica> existenteNom = pruebaDAO.findByNombre(prueba.getNombre());
         if (existenteNom.isPresent()
                 && (prueba.getId() == null || !existenteNom.get().getId().equals(prueba.getId()))) {

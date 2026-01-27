@@ -52,6 +52,7 @@ public class SecurityConfig {
                                                 .requestMatchers("/Pacientes/**").hasRole("PACIENTE")
                                                 .requestMatchers("/recepcion/**")
                                                 .hasAnyRole("RECEPCIONISTA", "ADMINISTRADOR")
+                                                .requestMatchers("/ws-clinica/**").authenticated()//socket
                                                 .requestMatchers("/vacaciones/**")
                                                 .hasAnyRole("ADMINISTRADOR", "MEDICO", "RECEPCIONISTA", "RRHH")
                                                 .requestMatchers("/empleados/nuevo", "/empleados/guardar",

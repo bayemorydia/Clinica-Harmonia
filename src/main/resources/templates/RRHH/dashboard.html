@@ -39,10 +39,30 @@
         .uppercase {
             text-transform: uppercase;
         }
+
+        /* Estilos para el contenedor de notificaciones WebSocket */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            width: 350px;
+        }
+        
+        .notification-toast {
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
     </style>
 </head>
 
 <body th:with="activePage='dashboard'">
+
+    <div id="toast-container"></div>
 
     <div sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layoutRRHH :: menu_RRHH}"></div>
 
@@ -173,6 +193,50 @@
     </main>
 
     <div th:replace="~{Reutilizable/layoutRRHH :: scripts_RRHH}"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script>
+        var socket = new SockJS('/ws-clinica');
+        var stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, function (frame) {
+            console.log('RRHH conectado a notificaciones: ' + frame);
+            
+            stompClient.subscribe('/topic/vacaciones', function (notificacion) {
+                mostrarNotificacionEmergente(notificacion.body);
+            });
+        });
+
+        function mostrarNotificacionEmergente(mensaje) {
+            const container = document.getElementById('toast-container');
+            const id = 'notif-' + Date.now();
+            
+            const toastHtml = `
+                <div id="${id}" class="alert alert-info alert-dismissible fade show shadow notification-toast border-start border-info border-5 mb-3" role="alert">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-info-circle-fill fs-4 me-3"></i>
+                        <div>
+                            <strong class="d-block">Solicitud de Vacaciones</strong>
+                            <span class="small">${mensaje}</span>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `;
+            
+            container.insertAdjacentHTML('afterbegin', toastHtml);
+
+            // Auto-cerrar después de 8 segundos
+            setTimeout(() => {
+                const toast = document.getElementById(id);
+                if (toast) {
+                    const bsAlert = new bootstrap.Alert(toast);
+                    bsAlert.close();
+                }
+            }, 8000);
+        }
+    </script>
 </body>
 
 </html>
