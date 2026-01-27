@@ -33,7 +33,6 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Lazy
     private EmpleadoService empleadoService;
 
-    // Métodos de activación/desactivación movidos desde el controlador
     @Override
     @Transactional
     public void activarUsuario(Long id) {
@@ -56,31 +55,23 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Usuario> listarUsuarios(Pageable pageable) {
-        return usuarioDAO.findAll(pageable);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Page<Usuario> buscarPorUsername(String query, Pageable pageable) {
-        return usuarioDAO.findByUsernameContainingIgnoreCase(query, pageable);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public void validarSolicitudReset(String dni) throws Exception {
         Empleado empleado = empleadoService.obtenerPorDni(dni);
-        if (empleado == null) throw new Exception("DNI/NIE no encontrado");
-        if (empleado.getUsuario() == null) throw new Exception("El empleado no tiene usuario asociado");
+        if (empleado == null)
+            throw new Exception("DNI/NIE no encontrado");
+        if (empleado.getUsuario() == null)
+            throw new Exception("El empleado no tiene usuario asociado");
     }
 
     @Override
     @Transactional
     public void resetearPassword(String dni, String newPassword, String confirmPassword) throws Exception {
-        if (!newPassword.equals(confirmPassword)) throw new Exception("Las contraseñas no coinciden");
+        if (!newPassword.equals(confirmPassword))
+            throw new Exception("Las contraseñas no coinciden");
         Empleado empleado = empleadoService.obtenerPorDni(dni);
-        if (empleado == null || empleado.getUsuario() == null) throw new Exception("Error al procesar la solicitud");
-        
+        if (empleado == null || empleado.getUsuario() == null)
+            throw new Exception("Error al procesar la solicitud");
+
         Usuario usuario = empleado.getUsuario();
         usuario.setPasswordHash(passwordEncoder.encode(newPassword));
         usuarioDAO.save(usuario);
@@ -110,12 +101,6 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     @Transactional
-    public void guardar(Usuario usuario) {
-        usuarioDAO.save(usuario);
-    }
-
-    @Override
-    @Transactional
     public Usuario crearUsuarioPaciente(String nombre, String apellidos, String dni) {
         return crearUsuarioBase(nombre, apellidos, dni, "PACIENTE");
     }
@@ -126,26 +111,6 @@ public class UsuarioServiceImpl implements UsuarioService {
         return crearUsuarioBase(nombre, apellidos, dni, rolNombre);
     }
 
-    private Usuario crearUsuarioBase(String nombre, String apellidos, String dni, String rolNombre) {
-        Usuario nuevoUsuario = new Usuario();
-        String nombreLimpio = nombre.toLowerCase().trim();
-        String primerApellido = apellidos.toLowerCase().trim().split(" ")[0];
-        String username = generarUsernameUnico(nombreLimpio, primerApellido);
-
-        nuevoUsuario.setUsername(username);
-        nuevoUsuario.setPasswordHash(passwordEncoder.encode(dni.toUpperCase().trim()));
-        nuevoUsuario.setActivo(true);
-
-        Rol rol = rolDAO.findByNombre(rolNombre.toUpperCase())
-                .orElseThrow(() -> new RuntimeException("Error: El rol '" + rolNombre + "' no existe"));
-
-        Set<Rol> roles = new HashSet<>();
-        roles.add(rol);
-        nuevoUsuario.setRoles(roles);
-
-        return usuarioDAO.save(nuevoUsuario);
-    }
-
     @Override
     @Transactional
     public void actualizarRolUsuario(Long usuarioId, String nuevoRolNombre) {
@@ -153,10 +118,25 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         Rol nuevoRol = rolDAO.findByNombre(nuevoRolNombre)
                 .orElseThrow(() -> new RuntimeException("El rol '" + nuevoRolNombre + "' no existe"));
-
         usuario.getRoles().clear();
         usuario.getRoles().add(nuevoRol);
         usuarioDAO.save(usuario);
+    }
+
+    private Usuario crearUsuarioBase(String nombre, String apellidos, String dni, String rolNombre) {
+        Usuario nuevoUsuario = new Usuario();
+        String nombreLimpio = nombre.toLowerCase().trim();
+        String primerApellido = apellidos.toLowerCase().trim().split(" ")[0];
+        String username = generarUsernameUnico(nombreLimpio, primerApellido);
+        nuevoUsuario.setUsername(username);
+        nuevoUsuario.setPasswordHash(passwordEncoder.encode(dni.toUpperCase().trim()));
+        nuevoUsuario.setActivo(true);
+        Rol rol = rolDAO.findByNombre(rolNombre.toUpperCase())
+                .orElseThrow(() -> new RuntimeException("Error: El rol '" + rolNombre + "' no existe"));
+        Set<Rol> roles = new HashSet<>();
+        roles.add(rol);
+        nuevoUsuario.setRoles(roles);
+        return usuarioDAO.save(nuevoUsuario);
     }
 
     private String generarUsernameUnico(String nombre, String apellido) {

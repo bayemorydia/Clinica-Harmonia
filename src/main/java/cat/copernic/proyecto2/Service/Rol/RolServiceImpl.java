@@ -20,7 +20,7 @@ public class RolServiceImpl implements RolService {
     @Override
     public Rol prepararNuevoRol() {
         Rol rol = new Rol();
-        rol.setActivo(true); // Regla de negocio: Los roles nuevos nacen activos
+        rol.setActivo(true);
         return rol;
     }
 
@@ -33,12 +33,12 @@ public class RolServiceImpl implements RolService {
     @Override
     @Transactional
     public void guardar(Rol rol) {
-        // Validación de Duplicados (Lógica de negocio movida aquí)
-        rolDAO.findByNombre(rol.getNombre()).ifPresent(existente -> {
+        Rol existente = rolDAO.findByNombreIgnoreCase(rol.getNombre()).orElse(null);
+        if (existente != null) {
             if (rol.getId() == null || !existente.getId().equals(rol.getId())) {
-                throw new RuntimeException("Ya existe un rol con el nombre exacto: " + rol.getNombre());
+                throw new RuntimeException("Ya existe un rol con el nombre: " + rol.getNombre());
             }
-        });
+        }
         rolDAO.save(rol);
     }
 

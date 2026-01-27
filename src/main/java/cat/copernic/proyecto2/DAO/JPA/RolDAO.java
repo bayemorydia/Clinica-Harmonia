@@ -24,4 +24,6 @@ public interface RolDAO extends JpaRepository<Rol, Long> {
     @Query("SELECT r FROM Rol r WHERE r.nombre IN ('RRHH', 'RECEPCIONISTA', 'MEDICO')")
     List<Rol> findRolesEspecificos();
 
+    Optional<Rol> findByNombreIgnoreCase(String nombre);
+
 }

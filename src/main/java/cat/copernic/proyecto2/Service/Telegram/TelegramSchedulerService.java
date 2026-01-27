@@ -24,16 +24,14 @@ public class TelegramSchedulerService {
     public void enviarRecordatoriosCitas() {
         LocalDateTime mañanaInicio = LocalDateTime.now().plusDays(1).withMinute(0).withSecond(0);
         LocalDateTime mañanaFin = mañanaInicio.plusHours(1);
-
         List<Cita> citas = citaDAO.findByFechaHoraBetweenAndEstadoNotOrderByFechaHoraAsc(
                 mañanaInicio, mañanaFin, EstadoCita.ANULADA);
-
         for (Cita cita : citas) {
             Long chatId = cita.getPaciente().getUsuario().getTelegramChatId();
             if (chatId != null) {
                 String hora = cita.getFechaHora().format(DateTimeFormatter.ofPattern("HH:mm"));
-                String msj = "⏰ <b>RECORDATORIO</b>\n\nHola " + cita.getPaciente().getNombre() + 
-                             ", mañana tienes cita a las " + hora + " en " + cita.getEspecialidad() + ".";
+                String msj = "⏰ <b>RECORDATORIO</b>\n\nHola " + cita.getPaciente().getNombre() +
+                        ", mañana tienes cita a las " + hora + " en " + cita.getEspecialidad() + ".";
                 botService.enviarMensaje(chatId, msj);
             }
         }

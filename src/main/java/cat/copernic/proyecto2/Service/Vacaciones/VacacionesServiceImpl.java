@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import java.util.List;
 
 @Service
@@ -21,36 +22,38 @@ public class VacacionesServiceImpl implements VacacionesService {
     @Autowired
     private UsuarioService usuarioService;
 
+    //socket
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
+
     @Override
     @Transactional
     public void procesarSolicitud(String username, LocalDate inicio, LocalDate fin) throws Exception {
-        // 1. Identificar empleado
+        //validaciones
         Empleado empleado = usuarioService.obtenerEmpleadoPorUsername(username);
         if (empleado == null)
             throw new Exception("login");
         if (inicio.isBefore(LocalDate.now())) {
-            throw new Exception("fecha_pasada"); // Asegúrate de añadir este mensaje a tu traductor
+            throw new Exception("fecha_pasada");
         }
-        // 2. Validaciones de Negocio
         if (inicio.isAfter(fin)) {
             throw new Exception("fecha");
         }
         if (existeSolapamiento(empleado.getId(), inicio, fin)) {
             throw new Exception("solapamiento");
         }
-
-        // 3. Creación y cálculo
+        //creación y cálculo
         Vacaciones vacacion = new Vacaciones();
         vacacion.setEmpleado(empleado);
         vacacion.setFechaInicio(inicio);
         vacacion.setFechaFin(fin);
         vacacion.setEstado(EstadoVacaciones.PENDIENTE);
-
-        long dias = ChronoUnit.DAYS.between(inicio, fin) + 1;
+        long dias = ChronoUnit.DAYS.between(inicio, fin) + 1; //Se suma uno para contar el dia actual 
         vacacion.setTotalDias((int) dias);
-
-        // 4. Persistencia
         vacacionesDAO.save(vacacion);
+        //sockets
+        String mensajeNotificacion = "Nueva solicitud de vacaciones de: " + username;
+        messagingTemplate.convertAndSend("/topic/vacaciones", mensajeNotificacion);
     }
 
     @Override
@@ -61,14 +64,9 @@ public class VacacionesServiceImpl implements VacacionesService {
 
     @Override
     @Transactional
-    public void guardarVacacion(Vacaciones vacacion) {
-        vacacionesDAO.save(vacacion);
-    }
-
-    @Override
-    @Transactional
     public void eliminarVacacion(Long id) {
         vacacionesDAO.deleteById(id);
+        
     }
 
     @Override
@@ -77,10 +75,8 @@ public class VacacionesServiceImpl implements VacacionesService {
         LocalDate hoy = LocalDate.now();
         LocalDate alta = (empleado.getFecha_alta() != null) ? empleado.getFecha_alta()
                 : LocalDate.of(hoy.getYear(), 1, 1);
-
         int diasMaxAnuales = 22;
         long diasDerecho;
-
         if (alta.getYear() < hoy.getYear()) {
             diasDerecho = diasMaxAnuales;
         } else {
@@ -88,14 +84,13 @@ public class VacacionesServiceImpl implements VacacionesService {
             long diasActivo = ChronoUnit.DAYS.between(alta, finDeAnio) + 1;
             diasDerecho = Math.round((diasActivo / 365.0) * diasMaxAnuales);
         }
-
         List<Vacaciones> misVacaciones = vacacionesDAO.findByEmpleadoId(empleado.getId());
+        //flujo de datos que filtra por aceptada y que sean el mismo año del empleado, suma los dias luego.
         long diasConsumidos = misVacaciones.stream()
                 .filter(v -> v.getEstado() == EstadoVacaciones.ACEPTADA)
                 .filter(v -> v.getFechaInicio().getYear() == hoy.getYear())
                 .mapToLong(Vacaciones::getTotalDias)
                 .sum();
-
         return diasDerecho - diasConsumidos;
     }
 
@@ -103,7 +98,7 @@ public class VacacionesServiceImpl implements VacacionesService {
     @Transactional(readOnly = true)
     public boolean existeSolapamiento(Long empleadoId, LocalDate inicio, LocalDate fin) {
         List<Vacaciones> existentes = vacacionesDAO.findByEmpleadoId(empleadoId);
-
+        //flujo de datos que filtra por vacaciones rechazadas, y ve si la fecha de inicio es antes de la fin, o la fin despues de inicio.
         return existentes.stream()
                 .filter(v -> v.getEstado() != EstadoVacaciones.RECHAZADA)
                 .anyMatch(v -> (inicio.isBefore(v.getFechaFin().plusDays(1))
