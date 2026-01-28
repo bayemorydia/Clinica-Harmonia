@@ -36,7 +36,7 @@ public class CitaController {
     private FacturaPdfService facturaPdfService;
 
     private void cargarListasFormulario(Model model) {
-        model.addAttribute("pacientes", pacienteService.getAllPacientes());
+        model.addAttribute("pacientes", pacienteService.listarPacientesActivos());
         model.addAttribute("profesionales", citaService.listarMedicosActivos());
         model.addAttribute("estadosCita", EstadoCita.values());
         model.addAttribute("especialidades", Especialidad.values());

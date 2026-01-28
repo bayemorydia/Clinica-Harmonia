@@ -25,4 +25,6 @@ public interface UsuarioDAO extends JpaRepository<Usuario, Long> {
                         Pageable pageable);
 
         Page<Usuario> findByUsername(String username, Pageable pageable);
+
+        Optional<Usuario> findByUsername(String username);
 }

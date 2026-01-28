@@ -11,15 +11,15 @@ public interface PacienteService {
 
     void savePaciente(Paciente paciente, MultipartFile imagen);
 
-    // Nuevo método para mover la lógica de actualización de foto desde controller
     void actualizarFotoDetalle(Long id, MultipartFile file);
 
     Paciente findPacienteById(Long id);
 
-
     void desactivarPaciente(Long id);
 
     String getEdadPaciente(Paciente paciente);
+
+    List<Paciente> listarPacientesActivos();
 
     long countPacientesActivos();
 
@@ -27,9 +27,7 @@ public interface PacienteService {
 
     Paciente buscarPorUsername(String username);
 
-
     void activarPaciente(Long id);
 
-    // Añadir a la interfaz PacienteService
     long obtenerTotalPacientes();
 }

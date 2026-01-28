@@ -16,12 +16,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -39,7 +39,6 @@ public class CitaServiceImpl implements CitaService {
     @Autowired
     private FacturaDAO facturaDAO;
 
-
     @Override
     @Transactional(readOnly = true)
     public long countCitasHoy(Long medicoId) {
@@ -48,8 +47,6 @@ public class CitaServiceImpl implements CitaService {
         return citaDAO.countByProfesionalIdAndFechaHoraBetweenAndEstadoNot(medicoId, inicio, fin, EstadoCita.ANULADA);
     }
 
-    //Este método intenta convertir una fecha en formato String a un objeto LocalDate.
-//Si la cadena es nula, vacía o no tiene un formato válido, devuelve la fecha actual.
     @Override
     public LocalDate parsearFechaAgenda(String fechaStr) {
         try {
@@ -59,23 +56,26 @@ public class CitaServiceImpl implements CitaService {
         }
     }
 
+    public Map<String, Long> obtenerResumenCitas(List<Cita> citas) {
+        Map<String, Long> resumen = new HashMap<>();
+        resumen.put("total", (long) citas.size());
+        resumen.put("programadas", citas.stream().filter(c -> c.getEstado().name().equals("PROGRAMADA")).count());
+        resumen.put("realizadas", citas.stream().filter(c -> c.getEstado().name().equals("REALIZADA")).count());
+        return resumen;
+    }
+
     @Override
     @Transactional(readOnly = true)
     public List<Empleado> listarMedicosActivos() {
-
         // Obtenemos la lista completa de empleados
         return empleadoService.listarTodos().stream()
-
                 // Filtramos solo los empleados que tienen rol y cuyo nombre es "MEDICO"
                 .filter(e -> e.getRol() != null && "MEDICO".equalsIgnoreCase(e.getRol().getNombre()))
-
                 // Filtramos solo los empleados que están activos
                 .filter(Empleado::getActiva)
-
                 // Convertimos el stream filtrado a una lista
                 .collect(Collectors.toList());
     }
-
 
     @Override
     @Transactional(readOnly = true)
@@ -98,45 +98,35 @@ public class CitaServiceImpl implements CitaService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveCita(Cita cita) throws Exception {
-
         // Validamos las reglas de negocio antes de guardar la cita
         validarReglasNegocio(cita);
-
         // Comprobamos si la cita es nueva (no tiene ID)
         boolean esNueva = (cita.getId() == null);
-
         // Si es nueva, establecemos el estado inicial como PROGRAMADA
         if (esNueva) {
             cita.setEstado(EstadoCita.PROGRAMADA);
         }
-
         // Guardamos la cita en la base de datos
         Cita guardada = citaDAO.save(cita);
-
         // Si la cita es nueva, generamos una factura asociada a la misma
         if (esNueva) {
             generarFacturaAsociada(guardada);
         }
     }
 
-
     /**
      * Lógica de validación extraída para mayor claridad
      */
     private void validarReglasNegocio(Cita cita) throws Exception {
-
         // Validación básica: la fecha y hora son obligatorias
         if (cita.getFechaHora() == null)
             throw new Exception("La fecha y hora son obligatorias.");
-
         // Normalizar la fecha/hora a la hora exacta (sin minutos ni segundos)
         LocalDateTime fecha = cita.getFechaHora().truncatedTo(ChronoUnit.HOURS);
         cita.setFechaHora(fecha);
-
         // Validación: no se puede agendar una cita en el pasado
         if (fecha.isBefore(LocalDateTime.now().truncatedTo(ChronoUnit.HOURS)))
             throw new Exception("No se pueden agendar citas en el pasado.");
-
         // Validación del horario permitido:
         // - Mañana: 08:00 a 12:00
         // - Tarde: 14:00 a 16:00
@@ -144,26 +134,23 @@ public class CitaServiceImpl implements CitaService {
         boolean horarioValido = (hora >= 8 && hora <= 12) || (hora >= 14 && hora <= 16);
         if (!horarioValido)
             throw new Exception("El horario permitido es de 08:00-12:00 y 14:00-16:00.");
-
         // Validación de días hábiles: solo de lunes a viernes
         if (fecha.getDayOfWeek().getValue() > 5)
             throw new Exception("Solo se pueden agendar citas de lunes a viernes.");
-
         // Validación de disponibilidad del paciente:
-        // Si ya tiene una cita en la misma fecha/hora (y no está anulada), lanza excepción
+        // Si ya tiene una cita en la misma fecha/hora (y no está anulada), lanza
+        // excepción
         validarDisponibilidad(
                 citaDAO.findByPacienteAndFechaHoraAndEstadoNot(cita.getPaciente(), fecha, EstadoCita.ANULADA),
                 cita,
-                "El paciente ya tiene una cita a esta hora."
-        );
-
+                "El paciente ya tiene una cita a esta hora.");
         // Validación de disponibilidad del profesional:
-        // Si el profesional ya tiene una cita en la misma fecha/hora (y no está anulada), lanza excepción
+        // Si el profesional ya tiene una cita en la misma fecha/hora (y no está
+        // anulada), lanza excepción
         validarDisponibilidad(
                 citaDAO.findByProfesionalAndFechaHoraAndEstadoNot(cita.getProfesional(), fecha, EstadoCita.ANULADA),
                 cita,
-                "El médico ya tiene una cita asignada a esta hora."
-        );
+                "El médico ya tiene una cita asignada a esta hora.");
     }
 
     // Método auxiliar para evitar repetir la lógica del ID
@@ -182,16 +169,13 @@ public class CitaServiceImpl implements CitaService {
         f.setFechaEmision(LocalDate.now());
         f.setEstado(EstadoPago.PENDIENTE);
         f.setActivo(true);
-
         BigDecimal precioBase = new BigDecimal("50.00");
-
         LineaFactura lf = new LineaFactura();
         lf.setConcepto("Consulta Médica: " + guardada.getEspecialidad() + " (Cita #" + guardada.getId() + ")");
         lf.setCantidad(1);
         lf.setPrecioUnitario(precioBase);
         lf.setSubtotal(precioBase);
         lf.setFactura(f);
-
         f.setLineas(new ArrayList<>(List.of(lf)));
         recalcularTotales(f);
         facturaDAO.save(f);
@@ -215,7 +199,6 @@ public class CitaServiceImpl implements CitaService {
         if (cita != null && cita.getEstado() != EstadoCita.ANULADA) {
             cita.setEstado(EstadoCita.ANULADA);
             citaDAO.save(cita);
-
             List<Factura> facturas = facturaDAO.findAll();
             for (Factura f : facturas) {
                 if (f.getLineas() != null && !f.getLineas().isEmpty()) {
@@ -236,13 +219,11 @@ public class CitaServiceImpl implements CitaService {
         return citaDAO.countPacientesConCitasPendientes(medicoId, EstadoCita.PROGRAMADA);
     }
 
-
     @Override
     @Transactional(readOnly = true)
     public List<Cita> obtenerCitasPendientesMedico(Long medicoId) {
         return citaDAO.findByProfesionalIdAndEstadoOrderByFechaHoraAsc(medicoId, EstadoCita.PROGRAMADA);
     }
-
 
     @Override
     @Transactional(readOnly = true)

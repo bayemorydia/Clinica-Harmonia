@@ -53,7 +53,6 @@ public class ConsultaServiceImpl implements ConsultaService {
             historial = new HistorialClinico();
             historial.setEpisodios(new ArrayList<>());
         }
-
         if (inicio != null || fin != null) {
             List<EpisodioClinico> filtrados = historial.getEpisodios().stream()
                     .filter(ep -> {
@@ -90,7 +89,6 @@ public class ConsultaServiceImpl implements ConsultaService {
         EpisodioClinico episodio = new EpisodioClinico();
         episodio.setDiagnostico(diagnosticoService.buscarPorId(diagnosticoId).orElseThrow());
         episodio.setFecha(LocalDateTime.now());
-
         List<LineaReceta> lineas = new ArrayList<>();
         if (medIds != null) {
             for (int i = 0; i < medIds.size(); i++) {
@@ -100,12 +98,10 @@ public class ConsultaServiceImpl implements ConsultaService {
                 lineas.add(lr);
             }
         }
-
         List<PruebaMedica> pruebas = new ArrayList<>();
         if (pruebaIds != null) {
             pruebaIds.forEach(pId -> pruebas.add(pruebaService.encontrarPrueba(pId)));
         }
-
         tratamiento.setFechaInicio(LocalDate.now());
         this.finalizarConsulta(citaId, episodio, tratamiento, pruebas, lineas);
     }
@@ -133,28 +129,22 @@ public class ConsultaServiceImpl implements ConsultaService {
     @Transactional
     public void finalizarConsulta(Long citaId, EpisodioClinico episodio, Tratamiento tratamiento,
             List<PruebaMedica> pruebas, List<LineaReceta> lineas) {
-
         Cita cita = citaDAO.findById(citaId).orElseThrow(() -> new RuntimeException("Cita no encontrada"));
-
         HistorialClinico hc = historialDAO.findByPacienteId(cita.getPaciente().getId())
                 .orElseGet(() -> {
                     HistorialClinico newHc = new HistorialClinico();
                     newHc.setPaciente(cita.getPaciente());
                     return historialDAO.save(newHc);
                 });
-
         episodio.setMedico(cita.getProfesional());
         episodio.setFecha(cita.getFechaHora());
         episodio.setMotivoConsulta(cita.getMotivo());
         episodio.setHistorial(hc);
-
         if (pruebas != null && !pruebas.isEmpty()) {
             episodio.setPruebasAsignadas(new ArrayList<>(pruebas));
             generarFacturaPorPruebas(cita, pruebas);
         }
-
         EpisodioClinico episodioGuardado = episodioDAO.save(episodio);
-
         if (tratamiento != null) {
             tratamiento.setEpisodio(episodioGuardado);
             tratamiento.setPaciente(cita.getPaciente());
@@ -163,7 +153,6 @@ public class ConsultaServiceImpl implements ConsultaService {
                 tratamiento.setFechaInicio(LocalDate.now());
             tratamientoDAO.save(tratamiento);
         }
-
         if (lineas != null && !lineas.isEmpty()) {
             RecetaMedica receta = new RecetaMedica();
             receta.setEpisodio(episodioGuardado);
@@ -177,7 +166,6 @@ public class ConsultaServiceImpl implements ConsultaService {
             receta.setLineas(lineasPersistibles);
             recetaDAO.save(receta);
         }
-
         cita.setEstado(EstadoCita.REALIZADA);
         citaDAO.save(cita);
     }
@@ -217,7 +205,6 @@ public class ConsultaServiceImpl implements ConsultaService {
     private void recalcularTotales(Factura factura) {
         // 1. Inicializamos el subtotal acumulado
         BigDecimal subtotalAcumulado = BigDecimal.ZERO;
-
         // 2. Validamos que la lista de líneas no sea nula para evitar
         // NullPointerException
         if (factura.getLineas() != null) {
@@ -227,16 +214,13 @@ public class ConsultaServiceImpl implements ConsultaService {
                 subtotalAcumulado = subtotalAcumulado.add(stLinea);
             }
         }
-
         // 3. Asignamos el subtotal a la factura
         factura.setSubtotal(subtotalAcumulado);
-
         // 4. Calculamos el IVA (21%) asegurando el redondeo para contabilidad
         // Usamos HALF_UP para redondear a 2 decimales (estándar financiero)
         BigDecimal iva = subtotalAcumulado.multiply(new BigDecimal("0.21"))
                 .setScale(2, RoundingMode.HALF_UP);
         factura.setIva(iva);
-
         // 5. Calculamos el total final
         factura.setTotal(subtotalAcumulado.add(iva));
     }
@@ -248,30 +232,22 @@ public class ConsultaServiceImpl implements ConsultaService {
         factura.setFechaVencimiento(LocalDate.now().plusDays(15));
         factura.setEstado(EstadoPago.PENDIENTE);
         factura.setActivo(true);
-
         List<LineaFactura> lineas = new ArrayList<>();
-
         for (PruebaMedica p : pruebas) {
             LineaFactura lf = new LineaFactura();
             lf.setConcepto("Prueba Médica: " + p.getNombre() + " (Cita #" + cita.getId() + ")");
             lf.setCantidad(1);
-
             // CORRECCIÓN: Asignar BigDecimal directamente sin usar .floatValue()
             // Asumiendo que p.getPrecio() ya devuelve BigDecimal
             BigDecimal precioPrueba = (p.getPrecio() != null) ? p.getPrecio() : BigDecimal.ZERO;
-
             lf.setPrecioUnitario(precioPrueba);
             lf.setSubtotal(precioPrueba); // Cantidad es 1, subtotal = precio
             lf.setFactura(factura);
-
             lineas.add(lf);
         }
-
         factura.setLineas(lineas);
-
         // CORRECCIÓN: Usar el método centralizado para calcular Subtotal, IVA y Total
         recalcularTotales(factura);
-
         facturaDAO.save(factura);
     }
 

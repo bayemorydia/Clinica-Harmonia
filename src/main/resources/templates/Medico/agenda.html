@@ -18,23 +18,27 @@
                     <h2 class="fw-bold text-dark mb-1" th:text="${trad.getTraduccion('agenda.titulo')}">Mi Agenda</h2>
                     <p class="text-muted mb-0">
                         <i class="bi bi-calendar3 me-2 text-primary"></i>
-                        <span class="text-capitalize" th:text="${#temporals.format(fechaActual, 'EEEE, dd MMMM yyyy')}"></span>
+                        <span class="text-capitalize"
+                            th:text="${#temporals.format(fechaActual, 'EEEE, dd MMMM yyyy')}"></span>
                     </p>
                 </div>
 
                 <div class="d-flex align-items-center gap-2">
                     <input type="date" class="form-control shadow-sm border-0" th:value="${fechaActual}"
-                        onchange="window.location.href='/medico/agenda?fecha=' + this.value" style="border-radius: 10px;">
+                        onchange="window.location.href='/medico/agenda?fecha=' + this.value"
+                        style="border-radius: 10px;">
 
                     <div class="btn-group shadow-sm">
                         <a th:href="@{/medico/agenda(fecha=${hoy})}" class="btn btn-white border bg-white fw-bold"
                             th:text="${trad.getTraduccion('agenda.btn.hoy')}">Hoy</a>
 
-                        <a th:href="@{/medico/agenda(fecha=${fechaActual.minusDays(1)})}" class="btn btn-white border bg-white">
+                        <a th:href="@{/medico/agenda(fecha=${fechaActual.minusDays(1)})}"
+                            class="btn btn-white border bg-white">
                             <i class="bi bi-chevron-left"></i>
                         </a>
 
-                        <a th:href="@{/medico/agenda(fecha=${fechaActual.plusDays(1)})}" class="btn btn-white border bg-white">
+                        <a th:href="@{/medico/agenda(fecha=${fechaActual.plusDays(1)})}"
+                            class="btn btn-white border bg-white">
                             <i class="bi bi-chevron-right"></i>
                         </a>
                     </div>
@@ -58,7 +62,8 @@
                                         <th th:text="${trad.getTraduccion('agenda.tabla.paciente')}">Paciente</th>
                                         <th th:text="${trad.getTraduccion('agenda.tabla.motivo')}">Motivo</th>
                                         <th th:text="${trad.getTraduccion('agenda.tabla.estado')}">Estado</th>
-                                        <th class="text-end pe-4" th:text="${trad.getTraduccion('agenda.tabla.acciones')}">Acciones</th>
+                                        <th class="text-end pe-4"
+                                            th:text="${trad.getTraduccion('agenda.tabla.acciones')}">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -71,38 +76,54 @@
                                             <div class="d-flex align-items-center">
                                                 <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3"
                                                     style="width: 38px; height: 38px; font-weight: 600;">
-                                                    <span th:text="${#strings.substring(cita.paciente.nombre,0,1)}"></span>
+                                                    <span
+                                                        th:text="${#strings.substring(cita.paciente.nombre,0,1)}"></span>
                                                 </div>
                                                 <div>
-                                                    <div class="fw-bold text-dark" th:text="${cita.paciente.nombre} + ' ' + ${cita.paciente.apellidos}"></div>
+                                                    <div class="fw-bold text-dark"
+                                                        th:text="${cita.paciente.nombre} + ' ' + ${cita.paciente.apellidos}">
+                                                    </div>
                                                     <small class="text-muted" th:text="${cita.paciente.dni}"></small>
                                                 </div>
                                             </div>
                                         </td>
                                         <td class="text-muted small" th:text="${cita.motivo}"></td>
                                         <td>
-                                            <span th:if="${cita.estado.name() == 'PROGRAMADA'}" class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-3">
-                                                <i class="bi bi-calendar-event me-1"></i>[[${trad.getTraduccion('agenda.status.programada')}]]
+                                            <span th:if="${cita.estado.name() == 'PROGRAMADA'}"
+                                                class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-3">
+                                                <i
+                                                    class="bi bi-calendar-event me-1"></i>[[${trad.getTraduccion('agenda.status.programada')}]]
                                             </span>
-                                            <span th:if="${cita.estado.name() == 'REALIZADA'}" class="badge bg-success-subtle text-success-emphasis border border-success-subtle rounded-pill px-3">
-                                                <i class="bi bi-check-circle me-1"></i>[[${trad.getTraduccion('agenda.status.realizada')}]]
+                                            <span th:if="${cita.estado.name() == 'REALIZADA'}"
+                                                class="badge bg-success-subtle text-success-emphasis border border-success-subtle rounded-pill px-3">
+                                                <i
+                                                    class="bi bi-check-circle me-1"></i>[[${trad.getTraduccion('agenda.status.realizada')}]]
                                             </span>
-                                            <span th:if="${cita.estado.name() == 'NO_PRESENTADO'}" class="badge bg-danger-subtle text-danger-emphasis border border-danger-subtle rounded-pill px-3">
-                                                <i class="bi bi-person-x me-1"></i>[[${trad.getTraduccion('agenda.status.ausente')}]]
+                                            <span th:if="${cita.estado.name() == 'NO_PRESENTADO'}"
+                                                class="badge bg-danger-subtle text-danger-emphasis border border-danger-subtle rounded-pill px-3">
+                                                <i
+                                                    class="bi bi-person-x me-1"></i>[[${trad.getTraduccion('agenda.status.ausente')}]]
                                             </span>
-                                            <span th:if="${cita.estado.name() == 'ANULADA'}" class="badge bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle rounded-pill px-3">
-                                                <i class="bi bi-x-circle me-1"></i>[[${trad.getTraduccion('agenda.status.anulada')}]]
+                                            <span th:if="${cita.estado.name() == 'ANULADA'}"
+                                                class="badge bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle rounded-pill px-3">
+                                                <i
+                                                    class="bi bi-x-circle me-1"></i>[[${trad.getTraduccion('agenda.status.anulada')}]]
                                             </span>
                                         </td>
                                         <td class="text-end pe-4">
-                                            <div th:if="${cita.estado.name() == 'PROGRAMADA' or cita.estado.name() == 'EN_CONSULTA'}">
-                                                <a th:href="@{/medico/atender/{id}(id=${cita.id})}" class="btn btn-sm btn-primary rounded-pill px-4 shadow-sm fw-bold">
-                                                    <i class="bi bi-stethoscope me-1"></i> [[${trad.getTraduccion('agenda.btn.atender')}]]
+                                            <div
+                                                th:if="${cita.estado.name() == 'PROGRAMADA' or cita.estado.name() == 'EN_CONSULTA'}">
+                                                <a th:href="@{/medico/atender/{id}(id=${cita.id})}"
+                                                    class="btn btn-sm btn-primary rounded-pill px-4 shadow-sm fw-bold">
+                                                    <i class="bi bi-stethoscope me-1"></i>
+                                                    [[${trad.getTraduccion('agenda.btn.atender')}]]
                                                 </a>
                                             </div>
                                             <div th:if="${cita.estado.name() == 'REALIZADA'}">
-                                                <a th:href="@{/medico/resumen-cita/{id}(id=${cita.id})}" class="btn btn-sm btn-light border rounded-pill px-3 shadow-sm">
-                                                    <i class="bi bi-file-earmark-medical me-1"></i> [[${trad.getTraduccion('agenda.btn.resumen')}]]
+                                                <a th:href="@{/medico/resumen-cita/{id}(id=${cita.id})}"
+                                                    class="btn btn-sm btn-light border rounded-pill px-3 shadow-sm">
+                                                    <i class="bi bi-file-earmark-medical me-1"></i>
+                                                    [[${trad.getTraduccion('agenda.btn.resumen')}]]
                                                 </a>
                                             </div>
                                         </td>
@@ -111,7 +132,8 @@
                                         <td colspan="5" class="text-center py-5 text-muted">
                                             <div class="opacity-50">
                                                 <i class="bi bi-calendar-x fs-1 d-block mb-3"></i>
-                                                <h5 th:text="${trad.getTraduccion('agenda.msg.vacia')}">No hay citas</h5>
+                                                <h5 th:text="${trad.getTraduccion('agenda.msg.vacia')}">No hay citas
+                                                </h5>
                                             </div>
                                         </td>
                                     </tr>
@@ -124,20 +146,24 @@
                 <div class="col-lg-3">
                     <div class="card shadow-sm border-0 bg-primary text-white mb-4" style="border-radius: 15px;">
                         <div class="card-body p-4 text-center">
-                            <h6 class="text-white-50 text-uppercase small fw-bold mb-3" th:text="${trad.getTraduccion('agenda.panel.resumen')}">Resumen del Día</h6>
+                            <h6 class="text-white-50 text-uppercase small fw-bold mb-3"
+                                th:text="${trad.getTraduccion('agenda.panel.resumen')}">Resumen del Día</h6>
                             <div class="mb-2">
-                                <span class="d-block small opacity-75" th:text="${trad.getTraduccion('agenda.panel.total')}">Citas totales</span>
-                                <h1 class="fw-bold mb-0" th:text="${#lists.size(citas)}">0</h1>
+                                <span class="d-block small opacity-75"
+                                    th:text="${trad.getTraduccion('agenda.panel.total')}">Citas totales</span>
+                                <h1 class="fw-bold mb-0" th:text="${totalCitas}">0</h1>
                             </div>
                             <hr class="opacity-25 my-3">
                             <div class="text-start small">
                                 <div class="d-flex justify-content-between mb-1">
-                                    <span th:text="${trad.getTraduccion('agenda.status.programada')} + ':'">Programadas:</span>
-                                    <span class="fw-bold" th:text="${#lists.size(citas.?[estado.name() == 'PROGRAMADA'])}">0</span>
+                                    <span
+                                        th:text="${trad.getTraduccion('agenda.status.programada')} + ':'">Programadas:</span>
+                                    <span class="fw-bold" th:text="${citasProgramadas}">0</span>
                                 </div>
                                 <div class="d-flex justify-content-between">
-                                    <span th:text="${trad.getTraduccion('agenda.status.realizada')} + ':'">Finalizadas:</span>
-                                    <span class="fw-bold" th:text="${#lists.size(citas.?[estado.name() == 'REALIZADA'])}">0</span>
+                                    <span
+                                        th:text="${trad.getTraduccion('agenda.status.realizada')} + ':'">Finalizadas:</span>
+                                    <span class="fw-bold" th:text="${citasRealizadas}">0</span>
                                 </div>
                             </div>
                         </div>
@@ -145,9 +171,12 @@
 
                     <div class="card shadow-sm border-0" style="border-radius: 15px;">
                         <div class="card-body p-4">
-                            <h6 class="fw-bold text-dark small text-uppercase mb-3" th:text="${trad.getTraduccion('agenda.panel.acceso')}">Acceso Rápido</h6>
-                            <a th:href="@{/medico/agenda(fecha=${hoy})}" class="btn btn-outline-primary w-100 rounded-pill btn-sm fw-bold">
-                                <i class="bi bi-calendar-check me-2"></i>[[${trad.getTraduccion('agenda.btn.volver_hoy')}]]
+                            <h6 class="fw-bold text-dark small text-uppercase mb-3"
+                                th:text="${trad.getTraduccion('agenda.panel.acceso')}">Acceso Rápido</h6>
+                            <a th:href="@{/medico/agenda(fecha=${hoy})}"
+                                class="btn btn-outline-primary w-100 rounded-pill btn-sm fw-bold">
+                                <i
+                                    class="bi bi-calendar-check me-2"></i>[[${trad.getTraduccion('agenda.btn.volver_hoy')}]]
                             </a>
                         </div>
                     </div>
@@ -159,10 +188,25 @@
     <div th:replace="~{Reutilizable/layoutMedico :: scripts_medico}"></div>
 
     <style>
-        .btn-white { background-color: white; color: #495057; }
-        .btn-white:hover { background-color: #f8f9fa; color: #0d6efd; }
-        .table-hover tbody tr:hover { background-color: rgba(13, 110, 253, 0.02); }
-        .badge { font-weight: 500; font-size: 0.75rem; }
+        .btn-white {
+            background-color: white;
+            color: #495057;
+        }
+
+        .btn-white:hover {
+            background-color: #f8f9fa;
+            color: #0d6efd;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: rgba(13, 110, 253, 0.02);
+        }
+
+        .badge {
+            font-weight: 500;
+            font-size: 0.75rem;
+        }
     </style>
 </body>
+
 </html>

@@ -53,27 +53,22 @@ public class FacturaPdfService {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         PdfWriter.getInstance(document, out);
         document.open();
-
         // Fuentes
         Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 20);
         Font boldFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
         Font regularFont = FontFactory.getFont(FontFactory.HELVETICA, 12);
-
         // Cabecera
         Paragraph titulo = new Paragraph("FACTURA OFICIAL", titleFont);
         titulo.setAlignment(Element.ALIGN_CENTER);
         document.add(titulo);
         document.add(new Paragraph(" "));
-
         // Datos del Paciente (Estructura de tabla como en Nóminas)
         PdfPTable datosPaciente = new PdfPTable(2);
         datosPaciente.setWidthPercentage(100);
-        datosPaciente.setWidths(new float[]{1, 2});
-
+        datosPaciente.setWidths(new float[] { 1, 2 });
         addCeldaDato(datosPaciente, "Nº Factura:", "#" + factura.getId(), boldFont, regularFont);
         String fecha = (factura.getFechaEmision() != null) ? factura.getFechaEmision().toString() : "N/A";
         addCeldaDato(datosPaciente, "Fecha Emisión:", fecha, boldFont, regularFont);
-
         if (factura.getPaciente() != null) {
             String nombre = factura.getPaciente().getNombre() + " " + factura.getPaciente().getApellidos();
             addCeldaDato(datosPaciente, "Paciente:", nombre, boldFont, regularFont);
@@ -81,56 +76,47 @@ public class FacturaPdfService {
         }
         document.add(datosPaciente);
         document.add(new Paragraph(" "));
-
         // Tabla de Conceptos
         PdfPTable tabla = new PdfPTable(3);
         tabla.setWidthPercentage(100);
-        tabla.setWidths(new float[]{3, 1, 1});
-
+        tabla.setWidths(new float[] { 3, 1, 1 });
         // Encabezados
-        String[] headers = {"Concepto", "Cant.", "Subtotal (€)"};
+        String[] headers = { "Concepto", "Cant.", "Subtotal (€)" };
         for (String h : headers) {
             PdfPCell cell = new PdfPCell(new Phrase(h, boldFont));
             cell.setBackgroundColor(Color.LIGHT_GRAY);
             cell.setPadding(5);
-            if (!h.equals("Concepto")) cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+            if (!h.equals("Concepto"))
+                cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
             tabla.addCell(cell);
         }
-
         // Líneas de factura
         if (factura.getLineas() != null) {
             for (LineaFactura linea : factura.getLineas()) {
                 tabla.addCell(new Phrase(linea.getConcepto(), regularFont));
-                
                 PdfPCell cCant = new PdfPCell(new Phrase(String.valueOf(linea.getCantidad()), regularFont));
                 cCant.setHorizontalAlignment(Element.ALIGN_RIGHT);
                 tabla.addCell(cCant);
-
                 PdfPCell cSub = new PdfPCell(new Phrase(String.format("%.2f €", linea.getSubtotal()), regularFont));
                 cSub.setHorizontalAlignment(Element.ALIGN_RIGHT);
                 tabla.addCell(cSub);
             }
         }
-
         // Fila de Total
         PdfPCell totalLabel = new PdfPCell(new Phrase("TOTAL A PAGAR", boldFont));
         totalLabel.setColspan(2);
         totalLabel.setPadding(5);
         tabla.addCell(totalLabel);
-
         PdfPCell totalVal = new PdfPCell(new Phrase(String.format("%.2f €", factura.getTotal()), boldFont));
         totalVal.setHorizontalAlignment(Element.ALIGN_RIGHT);
         totalVal.setPadding(5);
         tabla.addCell(totalVal);
-
         document.add(tabla);
-
         // Pie de página
         document.add(new Paragraph("\n\n"));
         Paragraph pie = new Paragraph("Gracias por confiar en Clínica Harmonia.", regularFont);
         pie.setAlignment(Element.ALIGN_CENTER);
         document.add(pie);
-
         document.close();
         return out.toByteArray();
     }

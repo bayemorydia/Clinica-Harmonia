@@ -1,7 +1,6 @@
 package cat.copernic.proyecto2.Service.Empleado;
 
 import cat.copernic.proyecto2.Domain.Administración.Empleado;
-import cat.copernic.proyecto2.Domain.Administración.Nomina;
 import org.springframework.data.domain.Page;
 import java.util.List;
 import java.util.Map;
@@ -26,5 +25,4 @@ public interface EmpleadoService {
     long ContarEmpleados();
 
     Empleado obtenerPorDni(String dni);
-
 }

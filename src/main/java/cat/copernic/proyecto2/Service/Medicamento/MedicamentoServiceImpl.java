@@ -23,7 +23,7 @@ public class MedicamentoServiceImpl implements MedicamentoService {
     @Override
     public Medicamento crearNuevo() {
         Medicamento m = new Medicamento();
-        m.setActivo(true); // Valor por defecto de negocio
+        m.setActivo(true); 
         return m;
     }
 
@@ -37,7 +37,6 @@ public class MedicamentoServiceImpl implements MedicamentoService {
     @Override
     @Transactional
     public void guardar(Medicamento medicamento) {
-        // Lógica de negocio: Validación de duplicidad
         if (medicamento.getId() == null) {
             if (existePorCodigo(medicamento.getCodigo())) {
                 throw new RuntimeException("CODIGO_DUPLICADO");
@@ -86,14 +85,10 @@ public class MedicamentoServiceImpl implements MedicamentoService {
         return medicamentoDAO.existsByCodigo(codigo);
     }
 
-    //estás editando un medicamento y quieres asegurarte de que el código no se repita en otro registro.
     @Override
     @Transactional(readOnly = true)
     public boolean existePorCodigoYIdNo(String codigo, Long id) {
         Medicamento m = medicamentoDAO.findByCodigo(codigo);
-        // Devuelve true si existe un medicamento con ese código
-        // y su ID es distinto al proporcionado
-
         return m != null && !m.getId().equals(id);
     }
 }

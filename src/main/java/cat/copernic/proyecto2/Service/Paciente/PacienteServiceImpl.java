@@ -16,7 +16,6 @@ import cat.copernic.proyecto2.Domain.Recepción.Paciente;
 import cat.copernic.proyecto2.Service.Imagen.ImagenService;
 import cat.copernic.proyecto2.Service.Validaciones.ValidacionesService;
 import cat.copernic.proyecto2.Service.Usuario.UsuarioService;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -46,32 +45,25 @@ public class PacienteServiceImpl implements PacienteService {
         if (pacienteForm.getDni() != null) {
             pacienteForm.setDni(pacienteForm.getDni().toUpperCase().trim());
         }
-
         // Comprobamos si el paciente es nuevo (no tiene ID asignado)
-
         if (pacienteForm.getId() == null || pacienteForm.getId() == 0) {
-            // Lógica de Nuevo Paciente
+            // Lógica de Nuevo Paciente, validaciones
             if (validacionesService != null) {
                 validacionesService.validarDocumentoIdentidad(pacienteForm.getDni());
             }
             if (pacienteDAO.existsByDni(pacienteForm.getDni())) {
                 throw new RuntimeException("DNI_DUPLICADO");
             }
-
             if (pacienteDAO.existsByEmail(pacienteForm.getEmail())) {
                 throw new RuntimeException("EMAIL_DUPLICADO");
             }
-
             pacienteForm.setFechaAlta(LocalDate.now());
             pacienteForm.setActivo(true);
-
             Usuario nuevoUsuario = usuarioService.crearUsuarioPaciente(
                     pacienteForm.getNombre(), pacienteForm.getApellidos(), pacienteForm.getDni());
             pacienteForm.setUsuario(nuevoUsuario);
-
             String nombreImagen = imagenService.guardarImagen(file, "Paciente");
             pacienteForm.setRutaFoto(nombreImagen);
-
             pacienteDAO.save(pacienteForm);
         } else {
             // Lógica de Edición
@@ -89,10 +81,6 @@ public class PacienteServiceImpl implements PacienteService {
             pacienteBD.setEmail(pacienteForm.getEmail());
             pacienteBD.setDireccion(pacienteForm.getDireccion());
             pacienteBD.setActivo(pacienteForm.isActivo());
-
-            if (file != null && !file.isEmpty()) {
-                gestionarCambioImagen(pacienteBD, file);
-            }
             pacienteDAO.save(pacienteBD);
         }
     }
@@ -100,41 +88,36 @@ public class PacienteServiceImpl implements PacienteService {
     @Override
     @Transactional
     public void actualizarFotoDetalle(Long id, MultipartFile file) {
-
         Paciente paciente = findPacienteById(id);
-
         // Comprobamos que el paciente exista,
         // que el archivo no sea nulo y que no esté vacío
         if (paciente != null && file != null && !file.isEmpty()) {
-
             gestionarCambioImagen(paciente, file);
-
             pacienteDAO.save(paciente);
         }
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<Paciente> listarPacientesActivos() {
+        return pacienteDAO.findByActivoTrue();
+    }
 
     private void gestionarCambioImagen(Paciente paciente, MultipartFile file) {
-
         // Comprobamos si el paciente ya tiene una imagen asignada
         // y que no sea la imagen por defecto
         if (paciente.getRutaFoto() != null && !paciente.getRutaFoto().equals("default-user.png")) {
-
             // Si existe una imagen anterior, se elimina del sistema
             imagenService.eliminarImagen(paciente.getRutaFoto(), "Paciente");
         }
-
         // Guardamos la nueva imagen y actualizamos la ruta en el paciente
         paciente.setRutaFoto(imagenService.guardarImagen(file, "Paciente"));
     }
-
 
     @Override
     public Paciente findPacienteById(Long id) {
         return pacienteDAO.findById(id).orElse(null);
     }
-
-
 
     @Override
     @Transactional
@@ -163,7 +146,6 @@ public class PacienteServiceImpl implements PacienteService {
         Pageable pageable = PageRequest.of(page, size, Sort.by("apellidos").ascending());
         return pacienteDAO.findByFilters(query, activo, pageable);
     }
-
 
     @Override
     public Paciente buscarPorUsername(String username) {

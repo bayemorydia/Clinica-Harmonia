@@ -27,7 +27,8 @@
                 <div class="d-flex align-items-center">
                     <div>
                         <h2 class="fw-bold text-dark mb-1" th:text="${trad.getTraduccion('vacaciones.titulo')}">
-                            Vacaciones</h2>
+                            Vacaciones</h2> <span><strong class="text-primary"
+                                th:text="${empleadoLogueado.usuario.username}">admin</strong></span>
                         <p class="text-muted mb-0 small" th:text="${trad.getTraduccion('vacaciones.subtitulo')}">
                             Solicitud y seguimiento de días de descanso.</p>
                     </div>
