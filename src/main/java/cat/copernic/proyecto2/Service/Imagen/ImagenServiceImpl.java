@@ -16,7 +16,6 @@ public class ImagenServiceImpl implements ImagenService {
         if (file == null || file.isEmpty()) {
             return "default-user.png";
         }
-
         try {
             // Ruta base donde se guardarán las imágenes dentro del proyecto
             String folder = "src/main/resources/static/images/";
@@ -25,12 +24,10 @@ public class ImagenServiceImpl implements ImagenService {
             // Creamos un nombre único para evitar colisiones
             String nombreImagen = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
             Path path = Paths.get(folder + nombreImagen);
-            
             // Crea los directorios si no existen
             Files.createDirectories(path.getParent());
             // Escribimos el archivo en la ruta especificada
             Files.write(path, bytes);
-
             return nombreImagen;
         } catch (IOException e) {
             System.err.println("Error al guardar imagen: " + e.getMessage());

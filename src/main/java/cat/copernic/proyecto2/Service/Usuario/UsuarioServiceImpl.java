@@ -8,6 +8,7 @@ import cat.copernic.proyecto2.Domain.Persona.Usuario;
 import cat.copernic.proyecto2.Service.Empleado.EmpleadoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import java.security.Principal;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -75,6 +76,16 @@ public class UsuarioServiceImpl implements UsuarioService {
         Usuario usuario = empleado.getUsuario();
         usuario.setPasswordHash(passwordEncoder.encode(newPassword));
         usuarioDAO.save(usuario);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Empleado obtenerEmpleadoDesdePrincipal(Principal principal) {
+        if (principal == null)
+            return null;
+        return usuarioDAO.findByUsername(principal.getName())
+                .map(Usuario::getEmpleado)
+                .orElse(null);
     }
 
     @Override

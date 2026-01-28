@@ -6,7 +6,6 @@ import cat.copernic.proyecto2.Domain.Recepción.EstadoCita;
 import cat.copernic.proyecto2.Domain.Recepción.Paciente;
 import org.springframework.data.domain.Page;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -23,15 +22,15 @@ public interface CitaService {
 
     LocalDate parsearFechaAgenda(String fechaStr);
 
+    Map<String, Long> obtenerResumenCitas(List<Cita> citas);
+
     long countCitasActivas();
 
     Cita findCitaById(Long id);
 
     long countPacientesPendientesPorMedico(Long medicoId);
 
-
     List<Cita> obtenerCitasPendientesMedico(Long medicoId);
-
 
     List<Cita> obtenerCitasDia(Long medicoId, LocalDate fecha);
 
@@ -40,5 +39,4 @@ public interface CitaService {
     List<Cita> listarCitasPorDiaGlobal(LocalDate fecha);
 
     List<Cita> findByPaciente(Paciente paciente);
-
 }

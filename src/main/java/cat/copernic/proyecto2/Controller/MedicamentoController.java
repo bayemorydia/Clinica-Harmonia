@@ -74,12 +74,10 @@ public class MedicamentoController {
             BindingResult result,
             Model model,
             RedirectAttributes flash) {
-
         if (result.hasErrors()) {
             model.addAttribute("trad", traduccionService);
             return "Farmacia/FormMedicamento";
         }
-
         try {
             medicamentoService.guardar(medicamento);
             flash.addFlashAttribute("success", "Operación realizada con éxito.");
@@ -110,7 +108,7 @@ public class MedicamentoController {
         return "redirect:/medicamentos";
     }
 
-    @PostMapping("/activar/{id}")
+    @GetMapping("/activar/{id}")
     public String activar(@PathVariable Long id, RedirectAttributes flash) {
         medicamentoService.activarLogica(id);
         flash.addFlashAttribute("success", "Medicamento reactivado.");

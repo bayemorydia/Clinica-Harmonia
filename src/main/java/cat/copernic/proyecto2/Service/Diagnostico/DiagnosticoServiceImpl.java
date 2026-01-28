@@ -25,7 +25,7 @@ public class DiagnosticoServiceImpl implements DiagnosticoService {
     @Override
     public Diagnostico crearNuevoDiagnostico() {
         Diagnostico diagnostico = new Diagnostico();
-        diagnostico.setActivo(true); // Valor por defecto de negocio
+        diagnostico.setActivo(true);
         return diagnostico;
     }
 
@@ -59,7 +59,6 @@ public class DiagnosticoServiceImpl implements DiagnosticoService {
                 }
             }
         }
-
         diagnosticoDAO.save(diagnostico);
     }
 

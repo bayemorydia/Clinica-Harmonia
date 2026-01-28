@@ -5,6 +5,7 @@ import cat.copernic.proyecto2.Service.Empleado.EmpleadoService;
 import cat.copernic.proyecto2.Service.Empleado.Turno.TurnoService;
 import cat.copernic.proyecto2.Service.Rol.RolService;
 import cat.copernic.proyecto2.Service.Traduccion.TraduccionService;
+import cat.copernic.proyecto2.Service.Usuario.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import java.security.Principal;
 import org.springframework.data.domain.Pageable;
 import cat.copernic.proyecto2.Service.Empleado.Nomina.NominaService;
 import cat.copernic.proyecto2.Domain.Administración.Nomina;
@@ -35,6 +37,17 @@ public class EmpleadoController {
 
     @Autowired
     private NominaService nominaService;
+
+    @Autowired
+    private UsuarioService usuarioService;
+
+    @ModelAttribute
+    public void addAttributes(Model model, Principal principal) {
+        if (principal != null) {
+            Empleado logueado = usuarioService.obtenerEmpleadoDesdePrincipal(principal);
+            model.addAttribute("empleadoLogueado", logueado);
+        }
+    }
 
     private void cargarListasSoporte(Model model) {
         model.addAttribute("roles", rolService.RolesConcretos());
@@ -96,12 +109,20 @@ public class EmpleadoController {
             return "Empleado/añadir";
         }
         try {
-            // Toda la lógica de roles y creación de usuario se movió al service
             empleadoService.crear(empleado);
             return "redirect:/empleados";
         } catch (Exception e) {
-            model.addAttribute("error", e.getMessage());
+            // Obtenemos el mensaje de la excepción.
+            // Si es una RuntimeException que envuelve a otra, buscamos el mensaje de la
+            // causa.
+            String mensajeError = (e.getCause() != null) ? e.getCause().getMessage() : e.getMessage();
+            model.addAttribute("error", mensajeError);
+            // Es vital volver a cargar las listas (roles, turnos) para que el formulario no
+            // falle al recargar
             cargarListasSoporte(model);
+            // Devolvemos el mismo objeto empleado para que el usuario no tenga que
+            // reescribir todo
+            model.addAttribute("empleado", empleado);
             return "Empleado/añadir";
         }
     }
@@ -156,20 +177,16 @@ public class EmpleadoController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             Model model) {
-
         Empleado empleado = empleadoService.obtenerPorId(id);
         model.addAttribute("empleado", empleado);
-
         Pageable pageable = PageRequest.of(page, size);
         Page<Nomina> nominaPage = nominaService.getNominasPorEmpleado(id, pageable);
-
         model.addAttribute("nominas", nominaPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", nominaPage.getTotalPages());
         model.addAttribute("totalElements", nominaPage.getTotalElements());
         model.addAttribute("size", size);
         model.addAttribute("trad", traduccionService);
-
         return "Empleado/nominasEmpleado";
     }
 }

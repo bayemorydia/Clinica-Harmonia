@@ -21,14 +21,20 @@
                                     <i class="bi bi-exclamation-triangle-fill text-warning fs-4"></i>
                                 </div>
                                 <div>
-                                    <h3 class="mb-0 fw-bold text-dark" th:text="${trad.getTraduccion('paciente.eliminar.titulo')}">Confirmar Acción</h3>
-                                    <p class="mb-0 text-muted small" th:text="${trad.getTraduccion('paciente.eliminar.subtitulo')}">Esta acción modificará el estado del registro</p>
+                                    <h3 class="mb-0 fw-bold text-dark"
+                                        th:text="${trad.getTraduccion('paciente.eliminar.titulo')}">Confirmar Acción
+                                    </h3>
+                                    <p class="mb-0 text-muted small"
+                                        th:text="${trad.getTraduccion('paciente.eliminar.subtitulo')}">Esta acción
+                                        modificará el estado del registro</p>
                                 </div>
                             </div>
                         </div>
 
                         <div class="card-body p-4 p-md-5 text-center">
-                            <p class="lead fw-semibold text-dark mb-4" th:text="${trad.getTraduccion('diagnostico.desactivar.pregunta')}">¿Desea retirar este diagnóstico del catálogo activo?</p>
+                            <p class="lead fw-semibold text-dark mb-4"
+                                th:text="${trad.getTraduccion('diagnostico.desactivar.pregunta')}">¿Desea retirar este
+                                diagnóstico del catálogo activo?</p>
 
                             <div class="bg-light p-4 rounded-4 border border-light-subtle mb-4">
                                 <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
@@ -36,30 +42,37 @@
                                     <i class="bi bi-journal-medical fs-3"></i>
                                 </div>
                                 <h5 class="fw-bold mb-1 text-dark" th:text="${diagnostico.nombre}">Nombre</h5>
-                                <p class="mb-0 text-muted font-monospace small" th:text="${trad.getTraduccion('lbl.codigo')} + ': ' + ${diagnostico.codigo}"></p>
+                                <p class="mb-0 text-muted font-monospace small"
+                                    th:text="${trad.getTraduccion('lbl.codigo')} + ': ' + ${diagnostico.codigo}"></p>
                             </div>
 
                             <div class="alert alert-warning border-0 small mb-0 shadow-sm text-start">
                                 <i class="bi bi-info-circle me-2"></i>
                                 <span th:text="${trad.getTraduccion('msg.desactivar_info')}">
-                                    Esto evitará que se asigne en nuevas consultas, pero se mantendrá en los historiales existentes para preservar la integridad médica.
+                                    Esto evitará que se asigne en nuevas consultas, pero se mantendrá en los historiales
+                                    existentes para preservar la integridad médica.
                                 </span>
                             </div>
 
                             <div class="mt-5 d-flex justify-content-center gap-3">
-                                <a th:href="@{/diagnosticos}" class="btn btn-light px-4 py-2 fw-bold text-secondary rounded-pill border">
+                                <a th:href="@{/diagnosticos}"
+                                    class="btn btn-light px-4 py-2 fw-bold text-secondary rounded-pill border">
                                     <span th:text="${trad.getTraduccion('btn.cancelar')}">Cancelar</span>
                                 </a>
-                                <a th:href="@{/diagnosticos/desactivar/{id}(id=${diagnostico.id})}" 
-                                   class="btn btn-warning px-4 py-2 fw-bold shadow-sm rounded-pill transition-all hover-lift">
-                                    <i class="bi bi-dash-circle-fill me-2"></i>
-                                    <span th:text="${trad.getTraduccion('btn.confirmar_desactivar')}">Desactivar</span>
-                                </a>
+                                <form th:action="@{/diagnosticos/desactivar/{id}(id=${diagnostico.id})}" method="post">
+                                    <button type="submit"
+                                        class="btn btn-warning px-4 py-2 fw-bold shadow-sm rounded-pill transition-all hover-lift">
+                                        <i class="bi bi-dash-circle-fill me-2"></i>
+                                        <span
+                                            th:text="${trad.getTraduccion('btn.confirmar_desactivar')}">Desactivar</span>
+                                    </button>
+                                </form>
                             </div>
                         </div>
 
                         <div class="card-footer bg-light bg-opacity-50 border-0 py-3 text-center">
-                            <small class="text-muted italic" th:text="${trad.getTraduccion('footer.modulo.seguridad')}">Módulo de Seguridad</small>
+                            <small class="text-muted italic"
+                                th:text="${trad.getTraduccion('footer.modulo.seguridad')}">Módulo de Seguridad</small>
                         </div>
                     </div>
                 </div>
@@ -68,10 +81,16 @@
     </main>
 
     <div th:replace="~{Reutilizable/layout :: scripts}"></div>
-    
+
     <style>
-        .hover-lift:hover { transform: translateY(-2px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.1)!important; }
-        .transition-all { transition: all 0.2s ease-in-out; }
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .1) !important;
+        }
+
+        .transition-all {
+            transition: all 0.2s ease-in-out;
+        }
     </style>
 </body>
 

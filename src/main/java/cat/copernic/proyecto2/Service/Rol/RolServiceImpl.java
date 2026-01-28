@@ -25,9 +25,8 @@ public class RolServiceImpl implements RolService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public Page<Rol> listarRoles(Pageable pageable) {
-        return rolDAO.findAll(pageable);
+    public List<Rol> listarTodos() {
+        return rolDAO.findAll();
     }
 
     @Override

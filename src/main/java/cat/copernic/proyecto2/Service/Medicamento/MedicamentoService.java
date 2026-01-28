@@ -13,7 +13,6 @@ public interface MedicamentoService {
 
     Medicamento encontrarMedicamento(Long id);
     
-    // Método para inicializar objetos nuevos
     Medicamento crearNuevo();
 
     void eliminarLogica(Long id);

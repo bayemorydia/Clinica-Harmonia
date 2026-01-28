@@ -27,9 +27,7 @@ public class DiagnosticoController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             Model model) {
-        
         Page<Diagnostico> pagina = diagnosticoService.getDiagnosticosPaginados(keyword, activo, page, size);
-        
         model.addAttribute("listaDiagnosticos", pagina.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", pagina.getTotalPages());
@@ -48,9 +46,7 @@ public class DiagnosticoController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             Model model) {
-        
         Page<Diagnostico> paginaDiagnosticos = diagnosticoService.getDiagnosticosPaginados(keyword, activo, page, size);
-        
         model.addAttribute("listaDiagnosticos", paginaDiagnosticos.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", paginaDiagnosticos.getTotalPages());
@@ -119,7 +115,7 @@ public class DiagnosticoController {
         }
     }
 
-    @GetMapping("/desactivar/{id}")
+    @PostMapping("/desactivar/{id}")
     public String desactivar(@PathVariable Long id, RedirectAttributes attribute) {
         diagnosticoService.desactivar(id);
         attribute.addFlashAttribute("warning", "Diagnóstico desactivado correctamente.");
