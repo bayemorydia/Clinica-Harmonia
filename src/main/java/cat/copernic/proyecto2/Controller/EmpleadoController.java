@@ -177,20 +177,16 @@ public class EmpleadoController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             Model model) {
-
         Empleado empleado = empleadoService.obtenerPorId(id);
         model.addAttribute("empleado", empleado);
-
         Pageable pageable = PageRequest.of(page, size);
         Page<Nomina> nominaPage = nominaService.getNominasPorEmpleado(id, pageable);
-
         model.addAttribute("nominas", nominaPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", nominaPage.getTotalPages());
         model.addAttribute("totalElements", nominaPage.getTotalElements());
         model.addAttribute("size", size);
         model.addAttribute("trad", traduccionService);
-
         return "Empleado/nominasEmpleado";
     }
 }

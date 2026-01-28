@@ -39,5 +39,4 @@ public interface CitaService {
     List<Cita> listarCitasPorDiaGlobal(LocalDate fecha);
 
     List<Cita> findByPaciente(Paciente paciente);
-
 }

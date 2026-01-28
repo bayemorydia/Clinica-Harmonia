@@ -51,9 +51,7 @@ public class CitaController {
             @RequestParam(name = "size", defaultValue = "10") int size,
             @RequestHeader(value = "X-Requested-With", required = false) String requestedWith,
             Model model) {
-
         Page<Cita> paginaCitas = citaService.getCitasPaginadas(query, estado, page, size);
-
         model.addAttribute("citas", paginaCitas.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", paginaCitas.getTotalPages());
@@ -63,7 +61,6 @@ public class CitaController {
         model.addAttribute("estadoFiltro", estado);
         model.addAttribute("estadosCita", EstadoCita.values());
         model.addAttribute("trad", traduccionService);
-
         // Si es una petición AJAX (desde el JS), devolvemos solo el fragmento de la
         // tabla
         if ("XMLHttpRequest".equals(requestedWith)) {
@@ -86,33 +83,21 @@ public class CitaController {
             BindingResult result,
             Model model,
             RedirectAttributes flash) {
-
         model.addAttribute("trad", traduccionService);
-
         if (result.hasErrors()) {
             cargarListasFormulario(model);
             return "Cita/formularioCita";
         }
-
         try {
             citaService.saveCita(cita);
             flash.addFlashAttribute("success", "Cita procesada con éxito");
             return "redirect:/citas";
         } catch (Exception e) {
-            // --- LA SOLUCIÓN AQUÍ ---
-            // 1. Añadimos el mensaje de error al modelo
             model.addAttribute("errorNegocio", e.getMessage());
-
-            // 2. En lugar de devolver la 'cita' con error, creamos una nueva limpia
             Cita nuevaCita = new Cita();
-            // Sugerimos de nuevo la próxima hora válida para facilitar al usuario
             nuevaCita.setFechaHora(LocalDateTime.now().truncatedTo(ChronoUnit.HOURS).plusHours(1));
             model.addAttribute("cita", nuevaCita);
-
-            // 3. Recargamos las listas (pacientes, médicos, etc.)
             cargarListasFormulario(model);
-
-            // 4. Devolvemos a la vista del formulario
             return "Cita/formularioCita";
         }
     }
@@ -133,13 +118,19 @@ public class CitaController {
     @GetMapping("/confirmarEliminar/{id}")
     public String mostrarConfirmacionAnular(@PathVariable Long id, Model model) {
         Cita cita = citaService.findCitaById(id);
-        // IMPORTANTE: Solo permitir anular si está programada
         if (cita == null || cita.getEstado() != EstadoCita.PROGRAMADA) {
             return "redirect:/citas";
         }
         model.addAttribute("cita", cita);
         model.addAttribute("trad", traduccionService);
         return "Cita/confirmarEliminarCita";
+    }
+
+    @PostMapping("/anular")
+    public String anularCita(@RequestParam Long id, RedirectAttributes flash) {
+        citaService.anularCita(id);
+        flash.addFlashAttribute("success", "Cita anulada correctamente");
+        return "redirect:/citas";
     }
 
     @GetMapping("/detalle/{id}")
@@ -150,12 +141,5 @@ public class CitaController {
         model.addAttribute("cita", cita);
         model.addAttribute("trad", traduccionService);
         return "Cita/detalleCita";
-    }
-
-    @PostMapping("/anular")
-    public String anularCita(@RequestParam Long id, RedirectAttributes flash) {
-        citaService.anularCita(id);
-        flash.addFlashAttribute("success", "Cita anulada correctamente");
-        return "redirect:/citas";
     }
 }

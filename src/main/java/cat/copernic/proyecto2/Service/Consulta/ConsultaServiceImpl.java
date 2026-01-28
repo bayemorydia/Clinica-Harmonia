@@ -10,16 +10,15 @@ import cat.copernic.proyecto2.Service.Prueba.PruebaService;
 import cat.copernic.proyecto2.Domain.Facturacion.EstadoPago;
 import cat.copernic.proyecto2.Domain.Facturacion.Factura;
 import cat.copernic.proyecto2.Domain.Facturacion.LineaFactura;
-import cat.copernic.proyecto2.Domain.Farmacia.Medicamento;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ConsultaServiceImpl implements ConsultaService {
@@ -30,8 +29,6 @@ public class ConsultaServiceImpl implements ConsultaService {
     private EpisodioClinicoDAO episodioDAO;
     @Autowired
     private CitaDAO citaDAO;
-    @Autowired
-    private MedicamentoDAO medicamentoDAO;
     @Autowired
     private TratamientoDAO tratamientoDAO;
     @Autowired
@@ -48,24 +45,19 @@ public class ConsultaServiceImpl implements ConsultaService {
     @Override
     @Transactional(readOnly = true)
     public HistorialClinico obtenerHistorialFiltrado(Long pacienteId, LocalDate inicio, LocalDate fin) {
-        HistorialClinico historial = obtenerOSolucionarHistorial(pacienteId);
-        if (historial == null) {
-            historial = new HistorialClinico();
+        // Obtenemos el historial o uno nuevo si es nulo para evitar
+        // NullPointerException
+        HistorialClinico historial = Optional.ofNullable(obtenerOSolucionarHistorial(pacienteId))
+                .orElseGet(HistorialClinico::new);
+        // Si la lista de episodios es nula, inicializarla para que el stream no falle
+        if (historial.getEpisodios() == null)
             historial.setEpisodios(new ArrayList<>());
-        }
-        if (inicio != null || fin != null) {
-            List<EpisodioClinico> filtrados = historial.getEpisodios().stream()
-                    .filter(ep -> {
-                        LocalDate fechaEp = ep.getFecha().toLocalDate();
-                        boolean matches = true;
-                        if (inicio != null && fechaEp.isBefore(inicio))
-                            matches = false;
-                        if (fin != null && fechaEp.isAfter(fin))
-                            matches = false;
-                        return matches;
-                    }).collect(java.util.stream.Collectors.toList());
-            historial.setEpisodios(filtrados);
-        }
+        // Filtrado directo con predicados encadenados
+        List<EpisodioClinico> filtrados = historial.getEpisodios().stream()
+                .filter(ep -> inicio == null || !ep.getFecha().toLocalDate().isBefore(inicio))
+                .filter(ep -> fin == null || !ep.getFecha().toLocalDate().isAfter(fin))
+                .toList();
+        historial.setEpisodios(filtrados);
         return historial;
     }
 
@@ -75,11 +67,7 @@ public class ConsultaServiceImpl implements ConsultaService {
         HistorialClinico historial = obtenerOSolucionarHistorial(cita.getPaciente().getId());
         return historial.getEpisodios().stream()
                 .filter(e -> e.getFecha().isEqual(cita.getFechaHora()))
-                .findFirst()
-                .orElseGet(() -> historial.getEpisodios().stream()
-                        .filter(e -> e.getFecha().isAfter(cita.getFechaHora().minusMinutes(1))
-                                && e.getFecha().isBefore(cita.getFechaHora().plusMinutes(1)))
-                        .findFirst().orElse(null));
+                .findFirst().orElse(null);
     }
 
     @Override
@@ -88,7 +76,6 @@ public class ConsultaServiceImpl implements ConsultaService {
             List<Long> medIds, List<String> medDosis, List<Long> pruebaIds) {
         EpisodioClinico episodio = new EpisodioClinico();
         episodio.setDiagnostico(diagnosticoService.buscarPorId(diagnosticoId).orElseThrow());
-        episodio.setFecha(LocalDateTime.now());
         List<LineaReceta> lineas = new ArrayList<>();
         if (medIds != null) {
             for (int i = 0; i < medIds.size(); i++) {
@@ -108,29 +95,10 @@ public class ConsultaServiceImpl implements ConsultaService {
 
     @Override
     @Transactional
-    public void procesarConsultaLegacy(Long citaId, EpisodioClinico episodio, Tratamiento tratamiento,
-            List<Long> pruebasIds, List<String> medNombre, List<String> medDosis) {
-        List<PruebaMedica> pruebas = new ArrayList<>();
-        if (pruebasIds != null) {
-            pruebasIds.forEach(id -> pruebas.add(pruebaService.encontrarPrueba(id)));
-        }
-        List<LineaReceta> lineas = new ArrayList<>();
-        if (medNombre != null) {
-            for (int i = 0; i < medNombre.size(); i++) {
-                LineaReceta lr = new LineaReceta();
-                lr.setDosis(medDosis.get(i));
-                lineas.add(lr);
-            }
-        }
-        this.finalizarConsulta(citaId, episodio, tratamiento, pruebas, lineas);
-    }
-
-    @Override
-    @Transactional
     public void finalizarConsulta(Long citaId, EpisodioClinico episodio, Tratamiento tratamiento,
             List<PruebaMedica> pruebas, List<LineaReceta> lineas) {
         Cita cita = citaDAO.findById(citaId).orElseThrow(() -> new RuntimeException("Cita no encontrada"));
-        HistorialClinico hc = historialDAO.findByPacienteId(cita.getPaciente().getId())
+        HistorialClinico hc = historialDAO.findSimpleByPacienteId(cita.getPaciente().getId())
                 .orElseGet(() -> {
                     HistorialClinico newHc = new HistorialClinico();
                     newHc.setPaciente(cita.getPaciente());
@@ -173,7 +141,7 @@ public class ConsultaServiceImpl implements ConsultaService {
     @Override
     @Transactional(readOnly = true)
     public HistorialClinico obtenerOSolucionarHistorial(Long pacienteId) {
-        HistorialClinico hc = historialDAO.findByPacienteId(pacienteId).orElse(null);
+        HistorialClinico hc = historialDAO.findSimpleByPacienteId(pacienteId).orElse(null);
         if (hc != null) {
             hc.getEpisodios().size();
             for (EpisodioClinico episodio : hc.getEpisodios()) {
@@ -202,6 +170,31 @@ public class ConsultaServiceImpl implements ConsultaService {
         return hc;
     }
 
+    private void generarFacturaPorPruebas(Cita cita, List<PruebaMedica> pruebas) {
+        Factura factura = new Factura();
+        factura.setPaciente(cita.getPaciente());
+        factura.setFechaEmision(LocalDate.now());
+        factura.setFechaVencimiento(LocalDate.now().plusDays(15));
+        factura.setEstado(EstadoPago.PENDIENTE);
+        factura.setActivo(true);
+        List<LineaFactura> lineas = new ArrayList<>();
+        for (PruebaMedica p : pruebas) {
+            LineaFactura lf = new LineaFactura();
+            lf.setConcepto("Prueba Médica: " + p.getNombre() + " (Cita #" + cita.getId() + ")");
+            lf.setCantidad(1);
+            // CORRECCIÓN: Asignar BigDecimal directamente sin usar .floatValue()
+            // Asumiendo que p.getPrecio() ya devuelve BigDecimal
+            BigDecimal precioPrueba = (p.getPrecio() != null) ? p.getPrecio() : BigDecimal.ZERO;
+            lf.setPrecioUnitario(precioPrueba);
+            lf.setSubtotal(precioPrueba); // Cantidad es 1, subtotal = precio
+            lf.setFactura(factura);
+            lineas.add(lf);
+        }
+        factura.setLineas(lineas);
+        recalcularTotales(factura);
+        facturaDAO.save(factura);
+    }
+
     private void recalcularTotales(Factura factura) {
         // 1. Inicializamos el subtotal acumulado
         BigDecimal subtotalAcumulado = BigDecimal.ZERO;
@@ -225,48 +218,11 @@ public class ConsultaServiceImpl implements ConsultaService {
         factura.setTotal(subtotalAcumulado.add(iva));
     }
 
-    private void generarFacturaPorPruebas(Cita cita, List<PruebaMedica> pruebas) {
-        Factura factura = new Factura();
-        factura.setPaciente(cita.getPaciente());
-        factura.setFechaEmision(LocalDate.now());
-        factura.setFechaVencimiento(LocalDate.now().plusDays(15));
-        factura.setEstado(EstadoPago.PENDIENTE);
-        factura.setActivo(true);
-        List<LineaFactura> lineas = new ArrayList<>();
-        for (PruebaMedica p : pruebas) {
-            LineaFactura lf = new LineaFactura();
-            lf.setConcepto("Prueba Médica: " + p.getNombre() + " (Cita #" + cita.getId() + ")");
-            lf.setCantidad(1);
-            // CORRECCIÓN: Asignar BigDecimal directamente sin usar .floatValue()
-            // Asumiendo que p.getPrecio() ya devuelve BigDecimal
-            BigDecimal precioPrueba = (p.getPrecio() != null) ? p.getPrecio() : BigDecimal.ZERO;
-            lf.setPrecioUnitario(precioPrueba);
-            lf.setSubtotal(precioPrueba); // Cantidad es 1, subtotal = precio
-            lf.setFactura(factura);
-            lineas.add(lf);
-        }
-        factura.setLineas(lineas);
-        // CORRECCIÓN: Usar el método centralizado para calcular Subtotal, IVA y Total
-        recalcularTotales(factura);
-        facturaDAO.save(factura);
-    }
-
-    @Override
-    public List<Medicamento> buscarMedicamentos(String q) {
-        return medicamentoDAO.findByNombreContainingIgnoreCase(q);
-    }
-
     @Override
     @Transactional
     public void cambiarEstadoCita(Long id, EstadoCita estado) {
         Cita cita = citaDAO.findById(id).orElseThrow();
         cita.setEstado(estado);
         citaDAO.save(cita);
-    }
-
-    @Override
-    @Transactional
-    public void guardarAtencion(EpisodioClinico e, List<LineaReceta> l, Long c) {
-        finalizarConsulta(c, e, null, null, l);
     }
 }

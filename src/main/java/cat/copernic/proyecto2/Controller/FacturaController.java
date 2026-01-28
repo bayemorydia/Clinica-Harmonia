@@ -52,12 +52,10 @@ public class FacturaController {
             headers.setContentDisposition(ContentDisposition.attachment()
                     .filename("Factura_" + id + ".pdf")
                     .build());
-
             return ResponseEntity.ok()
                     .headers(headers)
                     .contentLength(pdfBytes.length)
                     .body(pdfBytes);
-
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
