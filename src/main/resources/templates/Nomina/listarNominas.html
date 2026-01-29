@@ -122,14 +122,32 @@
                     <p class="text-muted small mb-0" th:text="${trad.getTraduccion('nominas.lista.subtitulo')}">Gestión
                         y visualización de registros salariales.</p>
                 </div>
-                <button class="btn btn-success rounded-pill px-4 shadow-sm fw-bold" id="pagarTodasBtn">
-                    <i class="bi bi-wallet2 me-2"></i>
-                    <span th:text="${trad.getTraduccion('nominas.btn.pagar_todas')}">Pagar todas las nóminas</span>
-                </button>
-                <p id="estadoPago" class="text-success fw-bold mt-2 d-none">
-                    ✔️ Las nóminas de este mes ya han sido pagadas
-                </p>
 
+                <div class="d-flex align-items-center gap-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <label class="small fw-bold text-muted">Periodo:</label>
+                        <select id="selectPeriodo" class="form-select form-select-sm rounded-pill shadow-sm"
+                            style="width: 130px;" onchange="actualizarInterfazBoton()">
+                            <option value="01/2026">01/2026</option>
+                            <option value="02/2026">02/2026</option>
+                            <option value="03/2026">03/2026</option>
+                            <option value="12/2025">12/2025</option>
+                        </select>
+                    </div>
+
+                    <button id="pagarTodasBtn" type="button" class="btn btn-success rounded-pill px-4 shadow-sm fw-bold"
+                        onclick="lanzarPago()">
+                        <i class="bi bi-wallet2 me-2"></i>
+                        <span>Pagar todas las nóminas</span>
+                    </button>
+                </div>
+            </div>
+
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show mt-3 mb-4 shadow-sm"
+                role="alert" style="border-radius: 12px;">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <span th:text="${success}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
 
             <div class="card shadow-sm border-0 mb-4" style="border-radius: 15px;">
@@ -211,13 +229,11 @@
                                                 <i class="bi bi-chevron-left"></i>
                                             </a>
                                         </li>
-
                                         <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
                                             th:classappend="${i == currentPage} ? 'active'">
                                             <a class="page-link" href="javascript:void(0)"
                                                 th:onclick="'changePage(' + ${i} + ')'" th:text="${i + 1}">1</a>
                                         </li>
-
                                         <li class="page-item"
                                             th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
                                             <a class="page-link" href="javascript:void(0)"
@@ -242,9 +258,11 @@
 
     <script th:inline="javascript">
         let searchTimeout;
+        let pollInterval;
 
         document.addEventListener("DOMContentLoaded", () => {
             initTableEvents();
+            actualizarInterfazBoton(); // Verificar estado inicial
         });
 
         function initTableEvents() {
@@ -254,7 +272,6 @@
                 });
             });
 
-            // Re-vincular buscador con delay
             const searchInput = document.getElementById('searchInput');
             if (searchInput && !searchInput.dataset.bound) {
                 searchInput.dataset.bound = "true";
@@ -270,7 +287,6 @@
             const size = document.getElementById('pageSize').value;
             const container = document.getElementById('tablaContainer');
 
-            // DETECCIÓN DE RUTA PARA RRHH (Evita el 404)
             const path = window.location.pathname.toLowerCase();
             let prefix = path.includes("/rrhh") ? "/RRHH" : "";
 
@@ -283,7 +299,7 @@
                 })
                 .then(html => {
                     container.innerHTML = html;
-                    initTableEvents(); // Re-activar eventos en la nueva tabla
+                    initTableEvents();
                 })
                 .catch(err => console.error("Error en búsqueda:", err));
         }
@@ -294,55 +310,72 @@
             if (page >= 0 && page < total) updateTable(page);
         }
 
-        // --- Lógica del botón Pagar Todas ---
-        function obtenerPeriodoActual() {
-            const hoy = new Date();
-            const mes = String(hoy.getMonth() + 1).padStart(2, '0');
-            const anyo = hoy.getFullYear();
-            return `${mes}/${anyo}`;
-        }
+        // --- LÓGICA DE HILOS Y POLLING ---
 
-        document.getElementById("pagarTodasBtn").addEventListener("click", function () {
-            const periodo = obtenerPeriodoActual();
-            const clavePago = `nominas_pagadas_${periodo}`;
+        function actualizarInterfazBoton() {
+            const periodo = document.getElementById("selectPeriodo").value;
+            const btn = document.getElementById("pagarTodasBtn");
+            const btnSpan = btn.querySelector('span');
 
-            if (localStorage.getItem(clavePago)) {
-                alert("⚠️ Las nóminas de este mes ya han sido pagadas");
-                return;
-            }
-
-            const confirmMsg = /*[[${trad.getTraduccion('nominas.confirm.pagar_todas')}]]*/ "confirmación por defecto";
-            if (!confirm(confirmMsg)) return;
-
-            // Aquí también usamos el prefijo dinámico
             const path = window.location.pathname.toLowerCase();
             let prefix = path.includes("/rrhh") ? "/RRHH" : "";
 
-            fetch(`${prefix}/nominas/descargarTodos?periodo=${encodeURIComponent(periodo)}`)
-                .then(response => {
-                    if (!response.ok) throw new Error("Error");
-                    return response.blob();
-                })
-                .then(blob => {
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement("a");
-                    a.href = url;
-                    a.download = `Nominas_${periodo.replace('/', '-')}.zip`;
-                    document.body.appendChild(a);
-                    a.click();
-                    a.remove();
-                    localStorage.setItem(clavePago, "true");
+            fetch(`${prefix}/nominas/estado-pago?periodo=${periodo}`)
+                .then(res => res.text())
+                .then(estado => {
+                    if (estado === "PAGADO") {
+                        btnSpan.innerText = "Pagado";
+                        btn.className = "btn btn-secondary rounded-pill px-4 shadow-sm fw-bold";
+                        btn.disabled = true;
+                        if (pollInterval) clearInterval(pollInterval);
+                    } else if (estado === "PROCESANDO") {
+                        btnSpan.innerText = "Procesando...";
+                        btn.className = "btn btn-warning rounded-pill px-4 shadow-sm fw-bold";
+                        btn.disabled = true;
+                        iniciarPolling(periodo);
+                    } else {
+                        btnSpan.innerText = /*[[${trad.getTraduccion('nominas.btn.pagar_todas')}]]*/ "Pagar todas las nóminas";
+                        btn.className = "btn btn-success rounded-pill px-4 shadow-sm fw-bold";
+                        btn.disabled = false;
+                        if (pollInterval) clearInterval(pollInterval);
+                    }
+                });
+        }
 
-                    const btn = document.getElementById("pagarTodasBtn");
-                    btn.disabled = true;
-                    btn.innerText = "Nóminas ya pagadas";
-                    btn.classList.replace("btn-success", "btn-secondary");
-                    document.getElementById("estadoPago").classList.remove("d-none");
-                })
-                .catch(err => alert("❌ Error al generar las nóminas"));
-        });
+        function lanzarPago() {
+            const periodo = document.getElementById("selectPeriodo").value;
+            const confirmMsg = /*[[${trad.getTraduccion('nominas.confirm.pagar_todas')}]]*/ "confirmación";
+            if (!confirm(confirmMsg)) return;
+
+            const path = window.location.pathname.toLowerCase();
+            let prefix = path.includes("/rrhh") ? "/RRHH" : "";
+
+            let formData = new FormData();
+            formData.append("periodo", periodo);
+            const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+            const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
+
+            fetch(`${prefix}/nominas/pagar-todas`, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    // Añadir esto para que Spring Security no bloquee el POST
+                    [csrfHeader]: csrfToken
+                }
+            }).then(() => {
+                actualizarInterfazBoton(); // Cambia a "Procesando" e inicia polling
+            }).catch(err => console.error("Error al lanzar hilos:", err));
+        }
+
+        function iniciarPolling(periodo) {
+            if (pollInterval) clearInterval(pollInterval);
+            pollInterval = setInterval(() => {
+                actualizarInterfazBoton();
+                // Opcional: Refrescar tabla mientras se procesa para ver resultados parciales
+                updateTable(0);
+            }, 3000);
+        }
     </script>
-
 </body>
 
 </html>

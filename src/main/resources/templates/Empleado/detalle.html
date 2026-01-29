@@ -4,7 +4,7 @@
 <head>
     <div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: head_medico}"></div>
     <div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: head_recepcion}"></div>
-    <div sec:authorize="!hasAnyRole('MEDICO', 'RECEPCIONISTA')" th:replace="~{Reutilizable/layout :: head_general}">
+    <div sec:authorize="!hasAnyRole('MEDICO', 'RECEPCIONISTA','RRHH')" th:replace="~{Reutilizable/layout :: head_general}">
     </div>
     <div sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layoutRRHH :: head_RRHH}"></div>
     <title th:text="${empleado.nombre} + ' ' + ${empleado.apellidos}">Detalle Empleado</title>
@@ -13,7 +13,7 @@
 <body class="bg-light">
     <div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: menu_medico}"></div>
     <div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: menu_recepcion}"></div>
-    <div sec:authorize="!hasAnyRole('MEDICO', 'RECEPCIONISTA')" th:replace="~{Reutilizable/layout :: menu}"></div>
+    <div sec:authorize="!hasAnyRole('MEDICO', 'RECEPCIONISTA','RRHH')" th:replace="~{Reutilizable/layout :: menu}"></div>
     <div sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layoutRRHH :: menu_RRHH}"></div>
 
     <main
@@ -244,7 +244,7 @@
     <div sec:authorize="hasRole('MEDICO')" th:replace="~{Reutilizable/layoutMedico :: scripts_medico}"></div>
     <div sec:authorize="hasRole('RECEPCIONISTA')" th:replace="~{Reutilizable/layoutRecepcion :: scripts_recepcion}">
     </div>
-    <div sec:authorize="!hasAnyRole('MEDICO', 'RECEPCIONISTA')" th:replace="~{Reutilizable/layout :: scripts}"></div>
+    <div sec:authorize="!hasAnyRole('MEDICO', 'RECEPCIONISTA','RRHH')" th:replace="~{Reutilizable/layout :: scripts}"></div>
     <div sec:authorize="hasRole('RRHH')" th:replace="~{Reutilizable/layoutRRHH :: scripts_RRHH}"></div>
     <!-- Validaciones JS -->
     <script>

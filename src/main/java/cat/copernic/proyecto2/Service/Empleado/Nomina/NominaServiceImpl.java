@@ -12,19 +12,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import cat.copernic.proyecto2.Service.Empleado.EmpleadoService;
-import java.util.concurrent.CompletableFuture;
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class NominaServiceImpl implements NominaService {
+
+    private final ConcurrentHashMap<String, String> estadosHilos = new ConcurrentHashMap<>();
 
     @Autowired
     private NominaDAO nominaRepository;
@@ -223,51 +224,6 @@ public class NominaServiceImpl implements NominaService {
     }
 
     @Override
-    @Async
-    @Transactional
-    public CompletableFuture<byte[]> generarYDescargarNominasTodos(String periodo) {
-        // Creamos un ByteArrayOutputStream para almacenar el ZIP en memoria
-        try (ByteArrayOutputStream baosZip = new ByteArrayOutputStream();
-                java.util.zip.ZipOutputStream zipOut = new java.util.zip.ZipOutputStream(baosZip)) {
-            List<Empleado> empleados = empleadoService.listarTodos();
-            // Recorremos cada empleado para generar su nómina
-            for (Empleado e : empleados) {
-                Nomina nomina = nominaRepository.findByEmpleadoIdAndPeriodo(e.getId(), periodo);
-                // Si no existe, la creamos y calculamos
-                if (nomina == null) {
-                    nomina = new Nomina();
-                    nomina.setEmpleado(e);
-                    nomina.setPeriodo(periodo);
-                    // Si el salario base es nulo, se asigna 0
-                    nomina.setSalarioBase(e.getSalarioBase() != null ? e.getSalarioBase() : BigDecimal.ZERO);
-                    // Calculamos la nómina (deducciones, complementos, etc.)
-                    calcularNomina(nomina);
-                    // Guardamos la nómina en base de datos
-                    nominaRepository.save(nomina);
-                }
-                // Generamos el PDF de la nómina
-                byte[] pdf = generarPdfNomina(nomina);
-                // Creamos una entrada dentro del ZIP con nombre personalizado
-                java.util.zip.ZipEntry zipEntry = new java.util.zip.ZipEntry(
-                        "Nomina_" + e.getNombre() + "_" + e.getApellidos() + ".pdf");
-                // Añadimos la entrada al ZIP
-                zipOut.putNextEntry(zipEntry);
-                // Escribimos el PDF dentro del ZIP
-                zipOut.write(pdf);
-                // Cerramos la entrada actual
-                zipOut.closeEntry();
-            }
-            // Finalizamos el ZIP
-            zipOut.finish();
-            // Devolvemos el ZIP en forma de arreglo de bytes
-            return CompletableFuture.completedFuture(baosZip.toByteArray());
-        } catch (Exception ex) {
-            // En caso de error, devolvemos null
-            return CompletableFuture.completedFuture(null);
-        }
-    }
-
-    @Override
     public Nomina inicializarNomina(Empleado empleado) {
         Nomina nomina = new Nomina();
         nomina.setEmpleado(empleado);
@@ -282,5 +238,49 @@ public class NominaServiceImpl implements NominaService {
     public Page<Nomina> listarNominasPorEmpleado(Long empleadoId, String search, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         return nominaRepository.findByEmpleadoIdAndPeriodoContaining(empleadoId, search, pageable);
+    }
+
+    @Override
+    public void pagarTodasLasNominas(String periodo) {
+        estadosHilos.put(periodo, "PROCESANDO");
+        Thread hiloPago = new Thread(() -> {
+            try {
+                // 1. Obtenemos todos los empleados
+                List<Empleado> empleados = empleadoService.listarTodos();
+                for (Empleado e : empleados) {
+                    // 2. Filtramos por tu atributo 'activa'
+                    if (e.getActiva() != null && e.getActiva()) {
+                        // 3. Verificamos si ya existe la nómina para evitar duplicados
+                        if (!nominaRepository.existsByEmpleadoIdAndPeriodo(e.getId(), periodo)) {
+                            Nomina nuevaNomina = new Nomina();
+                            nuevaNomina.setEmpleado(e);
+                            nuevaNomina.setPeriodo(periodo);
+                            nuevaNomina
+                                    .setSalarioBase(e.getSalarioBase() != null ? e.getSalarioBase() : BigDecimal.ZERO);
+                            calcularNomina(nuevaNomina);
+                            nominaRepository.save(nuevaNomina);
+                        }
+                    }
+                    // Simulación de carga para ver el estado "Procesando..." en la web
+                    Thread.sleep(500);
+                }
+                // 4. IMPORTANTE: Marcamos como PAGADO al finalizar el bucle
+                estadosHilos.put(periodo, "PAGADO");
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+            } catch (Exception ex) {
+                estadosHilos.put(periodo, "ERROR");
+            }
+        });
+        hiloPago.setName("Hilo-Pago-Manual-" + periodo);
+        hiloPago.start();
+    }
+
+    @Override
+    public String obtenerEstadoPago(String periodo) {
+        // Si hay datos en BD para ese periodo, siempre devolver "PAGADO"
+        if (nominaRepository.countByPeriodo(periodo) > 0)
+            return "PAGADO";
+        return estadosHilos.getOrDefault(periodo, "PENDIENTE");
     }
 }
