@@ -14,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.security.Principal;
 import java.util.Map;
 
@@ -171,5 +172,22 @@ public class RRHHController {
         Empleado empleado = empleadoService.obtenerPorUsername(auth.getName());
         model.addAttribute("empleadoLogueado", empleado);
         return "RRHH/vacaciones";
+    }
+
+    @PostMapping("/nominas/pagar-todas")
+    public String pagarTodas(@RequestParam("periodo") String periodo, RedirectAttributes flash) {
+        // Llamamos al servicio que crea el hilo
+        nominaService.pagarTodasLasNominas(periodo);
+        // Añadimos un mensaje que Thymeleaf mostrará tras la redirección
+        flash.addFlashAttribute("success",
+                "El proceso de pago para " + periodo + " se está ejecutando en segundo plano.");
+        // Redirigimos de vuelta a la lista de nóminas
+        return "redirect:/RRHH/nominas";
+    }
+
+    @GetMapping("/nominas/estado-pago")
+    @ResponseBody // Devuelve texto plano, no una vista
+    public String obtenerEstadoPago(@RequestParam String periodo) {
+        return nominaService.obtenerEstadoPago(periodo);
     }
 }

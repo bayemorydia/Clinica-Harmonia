@@ -37,4 +37,5 @@ public interface NominaDAO extends JpaRepository<Nomina, Long> {
            "LOWER(n.empleado.apellidos) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
            "LOWER(n.periodo) LIKE LOWER(CONCAT('%', :query, '%'))")
     Page<Nomina> findByGlobalQuery(@Param("query") String query, Pageable pageable);
+    long countByPeriodo(String periodo);
 }

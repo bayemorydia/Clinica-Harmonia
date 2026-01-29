@@ -4,6 +4,8 @@
 <head th:fragment="head_RRHH">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
@@ -83,24 +85,32 @@
             position: fixed;
             top: 20px;
             right: 20px;
-            z-index: 1060; /* Asegura que esté por encima de todo */
+            z-index: 1060;
+            /* Asegura que esté por encima de todo */
             width: 350px;
         }
-        
+
         .notification-toast {
             animation: slideIn 0.5s ease-out;
         }
 
         @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
     </style>
 </head>
 
 <body>
     <div class="sidebar d-flex flex-column p-3" th:fragment="menu_RRHH">
-        
+
         <div id="toast-container"></div>
 
         <div class="d-flex align-items-center mb-1 px-2">
@@ -183,10 +193,10 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
-        
+
         <script th:inline="javascript">
             // Lógica WebSocket centralizada para RRHH
-            (function() {
+            (function () {
                 var socket = new SockJS('/ws-clinica');
                 var stompClient = Stomp.over(socket);
                 stompClient.debug = null; // Ocultar mensajes de depuración en consola
@@ -200,7 +210,7 @@
                 function mostrarNotificacionEmergente(mensaje) {
                     const container = document.getElementById('toast-container');
                     if (!container) return;
-                    
+
                     const id = 'notif-' + Date.now();
                     const toastHtml = `
                         <div id="${id}" class="alert alert-info alert-dismissible fade show shadow notification-toast border-start border-info border-5 mb-3" role="alert" style="cursor:pointer;" onclick="location.href='/RRHH/gestionvacaciones'">
@@ -214,7 +224,7 @@
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" onclick="event.stopPropagation();"></button>
                         </div>
                     `;
-                    
+
                     container.insertAdjacentHTML('afterbegin', toastHtml);
 
                     // Auto-eliminar después de 8 segundos

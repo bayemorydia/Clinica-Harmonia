@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.http.*;
-import java.util.concurrent.CompletableFuture;
 
 @Controller
 @RequestMapping("/nominas")
@@ -103,24 +102,5 @@ public class NominaController {
         model.addAttribute("trad", traduccionService);
         model.addAttribute("activePage", "nominas");
         return "Nomina/detalleNomina";
-    }
-
-    @GetMapping("/descargarTodos")
-    @ResponseBody
-    public CompletableFuture<ResponseEntity<byte[]>> descargarNominasTodos(@RequestParam String periodo) {
-        return nominaService.generarYDescargarNominasTodos(periodo)
-                .thenApply(zipBytes -> {
-                    if (zipBytes == null) {
-                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-                    }
-
-                    HttpHeaders headers = new HttpHeaders();
-                    headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-                    headers.setContentDisposition(ContentDisposition.attachment()
-                            .filename("Nominas_" + periodo + ".zip")
-                            .build());
-
-                    return new ResponseEntity<>(zipBytes, headers, HttpStatus.OK);
-                });
     }
 }
